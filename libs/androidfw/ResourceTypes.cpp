@@ -4183,7 +4183,7 @@ bool ResTable::stringToValue(Res_value* outValue, String16* outString,
                     type.size(), package.string(), package.size(), &specFlags);
             if (rid != 0) {
                 if (enforcePrivate) {
-                    if ((specFlags&ResTable_typeSpec::SPEC_PUBLIC) == 0) {
+                    if ((dtohl(specFlags)&ResTable_typeSpec::SPEC_PUBLIC) == 0) {
                         if (accessor != NULL) {
                             accessor->reportError(accessorCookie, "Resource is not public.");
                         }
@@ -4338,7 +4338,7 @@ bool ResTable::stringToValue(Res_value* outValue, String16* outString,
                               package.string(), package.size(), &specFlags);
         if (rid != 0) {
             if (enforcePrivate) {
-                if ((specFlags&ResTable_typeSpec::SPEC_PUBLIC) == 0) {
+                if ((dtohl(specFlags)&ResTable_typeSpec::SPEC_PUBLIC) == 0) {
                     if (accessor != NULL) {
                         accessor->reportError(accessorCookie, "Attribute is not public.");
                     }
@@ -5054,7 +5054,7 @@ status_t ResTable::parsePackage(const ResTable_package* const pkg,
     const ResChunk_header* chunk =
         (const ResChunk_header*)(((const uint8_t*)pkg)
                                  + dtohs(pkg->header.headerSize));
-    const uint8_t* endPos = ((const uint8_t*)pkg) + dtohs(pkg->header.size);
+    const uint8_t* endPos = ((const uint8_t*)pkg) + dtohl(pkg->header.size);
     while (((const uint8_t*)chunk) <= (endPos-sizeof(ResChunk_header)) &&
            ((const uint8_t*)chunk) <= (endPos-dtohl(chunk->size))) {
         TABLE_NOISY(ALOGV("PackageChunk: type=0x%x, headerSize=0x%x, size=0x%x, pos=%p\n",

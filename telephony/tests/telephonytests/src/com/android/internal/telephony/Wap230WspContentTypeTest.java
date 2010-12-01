@@ -623,6 +623,28 @@ public class Wap230WspContentTypeTest extends TestCase {
 
     }
 
+    public void testTypedParamWellKnownShortIntegerCompactIntegerValue_0()  {
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        out.write(0x3);
+        out.write(SHORT_MIME_TYPE_ROLLOVER_CERTIFICATE | WSP_SHORT_INTEGER_MASK);
+        out.write(TYPED_PARAM_SEC | WSP_SHORT_INTEGER_MASK);
+        out.write(0x00 | WSP_SHORT_INTEGER_MASK);
+
+        WspTypeDecoder unit = new WspTypeDecoder(out.toByteArray());
+        assertTrue(unit.decodeContentType(0));
+
+        String mimeType = unit.getValueString();
+
+        assertEquals(STRING_MIME_TYPE_ROLLOVER_CERTIFICATE, mimeType);
+        assertEquals(0x3F, unit.getValue32());
+        assertEquals(4, unit.getDecodedDataLength());
+
+        Map<String, String> params = unit.getContentParameters();
+        assertEquals("0", params.get("SEC"));
+
+    }
+
     public void testTypedParamWellKnownShortIntegerMultipleParameters() throws Exception {
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();

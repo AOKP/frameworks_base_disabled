@@ -506,11 +506,7 @@ public class WspTypeDecoder {
             } else if (decodeIntegerValue(startIndex + totalRead)) {
                 totalRead += dataLength;
                 int intValue = (int) unsigned32bit;
-                if (intValue == 0) {
-                    value = "";
-                } else {
-                    value = String.valueOf(intValue);
-                }
+                value = String.valueOf(intValue);
             } else {
                 decodeTokenText(startIndex + totalRead);
                 totalRead += dataLength;

@@ -456,6 +456,9 @@ private:
     static VideoEncoderCap* createDefaultH263VideoEncoderCap();
     static VideoEncoderCap* createDefaultM4vVideoEncoderCap();
     static AudioEncoderCap* createDefaultAmrNBEncoderCap();
+#ifdef QCOM_HARDWARE
+    static AudioEncoderCap* createDefaultAacEncoderCap();
+#endif
 
     static int findTagForName(const NameToTagMap *map, size_t nMappings, const char *name);
 

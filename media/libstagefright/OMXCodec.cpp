@@ -1141,6 +1141,39 @@ status_t OMXCodec::configureCodec(const sp<MetaData> &meta) {
         if(err!=OK){
            return err;
         }
+    } else if(!strcasecmp(MEDIA_MIMETYPE_VIDEO_WMV, mMIME)) {
+	        OMX_QCOM_PARAM_PORTDEFINITIONTYPE portdef;
+	        portdef.nSize = sizeof(OMX_QCOM_PARAM_PORTDEFINITIONTYPE);
+	        portdef.nPortIndex = 0; //Input port.
+	        portdef.nMemRegion = OMX_QCOM_MemRegionInvalid;
+	        portdef.nCacheAttr = OMX_QCOM_CacheAttrNone;
+        int32_t WMVProfile = 0;
+        CHECK(meta->findInt32(kKeyWMVProfile,&WMVProfile));
+
+        if(WMVProfile == kTypeWMVAdvance)
+        {
+            portdef.nFramePackingFormat = OMX_QCOM_FramePacking_Arbitrary;
+            LOGV("Setting decoder in Arbitary Mode --- ADVANCE PROFILE");
+        }
+        else
+        {
+            portdef.nFramePackingFormat = OMX_QCOM_FramePacking_OnlyOneCompleteFrame;
+            LOGV("Setting decoder in Frame-By-Frame Mode --- SIMPLE Profile");
+        }
+
+        char value[PROPERTY_VALUE_MAX];
+        status_t err = mOMX->setParameter(mNode, (OMX_INDEXTYPE)OMX_QcomIndexPortDefn, &portdef, sizeof(OMX_QCOM_PARAM_PORTDEFINITIONTYPE));
+        if (!property_get("ro.product.device", value, "1")
+            || !strcmp(value, "msm7627_surf") || !strcmp(value, "msm7627_ffa")
+            || !strcmp(value, "msm7627_7x_surf") || !strcmp(value, "msm7627_7x_ffa")
+            || !strcmp(value, "msm7625_surf") || !strcmp(value, "msm7625_ffa"))
+        {
+            LOGE("OMX_QCOM_FramePacking_OnlyOneCompleteFrame not supported by component err: %d", err);
+        } else {
+            if(err!=OK){
+               return err;
+            }
+        }
 #endif
     } else if (!strcasecmp(MEDIA_MIMETYPE_AUDIO_G711_ALAW, mMIME)
             || !strcasecmp(MEDIA_MIMETYPE_AUDIO_G711_MLAW, mMIME)) {

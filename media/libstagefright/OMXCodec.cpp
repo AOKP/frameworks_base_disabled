@@ -1245,11 +1245,11 @@ status_t OMXCodec::configureCodec(const sp<MetaData> &meta) {
             || !strcmp(value, "msm7625_surf") || !strcmp(value, "msm7625_ffa"))
         {
             LOGE("OMX_QCOM_FramePacking_OnlyOneCompleteFrame not supported by component err: %d", err);
-        }
-        else
+        } else {
             if(err!=OK){
                return err;
             }
+        }
 #endif
     } else if (!strcasecmp(MEDIA_MIMETYPE_AUDIO_G711_ALAW, mMIME)
             || !strcasecmp(MEDIA_MIMETYPE_AUDIO_G711_MLAW, mMIME)) {

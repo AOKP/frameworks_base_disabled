@@ -232,14 +232,17 @@ __inline Word32 ASM_L_shr(Word32 L_var1, Word16 var2)
 
 __inline Word32 ASM_L_shl(Word32 L_var1, Word16 var2)
 {
-	Word32 result;
-	asm (
-		"MOV	%[result], %[L_var1], ASL %[var2] \n"
-		"TEQ	%[L_var1], %[result], ASR %[var2]\n"
-		"EORNE  %[result], %[mask], %[L_var1], ASR #31\n"
+	Word32 result; 
+	asm volatile( 
+		"MOV	r2, %[L_var1] \n"
+		"MOV	r3, #0x7fffffff\n"
+		"MOV	%[result], %[L_var1], ASL %[var2] \n" 
+		"TEQ	r2, %[result], ASR %[var2]\n"
+		"EORNE  %[result],r3,r2,ASR#31\n"
 		:[result]"=&r"(result)
-		:[L_var1]"r"(L_var1), [var2]"r"(var2), [mask]"r"(0x7fffffff)
-		);
+		:[L_var1]"r"(L_var1), [var2]"r"(var2)
+		:"r2", "r3"
+		); 
 	return result;
 }
 
@@ -262,9 +265,13 @@ __inline Word32 ASM_shl(Word32 L_var1, Word16 var2)
 	Word32 result;
 	asm (
 		"CMP	%[var2], #16\n"
-		"MOVLT  %[result], %[L_var1], ASL %[var2]\n"
-		"MOVGE  %[result], %[L_var1], ASL #16\n"
-		"SSAT   %[result], #16, %[result]\n"
+		"MOVGE  %[var2], #16\n"
+		"MOV    %[result], %[L_var1], ASL %[var2]\n"
+		"MOV    r3, #1\n"
+        "MOV    r2, %[result], ASR #15\n"
+        "RSB    r3,r3,r3,LSL #15 \n"
+        "TEQ    r2, %[result], ASR #31 \n"
+        "EORNE  %[result], r3, %[result],ASR #31"
 		:[result]"=r"(result)
 		:[L_var1]"r"(L_var1), [var2]"r"(var2)
 		);
@@ -307,12 +314,15 @@ __inline Word16 saturate(Word32 L_var1)
 	Word16 result;
 	Word32 tmp;
 	asm volatile (
-		"MOV	%[tmp], %[L_var1],ASR#15\n"
-		"TEQ	%[tmp], %[L_var1],ASR#31\n"
-		"EORNE	%[result], %[mask],%[L_var1],ASR#31\n"
+		"MOV	r3, #1\n"
+		"MOV	r2,%[L_var1],ASR#15\n"
+		"RSB	r3, r3, r3, LSL #15\n"
+		"TEQ	r2,%[L_var1],ASR#31\n"	
+		"EORNE	%[result],r3,%[L_var1],ASR#31\n"
 		"MOVEQ	%[result], %[L_var1]\n"
-		:[result]"=&r"(result), [tmp]"=&r"(tmp)
-		:[L_var1]"r"(L_var1), [mask]"r"(0x7fff)
+		:[result]"=r"(result)
+		:[L_var1]"r"(L_var1)
+		:"r2", "r3"
 	);
 
 	return result;
@@ -428,7 +438,7 @@ __inline Word32 L_mult(Word16 var1, Word16 var2)
 {
 #if ARMV5TE_L_MULT
 	Word32 result;
-	asm (
+	asm volatile(
 		"SMULBB %[result], %[var1], %[var2] \n"
 		"QADD %[result], %[result], %[result] \n"
 		:[result]"=r"(result)
@@ -457,10 +467,11 @@ __inline Word32 L_mult(Word16 var1, Word16 var2)
 __inline Word32 L_msu (Word32 L_var3, Word16 var1, Word16 var2)
 {
 #if ARMV5TE_L_MSU
-	Word32 result;
-	asm (
-		"SMULBB %[result], %[var1], %[var2] \n"
-		"QDSUB %[result], %[L_var3], %[result]\n"
+	Word32 result; 
+	asm volatile( 
+		"SMULBB %[result], %[var1], %[var2] \n" 
+		"QADD %[result], %[result], %[result] \n"
+		"QSUB %[result], %[L_var3], %[result]\n"
 		:[result]"=&r"(result)
 		:[L_var3]"r"(L_var3), [var1]"r"(var1), [var2]"r"(var2)
 		);
@@ -595,15 +606,17 @@ __inline Word32 L_shr (Word32 L_var1, Word16 var2)
 __inline Word16 add (Word16 var1, Word16 var2)
 {
 #if ARMV5TE_ADD
-	Word32 result;
-	Word32 tmp;
-	asm (
-		"ADD  %[result], %[var1], %[var2] \n"
-		"MOV  %[tmp], %[result], ASR #15 \n"
-		"TEQ  %[tmp], %[result], ASR #31 \n"
-		"EORNE %[result], %[mask], %[result], ASR #31"
-		:[result]"=&r"(result), [tmp]"=&r"(tmp)
-		:[var1]"r"(var1), [var2]"r"(var2), [mask]"r"(0x7fff)
+	Word32 result; 
+	asm volatile( 
+		"ADD  %[result], %[var1], %[var2] \n" 
+		"MOV  r3, #0x1\n"
+		"MOV  r2, %[result], ASR #15\n"
+		"RSB  r3, r3, r3, LSL, #15\n"
+		"TEQ  r2, %[result], ASR #31\n"
+		"EORNE %[result], r3, %[result], ASR #31"
+		:[result]"=r"(result)
+		:[var1]"r"(var1), [var2]"r"(var2)
+		:"r2", "r3"
 		);
 	return result;
 #else
@@ -623,15 +636,17 @@ __inline Word16 add (Word16 var1, Word16 var2)
 __inline Word16 sub(Word16 var1, Word16 var2)
 {
 #if ARMV5TE_SUB
-	Word32 result;
-	Word32 tmp;
-	asm (
-		"SUB   %[result], %[var1], %[var2] \n"
-		"MOV   %[tmp], %[var1], ASR #15 \n"
-		"TEQ   %[tmp], %[var1], ASR #31 \n"
-		"EORNE %[result], %[mask], %[result], ASR #31 \n"
-		:[result]"=&r"(result), [tmp]"=&r"(tmp)
-		:[var1]"r"(var1), [var2]"r"(var2), [mask]"r"(0x7fff)
+	Word32 result; 
+	asm volatile( 
+		"MOV   r3, #1\n"
+		"SUB   %[result], %[var1], %[var2] \n"		
+		"RSB   r3,r3,r3,LSL#15\n"
+		"MOV   r2, %[var1], ASR #15 \n" 
+		"TEQ   r2, %[var1], ASR #31 \n"
+		"EORNE %[result], r3, %[result], ASR #31 \n"
+		:[result]"=&r"(result)
+		:[var1]"r"(var1), [var2]"r"(var2)
+		:"r2", "r3"
 		);
 	return result;
 #else
@@ -685,11 +700,16 @@ __inline Word16 div_s (Word16 var1, Word16 var2)
 #if (MULT_IS_INLINE)
 __inline Word16 mult (Word16 var1, Word16 var2)
 {
-#if ARMV5TE_MULT && ARMV6_SAT
-	Word32 result;
-	asm (
-		"SMULBB %[result], %[var1], %[var2] \n"
-		"SSAT   %[result], #16, %[result], ASR #15 \n"
+#if ARMV5TE_MULT
+	Word32 result; 
+	asm volatile( 
+		"SMULBB r2, %[var1], %[var2] \n"
+		"MOV	r3, #1\n"
+		"MOV	%[result], r2, ASR #15\n"
+		"RSB	r3, r3, r3, LSL #15\n"
+		"MOV	r2, %[result], ASR #15\n"
+		"TEQ	r2, %[result], ASR #31\n"
+		"EORNE  %[result], r3, %[result], ASR #31 \n"
 		:[result]"=r"(result)
 		:[var1]"r"(var1), [var2]"r"(var2)
 		);
@@ -735,9 +755,9 @@ __inline Word16 norm_s (Word16 var1)
 		"CLZGT %[result], %[tmp]\n"
 		"SUBNE %[result], %[result], #17\n"
 		"MOVEQ %[result], #0\n"
-		"CMP   %[var1], #-1\n"
+		"CMP   r2, #-1\n"
 		"MOVEQ %[result], #15\n"
-		:[result]"=&r"(result), [tmp]"=&r"(tmp)
+		:[result]"=r"(result)
 		:[var1]"r"(var1)
 		);
 	return result;
@@ -986,12 +1006,14 @@ __inline Word16 norm_l (Word32 L_var1)
 __inline Word16 round16(Word32 L_var1)
 {
 #if ARMV5TE_ROUND
-	Word16 result;
-	asm (
-		"QADD  %[result], %[L_var1], %[bias]\n"
+	Word16 result; 
+	asm volatile( 
+		"MOV   r1,#0x00008000\n"
+		"QADD  %[result], %[L_var1], r1\n"
 		"MOV   %[result], %[result], ASR #16 \n"
 		:[result]"=r"(result)
-		:[L_var1]"r"(L_var1), [bias]"r"(0x8000)
+		:[L_var1]"r"(L_var1)
+		:"r1"
 		);
 	return result;
 #else
@@ -1013,7 +1035,8 @@ __inline Word32 L_mac (Word32 L_var3, Word16 var1, Word16 var2)
 	Word32 result;
 	asm (
 		"SMULBB %[result], %[var1], %[var2]\n"
-		"QDADD  %[result], %[L_var3], %[result]\n"
+		"QADD	%[result], %[result], %[result]\n"
+		"QADD   %[result], %[result], %[L_var3]\n"
 		:[result]"=&r"(result)
 		: [L_var3]"r"(L_var3), [var1]"r"(var1), [var2]"r"(var2)
 		);

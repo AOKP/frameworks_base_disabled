@@ -39,6 +39,9 @@ LOCAL_LDLIBS := $(FLTO_FLAG) -lpthread -ldl
 ifeq ($(TARGET_ARCH),arm)
 	LOCAL_SRC_FILES += fixed_asm.S iterators.S
 	LOCAL_CFLAGS += -fstrict-aliasing
+ifeq ($(ARCH_ARM_HAVE_VFP),true)
+	LOCAL_CFLAGS += -DHAVE_ARM_VFP
+endif
 endif
 
 ifeq ($(ARCH_ARM_HAVE_TLS_REGISTER),true)

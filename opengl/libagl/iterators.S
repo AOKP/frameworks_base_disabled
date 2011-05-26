@@ -21,6 +21,7 @@
     .arm
     
     .global iterators0032
+    .hidden iterators0032
     .type iterators0032, %function
 
 /*

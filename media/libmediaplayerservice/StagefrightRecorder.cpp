@@ -1104,12 +1104,63 @@ void StagefrightRecorder::clipVideoFrameRate() {
     }
 }
 
+/* Needs to be check max-bitrate in here to make sure that encoding with right parameters */
+#if defined(OMAP_ENHANCEMENT) && defined(TARGET_OMAP3)
+
+#define ARRAY_SIZE(array) (sizeof array / sizeof array[0])
+
+typedef struct {
+    size_t level;
+    size_t maxBitRate;
+    size_t maxFrameSizeinMbs;
+    size_t maxMbsPerSecond;
+} omap3_dsp_h264_supported;
+
+/* Below table synced with inside codec's */
+const omap3_dsp_h264_supported _h264_supported[] = {
+                            {10, 64000, 99, 1485},
+                            {11, 192000, 396, 3000},
+                            {12, 384000, 396, 6000},
+                            {20, 2000000, 396, 11880},
+                            {21, 4000000, 792, 19800},
+                            {22, 4000000, 1620, 20250},
+                            {30, 10000000, 1620, 40500}};
+
+static int _get_maxrate_in_mbs(int width, int height, int fps) {
+    int mps = (width / 16) * (height / 16) * fps; /* Max macroblocks per second */
+    int i;
+    int maxrate = -1;
+
+    for (i = 0; i < ARRAY_SIZE(_h264_supported); i++) {
+        if (mps < _h264_supported[i].maxMbsPerSecond) {
+            maxrate = _h264_supported[i].maxBitRate;
+            break;
+        }
+    }
+
+    // not found, set max.
+    if (maxrate == -1) maxrate = _h264_supported[ARRAY_SIZE(_h264_supported)-1].maxBitRate;
+
+    return maxrate;
+}
+#endif /* defined(OMAP_ENHANCEMENT) && defined(TARGET_OMAP3) */
+
 void StagefrightRecorder::clipVideoBitRate() {
     LOGV("clipVideoBitRate: encoder %d", mVideoEncoder);
-    int minBitRate = mEncoderProfiles->getVideoEncoderParamByName(
-                        "enc.vid.bps.min", mVideoEncoder);
-    int maxBitRate = mEncoderProfiles->getVideoEncoderParamByName(
-                        "enc.vid.bps.max", mVideoEncoder);
+    int minBitRate;
+    int maxBitRate;
+
+    minBitRate = mEncoderProfiles->getVideoEncoderParamByName(
+        "enc.vid.bps.min", mVideoEncoder);
+
+#if defined(OMAP_ENHANCEMENT) && defined(TARGET_OMAP3)
+    if (mVideoEncoder == 2) /* H.264 */
+        maxBitRate = _get_maxrate_in_mbs(mVideoWidth, mVideoHeight, mFrameRate);
+    else
+#endif
+        maxBitRate = mEncoderProfiles->getVideoEncoderParamByName(
+            "enc.vid.bps.max", mVideoEncoder);
+
     if (mVideoBitRate < minBitRate) {
         LOGW("Intended video encoding bit rate (%d bps) is too small"
              " and will be set to (%d bps)", mVideoBitRate, minBitRate);

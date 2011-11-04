@@ -3307,12 +3307,18 @@ public final class Settings {
          */
         public static final String ADB_ICON = "adb_icon";
 
-				/**
-				 * Whether to blink the LED when screen is on
-				 *
-				 * @hide
-				 */
-				public static final String LED_SCREEN_ON = "led_screen_on";
+        /**
+         * Whether to blink the LED when screen is on
+         *
+         * @hide
+         */
+        public static final String LED_SCREEN_ON = "led_screen_on";
+
+        /**
+         * The TCP/IP port to run ADB on, or -1 for USB
+         * @hide
+         */
+        public static final String ADB_PORT = "adb_port";
 
         /**
          * The hostname for this device

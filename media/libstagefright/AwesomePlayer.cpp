@@ -727,7 +727,13 @@ void AwesomePlayer::onBufferingUpdate() {
                     LOGI("cache is running low (< %d) , pausing.",
                          kLowWaterMarkBytes);
                     modifyFlags(CACHE_UNDERRUN, SET);
+#ifdef OMAP_ENHANCEMENT
+                    // if cache is running low because of seek, wait for seek complete event to occur before pausing.
+                    // pause causes all events to be cancelled and therefore the event MEDIA_SEEK_COMPLETE will be lost.
+                    if (!mWatchForAudioSeekComplete) pause_l();
+#else
                     pause_l();
+#endif
                     ensureCacheIsFetching_l();
                     sendCacheStats();
                     notifyListener_l(MEDIA_INFO, MEDIA_INFO_BUFFERING_START);
@@ -783,7 +789,13 @@ void AwesomePlayer::onBufferingUpdate() {
             LOGI("cache is running low (%.2f secs) , pausing.",
                  cachedDurationUs / 1E6);
             modifyFlags(CACHE_UNDERRUN, SET);
+#ifdef OMAP_ENHANCEMENT
+            // if cache is running low because of seek, wait for seek complete event to occur before pausing.
+            // pause causes all events to be cancelled and therefore the event MEDIA_SEEK_COMPLETE will be lost.
+            if (!mWatchForAudioSeekComplete) pause_l();
+#else
             pause_l();
+#endif
             ensureCacheIsFetching_l();
             sendCacheStats();
             notifyListener_l(MEDIA_INFO, MEDIA_INFO_BUFFERING_START);

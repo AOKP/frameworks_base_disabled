@@ -2725,7 +2725,6 @@ status_t OMXCodec::allocateOutputBuffersFromNativeWindow() {
     if (err != OK) {
         return err;
     }
-#ifndef SAMSUNG_CODEC_SUPPORT
 
 #ifdef QCOM_HARDWARE
     int format = (def.format.video.eColorFormat ==
@@ -2735,19 +2734,18 @@ status_t OMXCodec::allocateOutputBuffersFromNativeWindow() {
         format = HAL_PIXEL_FORMAT_YCrCb_420_SP;
 #endif
 
-#ifdef QCOM_HARDWARE
+#ifndef SAMSUNG_CODEC_SUPPORT
     err = native_window_set_buffers_geometry(
             mNativeWindow.get(),
+#ifdef QCOM_HARDWARE
             def.format.video.nStride,
             def.format.video.nSliceHeight,
             format);
 #else
-    err = native_window_set_buffers_geometry(
-            mNativeWindow.get(),
             def.format.video.nFrameWidth,
             def.format.video.nFrameHeight,
             def.format.video.eColorFormat);
-#endif //QCOM_HARDWARE
+#endif
 #else
     OMX_COLOR_FORMATTYPE eColorFormat;
 

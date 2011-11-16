@@ -2944,9 +2944,8 @@ status_t OMXCodec::allocateOutputBuffersFromNativeWindow() {
                 LOGE("Native Buffer handle is NULL");
                 break;
         }
-        CHECK_EQ(def.nBufferSize, handle->size); //otherwise it might cause memory corruption issues. It may fail because of alignment or extradata.
+        CHECK_EQ(def.nBufferSize, handle->size); //otherwise it might cause memory corruption issues
 #endif
-
         sp<GraphicBuffer> graphicBuffer(new GraphicBuffer(buf, false));
         BufferInfo info;
         info.mData = NULL;

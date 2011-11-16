@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2009 The Android Open Source Project
- * Copyright (C) 2011-2012 Code Aurora Forum
+ * Copyright (C) 2010-2011 Code Aurora Forum
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 /*--------------------------------------------------------------------------
-Copyright (c) 2011-2012, Code Aurora Forum. All rights reserved.
+Copyright (c) 2010-2011, Code Aurora Forum. All rights reserved.
 --------------------------------------------------------------------------*/
 
 //#define LOG_NDEBUG 0
@@ -60,7 +60,6 @@ Copyright (c) 2011-2012, Code Aurora Forum. All rights reserved.
 #ifdef QCOM_HARDWARE
 #include <OMX_QCOMExtns.h>
 #include <gralloc_priv.h>
-#include <qcom_ui.h>
 #include <QOMX_AudioExtensions.h>
 #endif
 #include "include/avc_utils.h"
@@ -340,6 +339,7 @@ static const CodecInfo kEncoderInfo[] = {
     { MEDIA_MIMETYPE_VIDEO_MPEG4, "OMX.qcom.7x30.video.encoder.mpeg4" },
 #ifdef QCOM_HARDWARE
     { MEDIA_MIMETYPE_AUDIO_EVRC,   "OMX.qcom.audio.encoder.evrc" },
+    { MEDIA_MIMETYPE_AUDIO_QCELP, "OMX.qcom.audio.decoder.Qcelp13Hw"},
     { MEDIA_MIMETYPE_AUDIO_QCELP,  "OMX.qcom.audio.encoder.qcelp13" },
 #endif
     { MEDIA_MIMETYPE_VIDEO_MPEG4, "OMX.qcom.video.encoder.mpeg4" },
@@ -527,7 +527,6 @@ uint32_t OMXCodec::getComponentQuirks(
         quirks |= kRequiresGlobalFlush;
     }
 #endif
-
     if (!strcmp(componentName, "OMX.qcom.audio.encoder.evrc")) {
         quirks |= kRequiresAllocateBufferOnInputPorts;
         quirks |= kRequiresAllocateBufferOnOutputPorts;
@@ -578,7 +577,6 @@ uint32_t OMXCodec::getComponentQuirks(
        quirks |= kRequiresGlobalFlush;
     }
 #endif
-
     if (!strncmp(componentName, "OMX.qcom.video.encoder.", 23)) {
         quirks |= kRequiresLoadedToIdleAfterAllocation;
         quirks |= kRequiresAllocateBufferOnInputPorts;
@@ -800,6 +798,24 @@ sp<MediaSource> OMXCodec::Create(
             ALOGE("This is ADIF/LTP clip , so using sw decoder ");
             componentName= "OMX.google.aac.decoder";
             componentNameBase = "OMX.google.aac.decoder";
+        uint32_t quirks = getComponentQuirks(componentNameBase, createEncoder);
+#ifdef QCOM_HARDWARE
+        if(quirks & kRequiresWMAProComponent)
+        {
+           int32_t version;
+           CHECK(meta->findInt32(kKeyWMAVersion, &version));
+           if(version==kTypeWMA)
+           {
+              componentName = "OMX.qcom.audio.decoder.wma";
+           }
+           else if(version==kTypeWMAPro)
+           {
+              componentName= "OMX.qcom.audio.decoder.wma10Pro";
+           }
+           else if(version==kTypeWMALossLess)
+           {
+              componentName= "OMX.qcom.audio.decoder.wmaLossLess";
+           }
         }
 #endif
 
@@ -1059,15 +1075,8 @@ status_t OMXCodec::configureCodec(const sp<MetaData> &meta) {
             LOGV("OMXCodec::configureCodec found kKeyRawCodecSpecificData of size %d\n", size);
             addCodecSpecificData(data, size);
         }
-#else
-        }
-#endif
     }
-
-#ifdef QCOM_HARDWARE
-    if (!strcasecmp(MEDIA_MIMETYPE_VIDEO_DIVX, mMIME) ||
-        !strcasecmp(MEDIA_MIMETYPE_VIDEO_DIVX4, mMIME) ||
-        !strcasecmp(MEDIA_MIMETYPE_VIDEO_DIVX311, mMIME)) {
+    if (!strcasecmp(MEDIA_MIMETYPE_VIDEO_DIVX, mMIME) || !strcasecmp(MEDIA_MIMETYPE_VIDEO_DIVX4, mMIME)) {
         LOGV("Setting the QOMX_VIDEO_PARAM_DIVXTYPE params ");
         QOMX_VIDEO_PARAM_DIVXTYPE paramDivX;
         InitOMXParams(&paramDivX);
@@ -1082,8 +1091,6 @@ status_t OMXCodec::configureCodec(const sp<MetaData> &meta) {
             paramDivX.eFormat = QOMX_VIDEO_DIVXFormat5;
         } else if(DivxVersion == kTypeDivXVer_6) {
             paramDivX.eFormat = QOMX_VIDEO_DIVXFormat6;
-        } else if(DivxVersion == kTypeDivXVer_3_11 ) {
-            paramDivX.eFormat = QOMX_VIDEO_DIVXFormat311;
         } else {
             paramDivX.eFormat = QOMX_VIDEO_DIVXFormatUnused;
         }
@@ -1150,9 +1157,9 @@ status_t OMXCodec::configureCodec(const sp<MetaData> &meta) {
                 CODEC_LOGE("DIVX 311 set frame by frame mode error");
                 return err;
             }
+#endif
         }
     }
-#endif
 
     int32_t bitRate = 0;
     if (mIsEncoder) {
@@ -1210,6 +1217,39 @@ status_t OMXCodec::configureCodec(const sp<MetaData> &meta) {
         if(err!=OK){
            return err;
         }
+    } else if(!strcasecmp(MEDIA_MIMETYPE_VIDEO_WMV, mMIME)) {
+	        OMX_QCOM_PARAM_PORTDEFINITIONTYPE portdef;
+	        portdef.nSize = sizeof(OMX_QCOM_PARAM_PORTDEFINITIONTYPE);
+	        portdef.nPortIndex = 0; //Input port.
+	        portdef.nMemRegion = OMX_QCOM_MemRegionInvalid;
+	        portdef.nCacheAttr = OMX_QCOM_CacheAttrNone;
+        int32_t WMVProfile = 0;
+        CHECK(meta->findInt32(kKeyWMVProfile,&WMVProfile));
+
+        if(WMVProfile == kTypeWMVAdvance)
+        {
+            portdef.nFramePackingFormat = OMX_QCOM_FramePacking_Arbitrary;
+            LOGV("Setting decoder in Arbitary Mode --- ADVANCE PROFILE");
+        }
+        else
+        {
+            portdef.nFramePackingFormat = OMX_QCOM_FramePacking_OnlyOneCompleteFrame;
+            LOGV("Setting decoder in Frame-By-Frame Mode --- SIMPLE Profile");
+        }
+
+        char value[PROPERTY_VALUE_MAX];
+        status_t err = mOMX->setParameter(mNode, (OMX_INDEXTYPE)OMX_QcomIndexPortDefn, &portdef, sizeof(OMX_QCOM_PARAM_PORTDEFINITIONTYPE));
+        if (!property_get("ro.product.device", value, "1")
+            || !strcmp(value, "msm7627_surf") || !strcmp(value, "msm7627_ffa")
+            || !strcmp(value, "msm7627_7x_surf") || !strcmp(value, "msm7627_7x_ffa")
+            || !strcmp(value, "msm7625_surf") || !strcmp(value, "msm7625_ffa"))
+        {
+            LOGE("OMX_QCOM_FramePacking_OnlyOneCompleteFrame not supported by component err: %d", err);
+        }
+        else
+            if(err!=OK){
+               return err;
+            }
 #endif
     } else if (!strcasecmp(MEDIA_MIMETYPE_AUDIO_G711_ALAW, mMIME)
             || !strcasecmp(MEDIA_MIMETYPE_AUDIO_G711_MLAW, mMIME)) {
@@ -4121,6 +4161,9 @@ bool OMXCodec::flushPortAsync(OMX_U32 portIndex) {
         // flush-complete event in this case.
 
         return false;
+#ifdef QCOM_HARDWARE
+        }
+#endif
     }
 #ifdef QCOM_HARDWARE
     }
@@ -5406,8 +5449,7 @@ status_t OMXCodec::stop() {
                 CODEC_LOGV("This component requires a flush before transitioning "
                      "from EXECUTING to IDLE...");
 #ifdef QCOM_HARDWARE
-            //DSP supports flushing of ports simultaneously. Flushing individual port is not supported.
-
+          //DSP supports flushing of ports simultaneously. Flushing individual port is not supported.
                 if(mQuirks & kRequiresGlobalFlush) {
                   bool emulateFlushCompletion = !flushPortAsync(kPortIndexBoth);
 
@@ -5568,6 +5610,9 @@ status_t OMXCodec::read(
         }
 #endif
         }
+#ifdef QCOM_HARDWARE
+        }
+#endif
 
         while (mSeekTimeUs >= 0) {
             if ((err = waitForBufferFilled_l()) != OK) {

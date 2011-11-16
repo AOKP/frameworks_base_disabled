@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2009 The Android Open Source Project
- * Copyright (C) 2010-2012 Code Aurora Forum
+ * Copyright (C) 2010-2011 Code Aurora Forum
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,6 @@
 #include "include/AACExtractor.h"
 #ifdef QCOM_HARDWARE
 #include "include/ExtendedExtractor.h"
-
 #include <media/stagefright/MediaDefs.h>
 #endif
 
@@ -99,29 +98,7 @@ bool DataSource::sniff(
                 *meta = newMeta;
 #ifdef QCOM_HARDWARE
                 if(*confidence >= 0.6f) {
-
                     LOGV("Ignore other Sniffers - confidence = %f , mimeType = %s",*confidence,mimeType->string());
-
-                    char value[PROPERTY_VALUE_MAX];
-                    if( (!strcasecmp((*mimeType).string(), MEDIA_MIMETYPE_CONTAINER_MPEG4)) &&
-                        (property_get("mmp.enable.3g2", value, NULL)) &&
-                        (!strcasecmp(value, "true") || !strcmp(value, "1"))) {
-
-                        //Incase of mimeType MPEG4 call the extended parser sniffer to check
-                        //if this is fragmented or not.
-                        LOGV("calling Extended Sniff if mimeType = %s ",(*mimeType).string());
-                        String8 tmpMimeType;
-                        float tmpConfidence;
-                        sp<AMessage> tmpMeta;
-                        (*extendedSnifferPosition)(this, &tmpMimeType, &tmpConfidence, &tmpMeta);
-                        if (tmpConfidence > *confidence) {
-                            *mimeType = tmpMimeType;
-                            *confidence = tmpConfidence;
-                            *meta = tmpMeta;
-                            LOGV("Confidence of Extended sniffer greater than previous sniffer ");
-                        }
-                    }
-
                     break;
                 }
 #endif

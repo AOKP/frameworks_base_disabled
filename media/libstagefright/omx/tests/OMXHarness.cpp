@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/*--------------------------------------------------------------------------
+Copyright (c) 2011, Code Aurora Forum. All rights reserved.
+--------------------------------------------------------------------------*/
 
 //#define LOG_NDEBUG 0
 #define LOG_TAG "OMXHarness"

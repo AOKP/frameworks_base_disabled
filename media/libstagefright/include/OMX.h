@@ -13,6 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/*--------------------------------------------------------------------------
+Copyright (c) 2011, Code Aurora Forum. All rights reserved.
+--------------------------------------------------------------------------*/
+
 
 #ifndef ANDROID_OMX_H_
 #define ANDROID_OMX_H_

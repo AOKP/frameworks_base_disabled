@@ -784,7 +784,7 @@ sp<MediaSource> OMXCodec::Create(
             }
         }
 
-        ALOGV("Attempting to allocate OMX node '%s'", componentName);
+        LOGE("Attempting to allocate OMX node '%s'", componentName);
 #endif
 
 #if USE_AAC_HW_DEC
@@ -868,7 +868,7 @@ sp<MediaSource> OMXCodec::Create(
 
         status_t err = omx->allocateNode(componentName, observer, &node);
         if (err == OK) {
-            ALOGV("Successfully allocated OMX node '%s'", componentName);
+            LOGE("Successfully allocated OMX node '%s'", componentName);
 
             sp<OMXCodec> codec = new OMXCodec(
                     omx, node, quirks, flags,
@@ -2273,10 +2273,8 @@ status_t OMXCodec::setVideoOutputFormat(
 #endif
         format.nIndex = 0;
 
-#ifdef QCOM_HARDWARE
         CODEC_LOGV("Video O/P format.nIndex 0x%x",format.nIndex);
         CODEC_LOGE("Video O/P format.eColorFormat 0x%x",format.eColorFormat);
-#endif
 
         status_t err = mOMX->getParameter(
                 mNode, OMX_IndexParamVideoPortFormat,
@@ -5184,7 +5182,7 @@ void OMXCodec::setG711Format(int32_t numChannels) {
 
 void OMXCodec::setImageOutputFormat(
         OMX_COLOR_FORMATTYPE format, OMX_U32 width, OMX_U32 height) {
-    CODEC_LOGV("setImageOutputFormat(%ld, %ld)", width, height);
+    CODEC_LOGE("setImageOutputFormat(%ld, %ld)", width, height);
 
 #if 0
     OMX_INDEXTYPE index;

@@ -590,7 +590,6 @@ uint32_t OMXCodec::getComponentQuirks(
             // the worst/least compression ratio is 0.5. It is found that
             // sometimes, the output buffer size is larger than
             // size advertised by the encoder.
-
 #ifndef QCOM_HARDWARE
             quirks |= kRequiresLargerEncoderOutputBuffer;
 #endif

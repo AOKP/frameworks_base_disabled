@@ -151,11 +151,7 @@ LOCAL_C_INCLUDES := \
 
 LOCAL_ARM_MODE := arm
 
-ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
-    LOCAL_MODULE := libstagefright_aacdec_omx
-else
-    LOCAL_MODULE := libstagefright_aacdec
-endif
+LOCAL_MODULE := libstagefright_aacdec_omx
 
 include $(BUILD_STATIC_LIBRARY)
 
@@ -172,11 +168,8 @@ LOCAL_C_INCLUDES := \
 
 LOCAL_CFLAGS := -DOSCL_IMPORT_REF=
 
-ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
-    LOCAL_STATIC_LIBRARIES := libstagefright_aacdec_omx
-else
-    LOCAL_STATIC_LIBRARIES := libstagefright_aacdec
-endif
+LOCAL_STATIC_LIBRARIES := \
+        libstagefright_aacdec_omx
 
 LOCAL_SHARED_LIBRARIES := \
         libstagefright_omx libstagefright_foundation libutils
@@ -188,7 +181,7 @@ include $(BUILD_SHARED_LIBRARY)
 
 ################################################################################
 
-ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
+ifeq ($(TARGET_USES_QCOM_LPA),true)
 include $(CLEAR_VARS)
 
 LOCAL_SRC_FILES := \
@@ -342,6 +335,4 @@ LOCAL_C_INCLUDES := frameworks/base/media/libstagefright/include
 LOCAL_MODULE := libstagefright_aacdec
 
 include $(BUILD_STATIC_LIBRARY)
-
 endif
-

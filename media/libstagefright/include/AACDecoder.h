@@ -19,9 +19,7 @@
 #define AAC_DECODER_H_
 
 #include <media/stagefright/MediaSource.h>
-#ifdef QCOM_HARDWARE
 #define AAC_MAX_FORMAT_BLOCK_SIZE 16
-#endif
 
 struct tPVMP4AudioDecoderExternal;
 
@@ -43,7 +41,6 @@ struct AACDecoder : public MediaSource {
 
 protected:
     virtual ~AACDecoder();
-
 private:
     sp<MetaData>    mMeta;
     sp<MediaSource> mSource;
@@ -60,7 +57,6 @@ private:
     int32_t  mUpsamplingFactor;
 
     MediaBuffer *mInputBuffer;
-#ifdef QCOM_HARDWARE
     uint8_t mFormatBlock[AAC_MAX_FORMAT_BLOCK_SIZE];
 
     // Temporary buffer to store incomplete frame buffers
@@ -68,7 +64,6 @@ private:
     uint32_t mTempBufferTotalSize;    // total size allocated
     uint32_t mTempBufferDataLen;      // actual data length
     uint32_t mInputBufferSize;         // input data length
-#endif
 
     status_t initCheck();
     AACDecoder(const AACDecoder &);

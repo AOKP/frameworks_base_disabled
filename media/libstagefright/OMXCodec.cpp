@@ -75,6 +75,7 @@ const static uint32_t kMaxColorFormatSupported = 1000;
 
 #ifdef QCOM_HARDWARE
 static const int QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka = 0x7FA30C03;
+static const int OMX_QCOM_COLOR_FormatYVU420SemiPlanar = 0x7FA30C00;
 #endif
 
 struct CodecInfo {
@@ -176,6 +177,9 @@ static sp<MediaSource> InstantiateSoftwareEncoder(
 
 static const CodecInfo kDecoderInfo[] = {
     { MEDIA_MIMETYPE_IMAGE_JPEG, "OMX.TI.JPEG.decode" },
+#ifdef QCOM_HARDWARE
+    { MEDIA_MIMETYPE_AUDIO_MPEG, "OMX.qcom.audio.decoder.mp3" },
+#endif
 //    { MEDIA_MIMETYPE_AUDIO_MPEG, "OMX.TI.MP3.decode" },
     { MEDIA_MIMETYPE_AUDIO_MPEG, "OMX.google.mp3.decoder" },
     { MEDIA_MIMETYPE_AUDIO_MPEG_LAYER_II, "OMX.Nvidia.mp2.decoder" },
@@ -241,7 +245,6 @@ static const CodecInfo kEncoderInfo[] = {
     { MEDIA_MIMETYPE_VIDEO_MPEG4, "OMX.qcom.7x30.video.encoder.mpeg4" },
 #ifdef QCOM_HARDWARE
     { MEDIA_MIMETYPE_AUDIO_EVRC,   "OMX.qcom.audio.encoder.evrc" },
-    { MEDIA_MIMETYPE_AUDIO_QCELP, "OMX.qcom.audio.decoder.Qcelp13Hw"},
     { MEDIA_MIMETYPE_AUDIO_QCELP,  "OMX.qcom.audio.encoder.qcelp13" },
 #endif
     { MEDIA_MIMETYPE_VIDEO_MPEG4, "OMX.qcom.video.encoder.mpeg4" },
@@ -787,6 +790,28 @@ status_t OMXCodec::configureCodec(const sp<MetaData> &meta) {
                 LOGE("Profile and/or level exceed the decoder's capabilities.");
                 return ERROR_UNSUPPORTED;
             }
+
+            if(!strcmp(mComponentName, "OMX.google.h264.decoder")
+                && (profile != kAVCProfileBaseline)) {
+                // The profile is unsupported by the decoder
+                return ERROR_UNSUPPORTED;
+            }
+
+            int32_t width, height;
+            bool success = meta->findInt32(kKeyWidth, &width);
+            success = success && meta->findInt32(kKeyHeight, &height);
+            CHECK(success);
+            if (!strcmp(mComponentName, "OMX.TI.720P.Decoder")
+                && (profile == kAVCProfileBaseline && level <= 39)
+                && (width*height <= MAX_RESOLUTION)
+                && (width <= MAX_RESOLUTION_WIDTH && height <= MAX_RESOLUTION_HEIGHT ))
+            {
+                // Though this decoder can handle this profile/level,
+                // we prefer to use "OMX.TI.Video.Decoder" for
+                // Baseline Profile with level <=39 and sub 720p
+                return ERROR_UNSUPPORTED;
+            }
+
         } else if (meta->findData(kKeyVorbisInfo, &type, &data, &size)) {
             addCodecSpecificData(data, size);
 
@@ -2230,6 +2255,8 @@ status_t OMXCodec::allocateOutputBuffersFromNativeWindow() {
     int format = (def.format.video.eColorFormat ==
                   QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka)?
                  HAL_PIXEL_FORMAT_YCbCr_420_SP_TILED : def.format.video.eColorFormat;
+    if(def.format.video.eColorFormat == OMX_QCOM_COLOR_FormatYVU420SemiPlanar)
+        format = HAL_PIXEL_FORMAT_YCrCb_420_SP;
 #endif
 
     err = native_window_set_buffers_geometry(
@@ -2336,6 +2363,13 @@ status_t OMXCodec::allocateOutputBuffersFromNativeWindow() {
             LOGE("dequeueBuffer failed: %s (%d)", strerror(-err), -err);
             break;
         }
+
+	private_handle_t *handle = (private_handle_t *)buf->handle;
+        if(!handle) {
+                LOGE("Native Buffer handle is NULL");
+                break;
+        }
+        CHECK_EQ(def.nBufferSize, handle->size); //otherwise it might cause memory corruption issues. It may fail because of alignment or extradata.
 
         sp<GraphicBuffer> graphicBuffer(new GraphicBuffer(buf, false));
         BufferInfo info;

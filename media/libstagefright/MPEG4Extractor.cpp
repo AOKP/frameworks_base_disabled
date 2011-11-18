@@ -608,6 +608,9 @@ status_t MPEG4Extractor::parseChunk(off64_t *offset, int depth) {
     uint32_t chunk_type = ntohl(hdr[1]);
     off64_t data_offset = *offset + 8;
 
+    if(chunk_size == 0)
+       return ERROR_MALFORMED;
+
     if (chunk_size == 1) {
         if (mDataSource->readAt(*offset + 8, &chunk_size, 8) < 8) {
             return ERROR_IO;
@@ -1125,12 +1128,17 @@ status_t MPEG4Extractor::parseChunk(off64_t *offset, int depth) {
 
         case FOURCC('s', 't', 's', 's'):
         {
-            status_t err =
-                mLastTrack->sampleTable->setSyncSampleParams(
-                        data_offset, chunk_data_size);
+            const char *mime;
+            CHECK(mLastTrack->meta->findCString(kKeyMIMEType, &mime));
+            if(strncmp(mime, "audio/", 6))
+            {
+                status_t err =
+                    mLastTrack->sampleTable->setSyncSampleParams(
+                           data_offset, chunk_data_size);
 
-            if (err != OK) {
-                return err;
+                if (err != OK) {
+                   return err;
+                }
             }
 
             *offset += chunk_size;
@@ -1812,10 +1820,6 @@ status_t MPEG4Extractor::updateAudioTrackInfoFromESDS_MPEG4Audio(
         numChannels = (csd[1] >> 3) & 15;
     }
 
-    if (numChannels == 0) {
-        return ERROR_UNSUPPORTED;
-    }
-
     int32_t prevSampleRate;
     CHECK(mLastTrack->meta->findInt32(kKeySampleRate, &prevSampleRate));
 
@@ -2261,9 +2265,12 @@ static bool LegacySniffMPEG4(
         || !memcmp(header, "ftyp3ge6", 8) || !memcmp(header, "ftyp3gg6", 8)
         || !memcmp(header, "ftypisom", 8) || !memcmp(header, "ftypM4V ", 8)
         || !memcmp(header, "ftypM4A ", 8) || !memcmp(header, "ftypf4v ", 8)
-        || !memcmp(header, "ftypkddi", 8) || !memcmp(header, "ftypM4VP", 8)) {
+        || !memcmp(header, "ftypkddi", 8) || !memcmp(header, "ftypM4VP", 8)
+        || !memcmp(header, "ftypMSNV", 8) || !memcmp(header, "ftypavc1", 8)
+        || !memcmp(header, "ftypmmp4", 8) || !memcmp(header, "ftypk3g1", 8)
+        || !memcmp(header, "ftypmp41", 8) || !memcmp(header, "ftypskm3", 8)) {
         *mimeType = MEDIA_MIMETYPE_CONTAINER_MPEG4;
-        *confidence = 0.4;
+        *confidence = 0.6;
 
         return true;
     }
@@ -2401,7 +2408,7 @@ static bool BetterSniffMPEG4(
     }
 
     *mimeType = MEDIA_MIMETYPE_CONTAINER_MPEG4;
-    *confidence = 0.4f;
+    *confidence = 0.6f;
 
     if (moovAtomEndOffset >= 0) {
         *meta = new AMessage;

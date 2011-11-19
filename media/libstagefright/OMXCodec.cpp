@@ -58,6 +58,7 @@ Copyright (c) 2011-2012, Code Aurora Forum. All rights reserved.
 #include <OMX_Component.h>
 
 #ifdef QCOM_HARDWARE
+#include <cutils/properties.h>
 #include <OMX_QCOMExtns.h>
 
 #include <gralloc_priv.h>
@@ -317,6 +318,7 @@ static const CodecInfo kEncoderInfo[] = {
     { MEDIA_MIMETYPE_VIDEO_MPEG4, "OMX.qcom.7x30.video.encoder.mpeg4" },
 #ifdef QCOM_HARDWARE
     { MEDIA_MIMETYPE_AUDIO_EVRC,   "OMX.qcom.audio.encoder.evrc" },
+    { MEDIA_MIMETYPE_AUDIO_QCELP, "OMX.qcom.audio.decoder.Qcelp13Hw"},
     { MEDIA_MIMETYPE_AUDIO_QCELP,  "OMX.qcom.audio.encoder.qcelp13" },
 #endif
     { MEDIA_MIMETYPE_VIDEO_MPEG4, "OMX.qcom.video.encoder.mpeg4" },
@@ -1083,7 +1085,54 @@ status_t OMXCodec::configureCodec(const sp<MetaData> &meta) {
             return err;
         }
     }
+
+    // Set params for divx311 and configure
+    // decoder in frame by frame mode
+    if (!strcasecmp(MEDIA_MIMETYPE_VIDEO_DIVX311, mMIME)) {
+        CODEC_LOGV("Setting the QOMX_VIDEO_PARAM_DIVX311TYPE params ");
+        QOMX_VIDEO_PARAM_DIVXTYPE paramDivX;
+        InitOMXParams(&paramDivX);
+        paramDivX.nPortIndex = mIsEncoder ? kPortIndexOutput : kPortIndexInput;
+        int32_t DivxVersion = 0;
+        CHECK(meta->findInt32(kKeyDivXVersion,&DivxVersion));
+        CODEC_LOGV("Divx Version Type %d\n",DivxVersion);
+
+        if(DivxVersion == kTypeDivXVer_3_11 ) {
+            paramDivX.eFormat = QOMX_VIDEO_DIVXFormat311;
+            paramDivX.eProfile = (QOMX_VIDEO_DIVXPROFILETYPE)0;//Not used for now.
+            paramDivX.pDrmHandle = NULL;
+            if (meta->findPointer(kKeyDivXDrm, &paramDivX.pDrmHandle) ) {
+                if( paramDivX.pDrmHandle != NULL ) {
+                    CODEC_LOGV("This DivX Clip is DRM encrypted, set the DRM handle ");
+                }
+                else {
+                    CODEC_LOGV("This DivX Clip is not DRM encrypted ");
+                }
+            }
+
+            status_t err =  mOMX->setParameter(mNode,
+                             (OMX_INDEXTYPE)OMX_QcomIndexParamVideoDivx,
+                             &paramDivX, sizeof(paramDivX));
+            if (err!=OK) {
+                CODEC_LOGE("Set params DIVX error");
+                return err;
+            }
+
+            CODEC_LOGV("kTypeDivXVer_3_11 - set frame by frame mode");
+            OMX_QCOM_PARAM_PORTDEFINITIONTYPE portdef;
+            portdef.nSize = sizeof(OMX_QCOM_PARAM_PORTDEFINITIONTYPE);
+            portdef.nPortIndex = 0; //Input port.
+            portdef.nMemRegion = OMX_QCOM_MemRegionInvalid;
+            portdef.nCacheAttr = OMX_QCOM_CacheAttrNone;
+            portdef.nFramePackingFormat = OMX_QCOM_FramePacking_OnlyOneCompleteFrame;
+            err = mOMX->setParameter(mNode, (OMX_INDEXTYPE)OMX_QcomIndexPortDefn, &portdef, sizeof(OMX_QCOM_PARAM_PORTDEFINITIONTYPE));
+            if (err != OK) {
+                CODEC_LOGE("DIVX 311 set frame by frame mode error");
+                return err;
+            }
 #endif
+        }
+    }
 
     int32_t bitRate = 0;
     if (mIsEncoder) {
@@ -1140,6 +1189,39 @@ status_t OMXCodec::configureCodec(const sp<MetaData> &meta) {
         status_t err = setWMAFormat(meta);
         if(err!=OK){
            return err;
+        }
+    } else if(!strcasecmp(MEDIA_MIMETYPE_VIDEO_WMV, mMIME)) {
+	        OMX_QCOM_PARAM_PORTDEFINITIONTYPE portdef;
+	        portdef.nSize = sizeof(OMX_QCOM_PARAM_PORTDEFINITIONTYPE);
+	        portdef.nPortIndex = 0; //Input port.
+	        portdef.nMemRegion = OMX_QCOM_MemRegionInvalid;
+	        portdef.nCacheAttr = OMX_QCOM_CacheAttrNone;
+        int32_t WMVProfile = 0;
+        CHECK(meta->findInt32(kKeyWMVProfile,&WMVProfile));
+
+        if(WMVProfile == kTypeWMVAdvance)
+        {
+            portdef.nFramePackingFormat = OMX_QCOM_FramePacking_Arbitrary;
+            LOGV("Setting decoder in Arbitary Mode --- ADVANCE PROFILE");
+        }
+        else
+        {
+            portdef.nFramePackingFormat = OMX_QCOM_FramePacking_OnlyOneCompleteFrame;
+            LOGV("Setting decoder in Frame-By-Frame Mode --- SIMPLE Profile");
+        }
+
+        char value[PROPERTY_VALUE_MAX];
+        status_t err = mOMX->setParameter(mNode, (OMX_INDEXTYPE)OMX_QcomIndexPortDefn, &portdef, sizeof(OMX_QCOM_PARAM_PORTDEFINITIONTYPE));
+        if (!property_get("ro.product.device", value, "1")
+            || !strcmp(value, "msm7627_surf") || !strcmp(value, "msm7627_ffa")
+            || !strcmp(value, "msm7627_7x_surf") || !strcmp(value, "msm7627_7x_ffa")
+            || !strcmp(value, "msm7625_surf") || !strcmp(value, "msm7625_ffa"))
+        {
+            LOGE("OMX_QCOM_FramePacking_OnlyOneCompleteFrame not supported by component err: %d", err);
+        } else {
+            if(err!=OK){
+               return err;
+            }
         }
 #endif
     } else if (!strcasecmp(MEDIA_MIMETYPE_AUDIO_G711_ALAW, mMIME)
@@ -1613,7 +1695,11 @@ void OMXCodec::setVideoInputFormat(
     video_def->nFrameHeight = height;
     video_def->nStride = stride;
     video_def->nSliceHeight = sliceHeight;
+#ifdef QCOM_HARDWARE
     video_def->xFramerate = (frameRate << 16);  // Q16 format
+#else
+    video_def->xFramerate = 0;      // No need for output port
+#endif
     video_def->eCompressionFormat = OMX_VIDEO_CodingUnused;
     video_def->eColorFormat = colorFormat;
 
@@ -5741,8 +5827,14 @@ static const char *colorFormatString(OMX_COLOR_FORMATTYPE type) {
         return "QOMX_COLOR_FormatYVU420PackedSemiPlanar32m4ka";
     } else if (type == QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka) {
         return "QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka";
-#endif
+    }
+    /*else if (type ==  OMX_QCOM_COLOR_FormatYVU420SemiPlanarInterlace) {
+        return "OMX_QCOM_COLOR_FormatYVU420SemiPlanarInterlace";
+    } */
+    else if (type < 0 || (size_t)type >= numNames) {
+#else
     } else if (type < 0 || (size_t)type >= numNames) {
+#endif
         return "UNKNOWN";
     } else {
         return kNames[type];

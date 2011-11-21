@@ -967,7 +967,7 @@ void InputDevice::process(const RawEvent* rawEvents, size_t count) {
 
             // Old touchscreen sensors need to send a fake BTN_TOUCH (BTN_LEFT)
 
-            if (rawEvent->scanCode == ABS_MT_TOUCH_MAJOR && rawEvent->type == EV_ABS) {
+            if (rawEvent->scanCode == ABS_MT_TOUCH_MAJOR) {
 
                 z_data = rawEvent->value;
                 touched = (0 != z_data);
@@ -1005,7 +1005,11 @@ void InputDevice::process(const RawEvent* rawEvents, size_t count) {
                     mapper->process(&event);
                 }
 
+<<<<<<< HEAD
                 //ALOGD("Fake event sent, touch=%d !", touched);
+=======
+                LOGD("Fake event sent, touch=%d !", touched);
+>>>>>>> a66a9a9... Allow compatibility with 'old' Touchscreens (Linux < 3.1)
             }
             else
 #endif //LEGACY_TOUCHSCREEN

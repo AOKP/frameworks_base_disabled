@@ -131,9 +131,14 @@ const char CameraParameters::KEY_RECORDING_HINT[] = "recording-hint";
 const char CameraParameters::KEY_VIDEO_SNAPSHOT_SUPPORTED[] = "video-snapshot-supported";
 const char CameraParameters::KEY_VIDEO_STABILIZATION[] = "video-stabilization";
 const char CameraParameters::KEY_VIDEO_STABILIZATION_SUPPORTED[] = "video-stabilization-supported";
+#ifdef QCOM_HARDWARE
 const char CameraParameters::KEY_ZSL[] = "zsl";
 const char CameraParameters::KEY_SUPPORTED_ZSL_MODES[] = "zsl-values";
 const char CameraParameters::KEY_CAMERA_MODE[] = "camera-mode";
+#endif
+const char CameraParameters::KEY_AE_BRACKET_HDR[] = "ae-bracket-hdr";
+/*only effective when KEY_AE_BRACKET_HDR set to ae_bracketing*/
+//const char CameraParameters::KEY_AE_BRACKET_SETTING_KEY[] = "ae-bracket-setting";
 
 const char CameraParameters::TRUE[] = "true";
 const char CameraParameters::FALSE[] = "false";
@@ -183,8 +188,8 @@ const char CameraParameters::FLASH_MODE_RED_EYE[] = "red-eye";
 const char CameraParameters::FLASH_MODE_TORCH[] = "torch";
 
 // Values for scene mode settings.
-const char CameraParameters::SCENE_MODE_AUTO[] = "auto";
-const char CameraParameters::SCENE_MODE_OFF[] = "off";
+const char CameraParameters::SCENE_MODE_AUTO[] = "auto"; // corresponds to CAMERA_BESTSHOT_OFF in HAL
+const char CameraParameters::SCENE_MODE_ASD[] = "asd";   // corresponds to CAMERA_BESTSHOT_AUTO in HAL
 const char CameraParameters::SCENE_MODE_ACTION[] = "action";
 const char CameraParameters::SCENE_MODE_PORTRAIT[] = "portrait";
 const char CameraParameters::SCENE_MODE_LANDSCAPE[] = "landscape";
@@ -227,6 +232,8 @@ const char CameraParameters::PIXEL_FORMAT_BAYER_RGGB[] = "bayer-rggb";
 #ifdef QCOM_HARDWARE
 const char CameraParameters::PIXEL_FORMAT_RAW[] = "raw";
 const char CameraParameters::PIXEL_FORMAT_YV12[] = "yv12";
+const char CameraParameters::PIXEL_FORMAT_YV12[] = "yuv420p";
+const char CameraParameters::PIXEL_FORMAT_NV12[] = "nv12";
 #endif
 
 // Values for focus mode settings.
@@ -237,9 +244,10 @@ const char CameraParameters::FOCUS_MODE_FIXED[] = "fixed";
 const char CameraParameters::FOCUS_MODE_EDOF[] = "edof";
 const char CameraParameters::FOCUS_MODE_CONTINUOUS_VIDEO[] = "continuous-video";
 const char CameraParameters::FOCUS_MODE_CONTINUOUS_PICTURE[] = "continuous-picture";
+#if defined(QCOM_HARDWARE)
+const char CameraParameters::FOCUS_MODE_NORMAL[] = "normal";
 
 #ifdef QCOM_HARDWARE
-const char CameraParameters::FOCUS_MODE_NORMAL[] = "normal";
 const char CameraParameters::KEY_SKIN_TONE_ENHANCEMENT[] = "skinToneEnhancement";
 const char CameraParameters::KEY_SUPPORTED_SKIN_TONE_ENHANCEMENT_MODES[] = "skinToneEnhancement-values";
 

@@ -597,14 +597,13 @@ public:
     // has no effect on still image capture.
     static const char KEY_VIDEO_STABILIZATION[];
 
-    static const char KEY_ZSL[];
-    static const char KEY_SUPPORTED_ZSL_MODES[];
-
-    static const char KEY_CAMERA_MODE[];
-
 #ifdef QCOM_HARDWARE
     static const char KEY_MEMORY_COLOR_ENHANCEMENT[];
     static const char KEY_SUPPORTED_MEM_COLOR_ENHANCE_MODES[];
+
+    static const char KEY_ZSL[];
+    static const char KEY_SUPPORTED_ZSL_MODES[];
+    static const char KEY_CAMERA_MODE[];
 
     static const char KEY_VIDEO_HIGH_FRAME_RATE[];
     static const char KEY_SUPPORTED_VIDEO_HIGH_FRAME_RATE_MODES[];
@@ -693,7 +692,6 @@ public:
     static const char FLASH_MODE_TORCH[];
 
     // Values for scene mode settings.
-    static const char SCENE_MODE_OFF[];
     static const char SCENE_MODE_AUTO[];
     static const char SCENE_MODE_ACTION[];
     static const char SCENE_MODE_PORTRAIT[];
@@ -740,6 +738,7 @@ public:
 #ifdef QCOM_HARDWARE
     static const char PIXEL_FORMAT_RAW[];
     static const char PIXEL_FORMAT_YV12[]; // NV21
+    static const char PIXEL_FORMAT_NV12[]; // NV12
 #endif
 
     // Values for focus mode settings.

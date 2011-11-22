@@ -616,7 +616,7 @@ void MediaProfiles::checkAndAddRequiredProfilesIfNecessary() {
 /*static*/ MediaProfiles*
 MediaProfiles::getInstance()
 {
-    ALOGV("getInstance");
+    LOGE("getInstance");
     Mutex::Autolock lock(sLock);
     if (!sIsInitialized) {
         char value[PROPERTY_VALUE_MAX];
@@ -627,10 +627,12 @@ MediaProfiles::getInstance()
                 ALOGW("could not find media config xml file");
                 sInstance = createDefaultInstance();
             } else {
+                LOGE("Guru :Else 1");
                 fclose(fp);  // close the file first.
                 sInstance = createInstanceFromXmlFile(defaultXmlFile);
             }
         } else {
+            LOGE("Guru : Else 2");
             sInstance = createInstanceFromXmlFile(value);
         }
         CHECK(sInstance != NULL);
@@ -638,6 +640,7 @@ MediaProfiles::getInstance()
         sIsInitialized = true;
     }
 
+    LOGE("getInstance %x",sInstance);
     return sInstance;
 }
 
@@ -1126,6 +1129,7 @@ int MediaProfiles::getCamcorderProfileIndex(int cameraId, camcorder_quality qual
             break;
         }
     }
+    LOGE("Guru : quality = %d, index = %d",quality,index);
     return index;
 }
 
@@ -1133,7 +1137,7 @@ int MediaProfiles::getCamcorderProfileParamByName(const char *name,
                                                   int cameraId,
                                                   camcorder_quality quality) const
 {
-    ALOGV("getCamcorderProfileParamByName: %s for camera %d, quality %d",
+    LOGE("getCamcorderProfileParamByName: %s for camera %d, quality %d",
          name, cameraId, quality);
 
     int index = getCamcorderProfileIndex(cameraId, quality);

@@ -129,6 +129,7 @@ const char CameraParameters::KEY_MAX_NUM_DETECTED_FACES_HW[] = "max-num-detected
 const char CameraParameters::KEY_MAX_NUM_DETECTED_FACES_SW[] = "max-num-detected-faces-sw";
 const char CameraParameters::KEY_RECORDING_HINT[] = "recording-hint";
 const char CameraParameters::KEY_VIDEO_SNAPSHOT_SUPPORTED[] = "video-snapshot-supported";
+const char CameraParameters::KEY_FULL_VIDEO_SNAP_SUPPORTED[] = "full-video-snap-supported";
 const char CameraParameters::KEY_VIDEO_STABILIZATION[] = "video-stabilization";
 const char CameraParameters::KEY_VIDEO_STABILIZATION_SUPPORTED[] = "video-stabilization-supported";
 #ifdef QCOM_HARDWARE
@@ -231,7 +232,6 @@ const char CameraParameters::PIXEL_FORMAT_JPEG[] = "jpeg";
 const char CameraParameters::PIXEL_FORMAT_BAYER_RGGB[] = "bayer-rggb";
 #ifdef QCOM_HARDWARE
 const char CameraParameters::PIXEL_FORMAT_RAW[] = "raw";
-const char CameraParameters::PIXEL_FORMAT_YV12[] = "yv12";
 const char CameraParameters::PIXEL_FORMAT_YV12[] = "yuv420p";
 const char CameraParameters::PIXEL_FORMAT_NV12[] = "nv12";
 #endif
@@ -326,6 +326,11 @@ const char CameraParameters::HDR_DISABLE[] = "disable";
 // Values for ZSL settings.
 const char CameraParameters::ZSL_OFF[] = "off";
 const char CameraParameters::ZSL_ON[] = "on";
+
+// Values for HDR Bracketing settings.
+const char CameraParameters::AE_BRACKET_HDR_OFF[] = "Off";
+const char CameraParameters::AE_BRACKET_HDR[] = "HDR";
+const char CameraParameters::AE_BRACKET[] = "AE-Bracket";
 
 static const char* portrait = "portrait";
 static const char* landscape = "landscape";

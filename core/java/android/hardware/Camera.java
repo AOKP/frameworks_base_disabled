@@ -4331,7 +4331,6 @@ public class Camera {
         }
 
         /**
-         * @hide
          * Sets the auto scene detect. Other settings like Touch AF/AEC might be
          * changed after setting face detection.
          *

@@ -903,7 +903,6 @@ status_t CameraService::Client::sendCommand(int32_t cmd, int32_t arg1, int32_t a
         disableMsgType(CAMERA_MSG_STATS_DATA);
     }
 #endif
-
     return mHardware->sendCommand(cmd, arg1, arg2);
 }
 

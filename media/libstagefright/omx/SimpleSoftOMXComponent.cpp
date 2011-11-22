@@ -434,6 +434,12 @@ void SimpleSoftOMXComponent::onChangeState(OMX_STATETYPE state) {
             CHECK_EQ((int)state, (int)OMX_StateIdle);
             break;
         case OMX_StateIdle:
+            if (state == OMX_StateIdle) {
+                LOGW("onChangeState(OMX_StateIdle) recieved when already in idle");
+                notify(OMX_EventError, OMX_ErrorSameState, 0, NULL);
+                return;
+            }
+
             CHECK(state == OMX_StateLoaded || state == OMX_StateExecuting);
             break;
         case OMX_StateExecuting:

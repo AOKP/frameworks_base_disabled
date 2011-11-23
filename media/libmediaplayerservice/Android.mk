@@ -34,11 +34,13 @@ LOCAL_SHARED_LIBRARIES :=     		\
 LOCAL_STATIC_LIBRARIES := \
         libstagefright_nuplayer                 \
         libstagefright_rtsp                     \
+        libmedia_helper                         \
 
 LOCAL_C_INCLUDES :=                                                 \
 	$(JNI_H_INCLUDE)                                                \
 	$(call include-path-for, graphics corecg)                       \
 	$(TOP)/frameworks/base/include/media/stagefright/openmax \
+	$(TOP)/frameworks/base/include/media \
 	$(TOP)/frameworks/base/media/libstagefright/include             \
 	$(TOP)/frameworks/base/media/libstagefright/rtsp                \
 	$(TOP)/external/tremolo/Tremolo \

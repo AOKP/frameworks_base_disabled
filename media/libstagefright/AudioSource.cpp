@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2010 The Android Open Source Project
+ * Copyright (c) 2011, Code Aurora Forum. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +28,10 @@
 #include <cutils/properties.h>
 #include <stdlib.h>
 
+#define AMR_FRAMESIZE 32
+#define QCELP_FRAMESIZE 35
+#define EVRC_FRAMESIZE 23
+
 namespace android {
 
 static void AudioRecordCallbackFunction(int event, void *user, void *info) {
@@ -52,7 +57,9 @@ AudioSource::AudioSource(
       mSampleRate(sampleRate),
       mPrevSampleTimeUs(0),
       mNumFramesReceived(0),
-      mNumClientOwnedBuffers(0) {
+      mNumClientOwnedBuffers(0),
+      mFormat(AUDIO_FORMAT_PCM_16_BIT),
+      mMime(MEDIA_MIMETYPE_AUDIO_RAW) {
 
     ALOGV("sampleRate: %d, channels: %d", sampleRate, channels);
     CHECK(channels == 1 || channels == 2);
@@ -158,7 +165,6 @@ status_t AudioSource::start(MetaData *params) {
         mRecord = NULL;
     }
 
-
     return err;
 }
 
@@ -204,10 +210,10 @@ sp<MetaData> AudioSource::getFormat() {
     }
 
     sp<MetaData> meta = new MetaData;
-    meta->setCString(kKeyMIMEType, MEDIA_MIMETYPE_AUDIO_RAW);
-    meta->setInt32(kKeySampleRate, mSampleRate);
+    meta->setCString(kKeyMIMEType, mMime);
+    meta->setInt32(kKeySampleRate, mRecord->getSampleRate());
     meta->setInt32(kKeyChannelCount, mRecord->channelCount());
-    meta->setInt32(kKeyMaxInputSize, kMaxBufferSize);
+    meta->setInt32(kKeyMaxInputSize, mMaxBufferSize);
 
     return meta;
 }
@@ -267,27 +273,26 @@ status_t AudioSource::read(
 
     // Mute/suppress the recording sound
 
-    int64_t timeUs;
-    CHECK(buffer->meta_data()->findInt64(kKeyTime, &timeUs));
-    int64_t elapsedTimeUs = timeUs - mStartTimeUs;
-
     if ( mFormat == AUDIO_FORMAT_PCM_16_BIT ) {
+        int64_t timeUs;
+        CHECK(buffer->meta_data()->findInt64(kKeyTime, &timeUs));
+        int64_t elapsedTimeUs = timeUs - mStartTimeUs;
         if (elapsedTimeUs < kAutoRampStartUs) {
             memset((uint8_t *) buffer->data(), 0, buffer->range_length());
         } else if (elapsedTimeUs < kAutoRampStartUs + kAutoRampDurationUs) {
             int32_t autoRampDurationFrames =
                     (kAutoRampDurationUs * mSampleRate + 500000LL) / 1000000LL;
 
-        int32_t autoRampStartFrames =
+            int32_t autoRampStartFrames =
                     (kAutoRampStartUs * mSampleRate + 500000LL) / 1000000LL;
 
-        int32_t nFrames = mNumFramesReceived - autoRampStartFrames;
-        rampVolume(nFrames, autoRampDurationFrames,
-                (uint8_t *) buffer->data(), buffer->range_length());
+            int32_t nFrames = mNumFramesReceived - autoRampStartFrames;
+            rampVolume(nFrames, autoRampDurationFrames,
+                    (uint8_t *) buffer->data(), buffer->range_length());
+        }
     }
-
     // Track the max recording signal amplitude.
-    if (mTrackMaxAmplitude) {
+    if (mTrackMaxAmplitude && ( mFormat == AUDIO_FORMAT_PCM_16_BIT)) {
         trackMaxAmplitude(
             (int16_t *) buffer->data(), buffer->range_length() >> 1);
     }
@@ -344,7 +349,7 @@ status_t AudioSource::dataCallbackTimestamp(
     }
 
     CHECK_EQ(numLostBytes & 1, 0u);
-    CHECK_EQ(audioBuffer.size & 1, 0u);
+    //CHECK_EQ(audioBuffer.size & 1, 0u);
     size_t bufferSize = numLostBytes + audioBuffer.size;
     MediaBuffer *buffer = new MediaBuffer(bufferSize);
     if (numLostBytes > 0) {
@@ -415,6 +420,24 @@ int16_t AudioSource::getMaxAmplitude() {
     mMaxAmplitude = 0;
     ALOGV("max amplitude since last call: %d", value);
     return value;
+}
+
+int64_t AudioSource::bufferDurationUs( ssize_t n ) {
+
+    int64_t dataDurationMs = 0;
+    if (mFormat == AUDIO_FORMAT_AMR_NB) {
+        dataDurationMs = (n/AMR_FRAMESIZE) * 20; //ms
+    }
+    else if (mFormat == AUDIO_FORMAT_EVRC) {
+       dataDurationMs = (n/EVRC_FRAMESIZE) * 20; //ms
+    }
+    else if (mFormat == AUDIO_FORMAT_QCELP) {
+        dataDurationMs = (n/QCELP_FRAMESIZE) * 20; //ms
+    }
+    else
+        CHECK(0);
+
+    return dataDurationMs*1000LL;
 }
 
 }  // namespace android

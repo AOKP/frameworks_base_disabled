@@ -400,7 +400,8 @@ void NuPlayer::onMessageReceived(const sp<AMessage> &msg) {
                             cropBottom - cropTop + 1);
                 }
             } else if (what == ACodec::kWhatShutdownCompleted) {
-                ALOGV("%s shutdown completed", audio ? "audio" : "video");
+                LOGV("%s shutdown completed", audio ? "audio" : "video");
+                Mutex::Autolock autoLock(mLock);
                 if (audio) {
                     mAudioDecoder.clear();
 
@@ -496,7 +497,8 @@ void NuPlayer::onMessageReceived(const sp<AMessage> &msg) {
 
         case kWhatReset:
         {
-            ALOGV("kWhatReset");
+            LOGV("kWhatReset");
+            Mutex::Autolock autoLock(mLock);
 
             /*TODO We have to evaluate if this fix is required from google */
             if (mRenderer != NULL) {
@@ -546,40 +548,15 @@ void NuPlayer::onMessageReceived(const sp<AMessage> &msg) {
         {
             Mutex::Autolock autoLock(mLock);
             int64_t seekTimeUs = -1, newSeekTime = -1;
-            status_t nRet = OK;
             CHECK(msg->findInt64("seekTimeUs", &seekTimeUs));
 
             ALOGV("kWhatSeek seekTimeUs=%lld us (%.2f secs)",
                  seekTimeUs, seekTimeUs / 1E6);
 
-            nRet = mSource->seekTo(seekTimeUs);
+            mSource->seekTo(seekTimeUs, &newSeekTime);
+            LOGV("newSeekTime %lld", newSeekTime);
 
-            if( mIsHttpLive ) {
-                mSource->getNewSeekTime(&newSeekTime);
-                LOGV("newSeekTime %lld", newSeekTime);
-            }
-            else if ( (mLiveSourceType == kHttpDashSource) && (nRet == OK)) // if seek success then flush the audio,video decoder and renderer
-            {
-                if( (mVideoDecoder != NULL) &&
-                    (mFlushingVideo == NONE || mFlushingVideo == AWAITING_DISCONTINUITY) ) {
-                    flushDecoder( false, false ); // flush video, do not shutdown
-                }
-
-               if( (mAudioDecoder != NULL) &&
-                   (mFlushingAudio == NONE|| mFlushingAudio == AWAITING_DISCONTINUITY) )
-               {
-                   flushDecoder( true, false );  // flush audio, do not shut down
-               }
-               // notify the UI about the seeked position, temp fix.. once seek works properly need to find a way to set the correct seeked position
-               //newSeekTime = seekTimeUs;
-
-               // get the new seeked position
-               mSource->getNewSeekTime(&newSeekTime);
-
-               LOGV("newSeekTime %lld", newSeekTime);
-            }
-            if( (newSeekTime >= 0 ) && (mLiveSourceType != kHttpDashSource)) {
-               mTimeDiscontinuityPending = true;
+            if( newSeekTime >= 0 ) {
                if( (mAudioDecoder != NULL) &&
                    (mFlushingAudio == NONE || mFlushingAudio == AWAITING_DISCONTINUITY) ) {
                   flushDecoder( true, true );
@@ -1001,6 +978,7 @@ void NuPlayer::flushDecoder(bool audio, bool needShutdown) {
     }
     LOGV("flushDecoder end states Audio %d, Video %d", mFlushingAudio, mFlushingVideo);
 }
+
 sp<NuPlayer::Source> NuPlayer::LoadCreateDashHttpSource(const char * uri, const KeyedVector<String8, String8> *headers, bool uidValid, uid_t uid)
 {
    const char* DASH_HTTP_LIVE_LIB = "libmmipstreamaal.so";
@@ -1043,4 +1021,3 @@ sp<NuPlayer::Source> NuPlayer::LoadCreateDashHttpSource(const char * uri, const 
 }
 
 }  // namespace android
-

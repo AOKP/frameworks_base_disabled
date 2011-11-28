@@ -58,6 +58,17 @@ private:
 
     bool mSignalledError;
 
+    int32_t mAACStreamFormat;
+
+    // Temporary buffer to store incomplete frame buffers
+    uint8_t* mTempInputBuffer;        // data ptr
+    uint32_t mTempBufferTotalSize;    // total size allocated
+    uint32_t mTempBufferDataLen;      // actual data length
+    uint32_t mInputBufferSize;         // input data length
+    uint32_t mTempBufferOffset;         // input data length
+
+    bool mCheckFragment; //flag to indicate if buffer merging is needed
+
     enum {
         NONE,
         AWAITING_DISABLED,
@@ -67,6 +78,8 @@ private:
     void initPorts();
     status_t initDecoder();
     bool isConfigured() const;
+    void helperOnQueueFilledDefault();
+    void helperOnQueueFilledForADIF();
 
     DISALLOW_EVIL_CONSTRUCTORS(SoftAAC);
 };

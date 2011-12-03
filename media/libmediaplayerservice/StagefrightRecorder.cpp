@@ -1429,10 +1429,19 @@ status_t StagefrightRecorder::setupCameraSource(
                 mTimeBetweenTimeLapseFrameCaptureUs);
         *cameraSource = mCameraSourceTimeLapse;
     } else {
+
+#ifdef QCOM_HARDWARE
+        bool useMeta = true;
+        char value[PROPERTY_VALUE_MAX];
+        if (property_get("debug.camcorder.disablemeta", value, NULL) &&
+            atoi(value)) {
+            useMeta = false;
+        }
+#endif
         *cameraSource = CameraSource::CreateFromCamera(
                 mCamera, mCameraProxy, mCameraId, videoSize, mFrameRate,
 #ifdef QCOM_HARDWARE
-                mPreviewSurface, false);
+                mPreviewSurface, useMeta);
 #else
                 mPreviewSurface, true /*storeMetaDataInVideoBuffers*/);
 #endif
@@ -1504,6 +1513,13 @@ status_t StagefrightRecorder::setupVideoEncoder(
     CHECK(meta->findInt32(kKeyStride, &stride));
     CHECK(meta->findInt32(kKeySliceHeight, &sliceHeight));
     CHECK(meta->findInt32(kKeyColorFormat, &colorFormat));
+#ifdef QCOM_HARDWARE
+    CHECK(meta->findInt32(kKeyHFR, &hfr));
+
+    if(hfr) {
+      mMaxFileDurationUs = mMaxFileDurationUs * (hfr/mFrameRate);
+    }
+#endif
 
     enc_meta->setInt32(kKeyWidth, width);
     enc_meta->setInt32(kKeyHeight, height);
@@ -1511,17 +1527,36 @@ status_t StagefrightRecorder::setupVideoEncoder(
     enc_meta->setInt32(kKeyStride, stride);
     enc_meta->setInt32(kKeySliceHeight, sliceHeight);
     enc_meta->setInt32(kKeyColorFormat, colorFormat);
-
+#ifdef QCOM_HARDWARE
+    enc_meta->setInt32(kKeyHFR, hfr);
+#endif
     if (mVideoTimeScale > 0) {
         enc_meta->setInt32(kKeyTimeScale, mVideoTimeScale);
     }
 
 #ifdef QCOM_HARDWARE
+    char mDeviceName[100];
+    property_get("ro.board.platform",mDeviceName,"0");
+    if(!strncmp(mDeviceName, "msm7627a", 8)) {
+      if(hfr && (width * height > 432*240)) {
+        LOGE("HFR mode is supported only upto WQVGA resolution");
+        return INVALID_OPERATION;
+      }
+    }
+    else {
+      if(hfr && ((mVideoEncoder != VIDEO_ENCODER_H264) || (width * height > 800*480))) {
+        LOGE("HFR mode is supported only upto WVGA and H264 codec.");
+        return INVALID_OPERATION;
+      }
+    }
+#endif
+
     /*
      * can set profile from the app as a parameter.
      * For the mean time, set from shell
      */
 
+#ifdef QCOM_HARDWARE
     char value[PROPERTY_VALUE_MAX];
     bool customProfile = false;
 
@@ -1580,8 +1615,14 @@ status_t StagefrightRecorder::setupVideoEncoder(
     uint32_t encoder_flags = 0;
 
     if (mIsMetaDataStoredInVideoBuffers) {
+        LOGW("Camera source supports metadata mode, create OMXCodec for metadata");
         encoder_flags |= OMXCodec::kHardwareCodecsOnly;
         encoder_flags |= OMXCodec::kStoreMetaDataInVideoBuffers;
+        if (property_get("ro.product.device", value, "0")
+            && (!strncmp(value, "msm7627", sizeof("msm7627") - 1))) {
+            LOGW("msm7627 family of chipsets supports, only one buffer at a time");
+            encoder_flags |= OMXCodec::kOnlySubmitOneInputBufferAtOneTime;
+        }
     }
 
     // Do not wait for all the input buffers to become available.

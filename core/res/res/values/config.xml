@@ -789,4 +789,7 @@
 
     <!-- Name of that key handler class -->
     <string name="config_deviceKeyHandlerClass"></string>
+
+    <!-- Use legacy USB device manager. -->
+    <bool name="config_usesLegacyUsbDeviceManager">false</bool>
 </resources>

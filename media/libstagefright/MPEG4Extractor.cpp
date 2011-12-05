@@ -2458,6 +2458,13 @@ static bool BetterSniffMPEG4(
         ALOGV("found metadata size: %lld", moovAtomEndOffset);
     }
 
+    if (moovAtomEndOffset >= 0) {
+        *meta = new AMessage;
+        (*meta)->setInt64("meta-data-size", moovAtomEndOffset);
+
+        LOGV("found metadata size: %lld", moovAtomEndOffset);
+    }
+
     return true;
 }
 

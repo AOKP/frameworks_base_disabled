@@ -359,6 +359,7 @@ private:
 
 ////////////////////////////////////////////////////////////////////////////////
 
+#ifdef QCOM_HARDWARE
 struct ACodec::FlushingOutputState : public ACodec::BaseState {
     FlushingOutputState(ACodec *codec);
 
@@ -380,6 +381,7 @@ private:
 };
 
 ////////////////////////////////////////////////////////////////////////////////
+#endif
 
 ACodec::ACodec()
     : mNode(NULL),
@@ -396,8 +398,9 @@ ACodec::ACodec()
     mExecutingToIdleState = new ExecutingToIdleState(this);
     mIdleToLoadedState = new IdleToLoadedState(this);
     mFlushingState = new FlushingState(this);
+#ifdef QCOM_HARDWARE
     mFlushingOutputState = new FlushingOutputState(this);
-
+#endif
     mPortEOS[kPortIndexInput] = mPortEOS[kPortIndexOutput] = false;
     mInputEOSResult = OK;
 
@@ -1248,7 +1251,7 @@ bool ACodec::allYourBuffersAreBelongToUs(
 
         if (info->mStatus != BufferInfo::OWNED_BY_US
                 && info->mStatus != BufferInfo::OWNED_BY_NATIVE_WINDOW) {
-            ALOGV("[%s] Buffer %p on port %ld still has status %d",
+            LOGE("[%s] Buffer %p on port %ld still has status %d",
                     mComponentName.c_str(),
                     info->mBufferID, portIndex, info->mStatus);
             return false;
@@ -2434,11 +2437,20 @@ bool ACodec::ExecutingState::onOMXEvent(
             if (data2 == 0 || data2 == OMX_IndexParamPortDefinition) {
                 LOGV("Flush output port before disable");
                 CHECK_EQ(mCodec->mOMX->sendCommand(
+#ifdef QCOM_HARDWARE
                         mCodec->mNode, OMX_CommandFlush, kPortIndexOutput),
+#else
+                            mCodec->mNode,
+                            OMX_CommandPortDisable, kPortIndexOutput),
+#endif
                      (status_t)OK);
 
+#ifdef QCOM_HARDWARE
                 mCodec->changeState(mCodec->mFlushingOutputState);
-
+#else
+                mCodec->freeOutputBuffersNotOwnedByComponent();
+                mCodec->changeState(mCodec->mOutputPortSettingsChangedState);
+#endif
             } else if (data2 == OMX_IndexConfigCommonOutputCrop) {
                 mCodec->mSentFormat = false;
             } else {
@@ -2855,6 +2867,7 @@ void ACodec::FlushingState::changeStateIfWeOwnAllBuffers() {
     }
 }
 
+#ifdef QCOM_HARDWARE
 ////////////////////////////////////////////////////////////////////////////////
 
 ACodec::FlushingOutputState::FlushingOutputState(ACodec *codec)
@@ -2975,5 +2988,6 @@ void ACodec::FlushingOutputState::changeStateIfWeOwnAllBuffers() {
         mCodec->changeState(mCodec->mOutputPortSettingsChangedState);
     }
 }
+#endif
 
 }  // namespace android

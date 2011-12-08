@@ -47,6 +47,11 @@ enum {
     ERROR_CORRUPT_NAL      = MEDIA_ERROR_BASE - 99,
 #endif
 
+#ifdef QCOM_HARDWARE
+    //Custom Error for corrupt NAL
+    ERROR_CORRUPT_NAL      = MEDIA_ERROR_BASE - 99,
+#endif
+
     // The following constant values should be in sync with
     // drm/drm_framework_common.h
     DRM_ERROR_BASE = -2000,

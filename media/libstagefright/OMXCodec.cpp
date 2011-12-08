@@ -4398,15 +4398,8 @@ bool OMXCodec::drainInputBuffer(BufferInfo *info) {
         if (err == ERROR_CORRUPT_NAL) {
             LOGW("Ignore Corrupt NAL");
             continue;
-        }
-        else if (err != OK) {
-            signalEOS = true;
-            mFinalStatus = err;
-            mSignalledEOS = true;
-            mBufferFilled.signal();
-            break;
-        }
-#else
+        } else 
+#endif
         if (err != OK) {
             signalEOS = true;
             mFinalStatus = err;
@@ -4414,7 +4407,6 @@ bool OMXCodec::drainInputBuffer(BufferInfo *info) {
             mBufferFilled.signal();
             break;
         }
-#endif
 
         if (mFlags & kUseSecureInputBuffers) {
             info = findInputBufferByDataPointer(srcBuffer->data());

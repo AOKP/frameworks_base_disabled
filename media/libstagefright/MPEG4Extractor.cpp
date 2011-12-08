@@ -39,6 +39,7 @@
 #include <media/stagefright/MetaData.h>
 #include <media/stagefright/Utils.h>
 #include <utils/String8.h>
+#include <cutils/properties.h>
 
 namespace android {
 
@@ -82,6 +83,12 @@ private:
     bool mWantsNALFragments;
 
     uint8_t *mSrcBuffer;
+
+    //For statistics profiling
+    uint32_t mNumSamplesReadError;
+    bool mStatistics;
+    void logExpectedFrames();
+    void logTrackStatistics();
 
     size_t parseNALSize(const uint8_t *data) const;
 
@@ -690,6 +697,7 @@ status_t MPEG4Extractor::parseChunk(off64_t *offset, int depth) {
         case FOURCC('m', 'f', 'r', 'a'):
         case FOURCC('u', 'd', 't', 'a'):
         case FOURCC('i', 'l', 's', 't'):
+        case FOURCC('e', 'd', 't', 's'):
         {
             if (chunk_type == FOURCC('s', 't', 'b', 'l')) {
                 ALOGV("sampleTable chunk is %d bytes long.", (size_t)chunk_size);
@@ -782,6 +790,87 @@ status_t MPEG4Extractor::parseChunk(off64_t *offset, int depth) {
             status_t err;
             if ((err = parseTrackHeader(data_offset, chunk_data_size)) != OK) {
                 return err;
+            }
+
+            *offset += chunk_size;
+            break;
+        }
+
+        case FOURCC('e', 'l', 's', 't' ):
+        {
+            if (chunk_data_size < 4){
+                return ERROR_MALFORMED;
+            }
+
+            uint8_t version;
+            if (mDataSource->readAt(data_offset, &version, 1) < 1){
+                return ERROR_IO;
+            }
+
+            uint8_t buffer[8];
+            if (mDataSource->readAt(data_offset,
+                buffer,
+                sizeof(buffer)) < (ssize_t)sizeof(buffer)) {
+                return ERROR_IO;
+            }
+
+            uint32_t entry_count = U32_AT(&buffer[4]);
+
+            if( version == 1 ){
+                uint8_t buffer[8 + entry_count * 20];
+                if (mDataSource->readAt(data_offset,
+                    buffer,
+                    sizeof(buffer)) < (ssize_t)sizeof(buffer)) {
+                    return ERROR_IO;
+                }
+
+                int64_t mvhdTimeScale = 0;
+                mFileMetaData->findInt64( kKeyEditOffset, &mvhdTimeScale );
+
+                uint64_t segment_duration[entry_count];
+                int64_t media_time[entry_count];
+                for (uint32_t i = 0; i < entry_count; i++ ){
+                    segment_duration[i] = U64_AT(&buffer[8 + i * 20]);
+                    media_time[i] = U64_AT(&buffer[8 + 8 + i * 20]);
+
+                    if( media_time[i] == -1 ){
+                        if( mvhdTimeScale != 0 ){
+                            int64_t editTime = ((int64_t)segment_duration[i] * 1000000 )/mvhdTimeScale;
+                            mLastTrack->meta->setInt64( kKeyEditOffset, editTime );
+                        }
+                    }
+                }
+
+                int16_t media_rate_integer;
+                int16_t media_rate_fraction = 0;
+            }
+            else { //version == 0
+                uint8_t buffer[8 + entry_count * 12];
+                if (mDataSource->readAt(data_offset,
+                    buffer,
+                    sizeof(buffer)) < (ssize_t)sizeof(buffer)) {
+                    return ERROR_IO;
+                }
+
+                uint32_t segment_duration[entry_count];
+                int32_t media_time[entry_count];
+
+                int32_t mvhdTimeScale = 0;
+                mFileMetaData->findInt32( kKeyEditOffset, &mvhdTimeScale );
+
+                for (uint32_t i = 0; i < entry_count; i++ ){
+                    segment_duration[i] = U32_AT(&buffer[8 + i * 12]);
+                    media_time[i] = U32_AT(&buffer[8 + 4 + i * 20]);
+
+                    if( media_time[i] == -1 ){
+                        if( mvhdTimeScale != 0 ){
+                            int64_t editTime = ((int64_t)segment_duration[i] * 1000000 )/mvhdTimeScale;
+                            mLastTrack->meta->setInt64( kKeyEditOffset, editTime );
+                        }
+                    }
+                }
+                int16_t media_rate_integer;
+                int16_t media_rate_fraction = 0;
             }
 
             *offset += chunk_size;
@@ -1211,8 +1300,29 @@ status_t MPEG4Extractor::parseChunk(off64_t *offset, int depth) {
                 return ERROR_MALFORMED;
             }
 
-            mLastTrack->meta->setData(
+            if (mPath.size() >= 2
+                    && mPath[mPath.size() - 2] == FOURCC('m', 'p', '4', 'v')) {
+
+                status_t err = updateVideoTrackInfoFromESDS_MPEG4Video(
+                        &buffer[4], chunk_data_size - 4);
+                if (err != OK) {
+                    return err;
+                }
+            }
+
+            const char *mime;
+            CHECK(mLastTrack->meta->findCString(kKeyMIMEType, &mime));
+            //Do not set ESDS to meta data if mime type is reset to H.263
+            if(!strcmp(mime,MEDIA_MIMETYPE_VIDEO_H263)) {
+                //update the offset since mimetype is H.263
+                *offset += chunk_size;
+                break;
+
+            }
+            else {
+                mLastTrack->meta->setData(
                     kKeyESDS, kTypeESDS, &buffer[4], chunk_data_size - 4);
+            }
 
             if (mPath.size() >= 2
                     && mPath[mPath.size() - 2] == FOURCC('m', 'p', '4', 'a')) {
@@ -1268,8 +1378,10 @@ status_t MPEG4Extractor::parseChunk(off64_t *offset, int depth) {
             char buffer[23];
             if (chunk_data_size != 7 &&
                 chunk_data_size != 23) {
-                ALOGE("Incorrect D263 box size %lld", chunk_data_size);
-                return ERROR_MALFORMED;
+
+                LOGW("Incorrect D263 box size %lld, skipping this atom", chunk_data_size);
+                *offset += chunk_size;
+                break;
             }
 
             if (mDataSource->readAt(
@@ -1337,11 +1449,11 @@ status_t MPEG4Extractor::parseChunk(off64_t *offset, int depth) {
 
         case FOURCC('m', 'v', 'h', 'd'):
         {
-            if (chunk_data_size < 12) {
+            if (chunk_data_size < 12) { //increase to 16?
                 return ERROR_MALFORMED;
             }
 
-            uint8_t header[12];
+            uint8_t header[16];
             if (mDataSource->readAt(
                         data_offset, header, sizeof(header))
                     < (ssize_t)sizeof(header)) {
@@ -1351,10 +1463,14 @@ status_t MPEG4Extractor::parseChunk(off64_t *offset, int depth) {
             int64_t creationTime;
             if (header[0] == 1) {
                 creationTime = U64_AT(&header[4]);
+                mFileMetaData->setInt64(kKeyEditOffset, 0 );
             } else if (header[0] != 0) {
                 return ERROR_MALFORMED;
             } else {
                 creationTime = U32_AT(&header[4]);
+                int32_t mvTimeScale = U32_AT(&header[12]);
+
+                mFileMetaData->setInt32(kKeyEditOffset, mvTimeScale );
             }
 
             String8 s;
@@ -1897,10 +2013,17 @@ MPEG4Source::MPEG4Source(
       mGroup(NULL),
       mBuffer(NULL),
       mWantsNALFragments(false),
-      mSrcBuffer(NULL) {
+      mSrcBuffer(NULL),
+      mNumSamplesReadError(0){
     const char *mime;
     bool success = mFormat->findCString(kKeyMIMEType, &mime);
     CHECK(success);
+
+    //for statistics profiling
+    char value[PROPERTY_VALUE_MAX];
+    mStatistics = false;
+    property_get("persist.debug.sf.statistics", value, "0");
+    if(atoi(value)) mStatistics = true;
 
     mIsAVC = !strcasecmp(mime, MEDIA_MIMETYPE_VIDEO_AVC);
 
@@ -1918,6 +2041,8 @@ MPEG4Source::MPEG4Source(
         // The number of bytes used to encode the length of a NAL unit.
         mNALLengthSize = 1 + (ptr[4] & 3);
     }
+
+    if (mStatistics) logExpectedFrames();
 }
 
 MPEG4Source::~MPEG4Source() {
@@ -1930,6 +2055,9 @@ status_t MPEG4Source::start(MetaData *params) {
     Mutex::Autolock autoLock(mLock);
 
     CHECK(!mStarted);
+
+    if (mStatistics)
+        logTrackStatistics();
 
     int32_t val;
     if (params && params->findInt32(kKeyWantsNALFragments, &val)
@@ -2104,6 +2232,7 @@ status_t MPEG4Source::read(
                     mCurrentSampleIndex, &offset, &size, &cts, &isSyncSample);
 
         if (err != OK) {
+            if (mStatistics) mNumSamplesReadError++;
             return err;
         }
 
@@ -2111,12 +2240,18 @@ status_t MPEG4Source::read(
 
         if (err != OK) {
             CHECK(mBuffer == NULL);
+            if (mStatistics) mNumSamplesReadError++;
             return err;
         }
     }
 
     if (!mIsAVC || mWantsNALFragments) {
         if (newBuffer) {
+            if (size > mBuffer->size()) {
+                mBuffer->release();
+                mBuffer = NULL;
+                return ERROR_IO;
+            }
             ssize_t num_bytes_read =
                 mDataSource->readAt(offset, (uint8_t *)mBuffer->data(), size);
 
@@ -2124,6 +2259,7 @@ status_t MPEG4Source::read(
                 mBuffer->release();
                 mBuffer = NULL;
 
+                if (mStatistics) mNumSamplesReadError++;
                 return ERROR_IO;
             }
 
@@ -2167,6 +2303,7 @@ status_t MPEG4Source::read(
             mBuffer->release();
             mBuffer = NULL;
 
+            if (mStatistics) mNumSamplesReadError++;
             return ERROR_MALFORMED;
         }
 
@@ -2204,6 +2341,7 @@ status_t MPEG4Source::read(
             mBuffer->release();
             mBuffer = NULL;
 
+            if (mStatistics) mNumSamplesReadError++;
             return ERROR_IO;
         }
 
@@ -2226,11 +2364,19 @@ status_t MPEG4Source::read(
                 }
 
                 if (isMalFormed) {
-                    ALOGE("Video is malformed");
+                    //If NAL Length is corrupt,
+                    //return custom error ERROR_CORRUPT_NAL
+                    LOGE("Video is malformed");
                     mBuffer->release();
                     mBuffer = NULL;
-                    return ERROR_MALFORMED;
+
+                    if (mStatistics) mNumSamplesReadError++;
+                    srcOffset -= mNALLengthSize;
+                    srcOffset += size;
+                    ++mCurrentSampleIndex;
+                    return ERROR_CORRUPT_NAL;
                 }
+
 
                 if (nalLength == 0) {
                     continue;
@@ -2309,7 +2455,8 @@ static bool LegacySniffMPEG4(
         || !memcmp(header, "ftypkddi", 8) || !memcmp(header, "ftypM4VP", 8)
         || !memcmp(header, "ftypMSNV", 8) || !memcmp(header, "ftypavc1", 8)
         || !memcmp(header, "ftypmmp4", 8) || !memcmp(header, "ftypk3g1", 8)
-        || !memcmp(header, "ftypmp41", 8) || !memcmp(header, "ftypskm3", 8)) {
+        || !memcmp(header, "ftypmp41", 8) || !memcmp(header, "ftypskm3", 8)
+        || !memcmp(header, "ftypFACE", 8) || !memcmp(header, "ftypwmf", 7)) {
         *mimeType = MEDIA_MIMETYPE_CONTAINER_MPEG4;
         *confidence = 0.6;
 
@@ -2458,6 +2605,13 @@ static bool BetterSniffMPEG4(
         ALOGV("found metadata size: %lld", moovAtomEndOffset);
     }
 
+    if (moovAtomEndOffset >= 0) {
+        *meta = new AMessage;
+        (*meta)->setInt64("meta-data-size", moovAtomEndOffset);
+
+        LOGV("found metadata size: %lld", moovAtomEndOffset);
+    }
+
     return true;
 }
 
@@ -2475,6 +2629,53 @@ bool SniffMPEG4(
 
     return false;
 }
+
+status_t MPEG4Extractor::updateVideoTrackInfoFromESDS_MPEG4Video(
+        const void *esds_data, size_t esds_size) {
+    ESDS esds(esds_data, esds_size);
+    const uint8_t *csd;
+    size_t csd_size;
+    if (esds.getCodecSpecificInfo(
+                (const void **)&csd, &csd_size) != OK) {
+        return ERROR_MALFORMED;
+    }
+
+    uint32_t offset = (csd_size) - 4;
+    if (csd != NULL && csd[offset] == 0x00 && csd[offset+1] == 0x00 &&
+        csd[offset+2] == 0x01 && csd[offset+3] < 0x20) {
+        LOGW("Reset Mime type from mp4v to H.263");
+        mLastTrack->meta->setCString(kKeyMIMEType, FourCC2MIME( FOURCC('s', '2', '6', '3')));
+    }
+    return OK;
+}
+
+void MPEG4Source::logTrackStatistics()
+{
+    const char *mime;
+    mFormat->findCString(kKeyMIMEType, &mime);
+    LOGW("=====================================================");
+    LOGW("Mime Type: %s",mime);
+    LOGW("Total number of samples in track: %u",mSampleTable->countSamples());
+    LOGW("Number of key samples: %u",mSampleTable->getNumSyncSamples());
+    LOGW("Number of corrupt samples: %u",mNumSamplesReadError ?
+           mNumSamplesReadError-1 : mNumSamplesReadError); //last sample reads error for EOS
+    LOGW("=====================================================");
+}
+
+void MPEG4Source::logExpectedFrames()
+{
+    const char *mime;
+    mFormat->findCString(kKeyMIMEType, &mime);
+    int64_t durationUs;
+    getFormat()->findInt64(kKeyDuration, &durationUs);
+    LOGW("=====================================================");
+    LOGW("Mime type: %s",mime);
+    LOGW("Track duration: %lld",durationUs/1000);
+    LOGW("Total number of samples in track: %u",mSampleTable->countSamples());
+    LOGW("Expected frames per second: %.2f",((float)mSampleTable->countSamples()*1000)/((float)durationUs/1000));
+    LOGW("=====================================================");
+}
+
 
 }  // namespace android
 

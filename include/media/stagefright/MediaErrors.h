@@ -47,6 +47,9 @@ enum {
     ERROR_CORRUPT_NAL      = MEDIA_ERROR_BASE - 99,
 #endif
 
+    //Custom Error for corrupt NAL
+    ERROR_CORRUPT_NAL      = MEDIA_ERROR_BASE - 99,
+
     // The following constant values should be in sync with
     // drm/drm_framework_common.h
     DRM_ERROR_BASE = -2000,

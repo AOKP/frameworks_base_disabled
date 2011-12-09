@@ -208,7 +208,9 @@ private:
 
     void getMoreInputDataIfPossible();
 
+#ifdef QCOM_HARDWARE
     void HandleExtraData(IOMX::buffer_id omxBuffer);
+#endif
 
     DISALLOW_EVIL_CONSTRUCTORS(BaseState);
 };
@@ -385,8 +387,12 @@ private:
 
 ACodec::ACodec()
     : mNode(NULL),
+#ifdef QCOM_HARDWARE
       mSentFormat(false),
       mSmoothStreaming(false) {
+#else
+      mSentFormat(false) {
+#endif
     mUninitializedState = new UninitializedState(this);
     mLoadedToIdleState = new LoadedToIdleState(this);
     mIdleToExecutingState = new IdleToExecutingState(this);
@@ -577,10 +583,12 @@ status_t ACodec::allocateOutputBuffersFromNativeWindow() {
         OMX_U32 newBufferCount = def.nBufferCountMin + minUndequeuedBufs;
         def.nBufferCountActual = newBufferCount;
 
+#ifdef QCOM_HARDWARE
         //Keep an extra buffer for smooth streaming
         if (mSmoothStreaming) {
             def.nBufferCountActual += 1;
         }
+#endif
 
         err = mOMX->setParameter(
                 mNode, OMX_IndexParamPortDefinition, &def, sizeof(def));
@@ -591,10 +599,12 @@ status_t ACodec::allocateOutputBuffersFromNativeWindow() {
             return err;
         }
 
+#ifdef QCOM_HARDWARE
         if (mSmoothStreaming) {
             //Copy the final port definitio
              memcpy(&mOutputPortDef, &def, sizeof(def));
         }
+#endif
     }
 
     err = native_window_set_buffer_count(
@@ -618,7 +628,17 @@ status_t ACodec::allocateOutputBuffersFromNativeWindow() {
     }
 #endif
 
-    ALOGV("[%s] Allocating %lu buffers from a native window of size %lu on "
+    err = mNativeWindow.get()->perform(mNativeWindow.get(),
+                              NATIVE_WINDOW_SET_BUFFERS_SIZE,
+                              def.nBufferSize);
+
+    if (err != 0) {
+        LOGE("native_window_set_buffer_size failed: %s (%d)", strerror(-err),
+                -err);
+        return err;
+    }
+
+    LOGV("[%s] Allocating %lu buffers from a native window of size %lu on "
          "output port",
          mComponentName.c_str(), def.nBufferCountActual, def.nBufferSize);
 
@@ -1195,7 +1215,11 @@ status_t ACodec::setVideoFormatOnPort(
 
     CHECK_EQ(err, (status_t)OK);
 
-    if (portIndex == kPortIndexInput && !mSmoothStreaming) {
+    if (portIndex == kPortIndexInput
+#ifdef QCOM_HARDWARE
+            && !mSmoothStreaming
+#endif
+            ) {
         // XXX Need a (much) better heuristic to compute input buffer sizes.
         const size_t X = 64 * 1024;
         if (def.nBufferSize < X) {
@@ -1205,10 +1229,14 @@ status_t ACodec::setVideoFormatOnPort(
 
     CHECK_EQ((int)def.eDomain, (int)OMX_PortDomainVideo);
 
+#ifdef QCOM_HARDWARE
     if (!mSmoothStreaming) {
+#endif
         video_def->nFrameWidth = width;
         video_def->nFrameHeight = height;
+#ifdef QCOM_HARDWARE
     }
+#endif
 
     if (portIndex == kPortIndexInput) {
         video_def->eCompressionFormat = compressionFormat;
@@ -1939,8 +1967,10 @@ bool ACodec::BaseState::onOMXFillBufferDone(
                     new AMessage(kWhatOutputBufferDrained, mCodec->id());
 
                 reply->setPointer("buffer-id", info->mBufferID);
-                reply->setInt32("flags", flags);
 
+#ifdef QCOM_HARDWARE
+                reply->setInt32("flags", flags);
+#endif
                 notify->setMessage("reply", reply);
 
                 notify->post();

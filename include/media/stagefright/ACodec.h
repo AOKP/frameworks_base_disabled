@@ -22,7 +22,9 @@
 #include <android/native_window.h>
 #include <media/IOMX.h>
 #include <media/stagefright/foundation/AHierarchicalStateMachine.h>
+#ifdef QCOM_HARDWARE
 #include <OMX_Component.h>
+#endif
 
 namespace android {
 
@@ -182,10 +184,12 @@ private:
 
     void signalError(OMX_ERRORTYPE error = OMX_ErrorUndefined);
 
+#ifdef QCOM_HARDWARE
     //Smooth streaming related
     status_t InitSmoothStreaming();
     OMX_PARAM_PORTDEFINITIONTYPE mOutputPortDef;
     bool mSmoothStreaming;
+#endif
 
     DISALLOW_EVIL_CONSTRUCTORS(ACodec);
 };

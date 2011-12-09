@@ -1344,6 +1344,7 @@ void ACodec::sendFormatChange() {
             int format = (def.format.video.eColorFormat == (OMX_COLOR_FORMATTYPE)QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka)?
                  HAL_PIXEL_FORMAT_YCbCr_420_SP_TILED : def.format.video.eColorFormat;
 
+
             if( mSmoothStreaming ) {
                //call Update buffer geometry here
                 status_t err = mNativeWindow.get()->perform(mNativeWindow.get(),

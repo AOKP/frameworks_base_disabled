@@ -929,6 +929,7 @@ status_t OMXCodec::parseAVCCodecSpecificData(
       mInterlaceFormatDetected = false;
     }
 #endif
+
     ptr += 6;
     size -= 6;
 
@@ -1024,7 +1025,7 @@ status_t OMXCodec::configureCodec(const sp<MetaData> &meta) {
 #else
                             data, size, &profile, &level)) != OK) {
 #endif
-                ALOGE("Malformed AVC codec specific data.");
+                LOGE("Malformed AVC codec specific data.");
                 return err;
             }
 
@@ -1065,10 +1066,14 @@ status_t OMXCodec::configureCodec(const sp<MetaData> &meta) {
 #endif
     }
 
-#ifdef QCOM_HARDWARE
+#ifndef QCOM_HARDWARE
+    if (!strcasecmp(MEDIA_MIMETYPE_VIDEO_DIVX, mMIME) || 
+        !strcasecmp(MEDIA_MIMETYPE_VIDEO_DIVX4, mMIME)) {
+#else
     if (!strcasecmp(MEDIA_MIMETYPE_VIDEO_DIVX, mMIME) ||
         !strcasecmp(MEDIA_MIMETYPE_VIDEO_DIVX4, mMIME) ||
         !strcasecmp(MEDIA_MIMETYPE_VIDEO_DIVX311, mMIME)) {
+#endif
         LOGV("Setting the QOMX_VIDEO_PARAM_DIVXTYPE params ");
         QOMX_VIDEO_PARAM_DIVXTYPE paramDivX;
         InitOMXParams(&paramDivX);
@@ -2324,10 +2329,19 @@ OMXCodec::OMXCodec(
       mThumbnailMode(false),
       m3DVideoDetected(false),
 #endif
+#ifdef QCOM_HARDWARE
       mNativeWindow(
               (!strncmp(componentName, "OMX.google.", 11)
               || !strcmp(componentName, "OMX.Nvidia.mpeg2v.decode"))
+                        ? NULL : nativeWindow),
+      mInterlaceFormatDetected(false),
+      mSPSParsed(false),
+      mThumbnailMode(false) {
+#else
+      mNativeWindow(!strncmp(componentName, "OMX.google.", 11)
+                        ? NULL : nativeWindow),
                         ? NULL : nativeWindow) {
+#endif
 #ifdef QCOM_HARDWARE
     parseFlags();
 #endif

@@ -242,7 +242,6 @@ private:
     bool mOnlySubmitOneBufferAtOneTime;
     bool mInterlaceFormatDetected;
     bool mSPSParsed;
-    bool bInvalidState;
 #endif
 
     // Used to record the decoding time for an output picture from
@@ -270,10 +269,10 @@ private:
     status_t setAACFormat(int32_t numChannels, int32_t sampleRate, int32_t bitRate);
 #ifdef QCOM_HARDWARE
     void setEVRCFormat( int32_t sampleRate, int32_t numChannels, int32_t bitRate);
-    void setG711Format(int32_t numChannels, int32_t sampleRate);
-    void setQCELPFormat( int32_t sampleRate, int32_t numChannels, int32_t bitRate);
-#else
+#endif
     void setG711Format(int32_t numChannels);
+#ifdef QCOM_HARDWARE
+    void setQCELPFormat( int32_t sampleRate, int32_t numChannels, int32_t bitRate);
 #endif
 
     status_t setVideoPortFormatType(

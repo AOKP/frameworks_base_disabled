@@ -80,6 +80,11 @@ namespace uirenderer {
 #define PROGRAM_HAS_EXTERNAL_TEXTURE_SHIFT 38
 #define PROGRAM_HAS_TEXTURE_TRANSFORM_SHIFT 39
 
+#ifdef MISSING_EGL_EXTERNAL_IMAGE
+# undef PROGRAM_HAS_EXTERNAL_TEXTURE_SHIFT
+# define PROGRAM_HAS_EXTERNAL_TEXTURE_SHIFT PROGRAM_KEY_TEXTURE
+#endif
+
 ///////////////////////////////////////////////////////////////////////////////
 // Types
 ///////////////////////////////////////////////////////////////////////////////

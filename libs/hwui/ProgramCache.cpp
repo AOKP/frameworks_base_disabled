@@ -393,6 +393,13 @@ Program* ProgramCache::generateProgram(const ProgramDescription& description, pr
 }
 
 String8 ProgramCache::generateVertexShader(const ProgramDescription& description) {
+
+#ifdef MISSING_EGL_EXTERNAL_IMAGE
+    if (description.hasExternalTexture) {
+        LOGW("SHADER USE EXTERNAL TEXTURE OES");
+    }
+#endif
+
     // Add attributes
     String8 shader(gVS_Header_Attributes);
     if (description.hasTexture || description.hasExternalTexture) {
@@ -466,7 +473,11 @@ String8 ProgramCache::generateVertexShader(const ProgramDescription& description
 
 String8 ProgramCache::generateFragmentShader(const ProgramDescription& description) {
     String8 shader;
-
+#ifdef MISSING_EGL_EXTERNAL_IMAGE
+    if (description.hasExternalTexture) {
+        LOGW("SHADER USE EXTERNAL TEXTURE OES");
+    }
+#endif
     const bool blendFramebuffer = description.framebufferMode >= SkXfermode::kPlus_Mode;
     if (blendFramebuffer) {
         shader.append(gFS_Header_Extension_FramebufferFetch);

@@ -314,13 +314,13 @@ private:
 
         uint32_t classes;
 
-        uint8_t keyBitmask[(KEY_MAX + 1) / 8];
-        uint8_t absBitmask[(ABS_MAX + 1) / 8];
-        uint8_t relBitmask[(REL_MAX + 1) / 8];
-        uint8_t swBitmask[(SW_MAX + 1) / 8];
-        uint8_t ledBitmask[(LED_MAX + 1) / 8];
-        uint8_t ffBitmask[(FF_MAX + 1) / 8];
-        uint8_t propBitmask[(INPUT_PROP_MAX + 1) / 8];
+        uint32_t keyBitmask[(KEY_MAX + 1) / 32];
+        uint32_t absBitmask[(ABS_MAX + 1) / 32];
+        uint32_t relBitmask[(REL_MAX + 1) / 32];
+        uint32_t swBitmask[(SW_MAX + 1) / 32];
+        uint32_t ledBitmask[(LED_MAX + 1) / 32];
+        uint32_t ffBitmask[(FF_MAX + 1) / 32];
+        uint32_t propBitmask[(INPUT_PROP_MAX + 1) / 32];
 
         String8 configurationFile;
         PropertyMap* configuration;

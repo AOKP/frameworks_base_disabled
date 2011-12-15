@@ -50,15 +50,13 @@
 #include <sys/ioctl.h>
 #include <sys/limits.h>
 
-/* this macro is used to tell if "bit" is set in "array"
- * it selects a byte from the array, and does a boolean AND
- * operation with a byte that only has the relevant bit set.
- * eg. to check for the 12th bit, we do (array[1] & 1<<4)
- */
-#define test_bit(bit, array)    (array[bit/8] & (1<<(bit%8)))
-
-/* this macro computes the number of bytes needed to represent a bit array of the specified size */
-#define sizeof_bit_array(bits)  ((bits + 7) / 8)
+// The kernel EVIOCG* ioctls return bitmaps defined in terms of longs
+// This code assumes sizeof(long) == sizeof(int32_t)
+#define BITS_PER_LONG            32
+#define BIT_MASK(nr)             (1UL << ((nr) % BITS_PER_LONG))
+#define BIT_WORD(nr)             ((nr) / BITS_PER_LONG)
+#define BITS_TO_LONGS(nr)        (((nr)+(BITS_PER_LONG-1)) / BITS_PER_LONG)
+#define test_bit(bit, array)     (array[BIT_WORD(bit)] & BIT_MASK(bit))
 
 #define INDENT "  "
 #define INDENT2 "    "
@@ -338,7 +336,7 @@ int32_t EventHub::getScanCodeState(int32_t deviceId, int32_t scanCode) const {
 
         Device* device = getDeviceLocked(deviceId);
         if (device && !device->isVirtual() && test_bit(scanCode, device->keyBitmask)) {
-            uint8_t keyState[sizeof_bit_array(KEY_MAX + 1)];
+            uint32_t keyState[BITS_TO_LONGS(KEY_MAX + 1)];
             memset(keyState, 0, sizeof(keyState));
             if (ioctl(device->fd, EVIOCGKEY(sizeof(keyState)), keyState) >= 0) {
                 return test_bit(scanCode, keyState) ? AKEY_STATE_DOWN : AKEY_STATE_UP;
@@ -356,7 +354,7 @@ int32_t EventHub::getKeyCodeState(int32_t deviceId, int32_t keyCode) const {
         Vector<int32_t> scanCodes;
         device->keyMap.keyLayoutMap->findScanCodesForKey(keyCode, &scanCodes);
         if (scanCodes.size() != 0) {
-            uint8_t keyState[sizeof_bit_array(KEY_MAX + 1)];
+            uint32_t keyState[BITS_TO_LONGS(KEY_MAX + 1)];
             memset(keyState, 0, sizeof(keyState));
             if (ioctl(device->fd, EVIOCGKEY(sizeof(keyState)), keyState) >= 0) {
                 for (size_t i = 0; i < scanCodes.size(); i++) {
@@ -378,7 +376,7 @@ int32_t EventHub::getSwitchState(int32_t deviceId, int32_t sw) const {
 
         Device* device = getDeviceLocked(deviceId);
         if (device && !device->isVirtual() && test_bit(sw, device->swBitmask)) {
-            uint8_t swState[sizeof_bit_array(SW_MAX + 1)];
+            uint32_t swState[BITS_TO_LONGS(SW_MAX + 1)];
             memset(swState, 0, sizeof(swState));
             if (ioctl(device->fd, EVIOCGSW(sizeof(swState)), swState) >= 0) {
                 return test_bit(sw, swState) ? AKEY_STATE_DOWN : AKEY_STATE_UP;
@@ -906,8 +904,8 @@ void EventHub::scanDevicesLocked() {
 
 // ----------------------------------------------------------------------------
 
-static bool containsNonZeroByte(const uint8_t* array, uint32_t startIndex, uint32_t endIndex) {
-    const uint8_t* end = array + endIndex;
+static bool containsNonZeroLong(const uint32_t* array, uint32_t startIndex, uint32_t endIndex) {
+    const uint32_t* end = array + endIndex;
     array += startIndex;
     while (array != end) {
         if (*(array++) != 0) {
@@ -1038,13 +1036,13 @@ status_t EventHub::openDeviceLocked(const char *devicePath) {
 
     // See if this is a keyboard.  Ignore everything in the button range except for
     // joystick and gamepad buttons which are handled like keyboards for the most part.
-    bool haveKeyboardKeys = containsNonZeroByte(device->keyBitmask, 0, sizeof_bit_array(BTN_MISC))
-            || containsNonZeroByte(device->keyBitmask, sizeof_bit_array(KEY_OK),
-                    sizeof_bit_array(KEY_MAX + 1));
-    bool haveGamepadButtons = containsNonZeroByte(device->keyBitmask, sizeof_bit_array(BTN_MISC),
-                    sizeof_bit_array(BTN_MOUSE))
-            || containsNonZeroByte(device->keyBitmask, sizeof_bit_array(BTN_JOYSTICK),
-                    sizeof_bit_array(BTN_DIGI));
+    bool haveKeyboardKeys = containsNonZeroLong(device->keyBitmask, 0, BITS_TO_LONGS(BTN_MISC))
+            || containsNonZeroLong(device->keyBitmask, BITS_TO_LONGS(KEY_OK),
+                    BITS_TO_LONGS(KEY_MAX + 1));
+    bool haveGamepadButtons = containsNonZeroLong(device->keyBitmask, BITS_TO_LONGS(BTN_MISC),
+                    BITS_TO_LONGS(BTN_MOUSE))
+            || containsNonZeroLong(device->keyBitmask, BITS_TO_LONGS(BTN_JOYSTICK),
+                    BITS_TO_LONGS(BTN_DIGI));
     if (haveKeyboardKeys || haveGamepadButtons) {
         device->classes |= INPUT_DEVICE_CLASS_KEYBOARD;
     }

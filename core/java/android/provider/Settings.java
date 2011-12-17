@@ -2183,6 +2183,14 @@ public final class Settings {
         @Deprecated
         public static final String WIFI_WATCHDOG_PING_TIMEOUT_MS =
             Secure.WIFI_WATCHDOG_PING_TIMEOUT_MS;
+
+        public static final String MENU_LOCATION = "menu_location";
+
+        public static final String CRT_OFF_ANIMATION = "crt_off_animation";
+
+        public static final String CRT_ON_ANIMATION = "crt_on_animation";
+
+        public static final String LOCKSCREEN_ENABLE_MENU_KEY = "lockscreen_enable_menu_key";
     }
 
     /**
@@ -4112,6 +4120,20 @@ public final class Settings {
             LOCK_SCREEN_OWNER_INFO,
             LOCK_SCREEN_OWNER_INFO_ENABLED
         };
+
+        public static final String POWER_SAVER_MODE = "power_saver_mode";
+
+        public static final String POWER_SAVER_DATA_MODE = "power_saver_data_mode";
+
+        public static final String POWER_SAVER_ORIGINAL_NETWORK_ON = "power_saver_original_network_on";
+
+        public static final String POWER_SAVER_ORIGINAL_NETWORK_MODE = "power_saver_original_network_mode";
+
+        public static final String POWER_SAVER_SYNC_MODE = "power_saver_sync_mode";
+
+        public static final String POWER_SAVER_SYNC_INTERVAL = "power_saver_sync_interval";
+
+        public static final String POWER_SAVER_DATA_DELAY = "power_saver_data_delay";
 
         /**
          * Helper method for determining if a location provider is enabled.

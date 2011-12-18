@@ -90,7 +90,7 @@ public class ToggleSlider extends RelativeLayout
             slider = res.getDrawable(
                     com.android.internal.R.drawable.scrubber_progress_horizontal_holo_dark);
         }
-        mSlider.setThumb(thumb);
+        //mSlider.setThumb(thumb);
         mSlider.setProgressDrawable(slider);
 
         if (mListener != null) {

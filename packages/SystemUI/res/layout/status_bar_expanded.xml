@@ -78,6 +78,12 @@
             android:contentDescription="@string/accessibility_clear_all"
             />            
     </RelativeLayout>
+    
+    <include layout="@layout/quick_toggles" 
+                android:id="@+id/quick_toggles"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
 
     <View
         android:layout_width="match_parent"

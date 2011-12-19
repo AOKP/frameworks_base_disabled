@@ -16,29 +16,28 @@
 
 package com.android.systemui.statusbar.phone;
 
+import java.io.FileDescriptor;
+import java.io.PrintWriter;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.ServiceManager;
+import android.provider.Settings;
 import android.util.AttributeSet;
 import android.util.Slog;
-import android.view.animation.AccelerateInterpolator;
 import android.view.Display;
 import android.view.MotionEvent;
+import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Surface;
 import android.view.WindowManager;
+import android.view.animation.AccelerateInterpolator;
 import android.widget.LinearLayout;
 
-import java.io.FileDescriptor;
-import java.io.PrintWriter;
-import java.lang.StringBuilder;
-
 import com.android.internal.statusbar.IStatusBarService;
-
 import com.android.systemui.R;
 
 public class NavigationBarView extends LinearLayout {
@@ -61,12 +60,20 @@ public class NavigationBarView extends LinearLayout {
 
     boolean mHidden, mLowProfile, mShowMenu;
     int mDisabledFlags = 0;
+    
+    public final static int SHOW_LEFT_MENU = 1;
+    public final static int SHOW_RIGHT_MENU = 0;
+    public final static int SHOW_BOTH_MENU = 2;
 
     public View getRecentsButton() {
         return mCurrentView.findViewById(R.id.recent_apps);
     }
+    
+    public View getLeftMenuButton() {
+        return mCurrentView.findViewById(R.id.menu_left);
+    }
 
-    public View getMenuButton() {
+    public View getRightMenuButton() {
         return mCurrentView.findViewById(R.id.menu);
     }
 
@@ -139,7 +146,24 @@ public class NavigationBarView extends LinearLayout {
 
         mShowMenu = show;
 
-        getMenuButton().setVisibility(mShowMenu ? View.VISIBLE : View.INVISIBLE);
+        int currentSetting = Settings.System.getInt(getContext().getContentResolver(),
+                Settings.System.MENU_LOCATION, SHOW_RIGHT_MENU);
+        
+        switch (currentSetting) {
+            case SHOW_BOTH_MENU:
+                getLeftMenuButton().setVisibility(mShowMenu ? View.VISIBLE : View.INVISIBLE);
+                getRightMenuButton().setVisibility(mShowMenu ? View.VISIBLE : View.INVISIBLE);
+                break;
+            case SHOW_LEFT_MENU:
+                getLeftMenuButton().setVisibility(mShowMenu ? View.VISIBLE : View.INVISIBLE);
+                getRightMenuButton().setVisibility(View.INVISIBLE);
+                break;
+            default:
+            case SHOW_RIGHT_MENU:
+                getLeftMenuButton().setVisibility(View.INVISIBLE);
+                getRightMenuButton().setVisibility(mShowMenu ? View.VISIBLE : View.INVISIBLE);
+                break;
+        }
     }
 
     public void setLowProfile(final boolean lightsOut) {
@@ -297,7 +321,7 @@ public class NavigationBarView extends LinearLayout {
         final View back = getBackButton();
         final View home = getHomeButton();
         final View recent = getRecentsButton();
-        final View menu = getMenuButton();
+        final View menu = getRightMenuButton();
 
         pw.println("      back: "
                 + PhoneStatusBar.viewInfo(back)

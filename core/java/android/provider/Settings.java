@@ -2191,6 +2191,8 @@ public final class Settings {
         public static final String CRT_ON_ANIMATION = "crt_on_animation";
 
         public static final String LOCKSCREEN_ENABLE_MENU_KEY = "lockscreen_enable_menu_key";
+
+        public static final String SHOW_STATUSBAR_IME_SWITCHER = "show_statusbar_ime_switcher";;
     }
 
     /**

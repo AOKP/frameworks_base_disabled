@@ -2184,15 +2184,49 @@ public final class Settings {
         public static final String WIFI_WATCHDOG_PING_TIMEOUT_MS =
             Secure.WIFI_WATCHDOG_PING_TIMEOUT_MS;
 
+        /*
+         * where to show the legacy menu key
+         * 0 = right (default)
+         * 1 = left
+         * 2 = both
+         */
         public static final String MENU_LOCATION = "menu_location";
 
         public static final String CRT_OFF_ANIMATION = "crt_off_animation";
 
         public static final String CRT_ON_ANIMATION = "crt_on_animation";
 
+        /*
+         * Whether to enable unlocking from lockscreen via menu key
+         */
         public static final String LOCKSCREEN_ENABLE_MENU_KEY = "lockscreen_enable_menu_key";
 
-        public static final String SHOW_STATUSBAR_IME_SWITCHER = "show_statusbar_ime_switcher";;
+        /*
+         * whether to show the IME switcher when typing in the statusbar. Boolean value.
+         */
+        public static final String SHOW_STATUSBAR_IME_SWITCHER = "show_statusbar_ime_switcher";
+
+        /*
+         * Which layout to use to display the navigation menu at the bottom.
+         * 0 = default
+         * 1 = defualt w/search
+         */
+        public static final String NAVIGATION_BAR_LAYOUT = "navigation_bar_layout";
+
+        /*
+         * Whether to show the battery text next to the battery icon. Boolean value.
+         */
+        public static final String STATUSBAR_BATTERY_TEXT = "statusbar_battery_text";
+
+        /*
+         * How long to keep the notification LED on (in milliseconds)
+         */
+        public static final String NOTIFICATION_LIGHT_ON = "notification_light_on";
+
+        /*
+         * How long to keep the notification LED off (in milliseconds)
+         */
+        public static final String NOTIFICATION_LIGHT_OFF = "notification_light_off";
     }
 
     /**

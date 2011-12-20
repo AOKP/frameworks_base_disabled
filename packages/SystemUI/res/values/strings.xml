@@ -365,4 +365,6 @@
 
     <!-- Content description of the clear button in the notification panel for accessibility (not shown on the screen). [CHAR LIMIT=NONE] -->
     <string name="accessibility_clear_all">Clear all notifications.</string>
+    
+    <string name="battery_test">99</string>
 </resources>

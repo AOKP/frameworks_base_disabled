@@ -97,6 +97,8 @@ public class PowerSaverService extends BroadcastReceiver {
 
     private boolean isScreenOn = false;
 
+    private boolean isCdma = false;
+
     Handler handler;
 
     private int mDataScreenOnSecondDelay = 5;
@@ -165,7 +167,10 @@ public class PowerSaverService extends BroadcastReceiver {
         switch (mScreenOffDataMode) {
             case DATA_2G:
                 Slog.i(TAG, "handleScreenOffData: requesting 2G only");
-                requestPhoneStateChange(Phone.NT_MODE_GSM_ONLY);
+                if (isCdma)
+                    requestPhoneStateChange(Phone.NT_MODE_EVDO_NO_CDMA);
+                else
+                    requestPhoneStateChange(Phone.NT_MODE_GSM_ONLY);
                 break;
             case DATA_OFF:
                 Slog.i(TAG, "handleScreenOffData: turning data off");
@@ -203,7 +208,8 @@ public class PowerSaverService extends BroadcastReceiver {
         alarms.set(AlarmManager.RTC_WAKEUP, timeToStart.getTimeInMillis(),
                 scheduleScreenOffPendingIntent);
 
-        Slog.i(TAG, "scheduleScreenOffTask() with multiplicative delay " + (mDataScreenOffSecondDelay
+        Slog.i(TAG, "scheduleScreenOffTask() with multiplicative delay "
+                + (mDataScreenOffSecondDelay
                 * screenOffScheduleAttempts));
     }
 
@@ -318,7 +324,7 @@ public class PowerSaverService extends BroadcastReceiver {
                     Slog.i(TAG, "screenOffTask: storing current data states");
                     requestPreferredDataType();
                     originalDataOn = Settings.Secure.getInt(
-                            mContext.getContentResolver(), Settings.Secure.MOBILE_DATA, 0) == 1;
+                            mContext.getContentResolver(), Settings.Secure.MOBILE_DATA, 1) == 1;
                     Settings.Secure
                             .putInt(mContext.getContentResolver(),
                                     Settings.Secure.POWER_SAVER_ORIGINAL_NETWORK_ON,
@@ -377,10 +383,16 @@ public class PowerSaverService extends BroadcastReceiver {
             if (mSyncDataMode != SYNCING_USE_SCREEN_OFF_CONFIG) // don't reset!
                 switch (mSyncMobileDataMode) {
                     case SYNCING_DATA_PREFER_2G:
-                        desiredNetworkMode = Phone.NT_MODE_GSM_ONLY;
+                        if (isCdma)
+                            desiredNetworkMode = Phone.NT_MODE_CDMA_NO_EVDO;
+                        else
+                            desiredNetworkMode = Phone.NT_MODE_GSM_ONLY;
                         break;
                     case SYNCING_DATA_PREFER_3G:
-                        desiredNetworkMode = Phone.NT_MODE_WCDMA_PREF;
+                        if (isCdma)
+                        desiredNetworkMode = Phone.NT_MODE_CDMA;
+                        else
+                            desiredNetworkMode = Phone.NT_MODE_WCDMA_PREF;
                         break;
                 }
 
@@ -463,6 +475,8 @@ public class PowerSaverService extends BroadcastReceiver {
         telephony = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
         alarms = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
 
+        isCdma = telephony.getCurrentPhoneType() == Phone.PHONE_TYPE_CDMA;
+
         SettingsObserver settingsObserver = new SettingsObserver(new Handler());
         settingsObserver.observe();
         updateSettings(); // to initialize values
@@ -480,6 +494,14 @@ public class PowerSaverService extends BroadcastReceiver {
         handler = new Handler();
 
         Slog.i(TAG, "system ready");
+
+        if (mMode == POWER_SAVER_MODE_OFF)
+            return;
+
+        /*
+         * Try to re-initialize values on boot that may have been lost due to PowerSaver changing
+         * them on screen off
+         */
 
         int powerSaverSavedNetworkMode = Settings.Secure.getInt(mContext.getContentResolver(),
                 Settings.Secure.POWER_SAVER_ORIGINAL_NETWORK_MODE, Phone.PREFERRED_NT_MODE);
@@ -499,7 +521,7 @@ public class PowerSaverService extends BroadcastReceiver {
         int powerSaverSavedNetworkOn = Settings.Secure.getInt(mContext.getContentResolver(),
                 Settings.Secure.POWER_SAVER_ORIGINAL_NETWORK_ON, 0);
         int systemSavedNetworkOn = Settings.Secure.getInt(mContext.getContentResolver(),
-                Settings.Secure.MOBILE_DATA, 0);
+                Settings.Secure.MOBILE_DATA, 1);
         if (powerSaverSavedNetworkOn != systemSavedNetworkOn) {
             Slog.e(TAG,
                     "System and PowerSaver saved mobile network state (on/off) mismatch. Caused by hardreboot or the like.");

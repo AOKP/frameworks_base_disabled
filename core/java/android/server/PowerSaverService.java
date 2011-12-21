@@ -476,8 +476,6 @@ public class PowerSaverService extends BroadcastReceiver {
         telephony = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
         alarms = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
 
-        isCdma = telephony.getCurrentPhoneType() == Phone.PHONE_TYPE_CDMA;
-
         SettingsObserver settingsObserver = new SettingsObserver(new Handler());
         settingsObserver.observe();
         updateSettings(); // to initialize values
@@ -495,6 +493,16 @@ public class PowerSaverService extends BroadcastReceiver {
         handler = new Handler();
 
         Slog.i(TAG, "system ready");
+
+        handler.postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                isCdma = (telephony.getCurrentPhoneType() == Phone.PHONE_TYPE_CDMA);
+                if (isCdma)
+                    Slog.w(TAG, "This should only be seen if the phone is CDMA only!");
+            }
+        }, 5000);
 
         if (mMode == POWER_SAVER_MODE_OFF)
             return;

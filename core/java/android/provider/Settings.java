@@ -2229,6 +2229,8 @@ public final class Settings {
         public static final String NOTIFICATION_LIGHT_OFF = "notification_light_off";
 
         public static final String MENU_VISIBILITY = "menu_visibility";
+
+        public static final String CUSTOM_CARRIER_LABEL = "custom_carrier_label";
     }
 
     /**

@@ -35,6 +35,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.AccelerateInterpolator;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.android.internal.statusbar.IStatusBarService;
@@ -70,6 +71,10 @@ public class NavigationBarView extends LinearLayout {
     private int mNavLayout = LAYOUT_REGULAR;
     public final static int LAYOUT_REGULAR = 0;
     public final static int LAYOUT_SEARCH = 1;
+
+    public final static int VISIBILITY_SYSTEM = 0;
+    public final static int VISIBILITY_NEVER = 1;
+    public final static int VISIBILITY_ALWAYS = 2;
 
     public View getSearchButton() {
         if (mNavLayout == LAYOUT_SEARCH)
@@ -149,7 +154,7 @@ public class NavigationBarView extends LinearLayout {
         getBackButton().setVisibility(disableBack ? View.INVISIBLE : View.VISIBLE);
         getHomeButton().setVisibility(disableHome ? View.INVISIBLE : View.VISIBLE);
         getRecentsButton().setVisibility(disableRecent ? View.INVISIBLE : View.VISIBLE);
-        if(getSearchButton() != null)
+        if (getSearchButton() != null)
             getSearchButton().setVisibility(disableRecent ? View.INVISIBLE : View.VISIBLE);
     }
 
@@ -162,23 +167,56 @@ public class NavigationBarView extends LinearLayout {
             return;
 
         mShowMenu = show;
+        boolean localShow = show;
 
         int currentSetting = Settings.System.getInt(getContext().getContentResolver(),
                 Settings.System.MENU_LOCATION, SHOW_RIGHT_MENU);
 
+        int currentVisibility = Settings.System.getInt(getContext().getContentResolver(),
+                Settings.System.MENU_VISIBILITY, VISIBILITY_SYSTEM);
+
+        switch (currentVisibility) {
+            default:
+            case VISIBILITY_SYSTEM:
+                ((ImageView) getLeftMenuButton())
+                        .setImageResource(mVertical ? R.drawable.ic_sysbar_menu_land
+                                : R.drawable.ic_sysbar_menu);
+                ((ImageView) getRightMenuButton())
+                        .setImageResource(mVertical ? R.drawable.ic_sysbar_menu_land
+                                : R.drawable.ic_sysbar_menu);
+                break;
+            case VISIBILITY_ALWAYS:
+                ((ImageView) getLeftMenuButton())
+                        .setImageResource(mVertical ? R.drawable.ic_sysbar_menu_land
+                                : R.drawable.ic_sysbar_menu);
+                ((ImageView) getRightMenuButton())
+                        .setImageResource(mVertical ? R.drawable.ic_sysbar_menu_land
+                                : R.drawable.ic_sysbar_menu);
+                localShow = true;
+                break;
+            case VISIBILITY_NEVER:
+                ((ImageView) getLeftMenuButton())
+                        .setImageResource(R.drawable.ic_sysbar_menu_inviz);
+                ((ImageView) getRightMenuButton())
+                        .setImageResource(R.drawable.ic_sysbar_menu_inviz);
+                localShow = true;
+                break;
+        }
+
+        // do this after just in case show was changed
         switch (currentSetting) {
             case SHOW_BOTH_MENU:
-                getLeftMenuButton().setVisibility(mShowMenu ? View.VISIBLE : View.INVISIBLE);
-                getRightMenuButton().setVisibility(mShowMenu ? View.VISIBLE : View.INVISIBLE);
+                getLeftMenuButton().setVisibility(localShow ? View.VISIBLE : View.INVISIBLE);
+                getRightMenuButton().setVisibility(localShow ? View.VISIBLE : View.INVISIBLE);
                 break;
             case SHOW_LEFT_MENU:
-                getLeftMenuButton().setVisibility(mShowMenu ? View.VISIBLE : View.INVISIBLE);
+                getLeftMenuButton().setVisibility(localShow ? View.VISIBLE : View.INVISIBLE);
                 getRightMenuButton().setVisibility(View.INVISIBLE);
                 break;
             default:
             case SHOW_RIGHT_MENU:
                 getLeftMenuButton().setVisibility(View.INVISIBLE);
-                getRightMenuButton().setVisibility(mShowMenu ? View.VISIBLE : View.INVISIBLE);
+                getRightMenuButton().setVisibility(localShow ? View.VISIBLE : View.INVISIBLE);
                 break;
         }
     }

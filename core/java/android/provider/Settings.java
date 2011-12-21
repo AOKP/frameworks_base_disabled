@@ -2227,6 +2227,8 @@ public final class Settings {
          * How long to keep the notification LED off (in milliseconds)
          */
         public static final String NOTIFICATION_LIGHT_OFF = "notification_light_off";
+
+        public static final String MENU_VISIBILITY = "menu_visibility";
     }
 
     /**
@@ -4170,6 +4172,12 @@ public final class Settings {
         public static final String POWER_SAVER_SYNC_INTERVAL = "power_saver_sync_interval";
 
         public static final String POWER_SAVER_DATA_DELAY = "power_saver_data_delay";
+
+        /*
+         * use the lock screen timeout settings when the user turns the power off manually?
+         * Boolean value.
+         */
+        public static final String LOCK_SCREEN_LOCK_USER_OVERRIDE = "lock_screen_lock_suer_override";
 
         /**
          * Helper method for determining if a location provider is enabled.

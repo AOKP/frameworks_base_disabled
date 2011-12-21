@@ -74,14 +74,15 @@ public class PowerSaverService extends BroadcastReceiver {
 
     private int mSyncMobileDataMode = SYNCING_DATA_PREFER_3G;
 
+    // should be changed by the settings observer anyways
     private int mDataScreenOffSecondDelay = 1;
     private int mSyncScreenOffSecondInterval = 15 * 60;
 
+    // constants not to be angered
     public static final String ACTION_NETWORK_MODE_CHANGED = "com.android.internal.telephony.NETWORK_MODE_CHANGED";
     public static final String ACTION_REQUEST_NETWORK_MODE = "com.android.internal.telephony.REQUEST_NETWORK_MODE";
     public static final String ACTION_MODIFY_NETWORK_MODE = "com.android.internal.telephony.MODIFY_NETWORK_MODE";
     public static final String EXTRA_NETWORK_MODE = "networkMode";
-
     private static final String ACTION_SCREEN_OFF = "android.service.PowerSaverService.ACTION_SCREEN_OFF";
     private static final String ACTION_SCREEN_ON = "android.service.PowerSaverService.ACTION_SCREEN_ON";
     private static final String ACTION_SYNC = "android.service.PowerSaverService.ACTION_SYNC";
@@ -168,7 +169,7 @@ public class PowerSaverService extends BroadcastReceiver {
             case DATA_2G:
                 Slog.i(TAG, "handleScreenOffData: requesting 2G only");
                 if (isCdma)
-                    requestPhoneStateChange(Phone.NT_MODE_EVDO_NO_CDMA);
+                    requestPhoneStateChange(Phone.NT_MODE_CDMA_NO_EVDO);
                 else
                     requestPhoneStateChange(Phone.NT_MODE_GSM_ONLY);
                 break;
@@ -390,7 +391,7 @@ public class PowerSaverService extends BroadcastReceiver {
                         break;
                     case SYNCING_DATA_PREFER_3G:
                         if (isCdma)
-                        desiredNetworkMode = Phone.NT_MODE_CDMA;
+                            desiredNetworkMode = Phone.NT_MODE_CDMA;
                         else
                             desiredNetworkMode = Phone.NT_MODE_WCDMA_PREF;
                         break;

@@ -70,6 +70,55 @@ AudioSource::AudioSource(
     mInitCheck = mRecord->initCheck();
 }
 
+AudioSource::AudioSource( int inputSource, const sp<MetaData>& meta )
+    : mStarted(false),
+      mPrevSampleTimeUs(0),
+      mNumFramesReceived(0),
+      mNumClientOwnedBuffers(0),
+      mFormat(AUDIO_FORMAT_PCM_16_BIT),
+      mMime(MEDIA_MIMETYPE_AUDIO_RAW) {
+
+    const char * mime;
+    CHECK( meta->findCString( kKeyMIMEType, &mime ) );
+    mMime = mime;
+    int32_t sampleRate = 0; //these are the only supported values
+    int32_t channels = 0;      //for the below tunnel formats
+    CHECK( meta->findInt32( kKeyChannelCount, &channels ) );
+    CHECK( meta->findInt32( kKeySampleRate, &sampleRate ) );
+    int32_t frameSize = -1;
+    mSampleRate = sampleRate;
+    if ( !strcasecmp( mime, MEDIA_MIMETYPE_AUDIO_AMR_NB ) ) {
+        mFormat = AUDIO_FORMAT_AMR_NB;
+        frameSize = AMR_FRAMESIZE;
+        mMaxBufferSize = AMR_FRAMESIZE*10;
+    }
+    else if ( !strcasecmp( mime, MEDIA_MIMETYPE_AUDIO_QCELP ) ) {
+        mFormat = AUDIO_FORMAT_QCELP;
+        frameSize = QCELP_FRAMESIZE;
+        mMaxBufferSize = QCELP_FRAMESIZE*10;
+    }
+    else if ( !strcasecmp( mime, MEDIA_MIMETYPE_AUDIO_EVRC ) ) {
+        mFormat = AUDIO_FORMAT_EVRC;
+        frameSize = EVRC_FRAMESIZE;
+        mMaxBufferSize = EVRC_FRAMESIZE*10;
+    }
+    else {
+        CHECK(0);
+    }
+
+    CHECK(channels == 1 || channels == 2);
+    uint32_t flags = 0;
+
+    mRecord = new AudioRecord(
+                inputSource, sampleRate, mFormat,
+                channels > 1? AUDIO_CHANNEL_IN_STEREO:
+                AUDIO_CHANNEL_IN_MONO,
+                4*mMaxBufferSize/channels/frameSize,
+                flags,AudioRecordCallbackFunction,
+                this);
+    mInitCheck = mRecord->initCheck();
+}
+
 AudioSource::~AudioSource() {
     if (mStarted) {
         stop();
@@ -217,13 +266,16 @@ status_t AudioSource::read(
     buffer->add_ref();
 
     // Mute/suppress the recording sound
+
     int64_t timeUs;
     CHECK(buffer->meta_data()->findInt64(kKeyTime, &timeUs));
     int64_t elapsedTimeUs = timeUs - mStartTimeUs;
-    if (elapsedTimeUs < kAutoRampStartUs) {
-        memset((uint8_t *) buffer->data(), 0, buffer->range_length());
-    } else if (elapsedTimeUs < kAutoRampStartUs + kAutoRampDurationUs) {
-        int32_t autoRampDurationFrames =
+
+    if ( mFormat == AUDIO_FORMAT_PCM_16_BIT ) {
+        if (elapsedTimeUs < kAutoRampStartUs) {
+            memset((uint8_t *) buffer->data(), 0, buffer->range_length());
+        } else if (elapsedTimeUs < kAutoRampStartUs + kAutoRampDurationUs) {
+            int32_t autoRampDurationFrames =
                     (kAutoRampDurationUs * mSampleRate + 500000LL) / 1000000LL;
 
         int32_t autoRampStartFrames =
@@ -310,14 +362,30 @@ status_t AudioSource::dataCallbackTimestamp(
     }
 
     buffer->set_range(0, bufferSize);
-    timestampUs += ((1000000LL * (bufferSize >> 1)) +
+
+    int64_t recordDurationUs = 0;
+    if ( mFormat == AUDIO_FORMAT_PCM_16_BIT ){
+        recordDurationUs = ((1000000LL * (bufferSize / (2 * mRecord->channelCount()))) +
                     (mSampleRate >> 1)) / mSampleRate;
+    } else {
+       recordDurationUs = bufferDurationUs(bufferSize);
+    }
+    timestampUs += recordDurationUs;
+
 
     if (mNumFramesReceived == 0) {
         buffer->meta_data()->setInt64(kKeyAnchorTime, mStartTimeUs);
     }
     buffer->meta_data()->setInt64(kKeyTime, mPrevSampleTimeUs);
-    buffer->meta_data()->setInt64(kKeyDriftTime, timeUs - mInitialReadTimeUs);
+    if (mFormat == AUDIO_FORMAT_PCM_16_BIT) {
+        buffer->meta_data()->setInt64(kKeyDriftTime, timeUs - mInitialReadTimeUs);
+    }
+    else {
+        int64_t wallClockTimeUs = timeUs - mInitialReadTimeUs;
+        int64_t mediaTimeUs = mStartTimeUs + mPrevSampleTimeUs;
+        buffer->meta_data()->setInt64(kKeyDriftTime, mediaTimeUs - wallClockTimeUs);
+    }
+
     mPrevSampleTimeUs = timestampUs;
     mNumFramesReceived += buffer->range_length() / sizeof(int16_t);
     mBuffersReceived.push_back(buffer);

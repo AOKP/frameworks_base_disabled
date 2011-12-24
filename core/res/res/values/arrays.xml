@@ -499,16 +499,16 @@
 
     <array name="lockscreen_targets_with_camera">
         <item>@drawable/ic_lockscreen_unlock</item>
-        <item>@null</item>
+        <item>@drawable/ic_lockscreen_sms</item>
+        <item>@drawable/ic_lockscreen_phone</item>
         <item>@drawable/ic_lockscreen_camera</item>
-        <item>@null</item>
     </array>
 
     <array name="lockscreen_target_descriptions_with_camera">
         <item>@string/description_target_unlock</item>
-        <item>@null</item>
+        <item>@string/description_target_sms</item>
+        <item>@string/description_target_phone</item>
         <item>@string/description_target_camera</item>
-        <item>@null</item>
     </array>
 
     <!-- Defines the shutdown options shown in the reboot dialog. -->

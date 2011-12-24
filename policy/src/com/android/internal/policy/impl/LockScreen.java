@@ -222,9 +222,23 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
         }
 
         public void onTrigger(View v, int target) {
-            if (target == 0 || target == 1) { // 0 = unlock/portrait, 1 = unlock/landscape
+            if (target == 0) { // right Action = Unlock
                 mCallback.goToUnlockScreen();
-            } else if (target == 2 || target == 3) { // 2 = alt/portrait, 3 = alt/landscape
+            } else if (target == 1) { // up Action == Mms
+                Intent mmsIntent = new Intent(Intent.ACTION_MAIN);
+                mmsIntent.setClassName("com.android.mms",
+                        "com.android.mms.ui.ConversationList");
+                mmsIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                mContext.startActivity(mmsIntent);
+                mCallback.goToUnlockScreen();
+            } else if (target == 2) { // left Action = Phone
+                Intent phoneIntent = new Intent(Intent.ACTION_MAIN);
+                phoneIntent.setClassName("com.android.contacts",
+                        "com.android.contacts.activities.DialtactsActivity");
+                phoneIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                mContext.startActivity(phoneIntent);
+                mCallback.goToUnlockScreen();
+            } else if (target == 3) {
                 if (!mCameraDisabled) {
                     // Start the Camera
                     Intent intent = new Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA);

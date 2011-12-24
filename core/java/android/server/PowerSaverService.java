@@ -19,6 +19,7 @@ import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
+import android.provider.Settings.SettingNotFoundException;
 import android.telephony.TelephonyManager;
 import android.util.Slog;
 
@@ -140,7 +141,8 @@ public class PowerSaverService extends BroadcastReceiver {
         } else if (ACTION_NETWORK_MODE_CHANGED.equals(action)) {
             if (intent.getExtras() != null) {
                 // originalNetworkMode = intent.getExtras().getInt(EXTRA_NETWORK_MODE);
-                Slog.i(TAG, "received network mode from intent (ignoring): " + originalNetworkMode);
+                Slog.i(TAG, "received network mode from intent (ignoring): "
+                        + intent.getExtras().getInt(EXTRA_NETWORK_MODE));
             }
 
         } else if (Intent.ACTION_SYNC_STATE_CHANGED.equals(action)) {
@@ -167,11 +169,14 @@ public class PowerSaverService extends BroadcastReceiver {
 
         switch (mScreenOffDataMode) {
             case DATA_2G:
-                Slog.i(TAG, "handleScreenOffData: requesting 2G only");
-                if (isCdma)
-                    requestPhoneStateChange(Phone.NT_MODE_CDMA_NO_EVDO);
-                else
+                if (isCdma) {
+                    // requestPhoneStateChange(Phone.NT_MODE_CDMA);
+                    Slog.w(TAG, "Not requesting 2G but MODE_CDMA ("
+                            + Phone.NT_MODE_CDMA + ")");
+                } else {
+                    Slog.i(TAG, "handleScreenOffData: requesting 2G only");
                     requestPhoneStateChange(Phone.NT_MODE_GSM_ONLY);
+                }
                 break;
             case DATA_OFF:
                 Slog.i(TAG, "handleScreenOffData: turning data off");
@@ -499,8 +504,11 @@ public class PowerSaverService extends BroadcastReceiver {
             @Override
             public void run() {
                 isCdma = (telephony.getCurrentPhoneType() == Phone.PHONE_TYPE_CDMA);
-                if (isCdma)
-                    Slog.w(TAG, "This should only be seen if the phone is CDMA only!");
+                Slog.w(TAG, "Phone type detected: " + (isCdma ? "CDMA" : "GSM"));
+
+                if (isCdma) {
+                    originalNetworkMode = Phone.NT_MODE_GLOBAL;
+                }
             }
         }, 5000);
 
@@ -511,11 +519,20 @@ public class PowerSaverService extends BroadcastReceiver {
          * Try to re-initialize values on boot that may have been lost due to PowerSaver changing
          * them on screen off
          */
+        int systemSavedNetworkMode;
+        int powerSaverSavedNetworkMode;
 
-        int powerSaverSavedNetworkMode = Settings.Secure.getInt(mContext.getContentResolver(),
-                Settings.Secure.POWER_SAVER_ORIGINAL_NETWORK_MODE, Phone.PREFERRED_NT_MODE);
-        int systemSavedNetworkMode = Settings.Secure.getInt(mContext.getContentResolver(),
-                Settings.Secure.PREFERRED_NETWORK_MODE, Phone.PREFERRED_NT_MODE);
+        try {
+            powerSaverSavedNetworkMode = Settings.Secure.getInt(mContext.getContentResolver(),
+                    Settings.Secure.POWER_SAVER_ORIGINAL_NETWORK_MODE);
+
+            systemSavedNetworkMode = Settings.Secure.getInt(mContext.getContentResolver(),
+                    Settings.Secure.PREFERRED_NETWORK_MODE);
+        } catch (SettingNotFoundException e) {
+            Slog.e(TAG,
+                    "PREFERRED_NETWORK_MODE or powersaver saved network mode doesn't exist. Could be first boot. Could be wtf");
+            return;
+        }
 
         if (powerSaverSavedNetworkMode != systemSavedNetworkMode) {
             Slog.e(TAG,
@@ -528,7 +545,7 @@ public class PowerSaverService extends BroadcastReceiver {
         }
 
         int powerSaverSavedNetworkOn = Settings.Secure.getInt(mContext.getContentResolver(),
-                Settings.Secure.POWER_SAVER_ORIGINAL_NETWORK_ON, 0);
+                Settings.Secure.POWER_SAVER_ORIGINAL_NETWORK_ON, 1);
         int systemSavedNetworkOn = Settings.Secure.getInt(mContext.getContentResolver(),
                 Settings.Secure.MOBILE_DATA, 1);
         if (powerSaverSavedNetworkOn != systemSavedNetworkOn) {
@@ -563,6 +580,13 @@ public class PowerSaverService extends BroadcastReceiver {
     }
 
     private void requestPhoneStateChange(int newState) {
+        if (isCdma)
+            if (newState == 0) {
+                Slog.e(TAG,
+                        "HOLY JESUS FCs INC. Just kidding, I saved you. Seriously though, this shouldn't happen.");
+                return;
+            }
+
         Slog.i(TAG, "Sending request to change phone network mode to: " + newState);
         Intent i = new Intent(ACTION_MODIFY_NETWORK_MODE);
         i.putExtra(EXTRA_NETWORK_MODE, newState);

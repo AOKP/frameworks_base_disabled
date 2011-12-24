@@ -367,4 +367,6 @@
     <string name="accessibility_clear_all">Clear all notifications.</string>
     
     <string name="battery_test">99</string>
+    <string name="status_bar_settings_gps_button">GPS</string>
+    <string name="status_bar_settings_bluetooth_button">Bluetooth</string>
 </resources>

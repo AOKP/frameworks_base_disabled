@@ -7,6 +7,7 @@
 	android:orientation="vertical"
 	android:background="@*android:drawable/notify_panel_notification_icon_bg_tile">
 
+
 	<LinearLayout
 		android:layout_width="match_parent"
 		android:layout_height="90dip"
@@ -33,12 +34,15 @@
 			android:paddingRight="2dp"
 			android:text="@string/status_bar_settings_auto_brightness_label" />
 	</LinearLayout>
+
+
 	<!-- Rotation lock -->
 	<LinearLayout
 		android:id="@+id/rotate"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:paddingBottom="10dp">
+		android:paddingBottom="10dp"
+		android:layout_weight="1">
 		<TextView
 			android:textAppearance="@style/TextAppearance.StatusBar.Date"
 			android:layout_width="wrap_content"
@@ -56,9 +60,67 @@
 			android:layout_marginRight="5dp" />
 	</LinearLayout>
 
-	<!-- Rotation lock -->
 	<LinearLayout
-		android:id="@+id/wifi"
+		android:id="@+id/row1"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal">
+
+		<!-- Wifi -->
+		<LinearLayout
+			android:id="@+id/wifi"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:paddingBottom="10dp"
+			android:layout_weight="1">
+			<TextView
+				android:textAppearance="@style/TextAppearance.StatusBar.Date"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:singleLine="true"
+				android:paddingTop="4dp"
+				android:paddingLeft="10dp"
+				android:gravity="center_vertical|left"
+				android:text="@string/status_bar_settings_wifi_button" />
+			<Switch
+				android:id="@+id/wifi_checkbox"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:layout_gravity="right"
+				android:layout_marginRight="5dp" />
+		</LinearLayout>
+
+
+
+		<!-- Gps -->
+		<LinearLayout
+			android:id="@+id/gps"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:paddingBottom="10dp"
+			android:layout_weight="1">
+			<TextView
+				android:textAppearance="@style/TextAppearance.StatusBar.Date"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:singleLine="true"
+				android:paddingTop="4dp"
+				android:paddingLeft="10dp"
+				android:gravity="center_vertical|left"
+				android:text="@string/status_bar_settings_gps_button" />
+			<Switch
+				android:id="@+id/gps_checkbox"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:layout_gravity="right"
+				android:layout_marginRight="5dp" />
+		</LinearLayout>
+
+	</LinearLayout>
+
+	<!-- Gps -->
+	<LinearLayout
+		android:id="@+id/bluetooth"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:paddingBottom="10dp">
@@ -70,14 +132,12 @@
 			android:paddingTop="4dp"
 			android:paddingLeft="10dp"
 			android:gravity="center_vertical|left"
-			android:text="@string/status_bar_settings_wifi_button" />
+			android:text="@string/status_bar_settings_bluetooth_button" />
 		<Switch
-			android:id="@+id/wifi_checkbox"
+			android:id="@+id/bluetooth_checkbox"
 			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
 			android:layout_gravity="right"
 			android:layout_marginRight="5dp" />
 	</LinearLayout>
-
-
 </LinearLayout>

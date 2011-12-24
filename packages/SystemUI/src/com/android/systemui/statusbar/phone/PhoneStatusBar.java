@@ -85,8 +85,10 @@ import com.android.systemui.statusbar.SignalClusterView;
 import com.android.systemui.statusbar.StatusBar;
 import com.android.systemui.statusbar.StatusBarIconView;
 import com.android.systemui.statusbar.policy.AutoRotateController;
+import com.android.systemui.statusbar.policy.BluetoothToggle;
 import com.android.systemui.statusbar.policy.BrightnessController;
 import com.android.systemui.statusbar.policy.DateView;
+import com.android.systemui.statusbar.policy.GpsToggle;
 import com.android.systemui.statusbar.policy.LocationController;
 import com.android.systemui.statusbar.policy.NetworkController;
 import com.android.systemui.statusbar.policy.NotificationRowLayout;
@@ -174,6 +176,8 @@ public class PhoneStatusBar extends StatusBar {
     BrightnessController mBrightness;
     AutoRotateController mRotate;
     WifiController mWifi;
+    GpsToggle mGps;
+    BluetoothToggle mBluetooth;
 
     // drag bar
     CloseDragHandle mCloseView;
@@ -349,6 +353,10 @@ public class PhoneStatusBar extends StatusBar {
                 (CompoundButton) expanded.findViewById(R.id.rotate_checkbox));
         mWifi = new WifiController(context,
                 (CompoundButton) expanded.findViewById(R.id.wifi_checkbox));
+        mGps = new GpsToggle(context,
+                (CompoundButton) expanded.findViewById(R.id.gps_checkbox));
+        mBluetooth = new BluetoothToggle(context,
+                (CompoundButton) expanded.findViewById(R.id.bluetooth_checkbox));
 
         mTicker = new MyTicker(context, sb);
 

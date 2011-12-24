@@ -2231,6 +2231,18 @@ public final class Settings {
         public static final String MENU_VISIBILITY = "menu_visibility";
 
         public static final String CUSTOM_CARRIER_LABEL = "custom_carrier_label";
+
+        /*
+         * Settings button in drop down. Boolean value. 
+         * 0 = defualt, click for settings, longpress for toggles
+         * 1 = click for toggles, long press for settings
+         */
+        public static final String STATUSBAR_SETTINGS_BEHAVIOR = "statusbar_settings_behavior";
+
+        /*
+         * whether to auto-hide the toggles when the statusbar collapes. Boolean value.
+         */
+        public static final String STATUSBAR_QUICKTOGGLES_AUTOHIDE = "statusbar_quicktoggles_autohide";
     }
 
     /**
@@ -4180,6 +4192,7 @@ public final class Settings {
          * Boolean value.
          */
         public static final String LOCK_SCREEN_LOCK_USER_OVERRIDE = "lock_screen_lock_suer_override";
+
 
         /**
          * Helper method for determining if a location provider is enabled.

@@ -29,6 +29,7 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.StatusBarManager;
 import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -36,6 +37,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.database.ContentObserver;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
@@ -233,6 +235,7 @@ public class PhoneStatusBar extends StatusBar {
     int[] mAbsPos = new int[2];
     Runnable mPostCollapseCleanup = null;
 
+    boolean mQuickTogglesHideAfterCollapse = true;
 
     // for disabling the status bar
     int mDisabled = 0;
@@ -1297,7 +1300,8 @@ public class PhoneStatusBar extends StatusBar {
             setNotificationIconVisibility(true, com.android.internal.R.anim.fade_in);
         }
         
-        mQuickToggles.setVisibility(View.GONE);
+        if(mQuickTogglesHideAfterCollapse)
+            mQuickToggles.setVisibility(View.GONE);
 
         if (!mExpanded) {
             return;
@@ -2216,70 +2220,115 @@ public class PhoneStatusBar extends StatusBar {
 
     private View.OnClickListener mSettingsButtonListener = new View.OnClickListener() {
         public void onClick(View v) {
-
-            if (mQuickToggles.getVisibility() == View.VISIBLE) {
-                int height = mQuickToggles.getHeight();
-
-                Animation a =
-                        AnimationUtils.makeOutAnimation(v.getContext(), true);
-                a.setDuration(400);
-                a.setAnimationListener(new AnimationListener() {
-
-                    @Override
-                    public void onAnimationEnd(Animation animation) {
-                        mQuickToggles.setVisibility(View.GONE);
-                    }
-
-                    @Override
-                    public void onAnimationStart(Animation animation) {
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animation animation) {
-                    }
-                });
-                mQuickToggles.startAnimation(a);
-            } else {
-                Animation a =
-                        AnimationUtils.makeInAnimation(v.getContext(), true);
-                a.setDuration(400);
-                a.setAnimationListener(new AnimationListener() {
-
-                    @Override
-                    public void onAnimationEnd(Animation animation) {
-                    }
-
-                    @Override
-                    public void onAnimationStart(Animation animation) {
-                        mQuickToggles.setVisibility(View.VISIBLE);
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animation animation) {
-                    }
-                });
-                mQuickToggles.startAnimation(a);
-            }
-
-        }
+            if(mDropdownSettingsDefualtBehavior)
+                mSettingsBehaviorOpenSettings();
+            else
+                mSettingsBehaviorOpenToggles();
+        }            
     };
     
     private View.OnLongClickListener mSettingsLongClickListener = new View.OnLongClickListener() {
         
         @Override
         public boolean onLongClick(View v) {
-            try {
-                // Dismiss the lock screen when Settings starts.
-                ActivityManagerNative.getDefault().dismissKeyguardOnNextActivity();
-            } catch (RemoteException e) {
-                return false;
-            }
-            v.getContext().startActivity(new Intent(Settings.ACTION_SETTINGS)
-                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-            animateCollapse();
+            if(mDropdownSettingsDefualtBehavior)
+                mSettingsBehaviorOpenToggles();
+            else
+                mSettingsBehaviorOpenSettings();
             return true;
         }
     };
+
+    private void mSettingsBehaviorOpenSettings() {
+        try {
+            // Dismiss the lock screen when Settings starts.
+            ActivityManagerNative.getDefault().dismissKeyguardOnNextActivity();
+        } catch (RemoteException e) {
+        }
+        mContext.startActivity(new Intent(Settings.ACTION_SETTINGS)
+                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+        animateCollapse();
+    }
+    
+    private void mSettingsBehaviorOpenToggles() {
+        if (mQuickToggles.getVisibility() == View.VISIBLE) {
+            int height = mQuickToggles.getHeight();
+
+            Animation a =
+                    AnimationUtils.makeOutAnimation(mContext, true);
+            a.setDuration(400);
+            a.setAnimationListener(new AnimationListener() {
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    mQuickToggles.setVisibility(View.GONE);
+                }
+
+                @Override
+                public void onAnimationStart(Animation animation) {
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+                }
+            });
+            mQuickToggles.startAnimation(a);
+        } else {
+            Animation a =
+                    AnimationUtils.makeInAnimation(mContext, true);
+            a.setDuration(400);
+            a.setAnimationListener(new AnimationListener() {
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                }
+
+                @Override
+                public void onAnimationStart(Animation animation) {
+                    mQuickToggles.setVisibility(View.VISIBLE);
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+                }
+            });
+            mQuickToggles.startAnimation(a);
+        }
+
+    }
+    
+    class SettingsObserver extends ContentObserver {
+        SettingsObserver(Handler handler) {
+            super(handler);
+        }
+
+        void observe() {
+            ContentResolver resolver = mContext.getContentResolver();
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.STATUSBAR_SETTINGS_BEHAVIOR), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.STATUSBAR_QUICKTOGGLES_AUTOHIDE), false, this);
+            
+        }
+
+        @Override
+        public void onChange(boolean selfChange) {
+            updateSettings();
+        }
+    }
+
+    boolean mDropdownSettingsDefualtBehavior = true;
+    
+    private void updateSettings() {
+        // Slog.i(TAG, "updated settings values");
+        ContentResolver cr = mContext.getContentResolver();
+        mDropdownSettingsDefualtBehavior = Settings.System.getInt(cr,
+                Settings.System.STATUSBAR_SETTINGS_BEHAVIOR, 0) == 0;
+        
+        mQuickTogglesHideAfterCollapse = Settings.System.getInt(cr,
+                Settings.System.STATUSBAR_QUICKTOGGLES_AUTOHIDE, 1) == 1;
+
+    }
 
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {

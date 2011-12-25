@@ -45,9 +45,15 @@ public class BatteryController extends LinearLayout {
 
     private ImageView mBatteryIcon;
     private TextView mBatteryText;
+    private TextView mBatteryCenterText;
     private ViewGroup mBatteryGroup;
 
     private boolean mShowBatteryText;
+
+    public static final int STYLE_OFFSET = 0;
+    public static final int STYLE_CENTER = 1;
+
+    private int mBatteryTextStyle = STYLE_OFFSET;
 
     public BatteryController(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -62,6 +68,7 @@ public class BatteryController extends LinearLayout {
         mBatteryGroup = (ViewGroup) findViewById(R.id.battery_combo);
         mBatteryIcon = (ImageView) findViewById(R.id.battery);
         mBatteryText = (TextView) findViewById(R.id.battery_text);
+        mBatteryCenterText = (TextView) findViewById(R.id.battery_text_center);
         addIconView(mBatteryIcon);
 
         SettingsObserver settingsObserver = new SettingsObserver(new Handler());
@@ -116,8 +123,10 @@ public class BatteryController extends LinearLayout {
         }
 
         // do my stuff here
-        if (mBatteryGroup != null)
+        if (mBatteryGroup != null) {
             mBatteryText.setText(Integer.toString(level));
+            mBatteryCenterText.setText(Integer.toString(level));
+        }
     }
 
     class SettingsObserver extends ContentObserver {
@@ -129,6 +138,8 @@ public class BatteryController extends LinearLayout {
             ContentResolver resolver = mContext.getContentResolver();
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUSBAR_BATTERY_TEXT), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.STATUSBAR_BATTERY_TEXT_STYLE), false, this);
         }
 
         @Override
@@ -143,10 +154,28 @@ public class BatteryController extends LinearLayout {
         mShowBatteryText = Settings.System
                 .getInt(cr, Settings.System.STATUSBAR_BATTERY_TEXT, 0) == 1;
 
+        mBatteryTextStyle = Settings.System
+                .getInt(cr, Settings.System.STATUSBAR_BATTERY_TEXT_STYLE, STYLE_OFFSET);
+
         if (mShowBatteryText) {
             mBatteryText.setVisibility(View.VISIBLE);
         } else {
             mBatteryText.setVisibility(View.GONE);
+        }
+
+        switch (mBatteryTextStyle) {
+            case STYLE_OFFSET:
+                mBatteryCenterText.setVisibility(View.GONE);
+                mBatteryText.setVisibility(View.VISIBLE);
+                break;
+            case STYLE_CENTER:
+                mBatteryText.setVisibility(View.GONE);
+                mBatteryCenterText.setVisibility(View.VISIBLE);
+                break;
+            default:
+                mBatteryText.setVisibility(View.GONE);
+                mBatteryCenterText.setVisibility(View.GONE);
+                break;
         }
 
     }

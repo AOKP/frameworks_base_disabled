@@ -14389,6 +14389,7 @@ package android.os {
     field public static final java.lang.String ID;
     field public static final java.lang.String MANUFACTURER;
     field public static final java.lang.String MODEL;
+    field public static final java.lang.String MODVERSION;
     field public static final java.lang.String PRODUCT;
     field public static final deprecated java.lang.String RADIO;
     field public static final java.lang.String SERIAL;
@@ -17453,6 +17454,7 @@ package android.provider {
     field public static final java.lang.String LOCK_PATTERN_ENABLED = "lock_pattern_autolock";
     field public static final java.lang.String LOCK_PATTERN_TACTILE_FEEDBACK_ENABLED = "lock_pattern_tactile_feedback_enabled";
     field public static final java.lang.String LOCK_PATTERN_VISIBLE = "lock_pattern_visible_pattern";
+    field public static final java.lang.String LOCK_SCREEN_LOCK_USER_OVERRIDE = "lock_screen_lock_suer_override";
     field public static final deprecated java.lang.String LOGGING_ID = "logging_id";
     field public static final java.lang.String NETWORK_PREFERENCE = "network_preference";
     field public static final java.lang.String PARENTAL_CONTROL_ENABLED = "parental_control_enabled";
@@ -17537,6 +17539,7 @@ package android.provider {
     field public static final android.net.Uri CONTENT_URI;
     field public static final java.lang.String CRT_OFF_ANIMATION = "crt_off_animation";
     field public static final java.lang.String CRT_ON_ANIMATION = "crt_on_animation";
+    field public static final java.lang.String CUSTOM_CARRIER_LABEL = "custom_carrier_label";
     field public static final deprecated java.lang.String DATA_ROAMING = "data_roaming";
     field public static final java.lang.String DATE_FORMAT = "date_format";
     field public static final java.lang.String DEBUG_APP = "debug_app";
@@ -17558,11 +17561,15 @@ package android.provider {
     field public static final deprecated java.lang.String LOCK_PATTERN_VISIBLE = "lock_pattern_visible_pattern";
     field public static final deprecated java.lang.String LOGGING_ID = "logging_id";
     field public static final java.lang.String MENU_LOCATION = "menu_location";
+    field public static final java.lang.String MENU_VISIBILITY = "menu_visibility";
     field public static final java.lang.String MODE_RINGER = "mode_ringer";
     field public static final java.lang.String MODE_RINGER_STREAMS_AFFECTED = "mode_ringer_streams_affected";
     field public static final java.lang.String MUTE_STREAMS_AFFECTED = "mute_streams_affected";
+    field public static final java.lang.String NAVIGATION_BAR_LAYOUT = "navigation_bar_layout";
     field public static final deprecated java.lang.String NETWORK_PREFERENCE = "network_preference";
     field public static final java.lang.String NEXT_ALARM_FORMATTED = "next_alarm_formatted";
+    field public static final java.lang.String NOTIFICATION_LIGHT_OFF = "notification_light_off";
+    field public static final java.lang.String NOTIFICATION_LIGHT_ON = "notification_light_on";
     field public static final java.lang.String NOTIFICATION_SOUND = "notification_sound";
     field public static final deprecated java.lang.String PARENTAL_CONTROL_ENABLED = "parental_control_enabled";
     field public static final deprecated java.lang.String PARENTAL_CONTROL_LAST_UPDATE = "parental_control_last_update";
@@ -17584,6 +17591,9 @@ package android.provider {
     field public static final java.lang.String SHOW_STATUSBAR_IME_SWITCHER = "show_statusbar_ime_switcher";
     field public static final deprecated java.lang.String SHOW_WEB_SUGGESTIONS = "show_web_suggestions";
     field public static final java.lang.String SOUND_EFFECTS_ENABLED = "sound_effects_enabled";
+    field public static final java.lang.String STATUSBAR_BATTERY_TEXT = "statusbar_battery_text";
+    field public static final java.lang.String STATUSBAR_QUICKTOGGLES_AUTOHIDE = "statusbar_quicktoggles_autohide";
+    field public static final java.lang.String STATUSBAR_SETTINGS_BEHAVIOR = "statusbar_settings_behavior";
     field public static final java.lang.String STAY_ON_WHILE_PLUGGED_IN = "stay_on_while_plugged_in";
     field public static final java.lang.String SYS_PROP_SETTING_VERSION = "sys.settings_system_version";
     field public static final java.lang.String TEXT_AUTO_CAPS = "auto_caps";

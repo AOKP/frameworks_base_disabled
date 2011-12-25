@@ -2243,6 +2243,8 @@ public final class Settings {
          * whether to auto-hide the toggles when the statusbar collapes. Boolean value.
          */
         public static final String STATUSBAR_QUICKTOGGLES_AUTOHIDE = "statusbar_quicktoggles_autohide";
+
+        public static final String STATUSBAR_BATTERY_TEXT_STYLE = "statusbar_battery_text_style";
     }
 
     /**

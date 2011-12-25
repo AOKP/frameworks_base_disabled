@@ -16,6 +16,7 @@ import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.wifi.WifiManager;
+import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
@@ -109,6 +110,10 @@ public class PowerSaverService extends BroadcastReceiver {
     PendingIntent scheduleScreenOffPendingIntent = null;
     PendingIntent scheduleScreenOnPendingIntent = null;
 
+    // battery vars
+    private boolean isCharging = false;
+    private int batteryLevel = 50;
+
     /*
      * when user turns screen on, but turns it off before screenOnTask can run, the information is
      * re-read and it could potentially reset the original states to the screen-off states
@@ -162,6 +167,9 @@ public class PowerSaverService extends BroadcastReceiver {
             handler.post(screenOnTask);
         } else if (ACTION_SYNC.equals(action)) {
             handler.post(scheduledSyncTask);
+        } else if (action.equals(Intent.ACTION_BATTERY_CHANGED)) {
+            batteryLevel = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0);
+            isCharging = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0) != 0;
         }
     }
 
@@ -220,6 +228,11 @@ public class PowerSaverService extends BroadcastReceiver {
     }
 
     private void scheduleScreenOffTask() {
+
+        if (isCharging) {
+            Slog.i(TAG, "Phone is on power, not scheduling PowerSaver functions.");
+            return;
+        }
 
         Calendar timeToStart = Calendar.getInstance();
         timeToStart.setTimeInMillis(System.currentTimeMillis());
@@ -493,6 +506,7 @@ public class PowerSaverService extends BroadcastReceiver {
         filter.addAction(ACTION_SCREEN_OFF);
         filter.addAction(ACTION_SCREEN_ON);
         filter.addAction(ACTION_SYNC);
+        filter.addAction(Intent.ACTION_BATTERY_CHANGED);
         mContext.registerReceiver(this, filter);
 
         handler = new Handler();

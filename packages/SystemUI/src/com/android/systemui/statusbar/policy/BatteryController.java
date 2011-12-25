@@ -158,25 +158,26 @@ public class BatteryController extends LinearLayout {
                 .getInt(cr, Settings.System.STATUSBAR_BATTERY_TEXT_STYLE, STYLE_OFFSET);
 
         if (mShowBatteryText) {
-            mBatteryText.setVisibility(View.VISIBLE);
+            switch (mBatteryTextStyle) {
+                case STYLE_OFFSET:
+                    mBatteryCenterText.setVisibility(View.GONE);
+                    mBatteryText.setVisibility(View.VISIBLE);
+                    break;
+                case STYLE_CENTER:
+                    mBatteryText.setVisibility(View.GONE);
+                    mBatteryCenterText.setVisibility(View.VISIBLE);
+                    break;
+                default:
+                    mBatteryText.setVisibility(View.GONE);
+                    mBatteryCenterText.setVisibility(View.GONE);
+                    break;
+            }
         } else {
             mBatteryText.setVisibility(View.GONE);
+            mBatteryCenterText.setVisibility(View.GONE);
         }
 
-        switch (mBatteryTextStyle) {
-            case STYLE_OFFSET:
-                mBatteryCenterText.setVisibility(View.GONE);
-                mBatteryText.setVisibility(View.VISIBLE);
-                break;
-            case STYLE_CENTER:
-                mBatteryText.setVisibility(View.GONE);
-                mBatteryCenterText.setVisibility(View.VISIBLE);
-                break;
-            default:
-                mBatteryText.setVisibility(View.GONE);
-                mBatteryCenterText.setVisibility(View.GONE);
-                break;
-        }
+        
 
     }
 }

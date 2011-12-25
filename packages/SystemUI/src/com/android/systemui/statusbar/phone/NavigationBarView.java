@@ -22,13 +22,18 @@ import java.io.PrintWriter;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Rect;
+import android.os.RemoteException;
 import android.os.ServiceManager;
+import android.os.SystemClock;
 import android.provider.Settings;
 import android.util.AttributeSet;
 import android.util.Slog;
 import android.view.Display;
+import android.view.IWindowManager;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.View;
@@ -73,6 +78,7 @@ public class NavigationBarView extends LinearLayout {
     public final static int LAYOUT_SEARCH = 1;
 
     public final static int VISIBILITY_SYSTEM = 0;
+    public final static int VISIBILITY_SYSTEM_AND_INVIZ = 3;
     public final static int VISIBILITY_NEVER = 1;
     public final static int VISIBILITY_ALWAYS = 2;
 
@@ -134,6 +140,15 @@ public class NavigationBarView extends LinearLayout {
                 }
             }
             return false;
+        }
+    };
+    private OnLongClickListener mSearchLongClickListener = new OnLongClickListener() {
+
+        @Override
+        public boolean onLongClick(View v) {
+            v.getContext().sendBroadcast(new Intent(Intent.ACTION_SEARCH_LONG_PRESS));
+            Slog.i(TAG, "Sending long press search key event");
+            return true;
         }
     };
 
@@ -200,6 +215,22 @@ public class NavigationBarView extends LinearLayout {
                 ((ImageView) getRightMenuButton())
                         .setImageResource(R.drawable.ic_sysbar_menu_inviz);
                 localShow = true;
+                break;
+            case VISIBILITY_SYSTEM_AND_INVIZ:
+                if (localShow) {
+                    ((ImageView) getLeftMenuButton())
+                            .setImageResource(mVertical ? R.drawable.ic_sysbar_menu_land
+                                    : R.drawable.ic_sysbar_menu);
+                    ((ImageView) getRightMenuButton())
+                            .setImageResource(mVertical ? R.drawable.ic_sysbar_menu_land
+                                    : R.drawable.ic_sysbar_menu);
+                } else {
+                    localShow = true;
+                    ((ImageView) getLeftMenuButton())
+                            .setImageResource(R.drawable.ic_sysbar_menu_inviz);
+                    ((ImageView) getRightMenuButton())
+                            .setImageResource(R.drawable.ic_sysbar_menu_inviz);
+                }
                 break;
         }
 
@@ -309,6 +340,8 @@ public class NavigationBarView extends LinearLayout {
                         ? findViewById(R.id.rot90_search)
                         : findViewById(R.id.rot270_search);
 
+                View searchView = findViewById(R.id.search);
+                searchView.setOnLongClickListener(mSearchLongClickListener);
                 break;
         }
 
@@ -318,6 +351,7 @@ public class NavigationBarView extends LinearLayout {
             group.setMotionEventSplittingEnabled(false);
         }
         mCurrentView = mRotatedViews[Surface.ROTATION_0];
+
     }
 
     public void reorient() {

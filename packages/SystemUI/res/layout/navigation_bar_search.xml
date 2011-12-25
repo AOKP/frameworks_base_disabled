@@ -21,97 +21,97 @@
 			android:animateLayoutChanges="true">
 
 			<!-- navigation controls -->
-			<View
-				android:layout_width="match_parent"
-				android:layout_height="match_parent"
-				android:layout_weight="1"
-				android:visibility="invisible" />
+<!-- 			<View -->
+<!-- 				android:layout_width="match_parent" -->
+<!-- 				android:layout_height="match_parent" -->
+<!-- 				android:layout_weight="1" -->
+<!-- 				android:visibility="gone" /> -->
 			<com.android.systemui.statusbar.policy.KeyButtonView
 				android:id="@+id/menu_left"
 				android:layout_width="40dp"
 				android:layout_height="match_parent"
 				android:src="@drawable/ic_sysbar_menu"
 				systemui:keyCode="82"
-				android:layout_weight="0"
+				android:layout_weight="1"
 				android:contentDescription="@string/accessibility_menu"
 				systemui:glowBackground="@drawable/ic_sysbar_highlight" />
-			<View
-				android:layout_width="match_parent"
-				android:layout_height="match_parent"
-				android:layout_weight="1"
-				android:visibility="invisible" />
+<!-- 			<View -->
+<!-- 				android:layout_width="match_parent" -->
+<!-- 				android:layout_height="match_parent" -->
+<!-- 				android:layout_weight="1" -->
+<!-- 				android:visibility="invisible" /> -->
 			<com.android.systemui.statusbar.policy.KeyButtonView
 				android:id="@+id/back"
-				android:layout_width="60dp"
+				android:layout_width="80dp"
 				android:layout_height="match_parent"
 				android:src="@drawable/ic_sysbar_back"
 				systemui:keyCode="4"
-				android:layout_weight="0"
+				android:layout_weight="2"
 				systemui:glowBackground="@drawable/ic_sysbar_highlight"
 				android:contentDescription="@string/accessibility_back" />
-			<View
-				android:id="@+id/back_padding"
-				android:layout_width="match_parent"
-				android:layout_height="match_parent"
-				android:layout_weight="1"
-				android:visibility="invisible" />
+<!-- 			<View -->
+<!-- 				android:id="@+id/back_padding" -->
+<!-- 				android:layout_width="match_parent" -->
+<!-- 				android:layout_height="match_parent" -->
+<!-- 				android:layout_weight="1" -->
+<!-- 				android:visibility="invisible" /> -->
 			<com.android.systemui.statusbar.policy.KeyButtonView
 				android:id="@+id/home"
-				android:layout_width="60dp"
+				android:layout_width="80dp"
 				android:layout_height="match_parent"
 				android:src="@drawable/ic_sysbar_home"
 				systemui:keyCode="3"
 				systemui:keyRepeat="false"
-				android:layout_weight="0"
+				android:layout_weight="2"
 				systemui:glowBackground="@drawable/ic_sysbar_highlight"
 				android:contentDescription="@string/accessibility_home" />
-			<View
-				android:layout_width="match_parent"
-				android:layout_height="match_parent"
-				android:layout_weight="1"
-				android:visibility="invisible" />
-			<com.android.systemui.statusbar.policy.KeyButtonView
+<!-- 			<View -->
+<!-- 				android:layout_width="match_parent" -->
+<!-- 				android:layout_height="match_parent" -->
+<!-- 				android:layout_weight="1" -->
+<!-- 				android:visibility="invisible" /> -->
+			<com.android.systemui.statusbar.policy.SearchKeyButtonView
 				android:id="@+id/search"
-				android:layout_width="60dp"
+				android:layout_width="80dp"
 				android:layout_height="match_parent"
 				android:src="@drawable/ic_sysbar_search"
 				systemui:keyCode="84"
 				systemui:keyRepeat="false"
-				android:layout_weight="0"
+				android:layout_weight="2"
 				systemui:glowBackground="@drawable/ic_sysbar_highlight"
 				android:contentDescription="@string/accessibility_home" />
-			<View
-				android:layout_width="match_parent"
-				android:layout_height="match_parent"
-				android:layout_weight="1"
-				android:visibility="invisible" />
+<!-- 			<View -->
+<!-- 				android:layout_width="match_parent" -->
+<!-- 				android:layout_height="match_parent" -->
+<!-- 				android:layout_weight="1" -->
+<!-- 				android:visibility="invisible" /> -->
 			<com.android.systemui.statusbar.policy.KeyButtonView
 				android:id="@+id/recent_apps"
-				android:layout_width="60dp"
+				android:layout_width="80dp"
 				android:layout_height="match_parent"
 				android:src="@drawable/ic_sysbar_recent"
-				android:layout_weight="0"
+				android:layout_weight="2"
 				systemui:glowBackground="@drawable/ic_sysbar_highlight"
 				android:contentDescription="@string/accessibility_recent" />
-			<View
-				android:layout_width="match_parent"
-				android:layout_height="match_parent"
-				android:layout_weight="1"
-				android:visibility="invisible" />
+<!-- 			<View -->
+<!-- 				android:layout_width="match_parent" -->
+<!-- 				android:layout_height="match_parent" -->
+<!-- 				android:layout_weight="1" -->
+<!-- 				android:visibility="invisible" /> -->
 			<com.android.systemui.statusbar.policy.KeyButtonView
 				android:id="@+id/menu"
 				android:layout_width="40dp"
 				android:layout_height="match_parent"
 				android:src="@drawable/ic_sysbar_menu"
 				systemui:keyCode="82"
-				android:layout_weight="0"
+				android:layout_weight="1"
 				android:contentDescription="@string/accessibility_menu"
 				systemui:glowBackground="@drawable/ic_sysbar_highlight" />
-			<View
-				android:layout_width="match_parent"
-				android:layout_height="match_parent"
-				android:layout_weight="1"
-				android:visibility="invisible" />
+<!-- 			<View -->
+<!-- 				android:layout_width="match_parent" -->
+<!-- 				android:layout_height="match_parent" -->
+<!-- 				android:layout_weight="1" -->
+<!-- 				android:visibility="gone" /> -->
 		</LinearLayout>
 
 		<!-- lights out layout to match exactly -->

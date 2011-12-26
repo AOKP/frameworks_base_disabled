@@ -72,6 +72,7 @@ public class BluetoothToggle extends BroadcastReceiver implements
 
     public void handleAdapterStateChange(int adapterState) {
         mEnabled = (adapterState == BluetoothAdapter.STATE_ON);
+        handleConnectionStateChange(adapterState);
     }
 
     public void handleConnectionStateChange(int connectionState) {

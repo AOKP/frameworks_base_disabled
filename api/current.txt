@@ -16350,6 +16350,7 @@ package android.provider {
   }
 
   protected static abstract interface ContactsContract.BaseSyncColumns {
+    field public static final java.lang.String IS_RESTRICTED = "is_restricted";
     field public static final java.lang.String SYNC1 = "sync1";
     field public static final java.lang.String SYNC2 = "sync2";
     field public static final java.lang.String SYNC3 = "sync3";
@@ -17592,6 +17593,7 @@ package android.provider {
     field public static final deprecated java.lang.String SHOW_WEB_SUGGESTIONS = "show_web_suggestions";
     field public static final java.lang.String SOUND_EFFECTS_ENABLED = "sound_effects_enabled";
     field public static final java.lang.String STATUSBAR_BATTERY_TEXT = "statusbar_battery_text";
+    field public static final java.lang.String STATUSBAR_BATTERY_TEXT_STYLE = "statusbar_battery_text_style";
     field public static final java.lang.String STATUSBAR_QUICKTOGGLES_AUTOHIDE = "statusbar_quicktoggles_autohide";
     field public static final java.lang.String STATUSBAR_SETTINGS_BEHAVIOR = "statusbar_settings_behavior";
     field public static final java.lang.String STAY_ON_WHILE_PLUGGED_IN = "stay_on_while_plugged_in";

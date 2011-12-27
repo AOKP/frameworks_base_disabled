@@ -170,7 +170,7 @@ public class NavigationBarView extends LinearLayout {
         getHomeButton().setVisibility(disableHome ? View.INVISIBLE : View.VISIBLE);
         getRecentsButton().setVisibility(disableRecent ? View.INVISIBLE : View.VISIBLE);
         if (getSearchButton() != null)
-            getSearchButton().setVisibility(disableRecent ? View.INVISIBLE : View.VISIBLE);
+            getSearchButton().setVisibility(disableHome ? View.INVISIBLE : View.VISIBLE);
     }
 
     public void setMenuVisibility(final boolean show) {
@@ -257,8 +257,8 @@ public class NavigationBarView extends LinearLayout {
     }
 
     public void setLowProfile(final boolean lightsOut, final boolean animate, final boolean force) {
-        if (!force && lightsOut == mLowProfile)
-            return;
+//        if (!force && lightsOut == mLowProfile)
+//            return;
 
         mLowProfile = lightsOut;
 

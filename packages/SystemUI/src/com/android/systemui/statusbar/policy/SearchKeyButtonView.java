@@ -2,12 +2,16 @@
 package com.android.systemui.statusbar.policy;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.TypedArray;
 import android.os.ServiceManager;
 import android.util.AttributeSet;
+import android.util.Slog;
 import android.view.IWindowManager;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.ViewConfiguration;
+import android.view.View.OnLongClickListener;
 import android.view.accessibility.AccessibilityEvent;
 
 import com.android.systemui.R;
@@ -40,6 +44,8 @@ public class SearchKeyButtonView extends KeyButtonView {
 
         setClickable(true);
         mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
+        
+        this.setOnLongClickListener(mSearchLongClickListener);
     }
 
     Runnable mCheckLongPress = new Runnable() {
@@ -47,6 +53,15 @@ public class SearchKeyButtonView extends KeyButtonView {
             if (isPressed()) {
                 performLongClick();
             }
+        }
+    };
+    
+    private OnLongClickListener mSearchLongClickListener = new OnLongClickListener() {
+
+        @Override
+        public boolean onLongClick(View v) {
+            v.getContext().sendBroadcast(new Intent(Intent.ACTION_SEARCH_LONG_PRESS));
+            return true;
         }
     };
 

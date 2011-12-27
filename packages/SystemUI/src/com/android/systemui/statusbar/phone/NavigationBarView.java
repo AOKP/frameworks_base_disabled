@@ -340,8 +340,10 @@ public class NavigationBarView extends LinearLayout {
                         ? findViewById(R.id.rot90_search)
                         : findViewById(R.id.rot270_search);
 
-                View searchView = findViewById(R.id.search);
-                searchView.setOnLongClickListener(mSearchLongClickListener);
+//                View searchView = findViewById(R.id.search);
+//                searchView.setOnLongClickListener(mSearchLongClickListener);
+                
+                
                 break;
         }
 

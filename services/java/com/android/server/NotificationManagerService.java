@@ -378,6 +378,8 @@ public class NotificationManagerService extends INotificationManager.Stub
                     Settings.System.NOTIFICATION_LIGHT_OFF), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.NOTIFICATION_LIGHT_ON), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.NOTIFICATION_LIGHT_COLOR), false, this);
             update();
         }
 
@@ -396,14 +398,16 @@ public class NotificationManagerService extends INotificationManager.Stub
             }
 
             Resources resources = mContext.getResources();
-            mDefaultNotificationColor = resources.getColor(
-                    com.android.internal.R.color.config_defaultNotificationColor);
+            mDefaultNotificationColor = Settings.System
+                    .getInt(mContext.getContentResolver(),
+                            Settings.System.NOTIFICATION_LIGHT_COLOR,
+                            resources.getColor(
+                                    com.android.internal.R.color.config_defaultNotificationColor));
 
             mDefaultNotificationLedOff = Settings.System
                     .getInt(mContext.getContentResolver(),
                             Settings.System.NOTIFICATION_LIGHT_OFF,
-                            resources
-                                    .getInteger(com.android.internal.R.integer.config_defaultNotificationLedOff));
+                            resources.getInteger(com.android.internal.R.integer.config_defaultNotificationLedOff));
 
             mDefaultNotificationLedOn = Settings.System
                     .getInt(mContext.getContentResolver(),

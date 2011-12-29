@@ -38,6 +38,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.RemoteException;
 import android.os.SystemClock;
+import android.provider.Settings;
 import android.text.Spannable;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
@@ -197,6 +198,7 @@ public class TransportControlView extends FrameLayout implements OnClickListener
         mAudioManager = new AudioManager(mContext);
         mCurrentPlayState = RemoteControlClient.PLAYSTATE_NONE; // until we get a callback
         mIRCD = new IRemoteControlDisplayWeak(mHandler);
+        setIsPlayingSystemSetting(false);
     }
 
     private void updateTransportControls(int transportControlFlags) {
@@ -332,6 +334,7 @@ public class TransportControlView extends FrameLayout implements OnClickListener
     }
 
     private void updatePlayPauseState(int state) {
+        setIsPlayingSystemSetting(state);
         if (DEBUG) Log.v(TAG,
                 "updatePlayPauseState(), old=" + mCurrentPlayState + ", state=" + state);
         if (state == mCurrentPlayState) {
@@ -511,5 +514,32 @@ public class TransportControlView extends FrameLayout implements OnClickListener
                 Log.e(TAG, "Unknown playback state " + state + " in wasPlayingRecently()");
                 return false;
         }
+    }
+
+    private void setIsPlayingSystemSetting(int state) {
+        //TODO we probably want to use intents to send information on whether Google Music is active or not.
+        switch (state) {
+            case RemoteControlClient.PLAYSTATE_PLAYING:
+            case RemoteControlClient.PLAYSTATE_FAST_FORWARDING:
+            case RemoteControlClient.PLAYSTATE_REWINDING:
+            case RemoteControlClient.PLAYSTATE_SKIPPING_FORWARDS:
+            case RemoteControlClient.PLAYSTATE_SKIPPING_BACKWARDS:
+            case RemoteControlClient.PLAYSTATE_BUFFERING:
+                setIsPlayingSystemSetting(true);
+                break;
+            case RemoteControlClient.PLAYSTATE_NONE:
+                setIsPlayingSystemSetting(false);
+                break;
+            case RemoteControlClient.PLAYSTATE_STOPPED:
+            case RemoteControlClient.PLAYSTATE_PAUSED:
+            case RemoteControlClient.PLAYSTATE_ERROR:
+            default:
+                setIsPlayingSystemSetting(false);
+                break;
+        }
+    }
+
+    private void setIsPlayingSystemSetting(boolean isPlaying) {
+        Settings.System.putInt(mContext.getContentResolver(), Settings.System.GOOGLE_MUSIC_IS_PLAYING, isPlaying ? 1 : 0);
     }
 }

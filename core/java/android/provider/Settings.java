@@ -2245,6 +2245,10 @@ public final class Settings {
         public static final String STATUSBAR_QUICKTOGGLES_AUTOHIDE = "statusbar_quicktoggles_autohide";
 
         public static final String STATUSBAR_BATTERY_TEXT_STYLE = "statusbar_battery_text_style";
+
+        public static final String GOOGLE_MUSIC_IS_PLAYING = "google_music_is_playing";
+
+        public static final String NOTIFICATION_LIGHT_COLOR = "notification_light_color";
     }
 
     /**

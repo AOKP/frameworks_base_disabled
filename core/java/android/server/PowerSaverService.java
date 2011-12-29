@@ -1,12 +1,18 @@
 
 package android.server;
 
+import java.util.Calendar;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.app.ActivityManager;
 import android.app.AlarmManager;
 import android.app.DownloadManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -22,12 +28,10 @@ import android.os.Handler;
 import android.provider.Settings;
 import android.provider.Settings.SettingNotFoundException;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.util.Slog;
 
 import com.android.internal.telephony.Phone;
-
-import java.util.Calendar;
-import java.util.concurrent.TimeUnit;
 
 public class PowerSaverService extends BroadcastReceiver {
 
@@ -178,7 +182,7 @@ public class PowerSaverService extends BroadcastReceiver {
         switch (mScreenOffDataMode) {
             case DATA_2G:
                 if (isCdma) {
-                    // requestPhoneStateChange(Phone.NT_MODE_CDMA);
+                    requestPhoneStateChange(Phone.NT_MODE_CDMA);
                     Slog.w(TAG, "Not requesting 2G but MODE_CDMA ("
                             + Phone.NT_MODE_CDMA + ")");
                 } else {
@@ -228,9 +232,20 @@ public class PowerSaverService extends BroadcastReceiver {
     }
 
     private void scheduleScreenOffTask() {
+        if (areMonitoredAppsRunning()) {
+            Slog.w(TAG, "Monitored apps are running, not scheduling PowerSaver functions.");
+            return;
+        }
+
+        if (Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.GOOGLE_MUSIC_IS_PLAYING, 0) == 1) {
+            Slog.w(TAG,
+                    "Google Music is detected playing/buffering. Not scheduling PowerSaver functions");
+            return;
+        }
 
         if (isCharging) {
-            Slog.i(TAG, "Phone is on power, not scheduling PowerSaver functions.");
+            Slog.w(TAG, "Phone is on power, not scheduling PowerSaver functions.");
             return;
         }
 
@@ -298,9 +313,11 @@ public class PowerSaverService extends BroadcastReceiver {
                     connectivity.setMobileDataEnabled(true);
                 }
 
-                Slog.i(TAG, "screenOnTask: Requesting to restore to original network mode: " +
-                        originalNetworkMode);
-                requestPhoneStateChange(originalNetworkMode);
+                if (mScreenOffDataMode == DATA_2G) {
+                    Slog.i(TAG, "screenOnTask: Requesting to restore to original network mode: " +
+                            originalNetworkMode);
+                    requestPhoneStateChange(originalNetworkMode);
+                }
             }
 
             if (mScreenOffWifiMode != WIFI_UNTOUCHED) {
@@ -363,7 +380,6 @@ public class PowerSaverService extends BroadcastReceiver {
                 skipReadingCurrentState = true;
             }
         }
-
     };
 
     Runnable scheduledSyncTask = new Runnable() {
@@ -403,13 +419,13 @@ public class PowerSaverService extends BroadcastReceiver {
                 switch (mSyncMobileDataMode) {
                     case SYNCING_DATA_PREFER_2G:
                         if (isCdma)
-                            desiredNetworkMode = Phone.NT_MODE_CDMA_NO_EVDO;
+                            desiredNetworkMode = Phone.NT_MODE_CDMA;
                         else
                             desiredNetworkMode = Phone.NT_MODE_GSM_ONLY;
                         break;
                     case SYNCING_DATA_PREFER_3G:
                         if (isCdma)
-                            desiredNetworkMode = Phone.NT_MODE_CDMA;
+                            desiredNetworkMode = Phone.NT_MODE_GLOBAL;
                         else
                             desiredNetworkMode = Phone.NT_MODE_WCDMA_PREF;
                         break;
@@ -594,17 +610,43 @@ public class PowerSaverService extends BroadcastReceiver {
     }
 
     private void requestPhoneStateChange(int newState) {
-        if (isCdma)
-            if (newState == 0) {
-                Slog.e(TAG,
-                        "HOLY JESUS FCs INC. Just kidding, I saved you. Seriously though, this shouldn't happen.");
-                return;
-            }
+        if (!isValidNetwork(newState)) {
+            Slog.e(TAG, "attempting to switch to an invalid network type: " + newState);
+            Slog.e(TAG, "Phone CDMA status: " + isCdma);
+        }
 
         Slog.i(TAG, "Sending request to change phone network mode to: " + newState);
         Intent i = new Intent(ACTION_MODIFY_NETWORK_MODE);
         i.putExtra(EXTRA_NETWORK_MODE, newState);
         mContext.sendBroadcast(i);
+    }
+
+    private boolean isValidNetwork(int networkType) {
+        isCdma = (telephony.getCurrentPhoneType() == Phone.PHONE_TYPE_CDMA);
+
+        switch (networkType) {
+            case Phone.NT_MODE_CDMA:
+            case Phone.NT_MODE_CDMA_NO_EVDO:
+            case Phone.NT_MODE_EVDO_NO_CDMA:
+            case Phone.NT_MODE_GLOBAL:
+            case Phone.NT_MODE_LTE_ONLY:
+                return (isCdma);
+            case Phone.NT_MODE_GSM_ONLY:
+            case Phone.NT_MODE_GSM_UMTS:
+            case Phone.NT_MODE_WCDMA_ONLY:
+            case Phone.NT_MODE_WCDMA_PREF:
+                return (!isCdma);
+        }
+        return false;
+    }
+
+    /*
+     * this method should check whether apps the user has specified are running -- if they are, just
+     * don't enable power saver. good for things like Google Music
+     */
+    private boolean areMonitoredAppsRunning() {
+
+        return false;
     }
 
     class SettingsObserver extends ContentObserver {

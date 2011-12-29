@@ -77,20 +77,28 @@ public class NavigationBarView extends LinearLayout {
     public final static int LAYOUT_REGULAR = 0;
     public final static int LAYOUT_SEARCH = 1;
 
+    /*
+     * Back - Home - Search | Long press home for recents Long press search-enabled
+     */
+    public final static int LAYOUT_HOME_RECENTS = 2;
+
     public final static int VISIBILITY_SYSTEM = 0;
     public final static int VISIBILITY_SYSTEM_AND_INVIZ = 3;
     public final static int VISIBILITY_NEVER = 1;
     public final static int VISIBILITY_ALWAYS = 2;
 
     public View getSearchButton() {
-        if (mNavLayout == LAYOUT_SEARCH)
+        if (mNavLayout == LAYOUT_SEARCH || mNavLayout == LAYOUT_HOME_RECENTS)
             return mCurrentView.findViewById(R.id.search);
         else
             return null;
     }
 
     public View getRecentsButton() {
-        return mCurrentView.findViewById(R.id.recent_apps);
+        if (mNavLayout == LAYOUT_HOME_RECENTS)
+            return null;
+        else
+            return mCurrentView.findViewById(R.id.recent_apps);
     }
 
     public View getLeftMenuButton() {
@@ -142,15 +150,6 @@ public class NavigationBarView extends LinearLayout {
             return false;
         }
     };
-    private OnLongClickListener mSearchLongClickListener = new OnLongClickListener() {
-
-        @Override
-        public boolean onLongClick(View v) {
-            v.getContext().sendBroadcast(new Intent(Intent.ACTION_SEARCH_LONG_PRESS));
-            Slog.i(TAG, "Sending long press search key event");
-            return true;
-        }
-    };
 
     public void setDisabledFlags(int disabledFlags) {
         setDisabledFlags(disabledFlags, false);
@@ -168,7 +167,9 @@ public class NavigationBarView extends LinearLayout {
 
         getBackButton().setVisibility(disableBack ? View.INVISIBLE : View.VISIBLE);
         getHomeButton().setVisibility(disableHome ? View.INVISIBLE : View.VISIBLE);
-        getRecentsButton().setVisibility(disableRecent ? View.INVISIBLE : View.VISIBLE);
+
+        if (getRecentsButton() != null)
+            getRecentsButton().setVisibility(disableRecent ? View.INVISIBLE : View.VISIBLE);
         if (getSearchButton() != null)
             getSearchButton().setVisibility(disableHome ? View.INVISIBLE : View.VISIBLE);
     }
@@ -257,8 +258,8 @@ public class NavigationBarView extends LinearLayout {
     }
 
     public void setLowProfile(final boolean lightsOut, final boolean animate, final boolean force) {
-//        if (!force && lightsOut == mLowProfile)
-//            return;
+        // if (!force && lightsOut == mLowProfile)
+        // return;
 
         mLowProfile = lightsOut;
 
@@ -339,11 +340,16 @@ public class NavigationBarView extends LinearLayout {
                 mRotatedViews[Surface.ROTATION_270] = NAVBAR_ALWAYS_AT_RIGHT
                         ? findViewById(R.id.rot90_search)
                         : findViewById(R.id.rot270_search);
+                break;
+            case LAYOUT_HOME_RECENTS:
+                mRotatedViews[Surface.ROTATION_0] =
+                        mRotatedViews[Surface.ROTATION_180] = findViewById(R.id.rot0_home_recents);
 
-//                View searchView = findViewById(R.id.search);
-//                searchView.setOnLongClickListener(mSearchLongClickListener);
-                
-                
+                mRotatedViews[Surface.ROTATION_90] = findViewById(R.id.rot90_home_recents);
+
+                mRotatedViews[Surface.ROTATION_270] = NAVBAR_ALWAYS_AT_RIGHT
+                        ? findViewById(R.id.rot90_home_recents)
+                        : findViewById(R.id.rot270_home_recents);
                 break;
         }
 

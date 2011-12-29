@@ -25,26 +25,7 @@ public class SearchKeyButtonView extends KeyButtonView {
     public SearchKeyButtonView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs);
 
-        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.KeyButtonView,
-                defStyle, 0);
-
-        mCode = a.getInteger(R.styleable.KeyButtonView_keyCode, 0);
-
         mSupportsLongpress = true; // a.getBoolean(R.styleable.KeyButtonView_keyRepeat, true);
-
-        mGlowBG = a.getDrawable(R.styleable.KeyButtonView_glowBackground);
-        if (mGlowBG != null) {
-            mDrawingAlpha = BUTTON_QUIESCENT_ALPHA;
-        }
-
-        a.recycle();
-
-        mWindowManager = IWindowManager.Stub.asInterface(
-                ServiceManager.getService(Context.WINDOW_SERVICE));
-
-        setClickable(true);
-        mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
-        
         this.setOnLongClickListener(mSearchLongClickListener);
     }
 
@@ -55,7 +36,7 @@ public class SearchKeyButtonView extends KeyButtonView {
             }
         }
     };
-    
+
     private OnLongClickListener mSearchLongClickListener = new OnLongClickListener() {
 
         @Override

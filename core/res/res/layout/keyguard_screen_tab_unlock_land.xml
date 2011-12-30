@@ -135,8 +135,8 @@
         android:layout_height="match_parent"
         android:layout_rowSpan="7"
 
-        android:targetDrawables="@array/lockscreen_targets_with_camera"
-        android:targetDescriptions="@array/lockscreen_target_descriptions_with_camera"
+        android:targetDrawables="@array/lockscreen_targets_with_lockscreen_mod"
+        android:targetDescriptions="@array/lockscreen_target_descriptions_with_lockscreen_mod"
         android:directionDescriptions="@array/lockscreen_direction_descriptions"
         android:handleDrawable="@drawable/ic_lockscreen_handle"
         android:waveDrawable="@drawable/ic_lockscreen_outerring"

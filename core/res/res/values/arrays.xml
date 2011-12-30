@@ -510,6 +510,22 @@
         <item>@string/description_target_camera</item>
         <item>@null</item>
     </array>
+    
+    <!--Added function to lockscreen -->
+    </array name="lockscreen_targets_with_lockscreen_mod">
+         <item>@drawable/ic_lockscreen_unlock</item>
+         <item>@drawable/ic_lockscreen_sms</item>
+         <item>@drawable/ic_lockscreen_phone</item>
+         <item>@drawable/ic_lockscreen_camera>
+    </array>
+    
+    </array name="lockscreen_target_descriptions_with_lockscreen_mod">
+         <item>@string/description_target_unlock</item>
+         <item>@string/description_target_sms</item>
+         <item>@string/description_target_phone</item>
+         <item>@string/description_target_camera</item>
+    </array>     
+    
 
     <!-- Defines the shutdown options shown in the reboot dialog. -->
     <array name="shutdown_reboot_options" translatable="false">

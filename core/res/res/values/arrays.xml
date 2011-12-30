@@ -478,9 +478,9 @@
 
     <array name="lockscreen_direction_descriptions">
         <item>@string/description_direction_right</item>
-        <item>@null</item>
         <item>@string/description_direction_left</item>
-        <item>@null</item>
+        <item>@string/descrption_direction_up</item>
+        <item>@string/description_direction_down</item>
     </array>
 
     <array name="lockscreen_targets_when_soundon">

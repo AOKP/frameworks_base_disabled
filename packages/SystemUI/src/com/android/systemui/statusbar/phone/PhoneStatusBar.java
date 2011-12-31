@@ -312,10 +312,25 @@ public class PhoneStatusBar extends StatusBar {
         mStatusBarView = sb;
 
         try {
+            int layoutToInflate = R.layout.navigation_bar;
             boolean showNav = mWindowManager.hasNavigationBar();
             if (showNav) {
+                switch (Settings.System.getInt(mContext.getContentResolver(),
+                        Settings.System.NAVIGATION_BAR_LAYOUT, NavigationBarView.LAYOUT_REGULAR)) {
+                    default:
+                    case NavigationBarView.LAYOUT_REGULAR:
+                        layoutToInflate = R.layout.navigation_bar;
+                        break;
+                    case NavigationBarView.LAYOUT_SEARCH:
+                        layoutToInflate = R.layout.navigation_bar_search;
+                        break;
+                    case NavigationBarView.LAYOUT_HOME_RECENTS:
+                        layoutToInflate = R.layout.navigation_bar_home_recents;
+                        break;
+                }
+
                 mNavigationBarView =
-                        (NavigationBarView) View.inflate(context, R.layout.navigation_bar, null);
+                        (NavigationBarView) View.inflate(context, layoutToInflate, null);
 
                 mNavigationBarView.setDisabledFlags(mDisabled);
             }

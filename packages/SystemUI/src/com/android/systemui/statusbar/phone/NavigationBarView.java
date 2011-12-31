@@ -318,40 +318,14 @@ public class NavigationBarView extends LinearLayout {
 
     public void onFinishInflate() {
 
-        switch (mNavLayout = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.NAVIGATION_BAR_LAYOUT, LAYOUT_REGULAR)) {
-            default:
-            case LAYOUT_REGULAR:
-                mRotatedViews[Surface.ROTATION_0] =
-                        mRotatedViews[Surface.ROTATION_180] = findViewById(R.id.rot0);
+        mRotatedViews[Surface.ROTATION_0] =
+                mRotatedViews[Surface.ROTATION_180] = findViewById(R.id.rot0);
 
-                mRotatedViews[Surface.ROTATION_90] = findViewById(R.id.rot90);
+        mRotatedViews[Surface.ROTATION_90] = findViewById(R.id.rot90);
 
-                mRotatedViews[Surface.ROTATION_270] = NAVBAR_ALWAYS_AT_RIGHT
-                        ? findViewById(R.id.rot90)
-                        : findViewById(R.id.rot270);
-                break;
-            case LAYOUT_SEARCH:
-                mRotatedViews[Surface.ROTATION_0] =
-                        mRotatedViews[Surface.ROTATION_180] = findViewById(R.id.rot0_search);
-
-                mRotatedViews[Surface.ROTATION_90] = findViewById(R.id.rot90_search);
-
-                mRotatedViews[Surface.ROTATION_270] = NAVBAR_ALWAYS_AT_RIGHT
-                        ? findViewById(R.id.rot90_search)
-                        : findViewById(R.id.rot270_search);
-                break;
-            case LAYOUT_HOME_RECENTS:
-                mRotatedViews[Surface.ROTATION_0] =
-                        mRotatedViews[Surface.ROTATION_180] = findViewById(R.id.rot0_home_recents);
-
-                mRotatedViews[Surface.ROTATION_90] = findViewById(R.id.rot90_home_recents);
-
-                mRotatedViews[Surface.ROTATION_270] = NAVBAR_ALWAYS_AT_RIGHT
-                        ? findViewById(R.id.rot90_home_recents)
-                        : findViewById(R.id.rot270_home_recents);
-                break;
-        }
+        mRotatedViews[Surface.ROTATION_270] = NAVBAR_ALWAYS_AT_RIGHT
+                ? findViewById(R.id.rot90)
+                : findViewById(R.id.rot270);
 
         for (View v : mRotatedViews) {
             // this helps avoid drawing artifacts with glowing navigation keys

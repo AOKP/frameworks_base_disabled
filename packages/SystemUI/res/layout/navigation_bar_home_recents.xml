@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:systemui="http://schemas.android.com/apk/res/com.android.systemui"
-	android:layout_height="match_parent"
-	android:layout_width="match_parent">
+<com.android.systemui.statusbar.phone.NavigationBarView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:systemui="http://schemas.android.com/apk/res/com.android.systemui"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:background="#FF000000"
+    >
 
 	<FrameLayout
-		android:id="@+id/rot0_home_recents"
+		android:id="@+id/rot0"
 		android:layout_height="match_parent"
 		android:layout_width="match_parent"
 		android:visibility="gone" >
@@ -183,7 +185,7 @@
 	</FrameLayout>
 
 	<FrameLayout
-		android:id="@+id/rot90_home_recents"
+		android:id="@+id/rot90"
 		android:layout_height="match_parent"
 		android:layout_width="match_parent"
 		android:visibility="gone"
@@ -337,9 +339,9 @@
 	</FrameLayout>
 
 	<View
-		android:id="@+id/rot270_home_recents"
+		android:id="@+id/rot270"
 		android:layout_height="match_parent"
 		android:layout_width="match_parent"
 		android:visibility="gone" />
 
-</LinearLayout>
+</com.android.systemui.statusbar.phone.NavigationBarView>

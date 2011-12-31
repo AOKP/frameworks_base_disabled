@@ -17577,6 +17577,8 @@ package android.provider {
     field public static final deprecated java.lang.String PARENTAL_CONTROL_ENABLED = "parental_control_enabled";
     field public static final deprecated java.lang.String PARENTAL_CONTROL_LAST_UPDATE = "parental_control_last_update";
     field public static final deprecated java.lang.String PARENTAL_CONTROL_REDIRECT_URL = "parental_control_redirect_url";
+    field public static final java.lang.String POWER_DIALOG_SHOW_POWER_SAVER = "power_dialog_show_power_saver";
+    field public static final java.lang.String POWER_DIALOG_SHOW_SCREENSHOT = "power_dialog_show_screenshot";
     field public static final java.lang.String RADIO_BLUETOOTH = "bluetooth";
     field public static final java.lang.String RADIO_CELL = "cell";
     field public static final java.lang.String RADIO_NFC = "nfc";
@@ -17596,6 +17598,10 @@ package android.provider {
     field public static final java.lang.String SOUND_EFFECTS_ENABLED = "sound_effects_enabled";
     field public static final java.lang.String STATUSBAR_BATTERY_TEXT = "statusbar_battery_text";
     field public static final java.lang.String STATUSBAR_BATTERY_TEXT_STYLE = "statusbar_battery_text_style";
+    field public static final java.lang.String STATUSBAR_CLOCK_AM_PM_STYLE = "statusbar_clock_am_pm_style";
+    field public static final java.lang.String STATUSBAR_CLOCK_COLOR = "statusbar_clock_color";
+    field public static final java.lang.String STATUSBAR_CLOCK_ENABLED = "statusbar_clock_enabled";
+    field public static final java.lang.String STATUSBAR_CLOCK_LOCKSCREEN_HIDE = "statusbar_clock_lockscreen_hide";
     field public static final java.lang.String STATUSBAR_QUICKTOGGLES_AUTOHIDE = "statusbar_quicktoggles_autohide";
     field public static final java.lang.String STATUSBAR_SETTINGS_BEHAVIOR = "statusbar_settings_behavior";
     field public static final java.lang.String STAY_ON_WHILE_PLUGGED_IN = "stay_on_while_plugged_in";

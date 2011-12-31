@@ -88,17 +88,11 @@ public class NavigationBarView extends LinearLayout {
     public final static int VISIBILITY_ALWAYS = 2;
 
     public View getSearchButton() {
-        if (mNavLayout == LAYOUT_SEARCH || mNavLayout == LAYOUT_HOME_RECENTS)
-            return mCurrentView.findViewById(R.id.search);
-        else
-            return null;
+        return mCurrentView.findViewById(R.id.search);
     }
 
     public View getRecentsButton() {
-        if (mNavLayout == LAYOUT_HOME_RECENTS)
-            return null;
-        else
-            return mCurrentView.findViewById(R.id.recent_apps);
+        return mCurrentView.findViewById(R.id.recent_apps);
     }
 
     public View getLeftMenuButton() {
@@ -165,13 +159,22 @@ public class NavigationBarView extends LinearLayout {
         final boolean disableRecent = ((disabledFlags & View.STATUS_BAR_DISABLE_RECENT) != 0);
         final boolean disableBack = ((disabledFlags & View.STATUS_BAR_DISABLE_BACK) != 0);
 
-        getBackButton().setVisibility(disableBack ? View.INVISIBLE : View.VISIBLE);
-        getHomeButton().setVisibility(disableHome ? View.INVISIBLE : View.VISIBLE);
-
-        if (getRecentsButton() != null)
+        try {
+            getBackButton().setVisibility(disableBack ? View.INVISIBLE : View.VISIBLE);
+        } catch (NullPointerException e) {
+        }
+        try {
+            getHomeButton().setVisibility(disableHome ? View.INVISIBLE : View.VISIBLE);
+        } catch (NullPointerException e) {
+        }
+        try {
             getRecentsButton().setVisibility(disableRecent ? View.INVISIBLE : View.VISIBLE);
-        if (getSearchButton() != null)
+        } catch (NullPointerException e) {
+        }
+        try {
             getSearchButton().setVisibility(disableHome ? View.INVISIBLE : View.VISIBLE);
+        } catch (NullPointerException e) {
+        }
     }
 
     public void setMenuVisibility(final boolean show) {

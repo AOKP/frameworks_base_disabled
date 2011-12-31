@@ -48,14 +48,15 @@ public class Clock extends TextView {
     private String mClockFormatString;
     private SimpleDateFormat mClockFormat;
 
-    private static final int AM_PM_STYLE_NORMAL = 0;
-    private static final int AM_PM_STYLE_SMALL = 1;
-    private static final int AM_PM_STYLE_GONE = 2;
+    public static final int AM_PM_STYLE_NORMAL = 0;
+    public static final int AM_PM_STYLE_SMALL = 1;
+    public static final int AM_PM_STYLE_GONE = 2;
 
-    //private static final int AM_PM_STYLE = AM_PM_STYLE_GONE;
-    
+    // private static final int AM_PM_STYLE = AM_PM_STYLE_GONE;
+
     private boolean mShowClock = true;
     private int mAmPmStyle = AM_PM_STYLE_GONE;
+    private boolean mShowClockDuringLockscreen = false;
     private int mClockColor = com.android.internal.R.color.holo_blue_light;
 
     public Clock(Context context) {
@@ -68,6 +69,9 @@ public class Clock extends TextView {
 
     public Clock(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+
+        SettingsObserver settingsObserver = new SettingsObserver(new Handler());
+        settingsObserver.observe();
     }
 
     @Override
@@ -92,8 +96,9 @@ public class Clock extends TextView {
         // The time zone may have changed while the receiver wasn't registered, so update the Time
         mCalendar = Calendar.getInstance(TimeZone.getDefault());
 
+        updateSettings();
         // Make sure we update to the current time
-        updateClock();
+        // updateClock();
     }
 
     @Override
@@ -203,6 +208,12 @@ public class Clock extends TextView {
 
     }
 
+    public void updateVisibilityFromStatusBar(boolean show) {
+        if (mShowClock)
+            setVisibility(show ? View.VISIBLE : View.GONE);
+
+    }
+
     class SettingsObserver extends ContentObserver {
         SettingsObserver(Handler handler) {
             super(handler);
@@ -211,11 +222,16 @@ public class Clock extends TextView {
         void observe() {
             ContentResolver resolver = mContext.getContentResolver();
             resolver.registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.STATUSBAR_AM_PM_STYLE), false, this);
+                    Settings.System.getUriFor(Settings.System.STATUSBAR_CLOCK_AM_PM_STYLE), false,
+                    this);
             resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.STATUSBAR_CLOCK_ENABLED), false, this);
             resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.STATUSBAR_CLOCK_COLOR), false, this);
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.STATUSBAR_CLOCK_LOCKSCREEN_HIDE),
+                    false, this);
+            updateSettings();
         }
 
         @Override
@@ -228,7 +244,12 @@ public class Clock extends TextView {
         ContentResolver resolver = mContext.getContentResolver();
 
         mClockFormatString = "";
-        mAmPmStyle = Settings.System.getInt(resolver, Settings.System.STATUSBAR_AM_PM_STYLE, AM_PM_STYLE_GONE);
+        mAmPmStyle = Settings.System.getInt(resolver, Settings.System.STATUSBAR_CLOCK_AM_PM_STYLE,
+                AM_PM_STYLE_GONE);
+
+        if (mAttached) {
+            updateClock();
+        }
 
         mShowClock = (Settings.System.getInt(resolver, Settings.System.STATUSBAR_CLOCK_ENABLED, 1) == 1);
         if (mShowClock)
@@ -236,8 +257,8 @@ public class Clock extends TextView {
         else
             setVisibility(View.GONE);
 
-        if (mAttached) {
-            updateClock();
-        }
+        mShowClockDuringLockscreen = (Settings.System.getInt(resolver,
+                Settings.System.STATUSBAR_CLOCK_LOCKSCREEN_HIDE, 1) == 1);
+
     }
 }

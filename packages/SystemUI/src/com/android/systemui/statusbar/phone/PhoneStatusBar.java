@@ -89,6 +89,7 @@ import com.android.systemui.statusbar.StatusBarIconView;
 import com.android.systemui.statusbar.policy.AutoRotateController;
 import com.android.systemui.statusbar.policy.BluetoothToggle;
 import com.android.systemui.statusbar.policy.BrightnessController;
+import com.android.systemui.statusbar.policy.Clock;
 import com.android.systemui.statusbar.policy.DateView;
 import com.android.systemui.statusbar.policy.GpsToggle;
 import com.android.systemui.statusbar.policy.LocationController;
@@ -1086,9 +1087,10 @@ public class PhoneStatusBar extends StatusBar {
     }
 
     public void showClock(boolean show) {
-        View clock = mStatusBarView.findViewById(R.id.clock);
+        Clock clock = (Clock) mStatusBarView.findViewById(R.id.clock);
         if (clock != null) {
-            clock.setVisibility(show ? View.VISIBLE : View.GONE);
+            clock.updateVisibilityFromStatusBar(show);
+            //clock.setVisibility(show ? View.VISIBLE : View.GONE);
         }
     }
 

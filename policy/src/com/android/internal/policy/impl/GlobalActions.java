@@ -35,10 +35,12 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.os.SystemProperties;
 import android.provider.Settings;
+import android.server.PowerSaverService;
 import android.telephony.PhoneStateListener;
 import android.telephony.ServiceState;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.util.Slog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -71,6 +73,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
     private SilentModeAction mSilentModeAction;
     private ToggleAction mAirplaneModeOn;
+    private ToggleAction mPowerSaverOn;
 
     private MyAdapter mAdapter;
 
@@ -78,6 +81,8 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
     private boolean mDeviceProvisioned = false;
     private ToggleAction.State mAirplaneState = ToggleAction.State.Off;
     private boolean mIsWaitingForEcmExit = false;
+    private boolean mEnablePowerSaverToggle = true;
+    private boolean mEnableScreenshotToggle = false;
 
     /**
      * @param context everything needs a context :(
@@ -161,6 +166,29 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 return false;
             }
         };
+        
+        mPowerSaverOn = new ToggleAction(
+                R.drawable.ic_lock_power_saver,
+                R.drawable.ic_lock_power_saver,
+                R.string.global_actions_toggle_power_saver,
+                R.string.global_actions_power_saver_on_status,
+                R.string.global_actions_power_saver_off_status) {
+
+            void onToggle(boolean on) {
+                Settings.Secure.putInt(mContext.getContentResolver(),
+                        Settings.Secure.POWER_SAVER_MODE,
+                         on ? PowerSaverService.POWER_SAVER_MODE_ON
+                                : PowerSaverService.POWER_SAVER_MODE_OFF);
+            }
+
+            public boolean showDuringKeyguard() {
+                return true;
+            }
+
+            public boolean showBeforeProvisioning() {
+                return false;
+            }
+        };
 
         mItems = new ArrayList<Action>();
 
@@ -204,22 +232,27 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         // next: airplane mode
         mItems.add(mAirplaneModeOn);
         
+        // next: power saver
+        if(mEnablePowerSaverToggle)
+            mItems.add(mPowerSaverOn); 
+        
         // next: screenshot
-        mItems.add(
-                new SinglePressAction(com.android.internal.R.drawable.ic_lock_screenshot,
-                        R.string.global_action_screenshot) {
-                    public void onPress() {
-                        takeScreenshot();
-                    }
+        if (mEnableScreenshotToggle)
+            mItems.add(
+                    new SinglePressAction(com.android.internal.R.drawable.ic_lock_screenshot,
+                            R.string.global_action_screenshot) {
+                        public void onPress() {
+                            takeScreenshot();
+                        }
 
-                    public boolean showDuringKeyguard() {
-                        return true;
-                    }
+                        public boolean showDuringKeyguard() {
+                            return true;
+                        }
 
-                    public boolean showBeforeProvisioning() {
-                        return true;
-                    }
-                });
+                        public boolean showBeforeProvisioning() {
+                            return true;
+                        }
+                    });
 
         // last: silent mode
         if (SHOW_SILENT_TOGGLE) {
@@ -328,6 +361,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         final boolean silentModeOn =
                 mAudioManager.getRingerMode() != AudioManager.RINGER_MODE_NORMAL;
         mAirplaneModeOn.updateState(mAirplaneState);
+
         mAdapter.notifyDataSetChanged();
         if (mKeyguardShowing) {
             mDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG);
@@ -338,6 +372,15 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             IntentFilter filter = new IntentFilter(AudioManager.RINGER_MODE_CHANGED_ACTION);
             mContext.registerReceiver(mRingerModeReceiver, filter);
         }
+        final boolean powerSaverOn = Settings.Secure.getInt(mContext.getContentResolver(),
+                Settings.Secure.POWER_SAVER_MODE, PowerSaverService.POWER_SAVER_MODE_OFF) == PowerSaverService.POWER_SAVER_MODE_ON;
+        mPowerSaverOn.updateState(powerSaverOn ? ToggleAction.State.On : ToggleAction.State.Off);
+
+        mEnablePowerSaverToggle = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.POWER_DIALOG_SHOW_POWER_SAVER, 1) == 1;
+        
+        mEnableScreenshotToggle = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.POWER_DIALOG_SHOW_SCREENSHOT, 0) == 1;
     }
 
 

@@ -2249,6 +2249,12 @@ public final class Settings {
         public static final String GOOGLE_MUSIC_IS_PLAYING = "google_music_is_playing";
 
         public static final String NOTIFICATION_LIGHT_COLOR = "notification_light_color";
+
+        public static final String STATUSBAR_AM_PM_STYLE = "statusbar_am_pm_style";
+
+        public static final String STATUSBAR_CLOCK_ENABLED = "statusbar_clock_enabled";
+
+        public static final String STATUSBAR_CLOCK_COLOR = "statusbar_clock_color";
     }
 
     /**

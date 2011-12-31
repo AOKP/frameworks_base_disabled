@@ -45,13 +45,11 @@ public class BluetoothToggle extends BroadcastReceiver implements
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
-        filter.addAction(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED);
         context.registerReceiver(this, filter);
 
         final BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
         if (adapter != null) {
             handleAdapterStateChange(adapter.getState());
-            handleConnectionStateChange(adapter.getConnectionState());
         }
 
         mBluetooth.setOnCheckedChangeListener(this);
@@ -63,22 +61,14 @@ public class BluetoothToggle extends BroadcastReceiver implements
 
         if (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
             handleAdapterStateChange(intent.getIntExtra(BluetoothAdapter.EXTRA_STATE,
-                    BluetoothAdapter.ERROR));
-        } else if (action.equals(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED)) {
-            handleConnectionStateChange(intent.getIntExtra(BluetoothAdapter.EXTRA_CONNECTION_STATE,
-                    BluetoothAdapter.STATE_DISCONNECTED));
+                    BluetoothAdapter.STATE_OFF));
         }
     }
 
     public void handleAdapterStateChange(int adapterState) {
-        mEnabled = (adapterState == BluetoothAdapter.STATE_ON);
-        handleConnectionStateChange(adapterState);
-    }
-
-    public void handleConnectionStateChange(int connectionState) {
         mSystemChanged = true;
 
-        switch (connectionState) {
+        switch (adapterState) {
             case BluetoothAdapter.STATE_ON:
                 mEnabled = true;
                 mBluetooth.setChecked(true);

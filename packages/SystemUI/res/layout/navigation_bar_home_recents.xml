@@ -42,7 +42,7 @@
 <!-- 				android:layout_height="match_parent" -->
 <!-- 				android:layout_weight="1" -->
 <!-- 				android:visibility="invisible" /> -->
-			<com.android.systemui.statusbar.policy.KeyButtonView
+			<com.android.systemui.statusbar.policy.buttons.BackKeyWithKillButtonView
 				android:id="@+id/back"
 				android:layout_width="80dp"
 				android:layout_height="match_parent"
@@ -57,7 +57,7 @@
 <!-- 				android:layout_height="match_parent" -->
 <!-- 				android:layout_weight="1" -->
 <!-- 				android:visibility="invisible" /> -->
-			<com.android.systemui.statusbar.policy.HomeKeyWithTasksButtonView
+			<com.android.systemui.statusbar.policy.buttons.HomeKeyWithTasksButtonView
 				android:id="@+id/home"
 				android:layout_width="80dp"
 				android:layout_height="match_parent"
@@ -72,7 +72,7 @@
 <!-- 				android:layout_height="match_parent" -->
 <!-- 				android:layout_weight="1" -->
 <!-- 				android:visibility="invisible" /> -->
-			<com.android.systemui.statusbar.policy.SearchKeyButtonView
+			<com.android.systemui.statusbar.policy.buttons.SearchKeyButtonView
 				android:id="@+id/search"
 				android:layout_width="80dp"
 				android:layout_height="match_parent"
@@ -118,63 +118,48 @@
 
 		<!-- lights out layout to match exactly -->
 		<LinearLayout
-			android:layout_height="match_parent"
-			android:layout_width="match_parent"
-			android:orientation="horizontal"
-			android:id="@+id/lights_out"
-			android:visibility="gone">
-			<View
-				android:layout_width="match_parent"
-				android:layout_height="match_parent"
-				android:layout_weight="1"
-				android:visibility="invisible" />
-			<ImageView
-				android:layout_width="60dp"
-				android:layout_height="match_parent"
-				android:layout_marginLeft="40dp"
-				android:src="@drawable/ic_sysbar_lights_out_dot_small"
-				android:scaleType="center"
-				android:layout_weight="0" />
-			<View
-				android:layout_width="match_parent"
-				android:layout_height="match_parent"
-				android:layout_weight="1"
-				android:visibility="invisible" />
-			<ImageView
-				android:layout_width="60dp"
-				android:layout_height="match_parent"
-				android:src="@drawable/ic_sysbar_lights_out_dot_large"
-				android:scaleType="center"
-				android:layout_weight="0" />
-			<View
-				android:layout_width="match_parent"
-				android:layout_height="match_parent"
-				android:layout_weight="1"
-				android:visibility="invisible" />
-			<ImageView
-				android:layout_width="60dp"
-				android:layout_height="match_parent"
-				android:src="@drawable/ic_sysbar_lights_out_dot_small"
-				android:scaleType="center"
-				android:layout_weight="0" />
-<!-- 			<View -->
-<!-- 				android:layout_width="match_parent" -->
-<!-- 				android:layout_height="match_parent" -->
-<!-- 				android:layout_weight="1" -->
-<!-- 				android:visibility="invisible" /> -->
-<!-- 			<ImageView -->
-<!-- 				android:layout_width="60dp" -->
-<!-- 				android:layout_marginRight="40dp" -->
-<!-- 				android:layout_height="match_parent" -->
-<!-- 				android:src="@drawable/ic_sysbar_lights_out_dot_small" -->
-<!-- 				android:scaleType="center" -->
-<!-- 				android:layout_weight="0" /> -->
-			<View
-				android:layout_width="match_parent"
-				android:layout_height="match_parent"
-				android:layout_weight="1"
-				android:visibility="invisible" />
-		</LinearLayout>
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:id="@+id/lights_out"
+            android:visibility="gone"
+            >
+            <ImageView
+                android:layout_width="80dp"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="40dp"
+                android:src="@drawable/ic_sysbar_lights_out_dot_small"
+                android:scaleType="center"
+                android:layout_weight="0"
+                />
+            <View 
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:visibility="invisible"
+                />
+            <ImageView
+                android:layout_width="80dp"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_sysbar_lights_out_dot_large"
+                android:scaleType="center"
+                android:layout_weight="0"
+                />
+            <View 
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:visibility="invisible"
+                />
+            <ImageView
+                android:layout_width="80dp"
+                android:layout_marginRight="40dp"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_sysbar_lights_out_dot_small"
+                android:scaleType="center"
+                android:layout_weight="0"
+                />
+        </LinearLayout>
 
 		<View
 			android:id="@+id/deadzone"
@@ -224,7 +209,7 @@
 <!-- 				android:layout_width="match_parent" -->
 <!-- 				android:layout_weight="1" -->
 <!-- 				android:visibility="invisible" /> -->
-			<com.android.systemui.statusbar.policy.SearchKeyButtonView
+			<com.android.systemui.statusbar.policy.buttons.SearchKeyButtonView
 				android:id="@+id/search"
 				android:layout_height="80dp"
 				android:layout_width="match_parent"
@@ -238,7 +223,7 @@
 <!-- 				android:layout_width="match_parent" -->
 <!-- 				android:layout_weight="1" -->
 <!-- 				android:visibility="invisible" /> -->
-			<com.android.systemui.statusbar.policy.HomeKeyWithTasksButtonView
+			<com.android.systemui.statusbar.policy.buttons.HomeKeyWithTasksButtonView
 				android:id="@+id/home"
 				android:layout_height="80dp"
 				android:layout_width="match_parent"
@@ -253,7 +238,7 @@
 <!-- 				android:layout_width="match_parent" -->
 <!-- 				android:layout_weight="1" -->
 <!-- 				android:visibility="invisible" /> -->
-			<com.android.systemui.statusbar.policy.KeyButtonView
+			<com.android.systemui.statusbar.policy.buttons.BackKeyWithKillButtonView
 				android:id="@+id/back"
 				android:layout_height="80dp"
 				android:layout_width="match_parent"
@@ -281,54 +266,49 @@
 		</LinearLayout>
 
 		<!-- lights out layout to match exactly -->
-		<LinearLayout
-			android:layout_height="match_parent"
-			android:layout_width="match_parent"
-			android:orientation="vertical"
-			android:id="@+id/lights_out"
-			android:visibility="gone">
-			<ImageView
-				android:layout_height="60dp"
-				android:layout_marginTop="40dp"
-				android:layout_width="match_parent"
-				android:src="@drawable/ic_sysbar_lights_out_dot_small"
-				android:scaleType="center"
-				android:layout_weight="0" />
-			<View
-				android:layout_height="match_parent"
-				android:layout_width="match_parent"
-				android:layout_weight="1"
-				android:visibility="invisible" />
-			<ImageView
-				android:layout_height="60dp"
-				android:layout_width="match_parent"
-				android:src="@drawable/ic_sysbar_lights_out_dot_large"
-				android:scaleType="center"
-				android:layout_weight="0" />
-<!-- 			<View -->
-<!-- 				android:layout_height="match_parent" -->
-<!-- 				android:layout_width="match_parent" -->
-<!-- 				android:layout_weight="1" -->
-<!-- 				android:visibility="invisible" /> -->
-<!-- 			<ImageView -->
-<!-- 				android:layout_height="60dp" -->
-<!-- 				android:layout_width="match_parent" -->
-<!-- 				android:src="@drawable/ic_sysbar_lights_out_dot_large" -->
-<!-- 				android:scaleType="center" -->
-<!-- 				android:layout_weight="0" /> -->
-			<View
-				android:layout_height="match_parent"
-				android:layout_width="match_parent"
-				android:layout_weight="1"
-				android:visibility="invisible" />
-			<ImageView
-				android:layout_height="60dp"
-				android:layout_marginBottom="40dp"
-				android:layout_width="match_parent"
-				android:src="@drawable/ic_sysbar_lights_out_dot_small"
-				android:scaleType="center"
-				android:layout_weight="0" />
-		</LinearLayout>
+        <LinearLayout 
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:id="@+id/lights_out"
+            android:visibility="gone"
+            >
+            <ImageView
+                android:layout_height="80dp"
+                android:layout_marginTop="40dp"
+                android:layout_width="match_parent"
+                android:src="@drawable/ic_sysbar_lights_out_dot_small"
+                android:scaleType="center"
+                android:layout_weight="0"
+                />
+            <View 
+                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:layout_weight="1"
+                android:visibility="invisible"
+                />
+            <ImageView
+                android:layout_height="80dp"
+                android:layout_width="match_parent"
+                android:src="@drawable/ic_sysbar_lights_out_dot_large"
+                android:scaleType="center"
+                android:layout_weight="0"
+                />
+            <View 
+                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:layout_weight="1"
+                android:visibility="invisible"
+                />
+            <ImageView
+                android:layout_height="80dp"
+                android:layout_marginBottom="40dp"
+                android:layout_width="match_parent"
+                android:src="@drawable/ic_sysbar_lights_out_dot_small"
+                android:scaleType="center"
+                android:layout_weight="0"
+                />
+        </LinearLayout>
 
 		<View
 			android:id="@+id/deadzone"

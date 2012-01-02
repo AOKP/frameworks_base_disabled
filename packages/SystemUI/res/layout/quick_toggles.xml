@@ -46,7 +46,7 @@
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:layout_weight="1">
-			<com.android.systemui.statusbar.policy.WifiToggle
+			<com.android.systemui.statusbar.policy.toggles.WifiToggle
 				android:layout_width="fill_parent"
 				android:layout_height="wrap_content"
 				systemui:labelText="@string/status_bar_settings_wifi_button"/>
@@ -56,7 +56,7 @@
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:layout_weight="1">
-			<com.android.systemui.statusbar.policy.GpsToggle
+			<com.android.systemui.statusbar.policy.toggles.GpsToggle
 				android:layout_width="fill_parent"
 				android:layout_height="wrap_content"
 				systemui:labelText="@string/status_bar_settings_gps_button"  />
@@ -73,7 +73,7 @@
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:layout_weight="1">
-				<com.android.systemui.statusbar.policy.BluetoothToggle
+				<com.android.systemui.statusbar.policy.toggles.BluetoothToggle
 					android:layout_width="fill_parent"
 					android:layout_height="wrap_content"
 					systemui:labelText="@string/status_bar_settings_bluetooth_button" />
@@ -83,14 +83,14 @@
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:layout_weight="1">
-			<com.android.systemui.statusbar.policy.NetworkToggle
+			<com.android.systemui.statusbar.policy.toggles.NetworkToggle
 				android:layout_width="fill_parent"
 				android:layout_height="wrap_content"
 				systemui:labelText="@string/toggle_data" />
 		</LinearLayout>
 	</LinearLayout>
 
-	<com.android.systemui.statusbar.policy.AutoRotateToggle
+	<com.android.systemui.statusbar.policy.toggles.AutoRotateToggle
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		systemui:labelText="@string/status_bar_settings_auto_rotation" />

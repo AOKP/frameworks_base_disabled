@@ -63,7 +63,7 @@
                 android:layout_weight="1"
                 android:visibility="invisible"
                 />    
-            <com.android.systemui.statusbar.policy.KeyButtonView android:id="@+id/back"
+            <com.android.systemui.statusbar.policy.buttons.BackKeyWithKillButtonView android:id="@+id/back"
                 android:layout_width="80dp"
                 android:layout_height="match_parent"
                 android:src="@drawable/ic_sysbar_back"
@@ -239,7 +239,7 @@
                 android:layout_weight="1"
                 android:visibility="invisible"
                 />
-            <com.android.systemui.statusbar.policy.KeyButtonView android:id="@+id/back"
+            <com.android.systemui.statusbar.policy.buttons.BackKeyWithKillButtonView android:id="@+id/back"
                 android:layout_height="80dp"
                 android:layout_width="match_parent"
                 android:src="@drawable/ic_sysbar_back_land"

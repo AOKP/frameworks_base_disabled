@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.systemui.statusbar.policy;
+package com.android.systemui.statusbar.policy.toggles;
 
 import java.util.Observable;
 import java.util.Observer;

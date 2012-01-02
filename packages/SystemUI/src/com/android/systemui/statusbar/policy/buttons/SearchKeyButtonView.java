@@ -1,5 +1,5 @@
 
-package com.android.systemui.statusbar.policy;
+package com.android.systemui.statusbar.policy.buttons;
 
 import android.content.Context;
 import android.content.Intent;
@@ -15,6 +15,7 @@ import android.view.View.OnLongClickListener;
 import android.view.accessibility.AccessibilityEvent;
 
 import com.android.systemui.R;
+import com.android.systemui.statusbar.policy.KeyButtonView;
 
 public class SearchKeyButtonView extends KeyButtonView {
 

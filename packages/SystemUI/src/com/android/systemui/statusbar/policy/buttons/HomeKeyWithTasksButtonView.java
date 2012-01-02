@@ -1,5 +1,5 @@
 
-package com.android.systemui.statusbar.policy;
+package com.android.systemui.statusbar.policy.buttons;
 
 import android.content.Context;
 import android.content.Intent;
@@ -10,6 +10,7 @@ import android.view.View;
 
 import com.android.internal.statusbar.IStatusBarService;
 import com.android.systemui.statusbar.phone.PhoneStatusBar;
+import com.android.systemui.statusbar.policy.KeyButtonView;
 
 public class HomeKeyWithTasksButtonView extends KeyButtonView {
     

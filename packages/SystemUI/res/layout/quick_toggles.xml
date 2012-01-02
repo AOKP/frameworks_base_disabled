@@ -36,29 +36,31 @@
 			systemui:text="@string/status_bar_settings_auto_brightness_label" />
 	</LinearLayout>
 
-
-	<!-- Rotation lock -->
 	<LinearLayout
-		android:id="@+id/rotate"
+		android:id="@+id/row1"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:paddingBottom="10dp"
-		android:layout_weight="1">
-		<TextView
-			android:textAppearance="@style/TextAppearance.StatusBar.Date"
-			android:layout_width="wrap_content"
+		android:orientation="horizontal">
+
+		<LinearLayout
+			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:singleLine="true"
-			android:paddingTop="4dp"
-			android:paddingLeft="10dp"
-			android:gravity="center_vertical|left"
-			android:text="@string/status_bar_settings_auto_rotation" />
-		<Switch
-			android:id="@+id/rotate_checkbox"
-			android:layout_width="fill_parent"
+			android:layout_weight="1">
+			<com.android.systemui.statusbar.policy.WifiToggle
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				systemui:labelText="@string/status_bar_settings_wifi_button"/>
+		</LinearLayout>
+
+		<LinearLayout
+			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:layout_gravity="right"
-			android:layout_marginRight="5dp" />
+			android:layout_weight="1">
+			<com.android.systemui.statusbar.policy.GpsToggle
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				systemui:labelText="@string/status_bar_settings_gps_button"  />
+		</LinearLayout>
 	</LinearLayout>
 
 	<LinearLayout
@@ -67,78 +69,30 @@
 		android:layout_height="wrap_content"
 		android:orientation="horizontal">
 
-		<!-- Wifi -->
 		<LinearLayout
-			android:id="@+id/wifi"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:paddingBottom="10dp"
 			android:layout_weight="1">
-			<TextView
-				android:textAppearance="@style/TextAppearance.StatusBar.Date"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:singleLine="true"
-				android:paddingTop="4dp"
-				android:paddingLeft="10dp"
-				android:gravity="center_vertical|left"
-				android:text="@string/status_bar_settings_wifi_button" />
-			<Switch
-				android:id="@+id/wifi_checkbox"
-				android:layout_width="fill_parent"
-				android:layout_height="wrap_content"
-				android:layout_gravity="right"
-				android:layout_marginRight="5dp" />
+				<com.android.systemui.statusbar.policy.BluetoothToggle
+					android:layout_width="fill_parent"
+					android:layout_height="wrap_content"
+					systemui:labelText="@string/status_bar_settings_bluetooth_button" />
 		</LinearLayout>
 
-
-
-		<!-- Gps -->
 		<LinearLayout
-			android:id="@+id/gps"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:paddingBottom="10dp"
 			android:layout_weight="1">
-			<TextView
-				android:textAppearance="@style/TextAppearance.StatusBar.Date"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:singleLine="true"
-				android:paddingTop="4dp"
-				android:paddingLeft="10dp"
-				android:gravity="center_vertical|left"
-				android:text="@string/status_bar_settings_gps_button" />
-			<Switch
-				android:id="@+id/gps_checkbox"
+			<com.android.systemui.statusbar.policy.NetworkToggle
 				android:layout_width="fill_parent"
 				android:layout_height="wrap_content"
-				android:layout_gravity="right"
-				android:layout_marginRight="5dp" />
+				systemui:labelText="@string/toggle_data" />
 		</LinearLayout>
-
 	</LinearLayout>
 
-	<!-- Gps -->
-	<LinearLayout
-		android:id="@+id/bluetooth"
-		android:layout_width="match_parent"
+	<com.android.systemui.statusbar.policy.AutoRotateToggle
+		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
-		android:paddingBottom="10dp">
-		<TextView
-			android:textAppearance="@style/TextAppearance.StatusBar.Date"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:singleLine="true"
-			android:paddingTop="4dp"
-			android:paddingLeft="10dp"
-			android:gravity="center_vertical|left"
-			android:text="@string/status_bar_settings_bluetooth_button" />
-		<Switch
-			android:id="@+id/bluetooth_checkbox"
-			android:layout_width="fill_parent"
-			android:layout_height="wrap_content"
-			android:layout_gravity="right"
-			android:layout_marginRight="5dp" />
-	</LinearLayout>
+		systemui:labelText="@string/status_bar_settings_auto_rotation" />
+
 </LinearLayout>

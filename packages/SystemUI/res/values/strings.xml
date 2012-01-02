@@ -368,5 +368,6 @@
     
     <string name="battery_test">99</string>
     <string name="status_bar_settings_gps_button">GPS</string>
-    <string name="status_bar_settings_bluetooth_button">Bluetooth</string>
+    <string name="status_bar_settings_bluetooth_button">BT</string>
+    <string name="toggle_data">Data</string>
 </resources>

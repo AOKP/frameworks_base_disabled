@@ -21,72 +21,53 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.util.AttributeSet;
+import android.widget.CompoundButton;
+import android.widget.TextView;
 
 import com.android.systemui.R;
 
-public class BluetoothToggle extends Toggle {
+public class NetworkToggle extends Toggle {
 
-    private int mAdapterState = BluetoothAdapter.STATE_OFF;
+    public NetworkToggle(Context context, AttributeSet attrs) {
+        this(context, attrs, 0);
+    }
 
-    public BluetoothToggle(Context context, AttributeSet attrs) {
+    public NetworkToggle(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs);
 
         context.registerReceiver(getBroadcastReceiver(), getIntentFilter());
     }
 
-    @Override
-    protected void onFinishInflate() {
-        super.onFinishInflate();
+    private boolean isMobileDataEnabled() {
+        ConnectivityManager cm = (ConnectivityManager) mContext
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        return cm.getMobileDataEnabled();
+    }
 
-        final BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
-        if (adapter != null) {
-            mAdapterState = adapter.getState();
-            updateToggleState();
-        }
-
+    private void setMobileDataEnabled(boolean on) {
+        ConnectivityManager cm = (ConnectivityManager) mContext
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        cm.setMobileDataEnabled(on);
     }
 
     @Override
     protected void updateInternalState() {
-        switch (mAdapterState) {
-            case BluetoothAdapter.STATE_ON:
-                mEnabled = true;
-                mToggle.setChecked(true);
-                mToggle.setEnabled(true);
-                break;
-            case BluetoothAdapter.STATE_TURNING_ON:
-                mToggle.setChecked(true);
-                mToggle.setEnabled(false);
-                break;
-            case BluetoothAdapter.STATE_TURNING_OFF:
-                mToggle.setChecked(false);
-                mToggle.setEnabled(false);
-                break;
-            default:
-            case BluetoothAdapter.STATE_OFF:
-                mEnabled = false;
-                mToggle.setChecked(false);
-                mToggle.setEnabled(true);
-                break;
-        }
+        mToggle.setChecked(isMobileDataEnabled());
     }
 
     @Override
     protected int getTextLabelId() {
-        return R.string.status_bar_settings_bluetooth_button;
+        return R.string.toggle_data;
     }
 
     @Override
     protected void onCheckChanged(boolean isChecked) {
         final BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
         if (adapter != null) {
-            if (isChecked)
-                adapter.enable();
-            else
-                adapter.disable();
+            setMobileDataEnabled(isChecked);
         }
-
     }
 
     protected BroadcastReceiver getBroadcastReceiver() {
@@ -94,17 +75,18 @@ public class BluetoothToggle extends Toggle {
 
             @Override
             public void onReceive(Context context, Intent intent) {
-                mAdapterState = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE,
-                        BluetoothAdapter.STATE_OFF);
-                updateToggleState();
+                final String action = intent.getAction();
+
+                if (action.equals(ConnectivityManager.CONNECTIVITY_ACTION)) {
+                    updateToggleState();
+                }
             }
         };
     }
 
     protected IntentFilter getIntentFilter() {
         IntentFilter filter = new IntentFilter();
-        filter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
+        filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         return filter;
     }
-
 }

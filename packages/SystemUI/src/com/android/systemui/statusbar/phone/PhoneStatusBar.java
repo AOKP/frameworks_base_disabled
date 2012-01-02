@@ -177,7 +177,6 @@ public class PhoneStatusBar extends StatusBar {
 
     LinearLayout mQuickToggles;
     BrightnessController mBrightness;
-    AutoRotateController mRotate;
     WifiController mWifi;
     GpsToggle mGps;
     BluetoothToggle mBluetooth;
@@ -368,14 +367,6 @@ public class PhoneStatusBar extends StatusBar {
         mQuickToggles = (LinearLayout) expanded.findViewById(R.id.quick_toggles);
         mBrightness = new BrightnessController(context, (ToggleSlider)
                 mQuickToggles.findViewById(R.id.brightness));
-        mRotate = new AutoRotateController(context,
-                (CompoundButton) expanded.findViewById(R.id.rotate_checkbox));
-        mWifi = new WifiController(context,
-                (CompoundButton) expanded.findViewById(R.id.wifi_checkbox));
-        mGps = new GpsToggle(context,
-                (CompoundButton) expanded.findViewById(R.id.gps_checkbox));
-        mBluetooth = new BluetoothToggle(context,
-                (CompoundButton) expanded.findViewById(R.id.bluetooth_checkbox));
 
         mTicker = new MyTicker(context, sb);
 

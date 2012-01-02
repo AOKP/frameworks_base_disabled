@@ -25,31 +25,14 @@ import android.content.Context;
 import android.database.Cursor;
 import android.location.LocationManager;
 import android.provider.Settings;
-import android.widget.CompoundButton;
+import android.util.AttributeSet;
 
-public class GpsToggle implements
-        CompoundButton.OnCheckedChangeListener {
-    private static final String TAG = "StatusBar.BluetoothController";
+import com.android.systemui.R;
 
-    private Context mContext;
+public class GpsToggle extends Toggle {
 
-    ContentQueryMap mContentQueryMap;
-    Observer mSettingsObserver;
-
-    CompoundButton mGps;
-
-    boolean mSystemChanged = false;
-
-    public GpsToggle(Context context, CompoundButton b) {
-        mContext = context;
-        mGps = b;
-
-        ContentResolver res = mContext.getContentResolver();
-        boolean gpsEnabled = Settings.Secure.isLocationProviderEnabled(
-                res, LocationManager.GPS_PROVIDER);
-        mGps.setChecked(gpsEnabled);
-
-        mGps.setOnCheckedChangeListener(this);
+    public GpsToggle(Context context, AttributeSet attrs) {
+        super(context, attrs);
 
         Cursor settingsCursor = mContext.getContentResolver().query(Settings.Secure.CONTENT_URI,
                 null,
@@ -63,29 +46,39 @@ public class GpsToggle implements
         if (mSettingsObserver == null) {
             mSettingsObserver = new Observer() {
                 public void update(Observable o, Object arg) {
-                    refreshStatus();
+                    updateToggleState();
                 }
             };
             mContentQueryMap.addObserver(mSettingsObserver);
         }
-
-        refreshStatus();
     }
 
-    public void refreshStatus() {
-        mSystemChanged = true;
+    ContentQueryMap mContentQueryMap;
+    Observer mSettingsObserver;
+
+    @Override
+    protected void updateInternalState() {
         ContentResolver res = mContext.getContentResolver();
         boolean gpsEnabled = Settings.Secure.isLocationProviderEnabled(
                 res, LocationManager.GPS_PROVIDER);
-        mGps.setChecked(gpsEnabled);
-        mSystemChanged = false;
+        mToggle.setChecked(gpsEnabled);
     }
 
     @Override
-    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        if (mSystemChanged)
-            return;
+    protected int getTextLabelId() {
+        return R.string.status_bar_settings_gps_button;
+    }
+
+    @Override
+    protected void onCheckChanged(boolean isChecked) {
         Settings.Secure.setLocationProviderEnabled(mContext.getContentResolver(),
                 LocationManager.GPS_PROVIDER, isChecked ? true : false);
     }
+
+    @Override
+    protected void onFinishInflate() {
+        super.onFinishInflate();
+        updateToggleState();
+    }
+
 }

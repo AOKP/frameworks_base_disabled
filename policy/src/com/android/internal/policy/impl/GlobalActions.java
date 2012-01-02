@@ -35,6 +35,7 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.os.SystemProperties;
 import android.provider.Settings;
+import android.provider.Settings.SettingNotFoundException;
 import android.server.PowerSaverService;
 import android.telephony.PhoneStateListener;
 import android.telephony.ServiceState;
@@ -125,6 +126,12 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
      * @return A new dialog.
      */
     private AlertDialog createDialog() {
+        mEnablePowerSaverToggle = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.POWER_DIALOG_SHOW_POWER_SAVER, 1) == 1;
+        
+        mEnableScreenshotToggle = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.POWER_DIALOG_SHOW_SCREENSHOT, 0) == 1;        
+        
         mSilentModeAction = new SilentModeAction(mAudioManager, mHandler);
 
         mAirplaneModeOn = new ToggleAction(
@@ -189,7 +196,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 return false;
             }
         };
-
+        
         mItems = new ArrayList<Action>();
 
         // first: power off
@@ -233,26 +240,41 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         mItems.add(mAirplaneModeOn);
         
         // next: power saver
-        if(mEnablePowerSaverToggle)
-            mItems.add(mPowerSaverOn); 
+        try {
+            Settings.Secure.getInt(mContext.getContentResolver(),
+                    Settings.Secure.POWER_SAVER_MODE);
+            if(mEnablePowerSaverToggle) {
+                Slog.e(TAG, "Adding powersaver");
+                mItems.add(mPowerSaverOn); 
+            } else {
+                Slog.e(TAG, "not adding power saver");
+            }
+        } catch (SettingNotFoundException e) {
+            //Power Saver hasn't yet been initialized so we don't want to make it easy for the user without
+            //  them reading any warnings that could be presented by enabling the power saver through ROM Control
+        }
+       
         
         // next: screenshot
-        if (mEnableScreenshotToggle)
-            mItems.add(
-                    new SinglePressAction(com.android.internal.R.drawable.ic_lock_screenshot,
-                            R.string.global_action_screenshot) {
-                        public void onPress() {
-                            takeScreenshot();
-                        }
+        if (mEnableScreenshotToggle) {
+            Slog.e(TAG, "Adding screenshot");
+            mItems.add(new SinglePressAction(com.android.internal.R.drawable.ic_lock_screenshot,
+                    R.string.global_action_screenshot) {
+                public void onPress() {
+                    takeScreenshot();
+                }
 
-                        public boolean showDuringKeyguard() {
-                            return true;
-                        }
+                public boolean showDuringKeyguard() {
+                    return true;
+                }
 
-                        public boolean showBeforeProvisioning() {
-                            return true;
-                        }
-                    });
+                public boolean showBeforeProvisioning() {
+                    return true;
+                }
+            });
+        } else {
+            Slog.e(TAG, "Not adding screenshot");
+        }
 
         // last: silent mode
         if (SHOW_SILENT_TOGGLE) {
@@ -376,11 +398,6 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 Settings.Secure.POWER_SAVER_MODE, PowerSaverService.POWER_SAVER_MODE_OFF) == PowerSaverService.POWER_SAVER_MODE_ON;
         mPowerSaverOn.updateState(powerSaverOn ? ToggleAction.State.On : ToggleAction.State.Off);
 
-        mEnablePowerSaverToggle = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.POWER_DIALOG_SHOW_POWER_SAVER, 1) == 1;
-        
-        mEnableScreenshotToggle = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.POWER_DIALOG_SHOW_SCREENSHOT, 0) == 1;
     }
 
 

@@ -3422,4 +3422,7 @@
     <!-- label for item that reboots the phone in phone options dialog -->
     <string name="global_action_reboot">Reboot</string>
 
+    <!--Application killed toast -->
+    <string name="app_killed_message">Application killed</string>
+
 </resources>

@@ -57,10 +57,6 @@ public class NetworkToggle extends Toggle {
         mToggle.setChecked(isMobileDataEnabled());
     }
 
-    @Override
-    protected int getTextLabelId() {
-        return R.string.toggle_data;
-    }
 
     @Override
     protected void onCheckChanged(boolean isChecked) {

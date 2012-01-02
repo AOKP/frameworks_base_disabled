@@ -94,11 +94,6 @@ public class AutoRotateToggle extends Toggle {
     }
 
     @Override
-    protected int getTextLabelId() {
-        return R.string.status_bar_settings_auto_rotation;
-    }
-
-    @Override
     protected void onCheckChanged(boolean isChecked) {
         if (isChecked != mAutoRotation) {
             setAutoRotation(isChecked);

@@ -97,8 +97,6 @@ public abstract class Toggle extends RelativeLayout implements
 
     protected abstract void updateInternalState();
 
-    protected abstract int getTextLabelId();
-
     protected abstract void onCheckChanged(boolean isChecked);
 
     public void updateToggleState() {

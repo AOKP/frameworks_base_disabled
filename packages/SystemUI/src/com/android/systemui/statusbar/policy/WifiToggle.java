@@ -137,11 +137,6 @@ public class WifiToggle extends Toggle {
     }
 
     @Override
-    protected int getTextLabelId() {
-        return R.string.status_bar_settings_wifi_button;
-    }
-
-    @Override
     protected void onCheckChanged(boolean isChecked) {
         if (isChecked != mIsWifiOn) {
             changeWifiState(isChecked);

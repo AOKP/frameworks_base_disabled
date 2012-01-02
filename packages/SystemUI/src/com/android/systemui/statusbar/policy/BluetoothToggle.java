@@ -73,11 +73,6 @@ public class BluetoothToggle extends Toggle {
     }
 
     @Override
-    protected int getTextLabelId() {
-        return R.string.status_bar_settings_bluetooth_button;
-    }
-
-    @Override
     protected void onCheckChanged(boolean isChecked) {
         final BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
         if (adapter != null) {

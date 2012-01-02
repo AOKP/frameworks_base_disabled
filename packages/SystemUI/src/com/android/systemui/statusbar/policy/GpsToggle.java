@@ -65,11 +65,6 @@ public class GpsToggle extends Toggle {
     }
 
     @Override
-    protected int getTextLabelId() {
-        return R.string.status_bar_settings_gps_button;
-    }
-
-    @Override
     protected void onCheckChanged(boolean isChecked) {
         Settings.Secure.setLocationProviderEnabled(mContext.getContentResolver(),
                 LocationManager.GPS_PROVIDER, isChecked ? true : false);

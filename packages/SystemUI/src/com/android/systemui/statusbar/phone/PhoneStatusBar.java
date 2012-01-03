@@ -86,6 +86,7 @@ import com.android.systemui.statusbar.SignalClusterView;
 import com.android.systemui.statusbar.StatusBar;
 import com.android.systemui.statusbar.StatusBarIconView;
 import com.android.systemui.statusbar.policy.BrightnessController;
+import com.android.systemui.statusbar.policy.CenterClock;
 import com.android.systemui.statusbar.policy.Clock;
 import com.android.systemui.statusbar.policy.DateView;
 import com.android.systemui.statusbar.policy.LocationController;
@@ -175,9 +176,6 @@ public class PhoneStatusBar extends StatusBar {
 
     LinearLayout mQuickToggles;
     BrightnessController mBrightness;
-    WifiController mWifi;
-    GpsToggle mGps;
-    BluetoothToggle mBluetooth;
 
     // drag bar
     CloseDragHandle mCloseView;
@@ -234,6 +232,8 @@ public class PhoneStatusBar extends StatusBar {
     Runnable mPostCollapseCleanup = null;
 
     boolean mQuickTogglesHideAfterCollapse = true;
+    
+    CenterClock mCenterClock;
 
     // for disabling the status bar
     int mDisabled = 0;
@@ -335,6 +335,8 @@ public class PhoneStatusBar extends StatusBar {
         } catch (RemoteException ex) {
             // no window manager? good luck with that
         }
+        
+        mCenterClock = (CenterClock) sb.findViewById(R.id.center_clock);
 
         // figure out which pixel-format to use for the status bar.
         mPixelFormat = PixelFormat.OPAQUE;
@@ -1079,7 +1081,11 @@ public class PhoneStatusBar extends StatusBar {
         Clock clock = (Clock) mStatusBarView.findViewById(R.id.clock);
         if (clock != null) {
             clock.updateVisibilityFromStatusBar(show);
-            //clock.setVisibility(show ? View.VISIBLE : View.GONE);
+        }
+        
+        CenterClock cclock = (CenterClock) mStatusBarView.findViewById(R.id.center_clock);
+        if (cclock != null) {
+            cclock.updateVisibilityFromStatusBar(show);
         }
     }
 
@@ -1766,6 +1772,7 @@ public class PhoneStatusBar extends StatusBar {
             mTickerView.setVisibility(View.VISIBLE);
             mTickerView.startAnimation(loadAnim(com.android.internal.R.anim.push_up_in, null));
             mIcons.startAnimation(loadAnim(com.android.internal.R.anim.push_up_out, null));
+            mCenterClock.updateVisibilityFromStatusBar(false);
         }
 
         @Override
@@ -1775,6 +1782,7 @@ public class PhoneStatusBar extends StatusBar {
             mIcons.startAnimation(loadAnim(com.android.internal.R.anim.push_down_in, null));
             mTickerView.startAnimation(loadAnim(com.android.internal.R.anim.push_down_out,
                     mTickingDoneListener));
+            mCenterClock.updateVisibilityFromStatusBar(true);
         }
 
         public void tickerHalting() {

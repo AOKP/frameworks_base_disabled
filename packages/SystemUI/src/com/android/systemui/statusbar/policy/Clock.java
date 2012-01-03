@@ -34,6 +34,7 @@ import android.text.format.DateFormat;
 import android.text.style.CharacterStyle;
 import android.text.style.RelativeSizeSpan;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.TextView;
 
@@ -43,21 +44,25 @@ import com.android.internal.R;
  * This widget display an analogic clock with two hands for hours and minutes.
  */
 public class Clock extends TextView {
-    private boolean mAttached;
-    private Calendar mCalendar;
-    private String mClockFormatString;
-    private SimpleDateFormat mClockFormat;
+    protected boolean mAttached;
+    protected Calendar mCalendar;
+    protected String mClockFormatString;
+    protected SimpleDateFormat mClockFormat;
 
     public static final int AM_PM_STYLE_NORMAL = 0;
     public static final int AM_PM_STYLE_SMALL = 1;
     public static final int AM_PM_STYLE_GONE = 2;
 
-    // private static final int AM_PM_STYLE = AM_PM_STYLE_GONE;
+    protected int mAmPmStyle = AM_PM_STYLE_GONE;
 
-    private boolean mShowClock = true;
-    private int mAmPmStyle = AM_PM_STYLE_GONE;
-    private boolean mShowClockDuringLockscreen = false;
-    private int mClockColor = com.android.internal.R.color.holo_blue_light;
+    public static final int STYLE_HIDE_CLOCK = 0;
+    public static final int STYLE_CLOCK_RIGHT = 1;
+    public static final int STYLE_CLOCK_CENTER = 2;
+
+    protected int mClockStyle = STYLE_CLOCK_RIGHT;
+
+    protected boolean mShowClockDuringLockscreen = false;
+    protected int mClockColor = com.android.internal.R.color.holo_blue_light;
 
     public Clock(Context context) {
         this(context, null);
@@ -110,7 +115,7 @@ public class Clock extends TextView {
         }
     }
 
-    private final BroadcastReceiver mIntentReceiver = new BroadcastReceiver() {
+    protected final BroadcastReceiver mIntentReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
@@ -130,7 +135,7 @@ public class Clock extends TextView {
         setText(getSmallTime());
     }
 
-    private final CharSequence getSmallTime() {
+    protected final CharSequence getSmallTime() {
         Context context = getContext();
         boolean b24 = DateFormat.is24HourFormat(context);
         int res;
@@ -209,7 +214,7 @@ public class Clock extends TextView {
     }
 
     public void updateVisibilityFromStatusBar(boolean show) {
-        if (mShowClock)
+        if (mClockStyle == STYLE_CLOCK_RIGHT)
             setVisibility(show ? View.VISIBLE : View.GONE);
 
     }
@@ -225,7 +230,7 @@ public class Clock extends TextView {
                     Settings.System.getUriFor(Settings.System.STATUSBAR_CLOCK_AM_PM_STYLE), false,
                     this);
             resolver.registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.STATUSBAR_CLOCK_ENABLED), false, this);
+                    Settings.System.getUriFor(Settings.System.STATUSBAR_CLOCK_STYLE), false, this);
             resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.STATUSBAR_CLOCK_COLOR), false, this);
             resolver.registerContentObserver(
@@ -240,7 +245,7 @@ public class Clock extends TextView {
         }
     }
 
-    private void updateSettings() {
+    protected void updateSettings() {
         ContentResolver resolver = mContext.getContentResolver();
 
         mClockFormatString = "";
@@ -251,14 +256,26 @@ public class Clock extends TextView {
             updateClock();
         }
 
-        mShowClock = (Settings.System.getInt(resolver, Settings.System.STATUSBAR_CLOCK_ENABLED, 1) == 1);
-        if (mShowClock)
-            setVisibility(View.VISIBLE);
-        else
-            setVisibility(View.GONE);
+        mClockColor = Settings.System.getInt(resolver, Settings.System.STATUSBAR_CLOCK_COLOR,
+                0xFF33B5E5);
+        if (mClockColor == -1) {
+            // flag to reset the color
+            mClockColor = 0xFF33B5E5;
+        }
+        setTextColor(mClockColor);
+
+        mClockStyle = Settings.System.getInt(resolver, Settings.System.STATUSBAR_CLOCK_STYLE, 1);
+        updateClockVisibility();
 
         mShowClockDuringLockscreen = (Settings.System.getInt(resolver,
                 Settings.System.STATUSBAR_CLOCK_LOCKSCREEN_HIDE, 1) == 1);
 
+    }
+
+    protected void updateClockVisibility() {
+        if (mClockStyle == STYLE_CLOCK_RIGHT)
+            setVisibility(View.VISIBLE);
+        else
+            setVisibility(View.GONE);
     }
 }

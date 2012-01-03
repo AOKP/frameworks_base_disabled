@@ -2252,7 +2252,7 @@ public final class Settings {
 
         public static final String STATUSBAR_CLOCK_AM_PM_STYLE = "statusbar_clock_am_pm_style";
 
-        public static final String STATUSBAR_CLOCK_ENABLED = "statusbar_clock_enabled";
+        public static final String STATUSBAR_CLOCK_STYLE = "statusbar_clock_enabled";
 
         public static final String STATUSBAR_CLOCK_COLOR = "statusbar_clock_color";
 
@@ -2261,6 +2261,8 @@ public final class Settings {
         public static final String POWER_DIALOG_SHOW_SCREENSHOT = "power_dialog_show_screenshot";
 
         public static final String STATUSBAR_CLOCK_LOCKSCREEN_HIDE = "statusbar_clock_lockscreen_hide";
+
+        public static final String STATUSBAR_SHOW_ALARM = "statusbar_show_alarm";
     }
 
     /**
@@ -4216,6 +4218,12 @@ public final class Settings {
          * Boolean value.
          */
         public static final String LOCK_SCREEN_LOCK_USER_OVERRIDE = "lock_screen_lock_suer_override";
+
+        public static final String POWER_SAVER_WIFI_MODE = "power_saver_wifi_mode";
+
+        public static final String POWER_SAVER_SYNC_DATA_MODE = "power_saver_sync_data_mode";
+
+        public static final String POWER_SAVER_SYNC_MOBILE_PREFERENCE = "power_saver_sync_mobile_preference";
 
 
         /**

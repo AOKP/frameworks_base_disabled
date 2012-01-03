@@ -2,17 +2,14 @@
 package android.server;
 
 import java.util.Calendar;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.app.ActivityManager;
 import android.app.AlarmManager;
 import android.app.DownloadManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -28,7 +25,6 @@ import android.os.Handler;
 import android.provider.Settings;
 import android.provider.Settings.SettingNotFoundException;
 import android.telephony.TelephonyManager;
-import android.util.Log;
 import android.util.Slog;
 
 import com.android.internal.telephony.Phone;
@@ -666,6 +662,12 @@ public class PowerSaverService extends BroadcastReceiver {
                     Settings.Secure.POWER_SAVER_SYNC_INTERVAL), false, this);
             resolver.registerContentObserver(Settings.Secure.getUriFor(
                     Settings.Secure.POWER_SAVER_DATA_DELAY), false, this);
+            resolver.registerContentObserver(Settings.Secure.getUriFor(
+                    Settings.Secure.POWER_SAVER_WIFI_MODE), false, this);
+            resolver.registerContentObserver(Settings.Secure.getUriFor(
+                    Settings.Secure.POWER_SAVER_SYNC_MOBILE_PREFERENCE), false, this);
+            resolver.registerContentObserver(Settings.Secure.getUriFor(
+                    Settings.Secure.POWER_SAVER_SYNC_DATA_MODE), false, this);
         }
 
         @Override
@@ -688,6 +690,13 @@ public class PowerSaverService extends BroadcastReceiver {
                 Settings.Secure.POWER_SAVER_DATA_DELAY, 0 /* default */);
         mScreenOffDataMode = Settings.Secure.getInt(cr, Settings.Secure.POWER_SAVER_DATA_MODE,
                 DATA_UNTOUCHED);
+        mScreenOffWifiMode = Settings.Secure.getInt(cr, Settings.Secure.POWER_SAVER_WIFI_MODE,
+                WIFI_UNTOUCHED);
+        mSyncDataMode = Settings.Secure.getInt(cr, Settings.Secure.POWER_SAVER_SYNC_DATA_MODE,
+                SYNCING_USE_SCREEN_OFF_CONFIG);
+        mSyncMobileDataMode = Settings.Secure.getInt(cr,
+                Settings.Secure.POWER_SAVER_SYNC_MOBILE_PREFERENCE,
+                SYNCING_DATA_PREFER_3G);
 
         if (mMode == POWER_SAVER_MODE_OFF) {
             cancelAllTasks();

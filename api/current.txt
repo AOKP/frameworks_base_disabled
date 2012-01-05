@@ -17466,8 +17466,11 @@ package android.provider {
     field public static final java.lang.String POWER_SAVER_MODE = "power_saver_mode";
     field public static final java.lang.String POWER_SAVER_ORIGINAL_NETWORK_MODE = "power_saver_original_network_mode";
     field public static final java.lang.String POWER_SAVER_ORIGINAL_NETWORK_ON = "power_saver_original_network_on";
+    field public static final java.lang.String POWER_SAVER_SYNC_DATA_MODE = "power_saver_sync_data_mode";
     field public static final java.lang.String POWER_SAVER_SYNC_INTERVAL = "power_saver_sync_interval";
+    field public static final java.lang.String POWER_SAVER_SYNC_MOBILE_PREFERENCE = "power_saver_sync_mobile_preference";
     field public static final java.lang.String POWER_SAVER_SYNC_MODE = "power_saver_sync_mode";
+    field public static final java.lang.String POWER_SAVER_WIFI_MODE = "power_saver_wifi_mode";
     field public static final java.lang.String SELECTED_INPUT_METHOD_SUBTYPE = "selected_input_method_subtype";
     field public static final java.lang.String SETTINGS_CLASSNAME = "settings_classname";
     field public static final java.lang.String SYS_PROP_SETTING_VERSION = "sys.settings_secure_version";
@@ -17600,10 +17603,11 @@ package android.provider {
     field public static final java.lang.String STATUSBAR_BATTERY_TEXT_STYLE = "statusbar_battery_text_style";
     field public static final java.lang.String STATUSBAR_CLOCK_AM_PM_STYLE = "statusbar_clock_am_pm_style";
     field public static final java.lang.String STATUSBAR_CLOCK_COLOR = "statusbar_clock_color";
-    field public static final java.lang.String STATUSBAR_CLOCK_ENABLED = "statusbar_clock_enabled";
     field public static final java.lang.String STATUSBAR_CLOCK_LOCKSCREEN_HIDE = "statusbar_clock_lockscreen_hide";
+    field public static final java.lang.String STATUSBAR_CLOCK_STYLE = "statusbar_clock_enabled";
     field public static final java.lang.String STATUSBAR_QUICKTOGGLES_AUTOHIDE = "statusbar_quicktoggles_autohide";
     field public static final java.lang.String STATUSBAR_SETTINGS_BEHAVIOR = "statusbar_settings_behavior";
+    field public static final java.lang.String STATUSBAR_SHOW_ALARM = "statusbar_show_alarm";
     field public static final java.lang.String STAY_ON_WHILE_PLUGGED_IN = "stay_on_while_plugged_in";
     field public static final java.lang.String SYS_PROP_SETTING_VERSION = "sys.settings_system_version";
     field public static final java.lang.String TEXT_AUTO_CAPS = "auto_caps";

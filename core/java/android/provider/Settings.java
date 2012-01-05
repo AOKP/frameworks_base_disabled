@@ -2263,6 +2263,8 @@ public final class Settings {
         public static final String STATUSBAR_CLOCK_LOCKSCREEN_HIDE = "statusbar_clock_lockscreen_hide";
 
         public static final String STATUSBAR_SHOW_ALARM = "statusbar_show_alarm";
+
+        public static final String STATUSBAR_TOGGLES = "statusbar_toggles";
     }
 
     /**

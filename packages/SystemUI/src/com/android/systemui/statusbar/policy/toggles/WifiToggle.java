@@ -16,16 +16,16 @@
 
 package com.android.systemui.statusbar.policy.toggles;
 
+import com.android.systemui.R;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
-import android.util.AttributeSet;
 import android.util.Log;
-
-import com.android.systemui.R;
+import android.view.View;
 
 /**
  * TODO: Listen for changes to the setting.
@@ -35,11 +35,14 @@ public class WifiToggle extends Toggle {
     private boolean mIsWifiOn;
     private int mWifiState = WifiManager.WIFI_STATE_UNKNOWN;
 
-    public WifiToggle(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
+    public WifiToggle(Context context) {
+        super(context);
 
-    private IntentFilter wifiFilter;
+        IntentFilter wifiFilter = new IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION);
+        mContext.registerReceiver(mBroadcastReceiver, wifiFilter);
+
+        setLabel(R.string.toggle_wifi);
+    }
 
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
 
@@ -51,21 +54,10 @@ public class WifiToggle extends Toggle {
             }
             mWifiState = intent
                     .getIntExtra(WifiManager.EXTRA_WIFI_STATE, -1);
-            updateToggleState();
+            updateState();
 
         }
     };
-
-    @Override
-    protected void onFinishInflate() {
-        super.onFinishInflate();
-        mIsWifiOn = isWifiOn(mContext);
-        mToggle.setChecked(mIsWifiOn);
-
-        wifiFilter = new IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION);
-
-        mContext.registerReceiver(mBroadcastReceiver, wifiFilter);
-    }
 
     public boolean isWifiOn(Context context) {
         WifiManager wifiManager = (WifiManager) context
@@ -105,27 +97,31 @@ public class WifiToggle extends Toggle {
     }
 
     @Override
-    protected void updateInternalState() {
+    protected void updateInternalToggleState() {
+        // WifiManager wifiManager = (WifiManager) mContext
+        // .getSystemService(Context.WIFI_SERVICE);
+        //
+        // mWifiState = wifiManager.getWifiApState();
 
         switch (mWifiState) {
             case WifiManager.WIFI_STATE_ENABLED:
                 mIsWifiOn = true;
-                mToggle.setChecked(mIsWifiOn);
+                mToggle.setChecked(true);
                 mToggle.setEnabled(true);
                 break;
             case WifiManager.WIFI_STATE_DISABLED:
                 mIsWifiOn = false;
-                mToggle.setChecked(mIsWifiOn);
+                mToggle.setChecked(false);
                 mToggle.setEnabled(true);
                 break;
             case WifiManager.WIFI_STATE_DISABLING:
                 mIsWifiOn = false;
-                mToggle.setChecked(mIsWifiOn);
+                mToggle.setChecked(false);
                 mToggle.setEnabled(false);
                 break;
             case WifiManager.WIFI_STATE_ENABLING:
                 mIsWifiOn = false;
-                mToggle.setChecked(mIsWifiOn);
+                mToggle.setChecked(true);
                 mToggle.setEnabled(false);
                 break;
             case WifiManager.WIFI_STATE_UNKNOWN:
@@ -141,6 +137,7 @@ public class WifiToggle extends Toggle {
         if (isChecked != mIsWifiOn) {
             changeWifiState(isChecked);
         }
+
     }
 
 }

@@ -49,6 +49,7 @@ import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.os.SystemClock;
 import android.provider.Settings;
+import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -77,6 +78,7 @@ import android.widget.TextView;
 
 import com.android.internal.statusbar.StatusBarIcon;
 import com.android.internal.statusbar.StatusBarNotification;
+import com.android.internal.telephony.Phone;
 import com.android.systemui.R;
 import com.android.systemui.recent.RecentTasksLoader;
 import com.android.systemui.recent.RecentsPanelView;
@@ -96,6 +98,8 @@ import com.android.systemui.statusbar.policy.ToggleSlider;
 import com.android.systemui.statusbar.policy.WifiController;
 import com.android.systemui.statusbar.policy.toggles.BluetoothToggle;
 import com.android.systemui.statusbar.policy.toggles.GpsToggle;
+import com.android.systemui.statusbar.policy.toggles.LteToggle;
+import com.android.systemui.statusbar.policy.toggles.OldToggle;
 
 public class PhoneStatusBar extends StatusBar {
     static final String TAG = "PhoneStatusBar";
@@ -365,8 +369,6 @@ public class PhoneStatusBar extends StatusBar {
         mScrollView = (ScrollView) expanded.findViewById(R.id.scroll);
 
         mQuickToggles = (LinearLayout) expanded.findViewById(R.id.quick_toggles);
-        mBrightness = new BrightnessController(context, (ToggleSlider)
-                mQuickToggles.findViewById(R.id.brightness));
 
         mTicker = new MyTicker(context, sb);
 
@@ -1769,26 +1771,30 @@ public class PhoneStatusBar extends StatusBar {
         public void tickerStarting() {
             mTicking = true;
             mIcons.setVisibility(View.GONE);
+            mCenterClock.setVisibility(View.GONE);
             mTickerView.setVisibility(View.VISIBLE);
             mTickerView.startAnimation(loadAnim(com.android.internal.R.anim.push_up_in, null));
             mIcons.startAnimation(loadAnim(com.android.internal.R.anim.push_up_out, null));
-            mCenterClock.updateVisibilityFromStatusBar(false);
+            mCenterClock.startAnimation(loadAnim(com.android.internal.R.anim.push_up_out, null));
         }
 
         @Override
         public void tickerDone() {
             mIcons.setVisibility(View.VISIBLE);
+            mCenterClock.setVisibility(View.VISIBLE);
             mTickerView.setVisibility(View.GONE);
             mIcons.startAnimation(loadAnim(com.android.internal.R.anim.push_down_in, null));
+            mCenterClock.startAnimation(loadAnim(com.android.internal.R.anim.push_down_in, null));
             mTickerView.startAnimation(loadAnim(com.android.internal.R.anim.push_down_out,
                     mTickingDoneListener));
-            mCenterClock.updateVisibilityFromStatusBar(true);
         }
 
         public void tickerHalting() {
             mIcons.setVisibility(View.VISIBLE);
+            mCenterClock.setVisibility(View.VISIBLE);
             mTickerView.setVisibility(View.GONE);
             mIcons.startAnimation(loadAnim(com.android.internal.R.anim.fade_in, null));
+            mCenterClock.startAnimation(loadAnim(com.android.internal.R.anim.fade_in, null));
             mTickerView.startAnimation(loadAnim(com.android.internal.R.anim.fade_out,
                     mTickingDoneListener));
         }

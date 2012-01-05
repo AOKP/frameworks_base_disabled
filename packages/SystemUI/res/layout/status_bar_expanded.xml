@@ -78,18 +78,16 @@
             android:contentDescription="@string/accessibility_clear_all"
             />            
     </RelativeLayout>
+
+	<View
+		android:layout_width="match_parent"
+		android:layout_height="2dp"
+		android:background="@drawable/status_bar_hr" />
     
     <include layout="@layout/quick_toggles" 
                 android:id="@+id/quick_toggles"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:background="@drawable/status_bar_hr"
-        />
+                android:layout_height="wrap_content" />
 
     <FrameLayout
         android:layout_width="match_parent" 

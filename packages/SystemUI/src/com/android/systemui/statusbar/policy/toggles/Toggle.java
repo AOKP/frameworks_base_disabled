@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 The Android Open Source Project
+ * Copyright (C) 2010 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,102 +17,90 @@
 package com.android.systemui.statusbar.policy.toggles;
 
 import android.content.Context;
-import android.content.res.TypedArray;
-import android.util.AttributeSet;
 import android.view.View;
 import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.systemui.R;
 
-public abstract class Toggle extends RelativeLayout implements
-        CompoundButton.OnCheckedChangeListener {
+/**
+ * TODO: Listen for changes to the setting.
+ */
+public abstract class Toggle implements OnCheckedChangeListener {
+
     protected static final String TAG = "Toggle";
 
-    protected Context mContext;
-    protected boolean mEnabled = false;
-    protected boolean mSystemChanging = false;
+    View mView;
+    Context mContext;
 
     // widgets
     protected ImageView mIcon;
     protected TextView mText;
     protected CompoundButton mToggle;
 
-    private int mTextContent;
-    private int mImageContent;
+    protected boolean mSystemChange = false;
 
-    public Toggle(Context context, AttributeSet attrs) {
-        this(context, attrs, 0);
-    }
-
-    public Toggle(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs);
-
+    public Toggle(Context context) {
         mContext = context;
-        View.inflate(context, R.layout.toggle, this);
 
-        TypedArray a = mContext.obtainStyledAttributes(attrs,
-                R.styleable.Toggle);
+        mView = View.inflate(mContext, R.layout.toggle, null);
 
-        final int N = a.getIndexCount();
-        for (int i = 0; i < N; ++i)
-        {
-            int attr = a.getIndex(i);
-            switch (attr)
-            {
-                case R.styleable.Toggle_labelText:
-                    mTextContent = a.getResourceId(attr, 0);
-
-                    break;
-                case R.styleable.Toggle_labelImage:
-                    mImageContent = a.getResourceId(attr, 0);
-                    break;
-            }
-        }
-        a.recycle();
-    }
-
-    @Override
-    protected void onFinishInflate() {
-        super.onFinishInflate();
-
-        mIcon = (ImageView) findViewById(R.id.icon);
-        mToggle = (CompoundButton) findViewById(R.id.toggle);
-        mText = (TextView) findViewById(R.id.label);
-
-        if (mTextContent != 0)
-            mText.setText(mTextContent);
-        else
-            mText.setVisibility(View.GONE);
-
-        if (mImageContent != 0)
-            mIcon.setImageResource(mImageContent);
-        else
-            mIcon.setVisibility(View.GONE);
+        mIcon = (ImageView) mView.findViewById(R.id.icon);
+        mToggle = (CompoundButton) mView.findViewById(R.id.toggle);
+        mText = (TextView) mView.findViewById(R.id.label);
 
         mToggle.setOnCheckedChangeListener(this);
     }
 
-    protected abstract void updateInternalState();
+    /**
+     * this method is called when we need to update the state of the toggle due to outside
+     * interactions.
+     */
+    protected abstract void updateInternalToggleState();
 
+    /**
+     * this method is called when the user manually toggles, update states as needed
+     */
     protected abstract void onCheckChanged(boolean isChecked);
 
-    public void updateToggleState() {
-        mSystemChanging = true;
-
-        updateInternalState();
-
-        mSystemChanging = false;
+    public void updateState() {
+        mSystemChange = true;
+        updateInternalToggleState();
+        mSystemChange = false;
     }
 
     @Override
-    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        if (mSystemChanging)
+    public final void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        if (mSystemChange)
             return;
 
         onCheckChanged(isChecked);
     }
 
+    public View getView() {
+        return mView;
+    }
+
+    public void setLabel(String s) {
+        if (mText != null)
+            mText.setText(s);
+    }
+
+    public void setLabel(int res) {
+        if (mText != null)
+            mText.setText(res);
+    }
+
+    public void setIcon(int res) {
+        if (mIcon != null) {
+            mIcon.setImageResource(res);
+        }
+    }
+
+    public void setupInfo(boolean showIcon, boolean showText) {
+        mIcon.setVisibility(showIcon ? View.VISIBLE : View.GONE);
+        mText.setVisibility(showText ? View.VISIBLE : View.GONE);
+    }
 }

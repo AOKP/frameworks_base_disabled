@@ -19,20 +19,20 @@ package com.android.systemui.statusbar.policy.toggles;
 import java.util.Observable;
 import java.util.Observer;
 
+import com.android.systemui.R;
+
 import android.content.ContentQueryMap;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.location.LocationManager;
 import android.provider.Settings;
-import android.util.AttributeSet;
-
-import com.android.systemui.R;
+import android.view.View;
 
 public class GpsToggle extends Toggle {
 
-    public GpsToggle(Context context, AttributeSet attrs) {
-        super(context, attrs);
+    public GpsToggle(Context context) {
+        super(context);
 
         Cursor settingsCursor = mContext.getContentResolver().query(Settings.Secure.CONTENT_URI,
                 null,
@@ -46,23 +46,16 @@ public class GpsToggle extends Toggle {
         if (mSettingsObserver == null) {
             mSettingsObserver = new Observer() {
                 public void update(Observable o, Object arg) {
-                    updateToggleState();
+                    updateState();
                 }
             };
             mContentQueryMap.addObserver(mSettingsObserver);
         }
+        setLabel(R.string.toggle_gps);
     }
 
     ContentQueryMap mContentQueryMap;
     Observer mSettingsObserver;
-
-    @Override
-    protected void updateInternalState() {
-        ContentResolver res = mContext.getContentResolver();
-        boolean gpsEnabled = Settings.Secure.isLocationProviderEnabled(
-                res, LocationManager.GPS_PROVIDER);
-        mToggle.setChecked(gpsEnabled);
-    }
 
     @Override
     protected void onCheckChanged(boolean isChecked) {
@@ -71,9 +64,11 @@ public class GpsToggle extends Toggle {
     }
 
     @Override
-    protected void onFinishInflate() {
-        super.onFinishInflate();
-        updateToggleState();
+    protected void updateInternalToggleState() {
+        ContentResolver res = mContext.getContentResolver();
+        boolean gpsEnabled = Settings.Secure.isLocationProviderEnabled(
+                res, LocationManager.GPS_PROVIDER);
+        mToggle.setChecked(gpsEnabled);
     }
 
 }

@@ -30,14 +30,9 @@ import com.android.systemui.R;
 
 public class NetworkToggle extends Toggle {
 
-    public NetworkToggle(Context context, AttributeSet attrs) {
-        this(context, attrs, 0);
-    }
-
-    public NetworkToggle(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs);
-
-        context.registerReceiver(getBroadcastReceiver(), getIntentFilter());
+    public NetworkToggle(Context context) {
+        super(context);
+        setLabel(R.string.toggle_data);
     }
 
     private boolean isMobileDataEnabled() {
@@ -51,12 +46,6 @@ public class NetworkToggle extends Toggle {
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
         cm.setMobileDataEnabled(on);
     }
-
-    @Override
-    protected void updateInternalState() {
-        mToggle.setChecked(isMobileDataEnabled());
-    }
-
 
     @Override
     protected void onCheckChanged(boolean isChecked) {
@@ -74,7 +63,7 @@ public class NetworkToggle extends Toggle {
                 final String action = intent.getAction();
 
                 if (action.equals(ConnectivityManager.CONNECTIVITY_ACTION)) {
-                    updateToggleState();
+                    updateState();
                 }
             }
         };
@@ -84,5 +73,10 @@ public class NetworkToggle extends Toggle {
         IntentFilter filter = new IntentFilter();
         filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         return filter;
+    }
+
+    @Override
+    protected void updateInternalToggleState() {
+        mToggle.setChecked(isMobileDataEnabled());
     }
 }

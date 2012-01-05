@@ -29,6 +29,7 @@ import android.provider.Settings;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.IWindowManager;
+import android.view.View;
 
 import com.android.systemui.R;
 
@@ -42,24 +43,14 @@ public class AutoRotateToggle extends Toggle {
     private ContentObserver mAccelerometerRotationObserver = new ContentObserver(new Handler()) {
         @Override
         public void onChange(boolean selfChange) {
-            updateToggleState();
+            updateState();
         }
     };
 
-    public AutoRotateToggle(Context context, AttributeSet attrs) {
-        this(context, attrs, 0);
-    }
-
-    public AutoRotateToggle(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs);
-
+    public AutoRotateToggle(Context context) {
+        super(context);
         mAutoRotation = getAutoRotation();
-    }
-
-    @Override
-    protected void onFinishInflate() {
-        super.onFinishInflate();
-        mToggle.setChecked(mAutoRotation);
+        setLabel(R.string.toggle_rotate);
     }
 
     private boolean getAutoRotation() {
@@ -87,16 +78,16 @@ public class AutoRotateToggle extends Toggle {
     }
 
     @Override
-    protected void updateInternalState() {
-        mToggle.setChecked(Settings.System.getInt(
-                mContext.getContentResolver(),
-                Settings.System.ACCELEROMETER_ROTATION, 0) != 0);
-    }
-
-    @Override
     protected void onCheckChanged(boolean isChecked) {
         if (isChecked != mAutoRotation) {
             setAutoRotation(isChecked);
         }
+    }
+
+    @Override
+    protected void updateInternalToggleState() {
+        mToggle.setChecked(Settings.System.getInt(
+                mContext.getContentResolver(),
+                Settings.System.ACCELEROMETER_ROTATION, 0) != 0);
     }
 }

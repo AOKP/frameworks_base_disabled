@@ -22,9 +22,9 @@ import android.content.Intent;
 import android.database.ContentObserver;
 import android.os.Handler;
 import android.provider.Settings;
+import android.provider.Settings.SettingNotFoundException;
 import android.server.PowerSaverService;
 import android.telephony.TelephonyManager;
-import android.util.AttributeSet;
 import android.util.Log;
 
 import com.android.internal.telephony.Phone;
@@ -34,7 +34,7 @@ public class TwoGToggle extends Toggle {
 
     private static final String TAG = "Toggle.2G";
 
-    private int mNetworkMode = Phone.PREFERRED_NT_MODE;
+    private int mNetworkMode = -1;
     private boolean isCdma = false;
 
     public TwoGToggle(Context c) {
@@ -47,8 +47,10 @@ public class TwoGToggle extends Toggle {
 
     @Override
     protected void onCheckChanged(boolean isChecked) {
-        int modeToRequest = (isChecked ? Phone.NT_MODE_GSM_ONLY : Phone.NT_MODE_WCDMA_PREF);
-        requestPhoneStateChange(modeToRequest);
+        TelephonyManager tm = (TelephonyManager) mView.getContext()
+                .getSystemService(Context.TELEPHONY_SERVICE);
+        tm.toggle2G(isChecked);
+
     }
 
     class SettingsObserver extends ContentObserver {
@@ -66,11 +68,21 @@ public class TwoGToggle extends Toggle {
 
         @Override
         public void onChange(boolean selfChange) {
-            mNetworkMode = Settings.Secure.getInt(mContext.getContentResolver(),
-                    Settings.Secure.PREFERRED_NETWORK_MODE, Phone.PREFERRED_NT_MODE);
+            mNetworkMode = getCurrentPreferredNetworkMode(mContext);
 
             updateState();
         }
+    }
+
+    private static int getCurrentPreferredNetworkMode(Context context) {
+        int network = -1;
+        try {
+            network = Settings.Secure.getInt(context.getContentResolver(),
+                    Settings.Secure.PREFERRED_NETWORK_MODE);
+        } catch (SettingNotFoundException e) {
+            e.printStackTrace();
+        }
+        return network;
     }
 
     private void requestPhoneStateChange(int newState) {
@@ -110,9 +122,9 @@ public class TwoGToggle extends Toggle {
 
     @Override
     protected void updateInternalToggleState() {
-        Log.e(TAG, "updating internal state");
+        mNetworkMode = getCurrentPreferredNetworkMode(mContext);
         if (mToggle != null)
-            mToggle.setChecked(mNetworkMode == Phone.NT_MODE_GLOBAL);
+            mToggle.setChecked(mNetworkMode == Phone.NT_MODE_GSM_ONLY);
     }
 
 }

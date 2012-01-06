@@ -22,6 +22,7 @@ import android.content.Intent;
 import android.database.ContentObserver;
 import android.os.Handler;
 import android.provider.Settings;
+import android.provider.Settings.SettingNotFoundException;
 import android.server.PowerSaverService;
 import android.telephony.TelephonyManager;
 import android.util.AttributeSet;
@@ -34,7 +35,7 @@ public class LteToggle extends Toggle {
 
     private static final String TAG = "Toggle.Lte";
 
-    private int mNetworkMode = Phone.PREFERRED_NT_MODE;
+    private int mNetworkMode = -1;
     private boolean isCdma = false;
 
     public LteToggle(Context c) {
@@ -47,8 +48,9 @@ public class LteToggle extends Toggle {
 
     @Override
     protected void onCheckChanged(boolean isChecked) {
-        int modeToRequest = (isChecked ? Phone.NT_MODE_GLOBAL : Phone.NT_MODE_CDMA);
-        requestPhoneStateChange(modeToRequest);
+        TelephonyManager tm = (TelephonyManager) mView.getContext()
+                .getSystemService(Context.TELEPHONY_SERVICE);
+        tm.toggleLTE(isChecked);
     }
 
     class SettingsObserver extends ContentObserver {
@@ -71,6 +73,17 @@ public class LteToggle extends Toggle {
 
             updateState();
         }
+    }
+
+    private static int getCurrentPreferredNetworkMode(Context context) {
+        int network = -1;
+        try {
+            network = Settings.Secure.getInt(context.getContentResolver(),
+                    Settings.Secure.PREFERRED_NETWORK_MODE);
+        } catch (SettingNotFoundException e) {
+            e.printStackTrace();
+        }
+        return network;
     }
 
     private void requestPhoneStateChange(int newState) {
@@ -110,9 +123,8 @@ public class LteToggle extends Toggle {
 
     @Override
     protected void updateInternalToggleState() {
-        Log.e(TAG, "updating internal state");
+        mNetworkMode = getCurrentPreferredNetworkMode(mContext);
         if (mToggle != null)
             mToggle.setChecked(mNetworkMode == Phone.NT_MODE_GLOBAL);
     }
-
 }

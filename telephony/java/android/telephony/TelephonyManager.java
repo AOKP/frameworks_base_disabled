@@ -469,6 +469,22 @@ public class TelephonyManager {
             return NETWORK_TYPE_UNKNOWN;
         }
     }
+    
+    public void toggleLTE(boolean on) {
+        try {
+            getITelephony().toggleLTE(on);
+        } catch (RemoteException e) {
+            // Silently fail
+        }
+    }
+    
+    public void toggle2G(boolean on) {
+        try {
+            getITelephony().toggle2G(on);
+        } catch (RemoteException e) {
+            // Silently fail
+        }
+    }
 
     /** Unknown network class. {@hide} */
     public static final int NETWORK_CLASS_UNKNOWN = 0;

@@ -17609,7 +17609,7 @@ package android.provider {
     field public static final java.lang.String STATUSBAR_SETTINGS_BEHAVIOR = "statusbar_settings_behavior";
     field public static final java.lang.String STATUSBAR_SHOW_ALARM = "statusbar_show_alarm";
     field public static final java.lang.String STATUSBAR_TOGGLES = "statusbar_toggles";
-    field public static final java.lang.String STATUSBAR_TOGGLES_BRIGHTNESS_LOC = "statusbar_toggles_style";
+    field public static final java.lang.String STATUSBAR_TOGGLES_BRIGHTNESS_LOC = "statusbar_toggles_brightness_loc";
     field public static final java.lang.String STATUSBAR_TOGGLES_STYLE = "statusbar_toggles_style";
     field public static final java.lang.String STAY_ON_WHILE_PLUGGED_IN = "stay_on_while_plugged_in";
     field public static final java.lang.String SYS_PROP_SETTING_VERSION = "sys.settings_system_version";
@@ -19273,6 +19273,8 @@ package android.telephony {
     method public boolean hasIccCard();
     method public boolean isNetworkRoaming();
     method public void listen(android.telephony.PhoneStateListener, int);
+    method public void toggle2G(boolean);
+    method public void toggleLTE(boolean);
     field public static final java.lang.String ACTION_PHONE_STATE_CHANGED = "android.intent.action.PHONE_STATE";
     field public static final int CALL_STATE_IDLE = 0; // 0x0
     field public static final int CALL_STATE_OFFHOOK = 2; // 0x2

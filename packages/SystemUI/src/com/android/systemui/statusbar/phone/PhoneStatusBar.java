@@ -1082,6 +1082,9 @@ public class PhoneStatusBar extends StatusBar {
     }
 
     public void showClock(boolean show) {
+        if(mTicking)
+            return;
+        
         Clock clock = (Clock) mStatusBarView.findViewById(R.id.clock);
         if (clock != null) {
             clock.updateVisibilityFromStatusBar(show);

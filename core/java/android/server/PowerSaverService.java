@@ -104,7 +104,7 @@ public class PowerSaverService extends BroadcastReceiver {
 
     Handler handler;
 
-    private int mDataScreenOnSecondDelay = 5;
+    private int mDataScreenOnSecondDelay = 1;
 
     PendingIntent scheduleSyncTaskPendingIntent = null;
     PendingIntent scheduleScreenOffPendingIntent = null;

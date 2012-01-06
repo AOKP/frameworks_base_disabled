@@ -50,6 +50,7 @@ public class AutoRotateToggle extends Toggle {
     public AutoRotateToggle(Context context) {
         super(context);
         mAutoRotation = getAutoRotation();
+        updateState();
         setLabel(R.string.toggle_rotate);
     }
 

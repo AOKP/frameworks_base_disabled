@@ -2265,6 +2265,10 @@ public final class Settings {
         public static final String STATUSBAR_SHOW_ALARM = "statusbar_show_alarm";
 
         public static final String STATUSBAR_TOGGLES = "statusbar_toggles";
+
+        public static final String STATUSBAR_TOGGLES_STYLE = "statusbar_toggles_style";
+
+        public static final String STATUSBAR_TOGGLES_BRIGHTNESS_LOC = "statusbar_toggles_brightness_loc";
     }
 
     /**

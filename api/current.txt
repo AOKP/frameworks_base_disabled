@@ -17608,6 +17608,9 @@ package android.provider {
     field public static final java.lang.String STATUSBAR_QUICKTOGGLES_AUTOHIDE = "statusbar_quicktoggles_autohide";
     field public static final java.lang.String STATUSBAR_SETTINGS_BEHAVIOR = "statusbar_settings_behavior";
     field public static final java.lang.String STATUSBAR_SHOW_ALARM = "statusbar_show_alarm";
+    field public static final java.lang.String STATUSBAR_TOGGLES = "statusbar_toggles";
+    field public static final java.lang.String STATUSBAR_TOGGLES_BRIGHTNESS_LOC = "statusbar_toggles_style";
+    field public static final java.lang.String STATUSBAR_TOGGLES_STYLE = "statusbar_toggles_style";
     field public static final java.lang.String STAY_ON_WHILE_PLUGGED_IN = "stay_on_while_plugged_in";
     field public static final java.lang.String SYS_PROP_SETTING_VERSION = "sys.settings_system_version";
     field public static final java.lang.String TEXT_AUTO_CAPS = "auto_caps";

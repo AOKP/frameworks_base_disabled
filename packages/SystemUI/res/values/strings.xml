@@ -371,7 +371,8 @@
     <string name="toggle_bt">BT</string>
     <string name="toggle_data">Data</string>
     <string name="toggle_lte">LTE</string>
-    <string name="toggle_rotate">Auto-rotate</string>
+    <string name="toggle_rotate">Rotate</string>
     <string name="toggle_wifi">Wi-Fi</string>
     <string name="toggle_gps">GPS</string>
+    <string name="toggle_2g">2G</string>
 </resources>

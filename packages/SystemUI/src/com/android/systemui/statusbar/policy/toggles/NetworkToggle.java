@@ -32,6 +32,7 @@ public class NetworkToggle extends Toggle {
 
     public NetworkToggle(Context context) {
         super(context);
+        updateState();
         setLabel(R.string.toggle_data);
     }
 

@@ -9,10 +9,4 @@
 	android:orientation="vertical"
 	android:background="@*android:drawable/notify_panel_notification_icon_bg_tile">
 
-	<View
-		android:layout_width="match_parent"
-		android:layout_height="2dp"
-
-		android:background="@drawable/status_bar_hr" />
-
 </com.android.systemui.statusbar.policy.toggles.TogglesView>

@@ -99,7 +99,6 @@ import com.android.systemui.statusbar.policy.WifiController;
 import com.android.systemui.statusbar.policy.toggles.BluetoothToggle;
 import com.android.systemui.statusbar.policy.toggles.GpsToggle;
 import com.android.systemui.statusbar.policy.toggles.LteToggle;
-import com.android.systemui.statusbar.policy.toggles.OldToggle;
 
 public class PhoneStatusBar extends StatusBar {
     static final String TAG = "PhoneStatusBar";
@@ -328,6 +327,9 @@ public class PhoneStatusBar extends StatusBar {
                         break;
                     case NavigationBarView.LAYOUT_HOME_RECENTS:
                         layoutToInflate = R.layout.navigation_bar_home_recents;
+                        break;
+                    case NavigationBarView.LAYOUT_HOME_TASKS:
+                        layoutToInflate = R.layout.navigation_bar_home_tasks;
                         break;
                 }
 

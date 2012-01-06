@@ -71,6 +71,7 @@ public class NavigationBarView extends LinearLayout {
     private int mNavLayout = LAYOUT_REGULAR;
     public final static int LAYOUT_REGULAR = 0;
     public final static int LAYOUT_SEARCH = 1;
+    public static final int LAYOUT_HOME_TASKS = 3;
 
     /*
      * Back - Home - Search | Long press home for recents Long press search-enabled

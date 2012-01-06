@@ -94,7 +94,7 @@ public class PowerSaverService extends BroadcastReceiver {
     private WifiManager wifi;
     private AlarmManager alarms;
 
-    private int originalNetworkMode = Phone.PREFERRED_NT_MODE;
+    private int originalNetworkMode = -1;
     private boolean originalWifiEnabled = false;
     private boolean originalDataOn = false;
 
@@ -386,7 +386,7 @@ public class PowerSaverService extends BroadcastReceiver {
 
             boolean enableWifi = false;
             boolean enableData = false;
-            int desiredNetworkMode = Phone.PREFERRED_NT_MODE;
+            int desiredNetworkMode = -1;
 
             switch (mSyncDataMode) {
                 case SYNCING_WIFI_ONLY:
@@ -463,7 +463,7 @@ public class PowerSaverService extends BroadcastReceiver {
 
     private void requestPreferredDataType() {
         int settingVal = Settings.Secure.getInt(mContext.getContentResolver(),
-                Settings.Secure.PREFERRED_NETWORK_MODE, Phone.PREFERRED_NT_MODE);
+                Settings.Secure.PREFERRED_NETWORK_MODE, -1);
         Settings.Secure.putInt(mContext.getContentResolver(),
                 Settings.Secure.POWER_SAVER_ORIGINAL_NETWORK_MODE, settingVal);
         Slog.i(TAG,
@@ -531,10 +531,7 @@ public class PowerSaverService extends BroadcastReceiver {
             public void run() {
                 isCdma = (telephony.getCurrentPhoneType() == Phone.PHONE_TYPE_CDMA);
                 Slog.w(TAG, "Phone type detected: " + (isCdma ? "CDMA" : "GSM"));
-
-                if (isCdma) {
-                    originalNetworkMode = Phone.NT_MODE_GLOBAL;
-                }
+                requestPreferredDataType();
             }
         }, 5000);
 
@@ -615,6 +612,16 @@ public class PowerSaverService extends BroadcastReceiver {
         Intent i = new Intent(ACTION_MODIFY_NETWORK_MODE);
         i.putExtra(EXTRA_NETWORK_MODE, newState);
         mContext.sendBroadcast(i);
+    }
+
+    private void setLowerPowerPhoneMode(boolean useLowerPower) {
+        TelephonyManager tm = (TelephonyManager) mContext
+                .getSystemService(Context.TELEPHONY_SERVICE);
+        if (tm.getPhoneType() == Phone.PHONE_TYPE_CDMA) {
+            tm.toggleLTE(!useLowerPower);
+        } else if (tm.getPhoneType() == Phone.PHONE_TYPE_GSM) {
+            tm.toggle2G(useLowerPower);
+        }
     }
 
     private boolean isValidNetwork(int networkType) {

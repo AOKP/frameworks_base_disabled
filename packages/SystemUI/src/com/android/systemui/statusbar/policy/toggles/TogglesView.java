@@ -224,9 +224,6 @@ public class TogglesView extends LinearLayout {
                 break;
         }
 
-        // TODO remove this!
-        addText = true;
-
         for (Toggle t : toggles)
             t.setupInfo(addIcon, addText);
 

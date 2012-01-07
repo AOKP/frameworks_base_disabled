@@ -12,7 +12,10 @@ import android.os.Process;
 import android.os.RemoteException;
 import android.provider.Settings;
 import android.util.AttributeSet;
+import android.view.HapticFeedbackConstants;
 import android.view.View;
+import android.view.ViewConfiguration;
+import android.view.WindowManagerPolicy.WindowState;
 
 import com.android.systemui.statusbar.policy.KeyButtonView;
 
@@ -53,7 +56,11 @@ public class BackKeyWithKillButtonView extends KeyButtonView {
                     if (uid >= Process.FIRST_APPLICATION_UID && uid <= Process.LAST_APPLICATION_UID
                             && appInfo.importance == RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
                         // Kill the entire pid
-                        Process.killProcess(appInfo.pid);
+                        if (appInfo.pkgList != null && (apps.size() > 0)) {
+                            mgr.forceStopPackage(appInfo.pkgList[0]);
+                        } else {
+                            Process.killProcess(appInfo.pid);
+                        }
                         break;
                     }
                 }
@@ -69,7 +76,7 @@ public class BackKeyWithKillButtonView extends KeyButtonView {
         public boolean onLongClick(View v) {
             if (Settings.Secure.getInt(mContext.getContentResolver(),
                     Settings.Secure.KILL_APP_LONGPRESS_BACK, 0) == 1) {
-                mHandler.postDelayed(mBackLongPress, 2000);
+                mHandler.postDelayed(mBackLongPress, ViewConfiguration.getGlobalActionKeyTimeout());
             }
             return true;
         }

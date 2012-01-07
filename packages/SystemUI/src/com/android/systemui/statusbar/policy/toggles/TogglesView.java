@@ -203,10 +203,16 @@ public class TogglesView extends LinearLayout {
         mBrightnessLocation = Settings.System.getInt(resolver,
                 Settings.System.STATUSBAR_TOGGLES_BRIGHTNESS_LOC,
                 BRIGHTNESS_LOC_TOP);
+        
+        boolean useAltButtonLayout = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.STATUSBAR_TOGGLES_USE_BUTTONS, 0) == 1;
 
-        mWidgetsPerRow = Settings.System.getInt(resolver,
-                Settings.System.STATUSBAR_TOGGLES_NUMBER_PER_ROW,
-                2);
+        //mWidgetsPerRow = Settings.System.getInt(resolver,
+        //        Settings.System.STATUSBAR_TOGGLES_NUMBER_PER_ROW,
+        //        2);
+        // use 2 for regular layout, 6 for buttons
+        // TODO: make buttons scrollable so we can have more than 6
+        mWidgetsPerRow = useAltButtonLayout ? 6 : 2;
 
         boolean addText = false;
         boolean addIcon = false;

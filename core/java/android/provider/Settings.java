@@ -2217,6 +2217,13 @@ public final class Settings {
         public static final String LOCKSCREEN_ENABLE_MENU_KEY = "lockscreen_enable_menu_key";
 
         /**
+	* Whether to enable mms and phone lockscreen shortcuts
+	*
+	* @hide
+	*/
+        public static final String LOCKSCREEN_QUAD_TARGETS = "lockscreen_quad_targets";
+
+        /**
          * whether to show the IME switcher when typing in the statusbar. Boolean value.
          * 
          * @hide

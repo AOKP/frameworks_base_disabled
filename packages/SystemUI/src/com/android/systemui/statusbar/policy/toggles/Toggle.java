@@ -17,6 +17,7 @@
 package com.android.systemui.statusbar.policy.toggles;
 
 import android.content.Context;
+import android.provider.Settings;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
@@ -45,7 +46,11 @@ public abstract class Toggle implements OnCheckedChangeListener {
     public Toggle(Context context) {
         mContext = context;
 
-        mView = View.inflate(mContext, R.layout.toggle, null);
+        boolean useAltButtonLayout = Settings.System.getInt(context.getContentResolver(),
+                Settings.System.STATUSBAR_TOGGLES_USE_BUTTONS, 0) == 1;
+
+        mView = View.inflate(mContext, useAltButtonLayout ? R.layout.toggle_button
+                : R.layout.toggle, null);
 
         mIcon = (ImageView) mView.findViewById(R.id.icon);
         mToggle = (CompoundButton) mView.findViewById(R.id.toggle);

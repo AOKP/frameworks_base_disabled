@@ -46,6 +46,8 @@ public class TogglesView extends LinearLayout {
     private static final String TOGGLE_WIFI = "WIFI";
     private static final String TOGGLE_2G = "2G";
 
+    private int mWidgetsPerRow = 2;
+
     public static final String STOCK_TOGGLES = TOGGLE_WIFI + TOGGLE_DELIMITER
             + TOGGLE_BLUETOOTH + TOGGLE_DELIMITER
             + TOGGLE_GPS + TOGGLE_DELIMITER
@@ -118,7 +120,7 @@ public class TogglesView extends LinearLayout {
             addBrightness();
 
         for (int i = 0; i < toggles.size(); i++) {
-            if (i % 2 == 0) {
+            if (i % mWidgetsPerRow == 0) {
                 // new row
                 rows.add(new LinearLayout(mContext));
             }
@@ -175,6 +177,9 @@ public class TogglesView extends LinearLayout {
             resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.STATUSBAR_TOGGLES_BRIGHTNESS_LOC),
                     false, this);
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.STATUSBAR_TOGGLES_NUMBER_PER_ROW),
+                    false, this);
             updateSettings();
         }
 
@@ -196,6 +201,10 @@ public class TogglesView extends LinearLayout {
                 Settings.System.STATUSBAR_TOGGLES_BRIGHTNESS_LOC,
                 BRIGHTNESS_LOC_TOP);
 
+        mWidgetsPerRow = Settings.System.getInt(resolver,
+                Settings.System.STATUSBAR_TOGGLES_NUMBER_PER_ROW,
+                2);
+
         boolean addText = false;
         boolean addIcon = false;
 
@@ -214,7 +223,7 @@ public class TogglesView extends LinearLayout {
                 addIcon = true;
                 break;
         }
-        
+
         // TODO remove this!
         addText = true;
 

@@ -2339,6 +2339,12 @@ public final class Settings {
         public static final String STATUSBAR_TOGGLES = "statusbar_toggles";
 
         /**
+         * What to display with the toggles.
+         * 1 = don't display text or icon
+         * 2 = display icon
+         * 3 = display text
+         * 4 = display text & icon
+         *
          * @hide
          */
         public static final String STATUSBAR_TOGGLES_STYLE = "statusbar_toggles_style";
@@ -2361,6 +2367,20 @@ public final class Settings {
          * @hide
          */
         public static final String ACCELEROMETER_ROTATION_SETTLE_TIME = "accelerometer_rotation_settle_time";
+
+        /**
+         * Number of toggles to show in a row.
+         *
+         * @hide
+         */
+        public static final String STATUSBAR_TOGGLES_NUMBER_PER_ROW = "statusbar_toggles_number_per_row";
+
+        /**
+         * Whether to use the ToggleButton layout instead of the Switch layout for toggles
+         * 
+         * @hide
+         */
+        public static final String STATUSBAR_TOGGLES_USE_BUTTONS = "statusbar_toggles_use_buttons";
     }
 
     /**

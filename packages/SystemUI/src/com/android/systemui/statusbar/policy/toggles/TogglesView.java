@@ -180,6 +180,9 @@ public class TogglesView extends LinearLayout {
             resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.STATUSBAR_TOGGLES_NUMBER_PER_ROW),
                     false, this);
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.STATUSBAR_TOGGLES_USE_BUTTONS),
+                    false, this);
             updateSettings();
         }
 

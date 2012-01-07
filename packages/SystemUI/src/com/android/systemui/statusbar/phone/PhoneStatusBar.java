@@ -415,6 +415,13 @@ public class PhoneStatusBar extends StatusBar {
                     }
                 });
 
+        mPowerWidget.setGlobalButtonOnLongClickListener(new View.OnLongClickListener() {
+            public boolean onLongClick(View v) {
+                animateCollapse();
+                return true;
+            }
+        });
+
 
         mTicker = new MyTicker(context, sb);
 

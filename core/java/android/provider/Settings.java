@@ -2352,6 +2352,15 @@ public final class Settings {
          * @hide
          */
         public static final String NAVIGATION_BAR_TINT = "navigation_bar_tint";
+
+        /**
+         * The number of milliseconds for which the device posture must be stable before we perform
+         * an orientation change. If the device appears to be rotating (being picked up, put down)
+         * then we keep waiting until it settles.
+         * default: 200ms
+         * @hide
+         */
+        public static final String ACCELEROMETER_ROTATION_SETTLE_TIME = "accelerometer_rotation_settle_time";
     }
 
     /**

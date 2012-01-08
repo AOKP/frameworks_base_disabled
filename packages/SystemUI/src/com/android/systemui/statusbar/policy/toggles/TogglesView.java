@@ -47,6 +47,8 @@ public class TogglesView extends LinearLayout {
     private static final String TOGGLE_2G = "2G";
     private static final String TOGGLE_WIFI_AP = "AP";
     private static final String TOGGLE_AIRPLANE = "AIRPLANE_MODE";
+    private static final String TOGGLE_VIBRATE = "VIBRATE";
+    private static final String TOGGLE_SILENT = "SILENT";
 
     private int mWidgetsPerRow = 2;
 
@@ -103,6 +105,10 @@ public class TogglesView extends LinearLayout {
                 newToggle = new WifiAPToggle(mContext);
             else if (splitToggle.equals(TOGGLE_AIRPLANE))
                 newToggle = new AirplaneModeToggle(mContext);
+            else if (splitToggle.equals(TOGGLE_VIBRATE))
+                newToggle = new VibrateToggle(mContext);
+            else if (splitToggle.equals(TOGGLE_SILENT))
+                newToggle = new SilentToggle(mContext);
 
             if (newToggle == null)
                 return;
@@ -244,5 +250,10 @@ public class TogglesView extends LinearLayout {
 
         addViews();
 
+    }
+
+    public void onStatusbarExpanded() {
+        for(Toggle t : toggles)
+            t.onStatusbarExpanded();
     }
 }

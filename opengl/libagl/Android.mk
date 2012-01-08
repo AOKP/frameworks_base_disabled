@@ -25,9 +25,10 @@ LOCAL_SRC_FILES:= \
 LOCAL_CFLAGS += -DLOG_TAG=\"libagl\"
 LOCAL_CFLAGS += -DGL_GLEXT_PROTOTYPES -DEGL_EGLEXT_PROTOTYPES
 LOCAL_CFLAGS += -fvisibility=hidden
+LOCAL_CFLAGS += -ffast-math -flto
 
 LOCAL_SHARED_LIBRARIES := libcutils libhardware libutils libpixelflinger libETC1
-LOCAL_LDLIBS := -lpthread -ldl
+LOCAL_LDLIBS := -flto -lpthread -ldl
 
 ifeq ($(TARGET_ARCH),arm)
 	LOCAL_SRC_FILES += fixed_asm.S iterators.S

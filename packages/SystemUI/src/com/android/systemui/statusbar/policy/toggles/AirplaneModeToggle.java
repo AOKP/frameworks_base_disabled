@@ -9,6 +9,8 @@ import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.provider.Settings;
 
+import com.android.systemui.R;
+
 public class AirplaneModeToggle extends Toggle {
     private static final String TAG = "StatusBar.AirplaneModeController";
 

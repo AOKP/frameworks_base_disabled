@@ -108,4 +108,7 @@ public abstract class Toggle implements OnCheckedChangeListener {
         mIcon.setVisibility(showIcon ? View.VISIBLE : View.GONE);
         mText.setVisibility(showText ? View.VISIBLE : View.GONE);
     }
+
+    protected void onStatusbarExpanded() {
+    }
 }

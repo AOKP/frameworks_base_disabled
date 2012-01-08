@@ -99,6 +99,7 @@ import com.android.systemui.statusbar.policy.WifiController;
 import com.android.systemui.statusbar.policy.toggles.BluetoothToggle;
 import com.android.systemui.statusbar.policy.toggles.GpsToggle;
 import com.android.systemui.statusbar.policy.toggles.LteToggle;
+import com.android.systemui.statusbar.policy.toggles.TogglesView;
 
 public class PhoneStatusBar extends StatusBar {
     static final String TAG = "PhoneStatusBar";
@@ -177,7 +178,7 @@ public class PhoneStatusBar extends StatusBar {
     View mClearButton;
     View mSettingsButton;
 
-    LinearLayout mQuickToggles;
+    TogglesView mQuickToggles;
     BrightnessController mBrightness;
 
     // drag bar
@@ -371,7 +372,7 @@ public class PhoneStatusBar extends StatusBar {
         mSettingsButton.setOnLongClickListener(mSettingsLongClickListener);
         mScrollView = (ScrollView) expanded.findViewById(R.id.scroll);
 
-        mQuickToggles = (LinearLayout) expanded.findViewById(R.id.quick_toggles);
+        mQuickToggles = (TogglesView) expanded.findViewById(R.id.quick_toggles);
 
         mTicker = new MyTicker(context, sb);
 
@@ -1318,6 +1319,8 @@ public class PhoneStatusBar extends StatusBar {
 
         if (false)
             postStartTracing();
+
+        mQuickToggles.onStatusbarExpanded();
     }
 
     void performCollapse() {

@@ -375,4 +375,6 @@
     <string name="toggle_wifi">Wi-Fi</string>
     <string name="toggle_gps">GPS</string>
     <string name="toggle_2g">2G</string>
+    <string name="toggle_wifiap">Wi-Fi AP</string>
+    <string name="toggle_airplane">Airplane</string>
 </resources>

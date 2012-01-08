@@ -34,7 +34,7 @@ public abstract class Toggle implements OnCheckedChangeListener {
     protected static final String TAG = "Toggle";
 
     View mView;
-    Context mContext;
+    protected Context mContext;
 
     // widgets
     protected ImageView mIcon;

@@ -45,6 +45,8 @@ public class TogglesView extends LinearLayout {
     private static final String TOGGLE_DATA = "DATA";
     private static final String TOGGLE_WIFI = "WIFI";
     private static final String TOGGLE_2G = "2G";
+    private static final String TOGGLE_WIFI_AP = "AP";
+    private static final String TOGGLE_AIRPLANE = "AIRPLANE_MODE";
 
     private int mWidgetsPerRow = 2;
 
@@ -83,20 +85,24 @@ public class TogglesView extends LinearLayout {
             Log.e(TAG, "split: " + splitToggle);
             Toggle newToggle = null;
 
-            if (splitToggle.startsWith(TOGGLE_AUTOROTATE))
+            if (splitToggle.equals(TOGGLE_AUTOROTATE))
                 newToggle = new AutoRotateToggle(mContext);
-            else if (splitToggle.startsWith(TOGGLE_BLUETOOTH))
+            else if (splitToggle.equals(TOGGLE_BLUETOOTH))
                 newToggle = new BluetoothToggle(mContext);
-            else if (splitToggle.startsWith(TOGGLE_DATA))
+            else if (splitToggle.equals(TOGGLE_DATA))
                 newToggle = new NetworkToggle(mContext);
-            else if (splitToggle.startsWith(TOGGLE_GPS))
+            else if (splitToggle.equals(TOGGLE_GPS))
                 newToggle = new GpsToggle(mContext);
-            else if (splitToggle.startsWith(TOGGLE_LTE))
+            else if (splitToggle.equals(TOGGLE_LTE))
                 newToggle = new LteToggle(mContext);
-            else if (splitToggle.startsWith(TOGGLE_WIFI))
+            else if (splitToggle.equals(TOGGLE_WIFI))
                 newToggle = new WifiToggle(mContext);
-            else if (splitToggle.startsWith(TOGGLE_2G))
+            else if (splitToggle.equals(TOGGLE_2G))
                 newToggle = new TwoGToggle(mContext);
+            else if (splitToggle.equals(TOGGLE_WIFI_AP))
+                newToggle = new WifiAPToggle(mContext);
+            else if (splitToggle.equals(TOGGLE_AIRPLANE))
+                newToggle = new AirplaneModeToggle(mContext);
 
             if (newToggle == null)
                 return;
@@ -203,13 +209,13 @@ public class TogglesView extends LinearLayout {
         mBrightnessLocation = Settings.System.getInt(resolver,
                 Settings.System.STATUSBAR_TOGGLES_BRIGHTNESS_LOC,
                 BRIGHTNESS_LOC_TOP);
-        
+
         boolean useAltButtonLayout = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.STATUSBAR_TOGGLES_USE_BUTTONS, 0) == 1;
 
-        //mWidgetsPerRow = Settings.System.getInt(resolver,
-        //        Settings.System.STATUSBAR_TOGGLES_NUMBER_PER_ROW,
-        //        2);
+        // mWidgetsPerRow = Settings.System.getInt(resolver,
+        // Settings.System.STATUSBAR_TOGGLES_NUMBER_PER_ROW,
+        // 2);
         // use 2 for regular layout, 6 for buttons
         // TODO: make buttons scrollable so we can have more than 6
         mWidgetsPerRow = useAltButtonLayout ? 6 : 2;

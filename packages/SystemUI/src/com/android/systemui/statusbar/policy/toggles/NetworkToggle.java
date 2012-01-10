@@ -34,6 +34,7 @@ public class NetworkToggle extends Toggle {
         super(context);
         updateState();
         setLabel(R.string.toggle_data);
+        setIcon(R.drawable.stat_data_on);
     }
 
     private boolean isMobileDataEnabled() {

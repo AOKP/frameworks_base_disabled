@@ -25,6 +25,7 @@ public class AirplaneModeToggle extends Toggle {
 
         updateState();
         setLabel(R.string.toggle_airplane);
+        setIcon(R.drawable.stat_airplane_on);
 
     }
 

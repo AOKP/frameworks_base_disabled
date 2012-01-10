@@ -16,6 +16,7 @@ public class SilentToggle extends Toggle {
 
         updateState();
         setLabel(R.string.toggle_silent);
+        setIcon(R.drawable.stat_silent_on);
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(AudioManager.RINGER_MODE_CHANGED_ACTION);

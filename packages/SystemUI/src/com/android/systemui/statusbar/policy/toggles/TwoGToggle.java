@@ -43,6 +43,7 @@ public class TwoGToggle extends Toggle {
         SettingsObserver obs = new SettingsObserver(new Handler());
         obs.observe();
         setLabel(R.string.toggle_2g);
+        setIcon(R.drawable.stat_2g_on);
     }
 
     @Override

@@ -43,6 +43,7 @@ public class WifiAPToggle extends Toggle {
         mContext.registerReceiver(mBroadcastReceiver, wifiFilter);
 
         setLabel(R.string.toggle_wifiap);
+        setIcon(R.drawable.toggle_wifi_ap);
     }
 
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {

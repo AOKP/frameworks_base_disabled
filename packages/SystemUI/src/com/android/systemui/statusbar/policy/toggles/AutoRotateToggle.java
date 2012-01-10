@@ -52,6 +52,7 @@ public class AutoRotateToggle extends Toggle {
         mAutoRotation = getAutoRotation();
         updateState();
         setLabel(R.string.toggle_rotate);
+        setIcon(R.drawable.toggle_rotate);
     }
 
     private boolean getAutoRotation() {

@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
-import android.provider.Settings;
 
 import com.android.systemui.R;
 
@@ -17,7 +16,8 @@ public class VibrateToggle extends Toggle {
 
         updateState();
         setLabel(R.string.toggle_vibrate);
-        
+        setIcon(R.drawable.toggle_vibrate);
+
         IntentFilter filter = new IntentFilter();
         filter.addAction(AudioManager.RINGER_MODE_CHANGED_ACTION);
         context.registerReceiver(new BroadcastReceiver() {
@@ -42,11 +42,11 @@ public class VibrateToggle extends Toggle {
         am.setRingerMode(isChecked ? AudioManager.RINGER_MODE_VIBRATE
                 : AudioManager.RINGER_MODE_NORMAL);
     }
-    
+
     @Override
     protected void onStatusbarExpanded() {
         super.onStatusbarExpanded();
-        updateState();        
+        updateState();
     }
 
 }

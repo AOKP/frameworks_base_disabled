@@ -43,6 +43,7 @@ public class LteToggle extends Toggle {
         SettingsObserver obs = new SettingsObserver(new Handler());
         obs.observe();
         setLabel(R.string.toggle_lte);
+        setIcon(R.drawable.toggle_lte);
     }
 
     @Override

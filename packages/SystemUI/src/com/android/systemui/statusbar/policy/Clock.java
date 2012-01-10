@@ -258,7 +258,7 @@ public class Clock extends TextView {
 
         mClockColor = Settings.System.getInt(resolver, Settings.System.STATUSBAR_CLOCK_COLOR,
                 0xFF33B5E5);
-        if (mClockColor == -1) {
+        if (mClockColor == Integer.MIN_VALUE) {
             // flag to reset the color
             mClockColor = 0xFF33B5E5;
         }

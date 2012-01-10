@@ -13,6 +13,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.HorizontalScrollView;
 
 import com.android.systemui.R;
 
@@ -51,6 +52,8 @@ public class TogglesView extends LinearLayout {
     private static final String TOGGLE_SILENT = "SILENT";
 
     private int mWidgetsPerRow = 2;
+    
+    private boolean useAltButtonLayout = false;
 
     public static final String STOCK_TOGGLES = TOGGLE_WIFI + TOGGLE_DELIMITER
             + TOGGLE_BLUETOOTH + TOGGLE_DELIMITER
@@ -134,11 +137,20 @@ public class TogglesView extends LinearLayout {
         for (int i = 0; i < toggles.size(); i++) {
             if (i % mWidgetsPerRow == 0) {
                 // new row
-                rows.add(new LinearLayout(mContext));
+            	 rows.add(new LinearLayout(mContext));
             }
             rows.get(rows.size() - 1).addView(toggles.get(i).getView(), PARAMS_TOGGLE);
         }
-
+        if (useAltButtonLayout) {   
+        	HorizontalScrollView sv = new HorizontalScrollView(mContext);
+        	sv.addView(rows.get(rows.size() - 1), PARAMS_TOGGLE);
+        	LinearLayout ll = new LinearLayout(mContext);
+        	ll.setOrientation(LinearLayout.HORIZONTAL);
+        	ll.addView(sv,PARAMS_TOGGLE);
+        	rows.remove(rows.size() - 1);
+        	rows.add(ll);
+        	
+        }
         if (mBrightnessLocation == BRIGHTNESS_LOC_BOTTOM)
             addBrightness();
 
@@ -216,7 +228,7 @@ public class TogglesView extends LinearLayout {
                 Settings.System.STATUSBAR_TOGGLES_BRIGHTNESS_LOC,
                 BRIGHTNESS_LOC_TOP);
 
-        boolean useAltButtonLayout = Settings.System.getInt(mContext.getContentResolver(),
+        useAltButtonLayout = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.STATUSBAR_TOGGLES_USE_BUTTONS, 0) == 1;
 
         // mWidgetsPerRow = Settings.System.getInt(resolver,
@@ -224,7 +236,10 @@ public class TogglesView extends LinearLayout {
         // 2);
         // use 2 for regular layout, 6 for buttons
         // TODO: make buttons scrollable so we can have more than 6
-        mWidgetsPerRow = useAltButtonLayout ? 6 : 2;
+        // ZB Edit - Temp make mWidgetsPerRow 100 for altWidgetLayout.  A more elegant solution
+        // will need to be implemented in the main loop.
+        
+        mWidgetsPerRow = useAltButtonLayout ? 100 : 2;
 
         boolean addText = false;
         boolean addIcon = false;

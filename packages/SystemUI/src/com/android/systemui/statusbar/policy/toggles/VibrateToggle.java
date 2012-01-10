@@ -17,7 +17,6 @@ public class VibrateToggle extends Toggle {
         updateState();
         setLabel(R.string.toggle_vibrate);
         setIcon(R.drawable.toggle_vibrate);
-
         IntentFilter filter = new IntentFilter();
         filter.addAction(AudioManager.RINGER_MODE_CHANGED_ACTION);
         context.registerReceiver(new BroadcastReceiver() {

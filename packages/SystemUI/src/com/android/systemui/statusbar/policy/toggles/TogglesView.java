@@ -250,7 +250,6 @@ public class TogglesView extends LinearLayout {
             case STYLE_ICON:
                 addIcon = true;
                 break;
-            default:
             case STYLE_TEXT:
                 addText = true;
                 break;
@@ -268,7 +267,7 @@ public class TogglesView extends LinearLayout {
     }
 
     public void onStatusbarExpanded() {
-        for(Toggle t : toggles)
+        for (Toggle t : toggles)
             t.onStatusbarExpanded();
     }
 }

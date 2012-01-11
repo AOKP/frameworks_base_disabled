@@ -287,6 +287,17 @@ status_t ATSParser::Program::parseProgramMap(ABitReader *br) {
             PIDsChanged = true;
             break;
         }
+
+        for (int j = 0; j < mStreams.size(); j++){
+
+            sp<Stream> stream = mStreams.editValueAt(j);
+            if (infos.itemAt(i).mType == stream->type() &&
+                infos.itemAt(i).mPID != stream->pid()) {
+               LOGE("stream PIDs have changed.");
+               PIDsChanged = true;
+               break;
+            }
+        }
     }
 
     if (PIDsChanged) {

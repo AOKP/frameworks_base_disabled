@@ -2,11 +2,8 @@
 <com.android.systemui.statusbar.policy.toggles.TogglesView
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:systemui="http://schemas.android.com/apk/res/com.android.systemui"
-	android:id="@+id/quick_toggles"
-	android:layout_width="match_parent"
-	android:layout_height="wrap_content"
-	android:visibility="gone"
-	android:paddingTop="10dp"
+	android:id="@+id/quick_toggles" android:layout_width="match_parent"
+	android:layout_height="wrap_content" android:visibility="gone"
 	android:orientation="vertical"
 	android:background="@*android:drawable/notify_panel_notification_icon_bg_tile">
 

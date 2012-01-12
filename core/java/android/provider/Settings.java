@@ -2388,6 +2388,13 @@ public final class Settings {
          * @hide
          */
         public static final String NAVIGATION_BAR_BUTTONS = "navigation_bar_buttons";
+
+        /**
+         * whether volume keys wake the screen. boolean value
+         * 
+         * @hide
+         */
+        public static final String VOLUME_WAKE_SCREEN = "volume_wake_screen";
     }
 
     /**

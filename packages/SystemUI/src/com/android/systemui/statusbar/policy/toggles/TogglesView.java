@@ -52,7 +52,7 @@ public class TogglesView extends LinearLayout {
     private static final String TOGGLE_SILENT = "SILENT";
 
     private int mWidgetsPerRow = 2;
-    
+
     private boolean useAltButtonLayout = false;
 
     public static final String STOCK_TOGGLES = TOGGLE_WIFI + TOGGLE_DELIMITER
@@ -113,10 +113,8 @@ public class TogglesView extends LinearLayout {
             else if (splitToggle.equals(TOGGLE_SILENT))
                 newToggle = new SilentToggle(mContext);
 
-            if (newToggle == null)
-                return;
-
-            toggles.add(newToggle);
+            if (newToggle != null)
+                toggles.add(newToggle);
         }
 
     }
@@ -137,19 +135,27 @@ public class TogglesView extends LinearLayout {
         for (int i = 0; i < toggles.size(); i++) {
             if (i % mWidgetsPerRow == 0) {
                 // new row
-            	 rows.add(new LinearLayout(mContext));
+                rows.add(new LinearLayout(mContext));
             }
             rows.get(rows.size() - 1).addView(toggles.get(i).getView(), PARAMS_TOGGLE);
         }
-        if (useAltButtonLayout) {   
-        	HorizontalScrollView sv = new HorizontalScrollView(mContext);
-        	sv.addView(rows.get(rows.size() - 1), PARAMS_TOGGLE);
-        	LinearLayout ll = new LinearLayout(mContext);
-        	ll.setOrientation(LinearLayout.HORIZONTAL);
-        	ll.addView(sv,PARAMS_TOGGLE);
-        	rows.remove(rows.size() - 1);
-        	rows.add(ll);
-        	
+        if (useAltButtonLayout) {
+            HorizontalScrollView sv = new HorizontalScrollView(mContext);
+
+            try {
+                sv.addView(rows.get(rows.size() - 1), PARAMS_TOGGLE);
+            } catch (ArrayIndexOutOfBoundsException e) {
+                // happens when brightness bar is below buttons
+                rows.add(new LinearLayout(mContext));
+                sv.addView(rows.get(rows.size() - 1), PARAMS_TOGGLE);
+            }
+
+            LinearLayout ll = new LinearLayout(mContext);
+            ll.setOrientation(LinearLayout.HORIZONTAL);
+            ll.addView(sv, PARAMS_TOGGLE);
+            rows.remove(rows.size() - 1);
+            rows.add(ll);
+
         }
         if (mBrightnessLocation == BRIGHTNESS_LOC_BOTTOM)
             addBrightness();
@@ -236,9 +242,9 @@ public class TogglesView extends LinearLayout {
         // 2);
         // use 2 for regular layout, 6 for buttons
         // TODO: make buttons scrollable so we can have more than 6
-        // ZB Edit - Temp make mWidgetsPerRow 100 for altWidgetLayout.  A more elegant solution
+        // ZB Edit - Temp make mWidgetsPerRow 100 for altWidgetLayout. A more elegant solution
         // will need to be implemented in the main loop.
-        
+
         mWidgetsPerRow = useAltButtonLayout ? 100 : 2;
 
         boolean addText = false;

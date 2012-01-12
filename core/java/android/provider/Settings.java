@@ -2401,6 +2401,13 @@ public final class Settings {
          * @hide
          */
         public static final String VOLUME_WAKE_SCREEN = "volume_wake_screen";
+
+        /**
+         * launch a custom app for sms
+         * 
+         * @hide
+         */
+        public static final String LOCKSCREEN_CUSTOM_SMS_INTENT = "lockscreen_custom_sms_intent";
     }
 
     /**

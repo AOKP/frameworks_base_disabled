@@ -16,28 +16,30 @@
 
 package com.android.internal.policy.impl;
 
-import com.android.internal.R;
-import com.android.internal.widget.LockPatternUtils;
-import com.android.internal.widget.SlidingTab;
-import com.android.internal.widget.WaveView;
-import com.android.internal.widget.multiwaveview.MultiWaveView;
+import java.io.File;
+import java.net.URISyntaxException;
 
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.media.AudioManager;
+import android.net.Uri;
+import android.provider.MediaStore;
+import android.provider.Settings;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.*;
-import android.util.Log;
-import android.media.AudioManager;
-import android.provider.MediaStore;
-import android.provider.Settings;
+import android.widget.LinearLayout;
 
-import java.io.File;
+import com.android.internal.R;
+import com.android.internal.widget.LockPatternUtils;
+import com.android.internal.widget.SlidingTab;
+import com.android.internal.widget.WaveView;
+import com.android.internal.widget.multiwaveview.MultiWaveView;
 
 /**
  * The screen within {@link LockPatternKeyguardView} that shows general
@@ -231,11 +233,25 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
                 if (target == 0) { // right Action = Unlock
                     mCallback.goToUnlockScreen();
                 } else if (target == 3) { // up Action == Mms
-                    Intent mmsIntent = new Intent(Intent.ACTION_MAIN);
-                    mmsIntent.setClassName("com.android.mms",
-                                           "com.android.mms.ui.ConversationList");
-                    mmsIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    mContext.startActivity(mmsIntent);
+                    String intentUri = Settings.System.getString(mContext.getContentResolver(), Settings.System.LOCKSCREEN_CUSTOM_SMS_INTENT);
+
+                    if(intentUri == null) {
+                        Intent intent = new Intent(Intent.ACTION_MAIN);
+                        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                                | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+                        intent.setClassName("com.android.mms", "com.android.mms.ui.ConversationList");
+                        mContext.startActivity(intent);
+                    } else {
+                        Intent mmsIntent;
+                        try {
+                            mmsIntent = Intent.parseUri(intentUri, 0);
+                            mmsIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                                    | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+                            mContext.startActivity(mmsIntent);
+                        } catch (URISyntaxException e) {
+                        }
+                    }
                     mCallback.goToUnlockScreen();
                 } else if (target == 1) { // left Action = Phone
                     Intent phoneIntent = new Intent(Intent.ACTION_MAIN);

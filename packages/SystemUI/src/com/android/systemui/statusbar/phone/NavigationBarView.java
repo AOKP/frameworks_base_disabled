@@ -188,7 +188,6 @@ public class NavigationBarView extends LinearLayout {
                 View v = null;
 
                 boolean notFound = false;
-
                 if (key.equals(NAV_BACK))
                     v = generateKey(landscape, KEY_BACK);
                 else if (key.equals(NAV_HOME))

@@ -332,13 +332,17 @@ sp<ABuffer> ElementaryStreamQueue::dequeueAccessUnitAAC() {
             mFormat = MakeAACCodecSpecificData(
                     profile, sampling_freq_index, channel_configuration);
 
+            mFormat->setInt32(kKeyMaxInputSize, (8192 * 3));
+
             int32_t sampleRate;
             int32_t numChannels;
+            int32_t maxInputSize;
             CHECK(mFormat->findInt32(kKeySampleRate, &sampleRate));
             CHECK(mFormat->findInt32(kKeyChannelCount, &numChannels));
+            CHECK(mFormat->findInt32(kKeyMaxInputSize, &maxInputSize));
 
-            ALOGI("found AAC codec config (%d Hz, %d channels)",
-                 sampleRate, numChannels);
+            LOGI("found AAC codec config (%d Hz, %d channels), Input buffer size %d",
+                 sampleRate, numChannels,maxInputSize);
         } else {
             // profile_ObjectType, sampling_frequency_index, private_bits,
             // channel_configuration, original_copy, home

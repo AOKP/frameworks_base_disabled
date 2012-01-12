@@ -29,8 +29,12 @@
 #include "include/AACExtractor.h"
 #ifdef QCOM_HARDWARE
 #include "include/ExtendedExtractor.h"
-#include <media/stagefright/MediaDefs.h>
+#else
+#include "include/AVIExtractor.h"
 #endif
+#include "include/WVMExtractor.h"
+
+#include <media/stagefright/MediaDefs.h>
 
 #include "matroska/MatroskaExtractor.h"
 
@@ -99,6 +103,26 @@ bool DataSource::sniff(
 #ifdef QCOM_HARDWARE
                 if(*confidence >= 0.6f) {
                     LOGV("Ignore other Sniffers - confidence = %f , mimeType = %s",*confidence,mimeType->string());
+
+                    char value[PROPERTY_VALUE_MAX];
+                    if( (!strcasecmp((*mimeType).string(), MEDIA_MIMETYPE_CONTAINER_MPEG4)) &&
+                        (property_get("mmp.enable.3g2", value, NULL)) &&
+                        (!strcasecmp(value, "true") || !strcmp(value, "1"))) {
+
+                        //Incase of mimeType MPEG4 call the extended parser sniffer to check
+                        //if this is fragmented or not.
+                        LOGV("calling Extended Sniff if mimeType = %s ",(*mimeType).string());
+                        String8 tmpMimeType;
+                        float tmpConfidence;
+                        sp<AMessage> tmpMeta;
+                        (*extendedSnifferPosition)(this, &tmpMimeType, &tmpConfidence, &tmpMeta);
+                        if (tmpConfidence > *confidence) {
+                            *mimeType = tmpMimeType;
+                            *confidence = tmpConfidence;
+                            *meta = tmpMeta;
+                            LOGV("Confidence of Extended sniffer greater than previous sniffer ");
+                        }
+                    }
                     break;
                 }
 #endif
@@ -148,6 +172,10 @@ void DataSource::RegisterDefaultSniffers() {
     RegisterSniffer(SniffMPEG2TS);
     RegisterSniffer(SniffMP3);
     RegisterSniffer(SniffAAC);
+    RegisterSniffer(SniffWVM);
+#ifndef QCOM_HARDWARE
+    RegisterSniffer(SniffAVI);
+#endif
     RegisterSniffer(SniffMPEG2PS);
 #ifdef QCOM_HARDWARE
     ExtendedExtractor::RegisterSniffers();

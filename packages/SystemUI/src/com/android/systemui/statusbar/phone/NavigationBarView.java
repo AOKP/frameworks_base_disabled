@@ -187,6 +187,8 @@ public class NavigationBarView extends LinearLayout {
                 Log.e(TAG, "split: " + key);
                 View v = null;
 
+                boolean notFound = false;
+
                 if (key.equals(NAV_BACK))
                     v = generateKey(landscape, KEY_BACK);
                 else if (key.equals(NAV_HOME))
@@ -195,9 +197,17 @@ public class NavigationBarView extends LinearLayout {
                     v = generateKey(landscape, KEY_SEARCH);
                 else if (key.equals(NAV_TASKS))
                     v = generateKey(landscape, KEY_TASKS);
+                else {
+                    // if we get here, this is baaaaaaaaaaaaaaaad, revert to stock setup
+                    notFound = true;
+                    Settings.System.putString(mContext.getContentResolver(),
+                            Settings.System.NAVIGATION_BAR_BUTTONS, STOCK_NAVBAR);
+                }
 
-                addButton(navButtonLayout, v, landscape);
-                addLightsOutButton(lightsOut, v, landscape, false);
+                if (!notFound) {
+                    addButton(navButtonLayout, v, landscape);
+                    addLightsOutButton(lightsOut, v, landscape, false);
+                }
 
             }
 

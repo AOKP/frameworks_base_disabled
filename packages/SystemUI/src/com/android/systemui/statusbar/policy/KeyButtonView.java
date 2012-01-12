@@ -128,6 +128,21 @@ public class KeyButtonView extends ImageView {
         }
     }
 
+    public void setSupportsLongPress(boolean supports) {
+        mSupportsLongpress = supports;
+    }
+
+    public void setCode(int code) {
+        mCode = code;
+    }
+
+    public void setGlowBackground(int id) {
+        mGlowBG = getResources().getDrawable(id);
+        if (mGlowBG != null) {
+            mDrawingAlpha = BUTTON_QUIESCENT_ALPHA;
+        }
+    }
+
     public float getDrawingAlpha() {
         if (mGlowBG == null)
             return 0;

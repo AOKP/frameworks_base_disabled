@@ -50,6 +50,7 @@ public class TogglesView extends LinearLayout {
     private static final String TOGGLE_AIRPLANE = "AIRPLANE_MODE";
     private static final String TOGGLE_VIBRATE = "VIBRATE";
     private static final String TOGGLE_SILENT = "SILENT";
+    private static final String TOGGLE_TORCH = "TORCH";
 
     private int mWidgetsPerRow = 2;
     
@@ -112,6 +113,8 @@ public class TogglesView extends LinearLayout {
                 newToggle = new VibrateToggle(mContext);
             else if (splitToggle.equals(TOGGLE_SILENT))
                 newToggle = new SilentToggle(mContext);
+            else if (splitToggle.equals(TOGGLE_TORCH))
+            	newToggle = new TorchToggle(mContext);
 
             if (newToggle == null)
                 return;

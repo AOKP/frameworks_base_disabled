@@ -2854,7 +2854,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         // Handle special keys.
         switch (keyCode) {
             case KeyEvent.KEYCODE_VOLUME_DOWN:
-            case KeyEvent.KEYCODE_VOLUME_UP:  {
+            case KeyEvent.KEYCODE_VOLUME_UP:
+            case KeyEvent.KEYCODE_VOLUME_MUTE: {
                 if (mVolBtnMusicControls && !down) {
                     handleVolumeLongPressAbort();
 
@@ -2862,61 +2863,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     if (!mIsLongPress)
                         handleVolumeKey(AudioManager.STREAM_MUSIC, keyCode);
                 }
-                if (down) {
-                    ITelephony telephonyService = getTelephonyService();
-                    if (telephonyService != null) {
-                        try {
-                            if (telephonyService.isRinging()) {
-                                // If an incoming call is ringing, either VOLUME key means
-                                // "silence ringer". We handle these keys here, rather than
-                                // in the InCallScreen, to make sure we'll respond to them
-                                // even if the InCallScreen hasn't come to the foreground yet.
-                                // Look for the DOWN event here, to agree with the "fallback"
-                                // behavior in the InCallScreen.
-                                Log.i(TAG, "interceptKeyBeforeQueueing:"
-                                        + " VOLUME key-down while ringing: Silence ringer!");
-
-                                // Silence the ringer. (It's safe to call this
-                                // even if the ringer has already been silenced.)
-                                telephonyService.silenceRinger();
-
-                                // And *don't* pass this key thru to the current activity
-                                // (which is probably the InCallScreen.)
-                                result &= ~ACTION_PASS_TO_USER;
-                                break;
-                            }
-                            if (telephonyService.isOffhook()
-                                    && (result & ACTION_PASS_TO_USER) == 0) {
-                                // If we are in call but we decided not to pass the key to
-                                // the application, handle the volume change here.
-                                handleVolumeKey(AudioManager.STREAM_VOICE_CALL, keyCode);
-                                break;
-                            }
-                        } catch (RemoteException ex) {
-                            Log.w(TAG, "ITelephony threw RemoteException", ex);
-                        }
-                    }
-
-                    if (isMusicActive() && (result & ACTION_PASS_TO_USER) == 0) {
-                        // Care for long-press actions to skip tracks
-                        if (mVolBtnMusicControls) {
-                            // initialize long press flag to false for volume events
-                            mIsLongPress = false;
-
-                            // if the button is held long enough, the following
-                            // procedure will set mIsLongPress=true
-                            handleVolumeLongPress(keyCode);
-                        } else {
-                            // If music is playing but we decided not to pass the key to the
-                            // application, handle the volume change here.
-                            handleVolumeKey(AudioManager.STREAM_MUSIC, keyCode);
-                        }
-                        break;
-                    }
-                }
-            }
-                break;
-            case KeyEvent.KEYCODE_VOLUME_MUTE: {
                 if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
                     if (down) {
                         if (isScreenOn && !mVolumeDownKeyTriggered
@@ -2978,11 +2924,20 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                             Log.w(TAG, "ITelephony threw RemoteException", ex);
                         }
                     }
-
                     if (isMusicActive() && (result & ACTION_PASS_TO_USER) == 0) {
-                        // If music is playing but we decided not to pass the key to the
-                        // application, handle the volume change here.
-                        handleVolumeKey(AudioManager.STREAM_MUSIC, keyCode);
+                        // Care for long-press actions to skip tracks
+                        if (mVolBtnMusicControls) {
+                            // initialize long press flag to false for volume events
+                            mIsLongPress = false;
+
+                            // if the button is held long enough, the following
+                            // procedure will set mIsLongPress=true
+                            handleVolumeLongPress(keyCode);
+                        } else {
+                            // If music is playing but we decided not to pass the key to the
+                            // application, handle the volume change here.
+                            handleVolumeKey(AudioManager.STREAM_MUSIC, keyCode);
+                        }
                         break;
                     }
                 }

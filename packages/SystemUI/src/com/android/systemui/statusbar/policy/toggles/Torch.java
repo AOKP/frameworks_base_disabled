@@ -239,11 +239,11 @@ public class Torch extends Activity implements  SurfaceHolder.Callback {
   public void onStop() {
     super.onStop();
     if (mCamera != null) {
-      stopPreview();
-      mCamera.release();
-      mCamera = null;
-    };
-    torch = null;
+        stopPreview();
+        mCamera.release();
+        mCamera = null;
+      };
+     torch = null;  
     Log.i(TAG, "onStop");
   }
 

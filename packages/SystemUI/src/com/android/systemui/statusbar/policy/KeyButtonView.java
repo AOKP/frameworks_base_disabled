@@ -128,6 +128,21 @@ public class KeyButtonView extends ImageView {
         }
     }
 
+    public void setSupportsLongPress(boolean supports) {
+        mSupportsLongpress = supports;
+    }
+
+    public void setCode(int code) {
+        mCode = code;
+    }
+
+    public void setGlowBackground(int id) {
+        mGlowBG = getResources().getDrawable(id);
+        if (mGlowBG != null) {
+            mDrawingAlpha = BUTTON_QUIESCENT_ALPHA;
+        }
+    }
+
     public float getDrawingAlpha() {
         if (mGlowBG == null)
             return 0;
@@ -199,14 +214,16 @@ public class KeyButtonView extends ImageView {
                             ObjectAnimator.ofFloat(this, "glowAlpha", 1f),
                             ObjectAnimator.ofFloat(this, "glowScale", GLOW_MAX_SCALE_FACTOR)
                             );
-                    as.setDuration(50);
+                    //as.setDuration(50);
+                    as.setDuration(40);
                 } else {
                     as.playTogether(
                             ObjectAnimator.ofFloat(this, "glowAlpha", 0f),
                             ObjectAnimator.ofFloat(this, "glowScale", 1f),
                             ObjectAnimator.ofFloat(this, "drawingAlpha", BUTTON_QUIESCENT_ALPHA)
                             );
-                    as.setDuration(500);
+                    //as.setDuration(500);
+                    as.setDuration(250);
                 }
                 as.start();
             }

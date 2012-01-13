@@ -245,6 +245,13 @@ public class PowerSaverService extends BroadcastReceiver {
             return;
         }
 
+        TelephonyManager telephony = (TelephonyManager) mContext
+                .getSystemService(Context.TELEPHONY_SERVICE);
+        if (telephony.getCallState() == TelephonyManager.CALL_STATE_OFFHOOK
+                || telephony.getCallState() == TelephonyManager.CALL_STATE_RINGING) {
+            Slog.w(TAG, "Phone is ringing or in a phone call, not enabling power saver");
+        }
+
         Calendar timeToStart = Calendar.getInstance();
         timeToStart.setTimeInMillis(System.currentTimeMillis());
         timeToStart.add(Calendar.SECOND, mDataScreenOffSecondDelay);

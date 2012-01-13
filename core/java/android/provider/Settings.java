@@ -2217,6 +2217,13 @@ public final class Settings {
         public static final String LOCKSCREEN_ENABLE_MENU_KEY = "lockscreen_enable_menu_key";
 
         /**
+	* Whether to enable mms and phone lockscreen shortcuts
+	*
+	* @hide
+	*/
+        public static final String LOCKSCREEN_QUAD_TARGETS = "lockscreen_quad_targets";
+
+        /**
          * whether to show the IME switcher when typing in the statusbar. Boolean value.
          * 
          * @hide
@@ -2381,6 +2388,32 @@ public final class Settings {
          * @hide
          */
         public static final String STATUSBAR_TOGGLES_USE_BUTTONS = "statusbar_toggles_use_buttons";
+
+        /**
+         * Order of phone navigation buttons
+         *
+         * @hide
+         */
+        public static final String NAVIGATION_BAR_BUTTONS = "navigation_bar_buttons";
+        /**
+         * whether volume keys wake the screen. boolean value
+         * 
+         * @hide
+         */
+        public static final String VOLUME_WAKE_SCREEN = "volume_wake_screen";
+
+        /**
+         * launch a custom app for sms
+         * 
+         * @hide
+         */
+        public static final String LOCKSCREEN_CUSTOM_SMS_INTENT = "lockscreen_custom_sms_intent";
+
+        /**
+         * Whether volume up/down can be long pressed to skip tracks
+         * @hide
+         */
+        public static final String VOLUME_MUSIC_CONTROLS = "volume_music_controls";
     }
 
     /**

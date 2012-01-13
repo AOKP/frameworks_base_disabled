@@ -132,6 +132,13 @@ public class TogglesView extends LinearLayout {
         removeViews();
         rows = new ArrayList<LinearLayout>();
 
+        if (!useAltButtonLayout) {
+            DisplayMetrics metrics = getContext().getResources().getDisplayMetrics();
+            float dp = 10f;
+            int pixels = (int) (metrics.density * dp + 0.5f);
+            this.setPadding(getPaddingLeft(), pixels, getPaddingRight(), getPaddingBottom());
+        }
+
         if (mBrightnessLocation == BRIGHTNESS_LOC_TOP)
             addBrightness();
 

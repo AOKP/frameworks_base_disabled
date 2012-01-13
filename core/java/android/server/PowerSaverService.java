@@ -9,7 +9,6 @@ import android.accounts.AccountManager;
 import android.app.AlarmManager;
 import android.app.DownloadManager;
 import android.app.PendingIntent;
-import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -513,9 +512,6 @@ public class PowerSaverService extends BroadcastReceiver {
         wifi = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
         telephony = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
         alarms = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
-        
-        final BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
-        adapter.disable();
 
         SettingsObserver settingsObserver = new SettingsObserver(new Handler());
         settingsObserver.observe();

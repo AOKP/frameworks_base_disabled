@@ -65,6 +65,7 @@ public class TorchToggle extends Toggle  {
         	}
         else{
         	Log.d(TAG,"Destroying Torch");
+        	torch=Torch.getTorch();
         	torch.finish();
         }
     }

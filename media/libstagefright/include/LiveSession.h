@@ -90,11 +90,13 @@ private:
     KeyedVector<AString, sp<ABuffer> > mAESKeyForURI;
 
     ssize_t mPrevBandwidthIndex;
+    ssize_t mBandwidthIndex;
     int64_t mLastPlaylistFetchTimeUs;
     sp<M3UParser> mPlaylist;
     int32_t mSeqNumber;
     int64_t mSeekTimeUs;
     int32_t mNumRetries;
+    int64_t mPrevBufferSize;
 
     Mutex mLock;
     Condition mCondition;
@@ -122,9 +124,10 @@ private:
     void onMonitorQueue();
     void onSeek(const sp<AMessage> &msg);
 
-    status_t fetchFile(const char *url, sp<ABuffer> *out);
+    status_t fetchFile(const char *url, sp<ABuffer> *out, bool isMedia = true);
     sp<M3UParser> fetchPlaylist(const char *url, bool *unchanged);
     size_t getBandwidthIndex();
+    void estimateFilesize(off64_t *size);
 
     status_t decryptBuffer(
             size_t playlistIndex, const sp<ABuffer> &buffer);

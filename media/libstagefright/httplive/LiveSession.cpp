@@ -38,6 +38,9 @@
 #include <openssl/aes.h>
 #include <openssl/md5.h>
 
+#define DEFAULT_SEGMENT_DURATION 10
+#define DEFAULT_MIN_SIZE 65536
+
 namespace android {
 
 LiveSession::LiveSession(uint32_t flags, bool uidValid, uid_t uid)
@@ -51,10 +54,12 @@ LiveSession::LiveSession(uint32_t flags, bool uidValid, uid_t uid)
                     ? HTTPBase::kFlagIncognito
                     : 0)),
       mPrevBandwidthIndex(-1),
+      mBandwidthIndex(-1),
       mLastPlaylistFetchTimeUs(-1),
       mSeqNumber(-1),
       mSeekTimeUs(-1),
       mNumRetries(0),
+      mPrevBufferSize(-1),
       mDurationUs(-1),
       mSeeking(false),
       mDisconnectPending(false),
@@ -222,7 +227,7 @@ void LiveSession::onDisconnect() {
     mDisconnectPending = false;
 }
 
-status_t LiveSession::fetchFile(const char *url, sp<ABuffer> *out) {
+status_t LiveSession::fetchFile(const char *url, sp<ABuffer> *out, bool isMedia) {
     LOGW("fetchFile %s", url);
 
     *out = NULL;
@@ -254,34 +259,68 @@ status_t LiveSession::fetchFile(const char *url, sp<ABuffer> *out) {
     }
 
     off64_t size;
-    status_t err = source->getSize(&size);
+    status_t haveFilesize = source->getSize(&size);
 
-    if (err != OK) {
-        size = 65536;
+    if (haveFilesize != OK) {
+        if(isMedia) {
+            estimateFilesize(&size);
+        } else {
+            size = DEFAULT_MIN_SIZE;
+        }
     }
 
+    LOGV("Filesize set to %llu",size);
     sp<ABuffer> buffer = new ABuffer(size);
     buffer->setRange(0, 0);
 
-    for (;;) {
-        size_t bufferRemaining = buffer->capacity() - buffer->size();
+    size_t bufferIncrement = size / 16;
 
-        if (bufferRemaining == 0) {
-            bufferRemaining = 32768;
+    if(bufferIncrement < DEFAULT_MIN_SIZE) {
+        bufferIncrement = DEFAULT_MIN_SIZE;
+    }
 
-            ALOGV("increasing download buffer to %d bytes",
-                 buffer->size() + bufferRemaining);
+    unsigned long bwThreshold;
 
-            sp<ABuffer> copy = new ABuffer(buffer->size() + bufferRemaining);
-            memcpy(copy->data(), buffer->data(), buffer->size());
-            copy->setRange(0, buffer->size());
+    if(isMedia && mBandwidthItems.size() > 0) {
+        bwThreshold = mBandwidthItems.itemAt(mBandwidthIndex).mBandwidth;
+    } else {
+        bwThreshold = 0;
+    }
 
-            buffer = copy;
+    int32_t curBandwidth;
+    int32_t projBandwidth;
+
+    if(isMedia && bwThreshold > 0) {
+        if(!mHTTPDataSource->estimateBandwidth(&curBandwidth)) {
+            curBandwidth = bwThreshold;
+        }
+        projBandwidth = curBandwidth;
+    }
+
+    size_t bufferRemaining = buffer->capacity();
+
+    for(int i=0;;i++) {
+        size_t toRead;
+
+        if(isMedia && bwThreshold > 0) {
+            if(curBandwidth < bwThreshold || projBandwidth < bwThreshold) {
+                // read minimum to allow more frequent bandwidth checking
+                toRead = DEFAULT_MIN_SIZE;
+            } else {
+                toRead = bufferIncrement;
+            }
+
+            if(toRead > bufferRemaining) {
+                toRead = bufferRemaining;
+            }
+        } else {
+            // if switching is not possible, always try to read maximum
+            toRead = bufferRemaining;
         }
 
+        // readAt() is split across multiple calls to allow bandwidth checking
         ssize_t n = source->readAt(
-                buffer->size(), buffer->data() + buffer->size(),
-                bufferRemaining);
+                buffer->size(),buffer->data()+buffer->size(),toRead);
 
         if (n < 0) {
             return n;
@@ -292,6 +331,66 @@ status_t LiveSession::fetchFile(const char *url, sp<ABuffer> *out) {
         }
 
         buffer->setRange(0, buffer->size() + (size_t)n);
+        bufferRemaining = buffer->capacity() - buffer->size();
+
+        if (haveFilesize == OK && bufferRemaining == 0) {
+            break;
+        }
+
+        // Only perform a bandwidth-index check for variant-list media files
+        if(isMedia && bwThreshold > 0) {
+            int32_t prevBandwidth = curBandwidth;
+            mHTTPDataSource->estimateBandwidth(&curBandwidth);
+            projBandwidth = 2*curBandwidth-prevBandwidth;
+
+            if(i > 0 && bufferRemaining > 0) {
+                size_t bandwidthIndex = getBandwidthIndex();
+                ssize_t indexChange = mBandwidthIndex-bandwidthIndex;
+
+                if(indexChange > 0) {
+                    LOGV("bandwidthIndex drop: %zu --> %zu",(size_t)mBandwidthIndex,(size_t)bandwidthIndex);
+
+                    // getBandwidthIndex() only considers 80% of the available bandwidth
+                    // This ignores the potential switch if the full bandwidth still works
+                    // thus giving an implicit 20% tolerance
+                    if((size_t)curBandwidth < bwThreshold
+                            && (size_t)prevBandwidth < bwThreshold
+                            && projBandwidth < (ssize_t)bwThreshold) {
+                        size_t lowSize = (size_t)(buffer->capacity()*
+                                (mBandwidthItems.itemAt(bandwidthIndex).mBandwidth/
+                                (double)bwThreshold));
+
+                        if(lowSize < bufferRemaining) {
+                            LOGV("Quicker to download lower index than finish (%zu > %llu)",bufferRemaining,lowSize);
+                            return INFO_BANDWIDTH_DROP;
+                        } else {
+                            LOGV("Quicker to finish this download than drop index (%zu <= %llu)",bufferRemaining,lowSize);
+                        }
+                    }
+                }
+            }
+        }
+
+        if (bufferRemaining == 0) {
+            if(buffer->capacity()/2 < DEFAULT_MIN_SIZE) {
+                bufferRemaining = DEFAULT_MIN_SIZE;
+            } else {
+                bufferRemaining = buffer->capacity()/2;
+            }
+
+            LOGV("increasing download buffer to %d bytes",
+                 buffer->size() + bufferRemaining);
+
+            sp<ABuffer> copy = new ABuffer(buffer->size() + bufferRemaining);
+            memcpy(copy->data(), buffer->data(), buffer->size());
+            copy->setRange(0, buffer->size());
+
+            buffer = copy;
+        }
+    }
+
+    if(isMedia) {
+        mPrevBufferSize = buffer->size();
     }
 
     *out = buffer;
@@ -299,11 +398,47 @@ status_t LiveSession::fetchFile(const char *url, sp<ABuffer> *out) {
     return OK;
 }
 
+void LiveSession::estimateFilesize(off64_t* size) {
+    // if bandwidth has not changed, no discontinuity, and not first file
+    if(mPrevBufferSize != -1) {
+        *size = mPrevBufferSize;
+    } else {
+        AString uri;
+        sp<AMessage> meta;
+
+        bool success = mPlaylist->itemAt(mSeqNumber -
+                mFirstSeqNumber, &uri, &meta);
+
+        int32_t duration;
+
+        if(success && meta != NULL) {
+            if (!meta->findInt32("duration", &duration) || duration <= 0) {
+                if(mPlaylist->meta() == NULL || !mPlaylist->meta()->
+                        findInt32("target-duration", &duration)) {
+                    duration = DEFAULT_SEGMENT_DURATION;
+                }
+            }
+        } else {
+            duration = DEFAULT_SEGMENT_DURATION;
+        }
+
+        unsigned long bwThreshold;
+        if(mBandwidthItems.size() > 0) {
+            bwThreshold = mBandwidthItems.itemAt(mBandwidthIndex).mBandwidth;
+        } else {
+            bwThreshold = DEFAULT_MIN_SIZE;
+        }
+
+        *size = bwThreshold*duration/8;
+    }
+}
+
 sp<M3UParser> LiveSession::fetchPlaylist(const char *url, bool *unchanged) {
     *unchanged = false;
 
     sp<ABuffer> buffer;
-    status_t err = fetchFile(url, &buffer);
+    LOGV("fetchPlaylist %s", url);
+    status_t err = fetchFile(url, &buffer, false);
 
     if (err != OK) {
         return NULL;
@@ -486,24 +621,24 @@ bool LiveSession::timeToRefreshPlaylist(int64_t nowUs) const {
 }
 
 void LiveSession::onDownloadNext() {
-    size_t bandwidthIndex = getBandwidthIndex();
+    mBandwidthIndex = getBandwidthIndex();
 
 rinse_repeat:
     int64_t nowUs = ALooper::GetNowUs();
 
     if (mLastPlaylistFetchTimeUs < 0
-            || (ssize_t)bandwidthIndex != mPrevBandwidthIndex
+            || mBandwidthIndex != mPrevBandwidthIndex
             || (!mPlaylist->isComplete() && timeToRefreshPlaylist(nowUs))) {
         AString url;
         if (mBandwidthItems.size() > 0) {
-            url = mBandwidthItems.editItemAt(bandwidthIndex).mURI;
+            url = mBandwidthItems.editItemAt(mBandwidthIndex).mURI;
         } else {
             url = mMasterURL;
         }
 
         bool firstTime = (mPlaylist == NULL);
 
-        if ((ssize_t)bandwidthIndex != mPrevBandwidthIndex) {
+        if (mBandwidthIndex != mPrevBandwidthIndex) {
             // If we switch bandwidths, do not pay any heed to whether
             // playlists changed since the last time...
             mPlaylist.clear();
@@ -568,14 +703,14 @@ rinse_repeat:
 
     if (mSeqNumber < mFirstSeqNumber
             || mSeqNumber > lastSeqNumberInPlaylist) {
-        if (mPrevBandwidthIndex != (ssize_t)bandwidthIndex) {
+        if (mPrevBandwidthIndex != mBandwidthIndex) {
             // Go back to the previous bandwidth.
 
             LOGW("new bandwidth does not have the sequence number "
                  "we're looking for, switching back to previous bandwidth");
 
             mLastPlaylistFetchTimeUs = -1;
-            bandwidthIndex = mPrevBandwidthIndex;
+            mBandwidthIndex = mPrevBandwidthIndex;
             goto rinse_repeat;
         }
 
@@ -596,7 +731,7 @@ rinse_repeat:
 
             // fall through
         } else {
-            ALOGE("Cannot find sequence number %d in playlist "
+            LOGV("Cannot find sequence number %d in playlist "
                  "(contains %d - %d)",
                  mSeqNumber, mFirstSeqNumber,
                  mFirstSeqNumber + mPlaylist->size() - 1);
@@ -615,14 +750,29 @@ rinse_repeat:
                 &uri,
                 &itemMeta));
 
+    if (mPrevBandwidthIndex >= 0 && mPrevBandwidthIndex != mBandwidthIndex) {
+        bandwidthChanged = true;
+    }
+
+    if(explicitDiscontinuity || bandwidthChanged) {
+        // force recalculation of buffer size in fetchFile
+        mPrevBufferSize = -1;
+    }
+
     int32_t val;
     if (itemMeta->findInt32("discontinuity", &val) && val != 0) {
         explicitDiscontinuity = true;
     }
 
     sp<ABuffer> buffer;
-    status_t err = fetchFile(uri.c_str(), &buffer);
-    if (err != OK) {
+    status_t err = fetchFile(uri.c_str(), &buffer, true);
+    if(err == INFO_BANDWIDTH_DROP) {
+        LOGV("fetchFile() exited due to a large bandwidth drop.");
+        mPrevBandwidthIndex = mBandwidthIndex;
+        mBandwidthIndex = getBandwidthIndex();
+
+        goto rinse_repeat;
+    } else if (err != OK) {
         Mutex::Autolock autoLock(mLock);
         if( !mSeeking ) {
            mDataSource->queueEOS(err);
@@ -649,7 +799,7 @@ rinse_repeat:
 
         ALOGE("This doesn't look like a transport stream...");
 
-        mBandwidthItems.removeAt(bandwidthIndex);
+        mBandwidthItems.removeAt(mBandwidthIndex);
 
         if (mBandwidthItems.isEmpty()) {
             mDataSource->queueEOS(ERROR_UNSUPPORTED);
@@ -659,15 +809,15 @@ rinse_repeat:
         LOGW("Retrying with a different bandwidth stream.");
 
         mLastPlaylistFetchTimeUs = -1;
-        bandwidthIndex = getBandwidthIndex();
-        mPrevBandwidthIndex = bandwidthIndex;
+        mBandwidthIndex = getBandwidthIndex();
+        mPrevBandwidthIndex = mBandwidthIndex;
         mSeqNumber = -1;
 
         goto rinse_repeat;
     }
 
-    if ((size_t)mPrevBandwidthIndex != bandwidthIndex) {
 #ifdef QCOM_HARDWARE
+    if (mPrevBandwidthIndex != mBandwidthIndex) {
         char value[PROPERTY_VALUE_MAX];
         if(property_get("httplive.enable.discontinuity", value, NULL) &&
            (!strcasecmp(value, "true") || !strcmp(value, "1")) ) {
@@ -680,7 +830,7 @@ rinse_repeat:
 
         if (mPrevBandwidthIndex >= 0) {
            LOGW("BW changed from index %d to index %d",
-                    mPrevBandwidthIndex, bandwidthIndex);
+                    mPrevBandwidthIndex, mBandwidthIndex);
         }
 #else
         bandwidthChanged = true;
@@ -710,7 +860,7 @@ rinse_repeat:
 
     mDataSource->queueBuffer(buffer);
 
-    mPrevBandwidthIndex = bandwidthIndex;
+    mPrevBandwidthIndex = mBandwidthIndex;
     ++mSeqNumber;
 
     postMonitorQueue();
@@ -922,7 +1072,6 @@ void LiveSession::onSeek(const sp<AMessage> &msg) {
 
     mSeeking = false;
     mCondition.broadcast();
-
     postMonitorQueue();
 }
 
@@ -939,4 +1088,3 @@ bool LiveSession::isSeekable() {
 }
 
 }  // namespace android
-

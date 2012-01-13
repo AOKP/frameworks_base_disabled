@@ -232,7 +232,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
             if (mQuadTargets) {
                 if (target == 0) { // right Action = Unlock
                     mCallback.goToUnlockScreen();
-                } else if (target == 3) { // up Action == Mms
+                } else if (target == 1) { // up Action == Mms
                     String intentUri = Settings.System.getString(mContext.getContentResolver(), Settings.System.LOCKSCREEN_CUSTOM_SMS_INTENT);
 
                     if(intentUri == null) {
@@ -253,14 +253,14 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
                         }
                     }
                     mCallback.goToUnlockScreen();
-                } else if (target == 1) { // left Action = Phone
+                } else if (target == 2) { // left Action = Phone
                     Intent phoneIntent = new Intent(Intent.ACTION_MAIN);
                     phoneIntent.setClassName("com.android.contacts",
                                              "com.android.contacts.activities.DialtactsActivity");
                     phoneIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     mContext.startActivity(phoneIntent);
                     mCallback.goToUnlockScreen();
-                } else if (target == 2) {
+                } else if (target == 3) {
                     if (!mCameraDisabled) {
                         // Start the Camera
                         Intent intent = new Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA);

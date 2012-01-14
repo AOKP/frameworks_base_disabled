@@ -12,6 +12,7 @@ import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
+import android.view.Gravity;
 import android.widget.LinearLayout;
 import android.widget.HorizontalScrollView;
 
@@ -71,7 +72,11 @@ public class TogglesView extends LinearLayout {
     private static final LinearLayout.LayoutParams PARAMS_TOGGLE = new LinearLayout.LayoutParams(
             LayoutParams.MATCH_PARENT,
             LayoutParams.WRAP_CONTENT, 1f);
-
+    
+    private static final LinearLayout.LayoutParams PARAMS_TOGGLE_SCROLL = new LinearLayout.LayoutParams(
+            LayoutParams.WRAP_CONTENT,
+            LayoutParams.MATCH_PARENT, 1f);
+    
     public TogglesView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
@@ -143,27 +148,30 @@ public class TogglesView extends LinearLayout {
             rows.get(rows.size() - 1).addView(toggles.get(i).getView(), PARAMS_TOGGLE);
         }
         if (useAltButtonLayout) {
-            HorizontalScrollView sv = new HorizontalScrollView(mContext);
-
+        	LinearLayout TogglesRowLayout;
+            HorizontalScrollView ToggleScrollView = new HorizontalScrollView(mContext);
+            ToggleScrollView.setFillViewport(true);
             try {
-                sv.addView(rows.get(rows.size() - 1), PARAMS_TOGGLE);
+            	TogglesRowLayout = rows.get(rows.size() - 1);
             } catch (ArrayIndexOutOfBoundsException e) {
                 // happens when brightness bar is below buttons
-                rows.add(new LinearLayout(mContext));
-                sv.addView(rows.get(rows.size() - 1), PARAMS_TOGGLE);
+            	TogglesRowLayout = new LinearLayout(mContext);
+            	rows.add(TogglesRowLayout);
             }
-
+            TogglesRowLayout.setGravity(Gravity.CENTER_HORIZONTAL);
+            ToggleScrollView.addView(TogglesRowLayout, PARAMS_TOGGLE_SCROLL);
             LinearLayout ll = new LinearLayout(mContext);
             ll.setOrientation(LinearLayout.HORIZONTAL);
-            ll.addView(sv, PARAMS_TOGGLE);
+            ll.addView(ToggleScrollView, PARAMS_TOGGLE);
             rows.remove(rows.size() - 1);
             rows.add(ll);
 
         }
         if (mBrightnessLocation == BRIGHTNESS_LOC_BOTTOM)
             addBrightness();
-
-        addSeparator();
+        if (!useAltButtonLayout) {  // I don't want seperators on toggles - will use padding. - ZB
+            addSeparator();
+        }
 
         for (LinearLayout row : rows)
             this.addView(row);

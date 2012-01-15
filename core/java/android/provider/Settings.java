@@ -2214,14 +2214,7 @@ public final class Settings {
          * 
          * @hide
          */
-        public static final String LOCKSCREEN_ENABLE_MENU_KEY = "lockscreen_enable_menu_key";
-
-        /**
-	* Whether to enable mms and phone lockscreen shortcuts
-	*
-	* @hide
-	*/
-        public static final String LOCKSCREEN_QUAD_TARGETS = "lockscreen_quad_targets";
+        public static final String LOCKSCREEN_ENABLE_MENU_KEY = "lockscreen_enable_menu_key";        
 
         /**
          * whether to show the IME switcher when typing in the statusbar. Boolean value.
@@ -2233,7 +2226,7 @@ public final class Settings {
         /**
          * Which layout to use to display the navigation menu at the bottom.
          * 0 = default
-         * 1 = defualt w/search
+         * 1 = default w/search
          * 
          * @hide
          */
@@ -2408,6 +2401,27 @@ public final class Settings {
          * @hide
          */
         public static final String LOCKSCREEN_CUSTOM_SMS_INTENT = "lockscreen_custom_sms_intent";
+        
+        /**
+         * launch a custom app
+         * 
+         * @hide
+         */
+        public static final String LOCKSCREEN_CUSTOM_SMS_INTENT_1 = "lockscreen_custom_sms_intent_1";
+        
+        /**
+         * launch a custom app
+         * 
+         * @hide
+         */
+        public static final String LOCKSCREEN_CUSTOM_SMS_INTENT_2 = "lockscreen_custom_sms_intent_2";
+        
+        /**
+         * launch a custom app
+         * 
+         * @hide
+         */
+        public static final String LOCKSCREEN_CUSTOM_SMS_INTENT_3 = "lockscreen_custom_sms_intent_3";
 
         /**
          * Whether volume up/down can be long pressed to skip tracks
@@ -2446,6 +2460,15 @@ public final class Settings {
          * @hide
          */
         public static final String STATUSBAR_BATTERY_ICON = "statusbar_battery_icon";
+
+		/**
+         * 0 = stock
+         * 1 = quad
+         * 2 = octo
+         * 
+         * @hide
+         */
+		public static final String LOCKSCREEN_LAYOUT = "lockscreen_layout";
     }
 
     /**

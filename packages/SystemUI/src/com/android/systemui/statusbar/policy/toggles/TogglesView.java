@@ -12,6 +12,7 @@ import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
+import android.view.Gravity;
 import android.widget.LinearLayout;
 import android.widget.HorizontalScrollView;
 
@@ -72,7 +73,11 @@ public class TogglesView extends LinearLayout {
     private static final LinearLayout.LayoutParams PARAMS_TOGGLE = new LinearLayout.LayoutParams(
             LayoutParams.MATCH_PARENT,
             LayoutParams.WRAP_CONTENT, 1f);
-
+    
+    private static final LinearLayout.LayoutParams PARAMS_TOGGLE_SCROLL = new LinearLayout.LayoutParams(
+            LayoutParams.WRAP_CONTENT,
+            LayoutParams.WRAP_CONTENT, 1f);
+    
     public TogglesView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
@@ -115,7 +120,7 @@ public class TogglesView extends LinearLayout {
             else if (splitToggle.equals(TOGGLE_SILENT))
                 newToggle = new SilentToggle(mContext);
             else if (splitToggle.equals(TOGGLE_TORCH))
-                newToggle = new TorchToggle(mContext);
+                 newToggle = new TorchToggle(mContext);
             else if (splitToggle.equals(TOGGLE_SYNC))
                 newToggle = new SyncToggle(mContext);
 
@@ -151,31 +156,34 @@ public class TogglesView extends LinearLayout {
                 // new row
                 rows.add(new LinearLayout(mContext));
             }
-            rows.get(rows.size() - 1).addView(toggles.get(i).getView(), PARAMS_TOGGLE);
+            rows.get(rows.size() - 1).addView(toggles.get(i).getView(), (useAltButtonLayout ? PARAMS_TOGGLE_SCROLL : PARAMS_TOGGLE));
         }
         if (useAltButtonLayout) {
-            HorizontalScrollView sv = new HorizontalScrollView(mContext);
-
+        	LinearLayout TogglesRowLayout;
+            HorizontalScrollView ToggleScrollView = new HorizontalScrollView(mContext);
+            //ToggleScrollView.setFillViewport(true);
             try {
-                sv.addView(rows.get(rows.size() - 1), PARAMS_TOGGLE);
+            	TogglesRowLayout = rows.get(rows.size() - 1);
             } catch (ArrayIndexOutOfBoundsException e) {
                 // happens when brightness bar is below buttons
-                rows.add(new LinearLayout(mContext));
-                sv.addView(rows.get(rows.size() - 1), PARAMS_TOGGLE);
+            	TogglesRowLayout = new LinearLayout(mContext);
+            	rows.add(TogglesRowLayout);
             }
-
+            TogglesRowLayout.setGravity(Gravity.CENTER_HORIZONTAL);
+            ToggleScrollView.addView(TogglesRowLayout, PARAMS_TOGGLE);
             LinearLayout ll = new LinearLayout(mContext);
-            ll.setOrientation(LinearLayout.HORIZONTAL);
-            ll.addView(sv, PARAMS_TOGGLE);
+            ll.setOrientation(LinearLayout.VERTICAL);
+            ll.setGravity(Gravity.CENTER_HORIZONTAL);
+            ll.addView(ToggleScrollView, PARAMS_TOGGLE_SCROLL);
             rows.remove(rows.size() - 1);
             rows.add(ll);
 
         }
-        if (mBrightnessLocation == BRIGHTNESS_LOC_BOTTOM)
+        if (mBrightnessLocation == BRIGHTNESS_LOC_BOTTOM) 
             addBrightness();
-
+        
         addSeparator();
-
+        
         for (LinearLayout row : rows)
             this.addView(row);
 
@@ -188,22 +196,22 @@ public class TogglesView extends LinearLayout {
     }
 
     private void addSeparator() {
-        View sep = new View(mContext);
-        sep.setBackgroundResource(R.drawable.status_bar_hr);
+    	View sep = new View(mContext);
+    	sep.setBackgroundResource(R.drawable.status_bar_hr);
 
-        DisplayMetrics metrics = getContext().getResources().getDisplayMetrics();
-        float dp = 2f;
-        float fpixels = metrics.density * dp;
-        int pixels = (int) (metrics.density * dp + 0.5f);
+    	DisplayMetrics metrics = getContext().getResources().getDisplayMetrics();
+    	float dp = 2f;
+    	float fpixels = metrics.density * dp;
+    	int pixels = (int) (metrics.density * dp + 0.5f);
 
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                LayoutParams.MATCH_PARENT,
-                pixels);
+    	LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+              LayoutParams.MATCH_PARENT,
+              pixels);
 
-        sep.setLayoutParams(params);
+    	sep.setLayoutParams(params);
 
-        rows.add(new LinearLayout(mContext));
-        rows.get(rows.size() - 1).addView(sep);
+    	rows.add(new LinearLayout(mContext));
+    	rows.get(rows.size() - 1).addView(sep);
     }
 
     class SettingsObserver extends ContentObserver {

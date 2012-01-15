@@ -2439,6 +2439,13 @@ public final class Settings {
          * @hide
          */
         public static final String STATUSBAR_TOGGLES_VISIBILITY = "statusbar_toggles_visibility";
+
+        /**
+         * Whether to show the battery icon
+         * 
+         * @hide
+         */
+        public static final String STATUSBAR_BATTERY_ICON = "statusbar_battery_icon";
     }
 
     /**

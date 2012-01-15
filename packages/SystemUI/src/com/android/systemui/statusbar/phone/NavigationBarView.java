@@ -289,7 +289,7 @@ public class NavigationBarView extends LinearLayout {
                 return v;
 
             case KEY_TASKS:
-                v = new SearchKeyButtonView(mContext, null);
+                v = new KeyButtonView(mContext, null);
                 v.setLayoutParams(getLayoutParams(landscape, 80));
 
                 v.setId(R.id.recent_apps);

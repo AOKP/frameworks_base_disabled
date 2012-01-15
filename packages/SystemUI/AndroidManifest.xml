@@ -120,7 +120,8 @@
             </intent-filter>
         </activity>
          <activity
-            android:name="com.android.systemui.statusbar.policy.toggles.Torch">
+            android:name="com.android.systemui.statusbar.policy.toggles.Torch"
+            android:theme="@android:style/Theme.Holo.Panel">
         </activity>
     </application>
 </manifest>

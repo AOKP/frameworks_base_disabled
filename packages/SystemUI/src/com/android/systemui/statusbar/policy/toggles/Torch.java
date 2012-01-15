@@ -23,7 +23,6 @@ import java.util.List;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.hardware.Camera;
 import android.hardware.Camera.Parameters;
 import android.os.Bundle;
@@ -46,8 +45,6 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
 
     private static final String WAKE_LOCK_TAG = "TORCH_WAKE_LOCK";
 
-    public static final String ACTION_UPDATE = "com.android.systemui.statusbar.policy.toggles.Torch.ACTION_CHANGED";
-
     private Camera mCamera;
     private boolean lightOn;
     private boolean previewOn;
@@ -65,6 +62,7 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
     }
 
     public static Torch getTorch() {
+        Log.d(TAG, "Gave Myself away!");
         return torch;
     }
 
@@ -124,8 +122,6 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
                 Log.e(TAG, "FLASH_MODE_TORCH not supported");
             }
         }
-        Intent i = new Intent(ACTION_UPDATE);
-        getApplicationContext().sendBroadcast(i);
     }
 
     private void turnLightOff() {
@@ -158,8 +154,6 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
                 }
             }
         }
-        Intent i = new Intent(ACTION_UPDATE);
-        getApplicationContext().sendBroadcast(i);
     }
 
     private void startPreview() {
@@ -203,7 +197,8 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
         surfaceView = (SurfaceView) this.findViewById(R.id.surfaceview);
         surfaceHolder = surfaceView.getHolder();
         surfaceHolder.addCallback(this);
-        surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+        // surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+        surfaceHolder.setKeepScreenOn(true);
         disablePhoneSleep();
         Log.i(TAG, "onCreate");
     }
@@ -236,21 +231,16 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
     @Override
     public void onPause() {
         super.onPause();
-        turnLightOff();
-        
+        // turnLightOff();
         Log.i(TAG, "onPause");
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        if (mCamera != null) {
-            stopPreview();
-            mCamera.release();
-            mCamera = null;
-        }
-        ;
-        torch = null;
+        /*
+         * if (mCamera != null) { stopPreview(); mCamera.release(); mCamera = null; }; torch = null;
+         */
         Log.i(TAG, "onStop");
     }
 
@@ -261,6 +251,7 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
             turnLightOff();
             stopPreview();
             mCamera.release();
+            torch = null;
         }
         Log.i(TAG, "onDestroy");
     }
@@ -268,6 +259,7 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
     @Override
     public void surfaceChanged(SurfaceHolder holder, int I, int J, int K) {
         Log.d(TAG, "surfaceChanged");
+        moveTaskToBack(true); // once Surface is set up - we should be able to background ourselves.
     }
 
     @Override
@@ -283,9 +275,5 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
         Log.d(TAG, "surfaceDestroyed");
-    }
-
-    public boolean isOn() {
-        return lightOn;
     }
 }

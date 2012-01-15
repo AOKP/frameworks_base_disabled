@@ -19,10 +19,8 @@
 
 package com.android.systemui.statusbar.policy.toggles;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.util.Log;
 
 import com.android.systemui.R;
@@ -36,53 +34,59 @@ public class TorchToggle extends Toggle {
 
     private boolean mIsTorchOn;
     private Context mContext;
-    private Torch torch;
+    private Torch mTorch;
+    private int runawayflag;
 
     public TorchToggle(Context context) {
         super(context);
         setLabel(R.string.toggle_torch);
         setIcon(R.drawable.toggle_torch);
         mContext = context;
-
-        IntentFilter intentFilter = new IntentFilter(Torch.ACTION_UPDATE);
-        mContext.registerReceiver(new BroadcastReceiver() {
-
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                updateState();
-            }
-        }, intentFilter);
-
-        updateState();
     }
 
     @Override
     protected void updateInternalToggleState() {
-        torch = Torch.getTorch();
-        if (torch != null)
-            mToggle.setChecked(torch.isOn());
-        else
-            mToggle.setChecked(false);
+        Log.d(TAG, "Updating TorchToggleState");
+        if (mIsTorchOn) {
+            if (mTorch == null) {
+                onCheckChanged(true); // It looks like we are 'on' but don't have a torch reference
+                                      // .. try to restart?
+            }
+        } else {
+            if (mTorch != null) {
+                mTorch.finish(); // looks like we are 'off', but still have a torch .. finish it.
+            }
+        }
     }
 
     @Override
     protected void onCheckChanged(boolean isChecked) {
         if (isChecked) {
-            Log.d(TAG, "Instantiating Torch");
-            if (Torch.getTorch() == null) {
-                Log.d(TAG, "Starting Intent");
-                Intent intent = new Intent(mContext, Torch.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                mContext.startActivity(intent);
-            }
-            torch = Torch.getTorch();
-        } else {
-            Log.d(TAG, "Destroying Torch");
-            torch = Torch.getTorch();
-            if (torch != null) {
-                torch.finish();
-            }
+            Log.d(TAG, "Starting Torch Intent");
+            Intent intent = new Intent(mContext, Torch.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            mContext.startActivity(intent);
+            mIsTorchOn = true;
+            runawayflag = 0;
         }
+        else {
+            if (mTorch != null) {
+                Log.d(TAG, "Destroying Torch");
+                mTorch.finish();
+            } else {
+                Log.d(TAG, "Tried to destroy Torch that was NULL!"); // I'm going to try a little
+                                                                     // recursion here.
+                if (++runawayflag > 10) {
+                    Log.d(TAG, "Tried 10 times to get Torch!"); // I don't want an uncontrolled
+                                                                // loop.
+                } else {
+                    mTorch = Torch.getTorch(); // let's try to get torch and retry the procedure
+                    onCheckChanged(false); // I love recursion!
+                }
+            }
+            mIsTorchOn = false;
+        }
+        mTorch = Torch.getTorch();
     }
 
 }

@@ -19,12 +19,16 @@
 
 package com.android.systemui.statusbar.policy.toggles;
 
-import com.android.systemui.R;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.util.Log;
 import java.io.IOException;
 import java.util.List;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.util.Log;
+
+import com.android.systemui.R;
 
 /**
  * TODO: Fix the WakeLock
@@ -42,8 +46,19 @@ public class TorchToggle extends Toggle  {
     public TorchToggle(Context context) {
         super(context);
         setLabel(R.string.toggle_torch);
-        setIcon(R.drawable.stat_torch_on);
+        setIcon(R.drawable.toggle_torch);
         mContext = context;
+
+        IntentFilter intentFilter = new IntentFilter(Torch.ACTION_UPDATE);
+        mContext.registerReceiver(new BroadcastReceiver() {
+
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                updateState();
+            }
+        }, intentFilter);
+
+        updateState();
     }
 
     

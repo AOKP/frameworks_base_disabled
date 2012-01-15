@@ -23,13 +23,13 @@ import java.util.List;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.hardware.Camera;
 import android.hardware.Camera.Parameters;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -45,6 +45,7 @@ public class Torch extends Activity implements  SurfaceHolder.Callback {
 
   private static final String WAKE_LOCK_TAG = "TORCH_WAKE_LOCK";
 
+    public static final String ACTION_UPDATE = "com.android.systemui.statusbar.policy.toggles.Torch.ACTION_CHANGED";
 
 
   private Camera mCamera;

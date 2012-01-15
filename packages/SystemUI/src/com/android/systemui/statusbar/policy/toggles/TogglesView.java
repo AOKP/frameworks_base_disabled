@@ -119,7 +119,7 @@ public class TogglesView extends LinearLayout {
             else if (splitToggle.equals(TOGGLE_SILENT))
                 newToggle = new SilentToggle(mContext);
             else if (splitToggle.equals(TOGGLE_TORCH))
-            	newToggle = new TorchToggle(mContext);
+                newToggle = new TorchToggle(mContext);
 
             if (newToggle != null)
                 toggles.add(newToggle);
@@ -136,6 +136,13 @@ public class TogglesView extends LinearLayout {
     private void addViews() {
         removeViews();
         rows = new ArrayList<LinearLayout>();
+
+        if (!useAltButtonLayout) {
+            DisplayMetrics metrics = getContext().getResources().getDisplayMetrics();
+            float dp = 10f;
+            int pixels = (int) (metrics.density * dp + 0.5f);
+            this.setPadding(getPaddingLeft(), pixels, getPaddingRight(), getPaddingBottom());
+        }
 
         if (mBrightnessLocation == BRIGHTNESS_LOC_TOP)
             addBrightness();

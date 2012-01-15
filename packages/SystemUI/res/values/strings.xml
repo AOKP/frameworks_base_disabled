@@ -380,4 +380,5 @@
     <string name="toggle_vibrate">Vibrate</string>
     <string name="toggle_silent">Silent</string>
     <string name="toggle_torch">Torch</string>
+    <string name="toggle_sync">Sync</string>
 </resources>

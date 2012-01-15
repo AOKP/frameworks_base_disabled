@@ -2421,6 +2421,18 @@ public final class Settings {
          * @hide
          */
         public static final String NAVIGATION_BAR_HOME_LONGPRESS = "navigation_bar_home_longpress";
+
+        /**
+         * Whether to show the battery bar
+         * 
+         * @hide
+         */
+        public static final String STATUSBAR_BATTERY_BAR = "statusbar_battery_bar";
+
+        /**
+         * @hide
+         */
+        public static final String STATUSBAR_BATTERY_BAR_COLOR = "statusbar_battery_bar_color";
     }
 
     /**

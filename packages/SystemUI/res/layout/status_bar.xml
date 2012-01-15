@@ -152,4 +152,8 @@
                 />
         </com.android.systemui.statusbar.phone.TickerView>
     </LinearLayout>
+
+	<com.android.systemui.statusbar.policy.BatteryBar
+		android:layout_width="match_parent"
+		android:layout_height="1dp" />
 </com.android.systemui.statusbar.phone.PhoneStatusBarView>

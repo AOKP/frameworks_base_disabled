@@ -52,7 +52,7 @@ public class GpsToggle extends Toggle {
             mContentQueryMap.addObserver(mSettingsObserver);
         }
         setLabel(R.string.toggle_gps);
-        setIcon(R.drawable.toggle_gps);
+        setIcon(R.drawable.stat_gps_on);
         updateState();
     }
 

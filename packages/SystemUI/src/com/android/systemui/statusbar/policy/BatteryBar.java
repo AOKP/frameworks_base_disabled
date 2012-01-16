@@ -69,7 +69,11 @@ public class BatteryBar extends LinearLayout implements Animatable, Runnable {
         super(context, attrs, defStyle);
 
         mBatteryBarLayout = new LinearLayout(mContext);
+        mBatteryBarLayout.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT,
+                LayoutParams.MATCH_PARENT));
         mBatteryBar = new View(mContext);
+        mBatteryBar.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT,
+                LayoutParams.MATCH_PARENT));
         mBatteryBarLayout.addView(mBatteryBar);
         addView(mBatteryBarLayout);
     }
@@ -162,13 +166,16 @@ public class BatteryBar extends LinearLayout implements Animatable, Runnable {
 
         }
         setProgress(mChargingLevel);
-        mHandler.postDelayed(this, FRAME_DURATION);
+        if (mChargingLevel < 95)
+            mHandler.postDelayed(this, FRAME_DURATION);
+        else
+            mHandler.postDelayed(this, 2000);
     }
 
     private void setProgress(int n) {
-        int width = (int) (getWidth() / 100) * n;
-        // Log.e(TAG, "percent: " + n + ", width: " + width);
-        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mBatteryBarLayout
+
+        int width = (int) ((getWidth() / 100) + 0.5d) * n;
+        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mBatteryBar
                 .getLayoutParams();
         params.width = width;
 

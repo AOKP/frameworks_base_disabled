@@ -2407,21 +2407,21 @@ public final class Settings {
          * 
          * @hide
          */
-        public static final String LOCKSCREEN_CUSTOM_SMS_INTENT_1 = "lockscreen_custom_sms_intent_1";
+        public static final String LOCKSCREEN_CUSTOM_APP_INTENT_1 = "lockscreen_custom_app_intent_1";
         
         /**
          * launch a custom app
          * 
          * @hide
          */
-        public static final String LOCKSCREEN_CUSTOM_SMS_INTENT_2 = "lockscreen_custom_sms_intent_2";
+        public static final String LOCKSCREEN_CUSTOM_APP_INTENT_2 = "lockscreen_custom_app_intent_2";
         
         /**
          * launch a custom app
          * 
          * @hide
          */
-        public static final String LOCKSCREEN_CUSTOM_SMS_INTENT_3 = "lockscreen_custom_sms_intent_3";
+        public static final String LOCKSCREEN_CUSTOM_APP_INTENT_3 = "lockscreen_custom_app_intent_3";
 
         /**
          * Whether volume up/down can be long pressed to skip tracks

@@ -324,19 +324,19 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
                                 "com.android.mms.ui.ConversationList");
                         mContext.startActivity(intent);
                     } else {
-                        Intent mmsIntent;
+                        Intent intent;
                         try {
-                            mmsIntent = Intent.parseUri(intentUri, 0);
-                            mmsIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                            intent = Intent.parseUri(intentUri, 0);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
                                     | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-                            mContext.startActivity(mmsIntent);
+                            mContext.startActivity(intent);
                         } catch (URISyntaxException e) {
                         }
                     }
                     mCallback.goToUnlockScreen();
                 } else if (target == 2) { // up Action == custom app 1
                     String intentUri = Settings.System.getString(mContext.getContentResolver(),
-                            Settings.System.LOCKSCREEN_CUSTOM_SMS_INTENT_1);
+                            Settings.System.LOCKSCREEN_CUSTOM_APP_INTENT_1);
 
                     if (intentUri == null) {
                         Intent intent = new Intent(Intent.ACTION_MAIN);
@@ -366,7 +366,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
                     mCallback.goToUnlockScreen();
                 } else if (target == 5) { // down/left Action == custom app 2
                     String intentUri = Settings.System.getString(mContext.getContentResolver(),
-                            Settings.System.LOCKSCREEN_CUSTOM_SMS_INTENT_2);
+                            Settings.System.LOCKSCREEN_CUSTOM_APP_INTENT_2);
 
                     if (intentUri == null) {
                         Intent intent = new Intent(Intent.ACTION_MAIN);
@@ -377,19 +377,19 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
                                 "com.google.android.talk.BuddyListCombo");
                         mContext.startActivity(intent);
                     } else {
-                        Intent mmsIntent;
+                        Intent intent;
                         try {
-                            mmsIntent = Intent.parseUri(intentUri, 0);
-                            mmsIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                            intent = Intent.parseUri(intentUri, 0);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
                                     | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-                            mContext.startActivity(mmsIntent);
+                            mContext.startActivity(intent);
                         } catch (URISyntaxException e) {
                         }
                     }
                     mCallback.goToUnlockScreen();
                 } else if (target == 7) { // down/right Action == custom app 3
                     String intentUri = Settings.System.getString(mContext.getContentResolver(),
-                            Settings.System.LOCKSCREEN_CUSTOM_SMS_INTENT_3);
+                            Settings.System.LOCKSCREEN_CUSTOM_APP_INTENT_3);
 
                     if (intentUri == null) {
                         Intent intent = new Intent(Intent.ACTION_MAIN);
@@ -400,12 +400,12 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
                                 "com.google.android.gm.GmailActivity");
                         mContext.startActivity(intent);
                     } else {
-                        Intent mmsIntent;
+                        Intent intent;
                         try {
-                            mmsIntent = Intent.parseUri(intentUri, 0);
-                            mmsIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                            intent = Intent.parseUri(intentUri, 0);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
                                     | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-                            mContext.startActivity(mmsIntent);
+                            mContext.startActivity(intent);
                         } catch (URISyntaxException e) {
                         }
                     }

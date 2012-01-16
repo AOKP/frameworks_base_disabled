@@ -6,6 +6,7 @@ import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.provider.Settings;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 import com.android.internal.statusbar.IStatusBarService;
@@ -25,8 +26,6 @@ public class HomeKeyWithTasksButtonView extends KeyButtonView {
     public HomeKeyWithTasksButtonView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs);
 
-        mBarService = IStatusBarService.Stub.asInterface(
-                ServiceManager.getService(Context.STATUS_BAR_SERVICE));
         this.setOnLongClickListener(mRecentsToggle);
         mSupportsLongpress = true;
     }
@@ -45,19 +44,24 @@ public class HomeKeyWithTasksButtonView extends KeyButtonView {
         public boolean onLongClick(View v) {
             int setting = Settings.System.getInt(mContext.getContentResolver(),
                     Settings.System.NAVIGATION_BAR_HOME_LONGPRESS, LONGPRESS_NONE);
+
+            Log.e("HOME_BUTTON", "setting: " + setting);
             switch (setting) {
-                default:
                 case LONGPRESS_NONE:
-                    break;
+                    return true;
+
                 case LONGPRESS_HOME:
                     try {
+                        mBarService = IStatusBarService.Stub.asInterface(
+                                ServiceManager.getService(Context.STATUS_BAR_SERVICE));
                         mBarService.toggleRecentApps();
+                        Log.e("HOME_BUTTON", "toggled recent apps");
+                        return true;
                     } catch (RemoteException e) {
                     }
-                    break;
+                    return false;
             }
-
-            return true;
+            return false;
         }
     };
 

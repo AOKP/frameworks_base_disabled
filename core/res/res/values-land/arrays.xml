@@ -81,8 +81,8 @@
 	<item>@null</item>
 	<item>@null</item>
         <item>@drawable/ic_lockscreen_unlock</item>
-        <item>@drawable/ic_lockscreen_custom_3</item>
-	<item>@null</item>
+        <item>@drawable/ic_lockscreen_sms</item>
+        <item>@null</item>
         <item>@drawable/ic_lockscreen_phone</item>
         <item>@drawable/ic_lockscreen_camera</item>
 	<item>@null</item>	
@@ -92,11 +92,11 @@
 	<item>@null</item>
 	<item>@null</item>
         <item>@string/description_target_unlock</item>
-        <item>@string/description_target_custom_3</item>
+        <item>@string/description_target_sms</item>       
 	<item>@null</item>
         <item>@string/description_target_phone</item>
         <item>@string/description_target_camera</item>
-	<item>@null</item>	
+	<item>@null</item>
     </array>
 
     <array name="octo_lockscreen_targets">

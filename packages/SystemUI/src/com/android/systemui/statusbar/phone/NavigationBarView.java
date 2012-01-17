@@ -48,6 +48,7 @@ import com.android.systemui.R;
 import com.android.systemui.statusbar.policy.KeyButtonView;
 import com.android.systemui.statusbar.policy.buttons.BackKeyWithKillButtonView;
 import com.android.systemui.statusbar.policy.buttons.HomeKeyWithTasksButtonView;
+import com.android.systemui.statusbar.policy.buttons.RecentsKey;
 import com.android.systemui.statusbar.policy.buttons.SearchKeyButtonView;
 
 public class NavigationBarView extends LinearLayout {
@@ -145,6 +146,8 @@ public class NavigationBarView extends LinearLayout {
 
     FrameLayout rot0;
     FrameLayout rot90;
+    
+    int numKeys = 3;
 
     private void makeBar(String navKeys) {
         if (navKeys == null)
@@ -156,6 +159,7 @@ public class NavigationBarView extends LinearLayout {
         ((LinearLayout) rot90.findViewById(R.id.lights_out)).removeAllViews();
 
         String[] split = navKeys.split("\\" + DELIMITER);
+        numKeys = split.length;
 
         for (int i = 0; i <= 1; i++) {
             boolean landscape = (i == 1);
@@ -247,11 +251,13 @@ public class NavigationBarView extends LinearLayout {
     private View generateKey(boolean landscape, int keyId) {
         KeyButtonView v = null;
         Resources r = getResources();
+        
+        int btnWidth = (numKeys == 3) ? 80 : 70;
 
         switch (keyId) {
             case KEY_BACK:
                 v = new BackKeyWithKillButtonView(mContext, null);
-                v.setLayoutParams(getLayoutParams(landscape, 80));
+                v.setLayoutParams(getLayoutParams(landscape, btnWidth));
 
                 v.setId(R.id.back);
                 v.setCode(4);
@@ -264,7 +270,7 @@ public class NavigationBarView extends LinearLayout {
 
             case KEY_HOME:
                 v = new HomeKeyWithTasksButtonView(mContext, null);
-                v.setLayoutParams(getLayoutParams(landscape, 80));
+                v.setLayoutParams(getLayoutParams(landscape, btnWidth));
 
                 v.setId(R.id.home);
                 v.setCode(3);
@@ -277,7 +283,7 @@ public class NavigationBarView extends LinearLayout {
 
             case KEY_SEARCH:
                 v = new SearchKeyButtonView(mContext, null);
-                v.setLayoutParams(getLayoutParams(landscape, 80));
+                v.setLayoutParams(getLayoutParams(landscape, btnWidth));
 
                 v.setId(R.id.search);
                 v.setCode(84);
@@ -288,8 +294,8 @@ public class NavigationBarView extends LinearLayout {
                 return v;
 
             case KEY_TASKS:
-                v = new KeyButtonView(mContext, null);
-                v.setLayoutParams(getLayoutParams(landscape, 80));
+                v = new RecentsKey(mContext, null);
+                v.setLayoutParams(getLayoutParams(landscape, btnWidth));
 
                 v.setId(R.id.recent_apps);
                 v.setImageResource(landscape ? R.drawable.ic_sysbar_recent_land

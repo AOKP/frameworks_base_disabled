@@ -1539,7 +1539,7 @@ void OMXCodec::setVideoInputFormat(
 
     int32_t width, height, frameRate, bitRate, stride, sliceHeight;
 #ifdef QCOM_HARDWARE
-    int32_t hfr;
+    int32_t hfr = 0;
 
     char value[PROPERTY_VALUE_MAX];
     if ( property_get("encoder.video.bitrate", value, 0) > 0 && atoi(value) > 0){
@@ -1556,7 +1556,7 @@ void OMXCodec::setVideoInputFormat(
     success = success && meta->findInt32(kKeyStride, &stride);
     success = success && meta->findInt32(kKeySliceHeight, &sliceHeight);
 #ifdef QCOM_HARDWARE
-    success = success && meta->findInt32(kKeyHFR, &hfr);
+    meta->findInt32(kKeyHFR, &hfr);
 #endif
     CHECK(success);
     CHECK(stride != 0);
@@ -1889,7 +1889,7 @@ status_t OMXCodec::setupH263EncoderParameters(const sp<MetaData>& meta) {
     success = success && meta->findInt32(kKeyFrameRate, &frameRate);
     success = success && meta->findInt32(kKeyIFramesInterval, &iFramesInterval);
 #ifdef QCOM_HARDWARE
-    success = success && meta->findInt32(kKeyHFR, &hfr);
+    meta->findInt32(kKeyHFR, &hfr);
 #endif
     CHECK(success);
     OMX_VIDEO_PARAM_H263TYPE h263type;
@@ -1936,12 +1936,6 @@ status_t OMXCodec::setupH263EncoderParameters(const sp<MetaData>& meta) {
     return OK;
 }
 
-#ifdef QCOM_HARDWARE
-status_t OMXCodec::setupMPEG2EncoderParameters(const sp<MetaData>& meta) {
-    return OK;
-}
-#endif
-
 status_t OMXCodec::setupMPEG4EncoderParameters(const sp<MetaData>& meta) {
     int32_t iFramesInterval, frameRate, bitRate;
 #ifdef QCOM_HARDWARE
@@ -1951,7 +1945,7 @@ status_t OMXCodec::setupMPEG4EncoderParameters(const sp<MetaData>& meta) {
     success = success && meta->findInt32(kKeyFrameRate, &frameRate);
     success = success && meta->findInt32(kKeyIFramesInterval, &iFramesInterval);
 #ifdef QCOM_HARDWARE
-    success = success && meta->findInt32(kKeyHFR, &hfr);
+    meta->findInt32(kKeyHFR, &hfr);
 #endif
     CHECK(success);
     OMX_VIDEO_PARAM_MPEG4TYPE mpeg4type;
@@ -2019,6 +2013,7 @@ status_t OMXCodec::setupAVCEncoderParameters(const sp<MetaData>& meta) {
     success = success && meta->findInt32(kKeyFrameRate, &frameRate);
     success = success && meta->findInt32(kKeyIFramesInterval, &iFramesInterval);
 #ifdef QCOM_HARDWARE
+    meta->findInt32(kKeyHFR, &hfr);
     success = success && meta->findInt32(kKeyHFR, &hfr);
 #endif
     CHECK(success);

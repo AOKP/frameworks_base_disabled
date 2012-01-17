@@ -236,6 +236,25 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
         }
 
         public void onTrigger(View v, int target) {
+            if (mLockscreenStyle == LAYOUT_STOCK) {
+                if (target == 0 || target == 1) { // 0 = unlock/portrait, 1 =
+                    // unlock/landscape
+                    mCallback.goToUnlockScreen();
+                } else if (target == 2 || target == 3) { // 2 = alt/portrait, 3
+                    // = alt/landscape
+                    if (!mCameraDisabled) {
+                        // Start the Camera
+                        Intent intent = new Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        mContext.startActivity(intent);
+                        mCallback.goToUnlockScreen();
+                    } else {
+                        toggleRingMode();
+                        mUnlockWidgetMethods.updateResources();
+                        mCallback.pokeWakelock();
+                    }
+                }
+            }
             if (mLockscreenStyle == LAYOUT_QUAD) {
                 if (target == 0) { // right Action = Unlock
                     mCallback.goToUnlockScreen();
@@ -270,24 +289,6 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
                     mContext.startActivity(phoneIntent);
                     mCallback.goToUnlockScreen();
                 } else if (target == 3) {
-                    if (!mCameraDisabled) {
-                        // Start the Camera
-                        Intent intent = new Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        mContext.startActivity(intent);
-                        mCallback.goToUnlockScreen();
-                    } else {
-                        toggleRingMode();
-                        mUnlockWidgetMethods.updateResources();
-                        mCallback.pokeWakelock();
-                    }
-                }
-            } else {
-                if (target == 0 || target == 1) { // 0 = unlock/portrait, 1 =
-                                                  // unlock/landscape
-                    mCallback.goToUnlockScreen();
-                } else if (target == 2 || target == 3) { // 2 = alt/portrait, 3
-                                                         // = alt/landscape
                     if (!mCameraDisabled) {
                         // Start the Camera
                         Intent intent = new Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA);
@@ -420,7 +421,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
                     } else {
                         toggleRingMode();
                         mUnlockWidgetMethods.updateResources();
-                        mCallback.pokeWakelock();                    
+                        mCallback.pokeWakelock();
                     }
                 }
             }

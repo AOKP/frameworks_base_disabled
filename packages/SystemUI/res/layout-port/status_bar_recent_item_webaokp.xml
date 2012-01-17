@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout 
+    android:paddingLeft="@dimen/status_bar_recents_item_padding" 
+    android:paddingRight="@dimen/status_bar_recents_item_padding" 
+    android:layout_width="wrap_content" 
+    android:layout_height="fill_parent"
+ 	xmlns:android="http://schemas.android.com/apk/res/android">
+    <RelativeLayout 
+        android:layout_gravity="center_vertical" 
+        android:paddingTop="0.0dip"			
+        android:id="@id/recent_item" 
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content" 
+        android:layout_centerInParent="true">
+        <FrameLayout 
+                android:id="@id/app_thumbnail" 
+                android:background="@drawable/recents_thumbnail_bg" 
+                android:visibility="invisible" 
+                android:layout_width="wrap_content" 
+                android:layout_height="wrap_content" 
+                android:layout_marginLeft="5.0dip" 
+                android:foreground="@drawable/recents_thumbnail_fg" 
+                android:layout_centerInParent="true">
+            <ImageView 
+                android:id="@id/app_thumbnail_image" 
+                android:layout_width="170.0dip" android:layout_height="210.0dip" />
+            <ImageView 
+                android:id="@id/app_icon" 
+                android:layout_width="wrap_content" 
+                android:layout_height="wrap_content" 
+                android:layout_marginLeft="@dimen/status_bar_recents_app_icon_left_margin" 
+                android:layout_marginTop="0.0dip" android:scaleType="centerInside" 
+                android:adjustViewBounds="true" 
+                android:maxWidth="@dimen/status_bar_recents_app_icon_max_width" 
+                android:maxHeight="@dimen/status_bar_recents_app_icon_max_height" 
+                android:layout_alignParentLeft="true" android:layout_alignParentTop="true" />
+        </FrameLayout>
+        <TextView 
+                android:textSize="@dimen/status_bar_recents_app_label_text_size" 
+                android:textColor="@color/status_bar_recents_app_label_color" 
+                android:ellipsize="marquee" 
+                android:id="@id/app_label" 
+                android:paddingTop="0.0dip" 
+                android:fadingEdge="horizontal" 
+                android:fadingEdgeLength="@dimen/status_bar_recents_fading_edge_length" 
+                android:layout_width="@dimen/status_bar_recents_app_label_width" 
+                android:layout_height="fill_parent" 
+                android:layout_marginLeft="@dimen/status_bar_recents_app_label_left_margin" 
+                android:layout_marginTop="160.0dip" 
+                android:scrollHorizontally="true" 
+                android:singleLine="true" 
+                android:layout_below="@id/app_thumbnail" 
+                android:layout_alignLeft="@id/app_thumbnail" 
+                android:layout_alignParentBottom="true" />
+        <TextView 
+        		android:textSize="@dimen/status_bar_recents_app_description_text_size" 
+        		android:ellipsize="marquee" 
+        		android:id="@id/app_description" 
+        		android:fadingEdge="horizontal" 
+        		android:fadingEdgeLength="@dimen/status_bar_recents_fading_edge_length" 
+        		android:layout_width="@dimen/status_bar_recents_app_label_width" 
+        		android:layout_height="wrap_content" 
+        		android:layout_marginLeft="@dimen/status_bar_recents_app_label_left_margin" 
+        		android:layout_marginTop="60.0dip" 
+        		android:scrollHorizontally="true" 
+        		android:singleLine="true" 
+        		android:layout_below="@id/app_label" 
+        		android:layout_alignLeft="@id/app_thumbnail" 
+        		android:layout_alignParentBottom="true" />
+    </RelativeLayout>
+</FrameLayout>

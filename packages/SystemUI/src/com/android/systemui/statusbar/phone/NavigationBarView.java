@@ -183,18 +183,18 @@ public class NavigationBarView extends LinearLayout {
             addButton(navButtonLayout, leftmenuKey, landscape);
             addLightsOutButton(lightsOut, leftmenuKey, landscape, true);
 
-            for (String key : split) {
-                Log.e(TAG, "split: " + key);
+            for (int j = 0; j < split.length; j++) {
+                Log.i(TAG, "split: " + split[j]);
                 View v = null;
 
                 boolean notFound = false;
-                if (key.equals(NAV_BACK))
+                if (split[j].equals(NAV_BACK))
                     v = generateKey(landscape, KEY_BACK);
-                else if (key.equals(NAV_HOME))
+                else if (split[j].equals(NAV_HOME))
                     v = generateKey(landscape, KEY_HOME);
-                else if (key.equals(NAV_SEARCH))
+                else if (split[j].equals(NAV_SEARCH))
                     v = generateKey(landscape, KEY_SEARCH);
-                else if (key.equals(NAV_TASKS))
+                else if (split[j].equals(NAV_TASKS))
                     v = generateKey(landscape, KEY_TASKS);
                 else {
                     // if we get here, this is baaaaaaaaaaaaaaaad, revert to stock setup
@@ -206,6 +206,16 @@ public class NavigationBarView extends LinearLayout {
                 if (!notFound) {
                     addButton(navButtonLayout, v, landscape);
                     addLightsOutButton(lightsOut, v, landscape, false);
+
+                    if (j == (split.length - 1)) {
+                        // which to skip
+                    } else {
+                        // add separator view here
+                        View separator = new View(mContext);
+                        separator.setLayoutParams(getSeparatorLayoutParams());
+                        addButton(navButtonLayout, separator, landscape);
+                        addLightsOutButton(lightsOut, separator, landscape, true);
+                    }
                 }
 
             }
@@ -335,16 +345,12 @@ public class NavigationBarView extends LinearLayout {
 
         float px = dp * getResources().getDisplayMetrics().density;
         return landscape ?
-                new LayoutParams(LayoutParams.MATCH_PARENT, (int) px, 1f) :
-                new LayoutParams((int) px, LayoutParams.MATCH_PARENT, 1f);
+                new LayoutParams(LayoutParams.MATCH_PARENT, (int) px, 0f) :
+                new LayoutParams((int) px, LayoutParams.MATCH_PARENT, 0f);
     }
 
-    private LayoutParams getMenuLayoutParams(boolean landscape, float dp) {
-
-        float px = dp * getResources().getDisplayMetrics().density;
-        return new LayoutParams(landscape ?
-                new LayoutParams(LayoutParams.MATCH_PARENT, (int) px, 0.5f) :
-                new LayoutParams((int) px, LayoutParams.MATCH_PARENT, 0.5f));
+    private LayoutParams getSeparatorLayoutParams() {
+        return new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, 1f);
     }
 
     View.OnTouchListener mLightsOutListener = new View.OnTouchListener() {

@@ -121,7 +121,8 @@
         </activity>
          <activity
             android:name="com.android.systemui.statusbar.policy.toggles.Torch"
-            android:theme="@android:style/Theme.Holo.Panel">
+            android:theme="@android:style/Theme.Holo.Panel"
+            android:excludeFromRecents="true">
         </activity>
     </application>
 </manifest>

@@ -70,6 +70,10 @@ import android.widget.RemoteViews;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import android.provider.Settings;
+import android.app.Activity;
+import android.util.Log;
+
 import com.android.internal.statusbar.StatusBarIcon;
 import com.android.internal.statusbar.StatusBarNotification;
 import com.android.systemui.R;
@@ -307,8 +311,13 @@ public class TabletStatusBar extends StatusBar implements
 
         // Recents Panel
         mRecentTasksLoader = new RecentTasksLoader(context);
-        mRecentsPanel = (RecentsPanelView) View.inflate(context,
-                R.layout.status_bar_recent_panel, null);
+        if (Settings.System.getInt(getContext().getContentResolver(),
+                Settings.System.HORIZONTAL_RECENTS_TASK_PANEL,0) == 1) 
+            mRecentsPanel = (RecentsPanelView) View.inflate(context,
+                R.layout.status_bar_recent_panel_webaokp, null);
+        else 
+            mRecentsPanel = (RecentsPanelView) View.inflate(context,
+                    R.layout.status_bar_recent_panel, null);
         mRecentsPanel.setVisibility(View.GONE);
         mRecentsPanel.setSystemUiVisibility(View.STATUS_BAR_DISABLE_BACK);
         mRecentsPanel.setOnTouchListener(new TouchOutsideListener(MSG_CLOSE_RECENTS_PANEL,

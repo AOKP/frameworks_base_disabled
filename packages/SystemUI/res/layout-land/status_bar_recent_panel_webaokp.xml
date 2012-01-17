@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.android.systemui.recent.RecentsPanelView 
+    android:id="@id/recents_root" 
+	android:layout_width="fill_parent" 
+	android:layout_height="fill_parent"
+ xmlns:android="http://schemas.android.com/apk/res/android">
+    <FrameLayout 
+    	android:id="@id/recents_bg_protect" 
+    	android:background="@drawable/status_bar_recents_background" 
+    	android:layout_width="fill_parent" 
+    	android:layout_height="wrap_content" 
+    	android:layout_centerVertical="true">
+        <com.android.systemui.recent.RecentsHorizontalScrollView 
+        	android:layout_gravity="bottom|left|center" 
+        	android:id="@id/recents_container" 
+        	android:scrollbars="none" 
+        	android:fadingEdge="vertical" 
+        	android:clipChildren="false" 
+        	android:clipToPadding="false" 
+        	android:layout_width="fill_parent" 
+        	android:layout_height="wrap_content" 
+        	android:layout_marginRight="0.0dip" 
+        	android:stackFromBottom="true" 
+        	android:divider="@null">
+            <LinearLayout 
+            	android:orientation="horizontal" 
+            	android:id="@id/recents_linear_layout" 
+            	android:clipChildren="false" 
+            	android:clipToPadding="false" 
+            	android:layout_width="fill_parent" 
+            	android:layout_height="wrap_content" />
+        </com.android.systemui.recent.RecentsHorizontalScrollView>
+    </FrameLayout>
+    <include android:id="@id/recents_no_apps" 
+    	android:visibility="invisible" 
+    	android:layout_width="fill_parent" 
+    	android:layout_height="fill_parent" 
+    	layout="@layout/status_bar_no_recent_apps" />
+</com.android.systemui.recent.RecentsPanelView>

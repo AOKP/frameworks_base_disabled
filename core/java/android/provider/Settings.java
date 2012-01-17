@@ -2421,6 +2421,14 @@ public final class Settings {
          * @hide
          */
         public static final String NAVIGATION_BAR_HOME_LONGPRESS = "navigation_bar_home_longpress";
+        
+        /** 
+         * Whether to use horizontal recents tasks (WebAOKP)
+         * 
+         * @hide
+         */
+        public static final String HORIZONTAL_RECENTS_TASK_PANEL = "horizontal_recents_task_panel";
+        
     }
 
     /**

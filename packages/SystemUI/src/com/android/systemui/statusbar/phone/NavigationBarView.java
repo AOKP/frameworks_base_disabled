@@ -213,7 +213,6 @@ public class NavigationBarView extends LinearLayout {
             View rightMenuKey = generateKey(landscape, KEY_MENU_RIGHT);
             addButton(navButtonLayout, rightMenuKey, landscape);
             addLightsOutButton(lightsOut, rightMenuKey, landscape, true);
-
         }
 
     }
@@ -395,6 +394,14 @@ public class NavigationBarView extends LinearLayout {
         try {
             getSearchButton().setVisibility(disableHome ? View.INVISIBLE : View.VISIBLE);
         } catch (NullPointerException e) {
+        }
+
+        final boolean hideBar = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.LOCKSCREEN_HIDE_NAV, 0) == 1;
+        if (hideBar && disableHome && disableRecent && disableBack) {
+            this.setVisibility(View.INVISIBLE);
+        } else {
+            this.setVisibility(View.VISIBLE);
         }
     }
 

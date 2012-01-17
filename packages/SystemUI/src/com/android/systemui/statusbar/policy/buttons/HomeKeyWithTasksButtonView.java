@@ -14,6 +14,8 @@ import com.android.systemui.statusbar.policy.KeyButtonView;
 
 public class HomeKeyWithTasksButtonView extends KeyButtonView {
 
+    private static final String TAG = "Key.Home";
+
     IStatusBarService mBarService;
 
     public static final int LONGPRESS_NONE = 0;
@@ -26,8 +28,15 @@ public class HomeKeyWithTasksButtonView extends KeyButtonView {
     public HomeKeyWithTasksButtonView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs);
 
-        this.setOnLongClickListener(mRecentsToggle);
-        mSupportsLongpress = true;
+        if (Settings.System.getInt(getContext().getContentResolver(),
+                Settings.System.NAVIGATION_BAR_HOME_LONGPRESS, 0) == 1)
+            mSupportsLongpress = true;
+        else
+            mSupportsLongpress = false;
+
+        setOnLongClickListener(mLongPressListener);
+        Log.e(TAG, "Created");
+
     }
 
     Runnable mCheckLongPress = new Runnable() {
@@ -38,30 +47,17 @@ public class HomeKeyWithTasksButtonView extends KeyButtonView {
         }
     };
 
-    private OnLongClickListener mRecentsToggle = new OnLongClickListener() {
+    private OnLongClickListener mLongPressListener = new OnLongClickListener() {
 
         @Override
         public boolean onLongClick(View v) {
-            int setting = Settings.System.getInt(mContext.getContentResolver(),
-                    Settings.System.NAVIGATION_BAR_HOME_LONGPRESS, LONGPRESS_NONE);
-
-            Log.e("HOME_BUTTON", "setting: " + setting);
-            switch (setting) {
-                case LONGPRESS_NONE:
-                    return true;
-
-                case LONGPRESS_HOME:
-                    try {
-                        mBarService = IStatusBarService.Stub.asInterface(
-                                ServiceManager.getService(Context.STATUS_BAR_SERVICE));
-                        mBarService.toggleRecentApps();
-                        Log.e("HOME_BUTTON", "toggled recent apps");
-                        return true;
-                    } catch (RemoteException e) {
-                    }
-                    return false;
+            try {
+                mBarService = IStatusBarService.Stub.asInterface(
+                        ServiceManager.getService(Context.STATUS_BAR_SERVICE));
+                mBarService.toggleRecentApps();
+            } catch (RemoteException e) {
             }
-            return false;
+            return true;
         }
     };
 

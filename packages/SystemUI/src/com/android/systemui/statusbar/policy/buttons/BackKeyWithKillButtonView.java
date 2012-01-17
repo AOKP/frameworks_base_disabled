@@ -30,7 +30,7 @@ public class BackKeyWithKillButtonView extends KeyButtonView {
     public BackKeyWithKillButtonView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs);
 
-        this.setOnLongClickListener(mRecentsToggle);
+        this.setOnLongClickListener(mBackKey);
         mSupportsLongpress = true;
 
         mHandler = new Handler();
@@ -70,7 +70,7 @@ public class BackKeyWithKillButtonView extends KeyButtonView {
         }
     };
 
-    private OnLongClickListener mRecentsToggle = new OnLongClickListener() {
+    private OnLongClickListener mBackKey = new OnLongClickListener() {
 
         @Override
         public boolean onLongClick(View v) {

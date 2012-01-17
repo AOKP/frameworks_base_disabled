@@ -77,16 +77,6 @@ public class NavigationBarView extends LinearLayout {
     public final static int SHOW_RIGHT_MENU = 0;
     public final static int SHOW_BOTH_MENU = 2;
 
-    private int mNavLayout = LAYOUT_REGULAR;
-    public final static int LAYOUT_REGULAR = 0;
-    public final static int LAYOUT_SEARCH = 1;
-    public static final int LAYOUT_HOME_TASKS = 3;
-
-    /*
-     * Back - Home - Search | Long press home for recents Long press search-enabled
-     */
-    public final static int LAYOUT_HOME_RECENTS = 2;
-
     public final static int VISIBILITY_SYSTEM = 0;
     public final static int VISIBILITY_SYSTEM_AND_INVIZ = 3;
     public final static int VISIBILITY_NEVER = 1;

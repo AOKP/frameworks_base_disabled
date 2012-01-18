@@ -935,7 +935,12 @@ public class MultiWaveView extends View {
                 return null;
             }
         }
-        return mTargetDescriptions.get(index);
+        String s = "";
+        try { 
+            s = mTargetDescriptions.get(index);
+        } catch (Exception e) {
+        }
+        return s;
     }
 
     private String getDirectionDescription(int index) {

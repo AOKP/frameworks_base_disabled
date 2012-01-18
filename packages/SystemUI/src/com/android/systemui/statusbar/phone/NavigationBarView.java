@@ -48,6 +48,7 @@ import com.android.systemui.R;
 import com.android.systemui.statusbar.policy.KeyButtonView;
 import com.android.systemui.statusbar.policy.buttons.BackKeyWithKillButtonView;
 import com.android.systemui.statusbar.policy.buttons.HomeKeyWithTasksButtonView;
+import com.android.systemui.statusbar.policy.buttons.RecentsKey;
 import com.android.systemui.statusbar.policy.buttons.SearchKeyButtonView;
 
 public class NavigationBarView extends LinearLayout {
@@ -76,16 +77,6 @@ public class NavigationBarView extends LinearLayout {
     public final static int SHOW_LEFT_MENU = 1;
     public final static int SHOW_RIGHT_MENU = 0;
     public final static int SHOW_BOTH_MENU = 2;
-
-    private int mNavLayout = LAYOUT_REGULAR;
-    public final static int LAYOUT_REGULAR = 0;
-    public final static int LAYOUT_SEARCH = 1;
-    public static final int LAYOUT_HOME_TASKS = 3;
-
-    /*
-     * Back - Home - Search | Long press home for recents Long press search-enabled
-     */
-    public final static int LAYOUT_HOME_RECENTS = 2;
 
     public final static int VISIBILITY_SYSTEM = 0;
     public final static int VISIBILITY_SYSTEM_AND_INVIZ = 3;
@@ -155,6 +146,8 @@ public class NavigationBarView extends LinearLayout {
 
     FrameLayout rot0;
     FrameLayout rot90;
+    
+    int numKeys = 3;
 
     private void makeBar(String navKeys) {
         if (navKeys == null)
@@ -166,6 +159,7 @@ public class NavigationBarView extends LinearLayout {
         ((LinearLayout) rot90.findViewById(R.id.lights_out)).removeAllViews();
 
         String[] split = navKeys.split("\\" + DELIMITER);
+        numKeys = split.length;
 
         for (int i = 0; i <= 1; i++) {
             boolean landscape = (i == 1);
@@ -183,18 +177,18 @@ public class NavigationBarView extends LinearLayout {
             addButton(navButtonLayout, leftmenuKey, landscape);
             addLightsOutButton(lightsOut, leftmenuKey, landscape, true);
 
-            for (String key : split) {
-                Log.e(TAG, "split: " + key);
+            for (int j = 0; j < split.length; j++) {
+                Log.i(TAG, "split: " + split[j]);
                 View v = null;
 
                 boolean notFound = false;
-                if (key.equals(NAV_BACK))
+                if (split[j].equals(NAV_BACK))
                     v = generateKey(landscape, KEY_BACK);
-                else if (key.equals(NAV_HOME))
+                else if (split[j].equals(NAV_HOME))
                     v = generateKey(landscape, KEY_HOME);
-                else if (key.equals(NAV_SEARCH))
+                else if (split[j].equals(NAV_SEARCH))
                     v = generateKey(landscape, KEY_SEARCH);
-                else if (key.equals(NAV_TASKS))
+                else if (split[j].equals(NAV_TASKS))
                     v = generateKey(landscape, KEY_TASKS);
                 else {
                     // if we get here, this is baaaaaaaaaaaaaaaad, revert to stock setup
@@ -206,6 +200,16 @@ public class NavigationBarView extends LinearLayout {
                 if (!notFound) {
                     addButton(navButtonLayout, v, landscape);
                     addLightsOutButton(lightsOut, v, landscape, false);
+
+                    if (j == (split.length - 1)) {
+                        // which to skip
+                    } else {
+                        // add separator view here
+                        View separator = new View(mContext);
+                        separator.setLayoutParams(getSeparatorLayoutParams());
+                        addButton(navButtonLayout, separator, landscape);
+                        addLightsOutButton(lightsOut, separator, landscape, true);
+                    }
                 }
 
             }
@@ -213,7 +217,6 @@ public class NavigationBarView extends LinearLayout {
             View rightMenuKey = generateKey(landscape, KEY_MENU_RIGHT);
             addButton(navButtonLayout, rightMenuKey, landscape);
             addLightsOutButton(lightsOut, rightMenuKey, landscape, true);
-
         }
 
     }
@@ -248,11 +251,13 @@ public class NavigationBarView extends LinearLayout {
     private View generateKey(boolean landscape, int keyId) {
         KeyButtonView v = null;
         Resources r = getResources();
+        
+        int btnWidth = (numKeys == 3) ? 80 : 70;
 
         switch (keyId) {
             case KEY_BACK:
                 v = new BackKeyWithKillButtonView(mContext, null);
-                v.setLayoutParams(getLayoutParams(landscape, 80));
+                v.setLayoutParams(getLayoutParams(landscape, btnWidth));
 
                 v.setId(R.id.back);
                 v.setCode(4);
@@ -265,7 +270,7 @@ public class NavigationBarView extends LinearLayout {
 
             case KEY_HOME:
                 v = new HomeKeyWithTasksButtonView(mContext, null);
-                v.setLayoutParams(getLayoutParams(landscape, 80));
+                v.setLayoutParams(getLayoutParams(landscape, btnWidth));
 
                 v.setId(R.id.home);
                 v.setCode(3);
@@ -278,7 +283,7 @@ public class NavigationBarView extends LinearLayout {
 
             case KEY_SEARCH:
                 v = new SearchKeyButtonView(mContext, null);
-                v.setLayoutParams(getLayoutParams(landscape, 80));
+                v.setLayoutParams(getLayoutParams(landscape, btnWidth));
 
                 v.setId(R.id.search);
                 v.setCode(84);
@@ -289,8 +294,8 @@ public class NavigationBarView extends LinearLayout {
                 return v;
 
             case KEY_TASKS:
-                v = new SearchKeyButtonView(mContext, null);
-                v.setLayoutParams(getLayoutParams(landscape, 80));
+                v = new RecentsKey(mContext, null);
+                v.setLayoutParams(getLayoutParams(landscape, btnWidth));
 
                 v.setId(R.id.recent_apps);
                 v.setImageResource(landscape ? R.drawable.ic_sysbar_recent_land
@@ -336,16 +341,12 @@ public class NavigationBarView extends LinearLayout {
 
         float px = dp * getResources().getDisplayMetrics().density;
         return landscape ?
-                new LayoutParams(LayoutParams.MATCH_PARENT, (int) px, 1f) :
-                new LayoutParams((int) px, LayoutParams.MATCH_PARENT, 1f);
+                new LayoutParams(LayoutParams.MATCH_PARENT, (int) px, 0f) :
+                new LayoutParams((int) px, LayoutParams.MATCH_PARENT, 0f);
     }
 
-    private LayoutParams getMenuLayoutParams(boolean landscape, float dp) {
-
-        float px = dp * getResources().getDisplayMetrics().density;
-        return new LayoutParams(landscape ?
-                new LayoutParams(LayoutParams.MATCH_PARENT, (int) px, 0.5f) :
-                new LayoutParams((int) px, LayoutParams.MATCH_PARENT, 0.5f));
+    private LayoutParams getSeparatorLayoutParams() {
+        return new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, 1f);
     }
 
     View.OnTouchListener mLightsOutListener = new View.OnTouchListener() {
@@ -395,6 +396,14 @@ public class NavigationBarView extends LinearLayout {
         try {
             getSearchButton().setVisibility(disableHome ? View.INVISIBLE : View.VISIBLE);
         } catch (NullPointerException e) {
+        }
+
+        final boolean hideBar = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.LOCKSCREEN_HIDE_NAV, 0) == 1;
+        if (hideBar && disableHome && disableRecent && disableBack) {
+            this.setVisibility(View.INVISIBLE);
+        } else {
+            this.setVisibility(View.VISIBLE);
         }
     }
 

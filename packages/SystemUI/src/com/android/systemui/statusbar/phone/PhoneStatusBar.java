@@ -401,6 +401,10 @@ public class PhoneStatusBar extends StatusBar {
         observer.observe();
         updateSettings();
         
+        // restore state
+        mQuickToggles.setVisibility(Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.STATUSBAR_TOGGLES_VISIBILITY, 0) == 1 ? View.VISIBLE : View.GONE);
+        
         return sb;
     }
 
@@ -1330,8 +1334,10 @@ public class PhoneStatusBar extends StatusBar {
             setNotificationIconVisibility(true, com.android.internal.R.anim.fade_in);
         }
 
-        if (mQuickTogglesHideAfterCollapse)
+        if (mQuickTogglesHideAfterCollapse) {
             mQuickToggles.setVisibility(View.GONE);
+            Settings.System.putInt(mContext.getContentResolver(), Settings.System.STATUSBAR_TOGGLES_VISIBILITY, 0);
+        }
 
         if (!mExpanded) {
             return;
@@ -2314,6 +2320,7 @@ public class PhoneStatusBar extends StatusBar {
                 @Override
                 public void onAnimationEnd(Animation animation) {
                     mQuickToggles.setVisibility(View.GONE);
+                    Settings.System.putInt(mContext.getContentResolver(), Settings.System.STATUSBAR_TOGGLES_VISIBILITY, 0);
                 }
 
                 @Override
@@ -2338,6 +2345,7 @@ public class PhoneStatusBar extends StatusBar {
                 @Override
                 public void onAnimationStart(Animation animation) {
                     mQuickToggles.setVisibility(View.VISIBLE);
+                    Settings.System.putInt(mContext.getContentResolver(), Settings.System.STATUSBAR_TOGGLES_VISIBILITY, 1);
                 }
 
                 @Override

@@ -1667,6 +1667,19 @@ public final class Settings {
         public static final String ACCELEROMETER_ROTATION = "accelerometer_rotation";
 
         /**
+         * Control the type of rotation which can be performed using the accelerometer
+         * if ACCELEROMETER_ROTATION is enabled.
+         * Value is a bitwise combination of
+         * 1 = 0 degrees (portrait)
+         * 2 = 90 degrees (left)
+         * 4 = 180 degrees (inverted portrait)
+         * 8 = 270 degrees (right)
+         * Setting to 0 is effectively orientation lock
+         * @hide
+         */
+        public static final String ACCELEROMETER_ROTATION_ANGLES = "accelerometer_rotation_angles";
+
+        /**
          * Default screen rotation when no other policy applies.
          * When {@link #ACCELEROMETER_ROTATION} is zero and no on-screen Activity expresses a
          * preference, this rotation value will be used. Must be one of the
@@ -2214,14 +2227,7 @@ public final class Settings {
          * 
          * @hide
          */
-        public static final String LOCKSCREEN_ENABLE_MENU_KEY = "lockscreen_enable_menu_key";
-
-        /**
-	* Whether to enable mms and phone lockscreen shortcuts
-	*
-	* @hide
-	*/
-        public static final String LOCKSCREEN_QUAD_TARGETS = "lockscreen_quad_targets";
+        public static final String LOCKSCREEN_ENABLE_MENU_KEY = "lockscreen_enable_menu_key";        
 
         /**
          * whether to show the IME switcher when typing in the statusbar. Boolean value.
@@ -2233,7 +2239,7 @@ public final class Settings {
         /**
          * Which layout to use to display the navigation menu at the bottom.
          * 0 = default
-         * 1 = defualt w/search
+         * 1 = default w/search
          * 
          * @hide
          */
@@ -2408,6 +2414,27 @@ public final class Settings {
          * @hide
          */
         public static final String LOCKSCREEN_CUSTOM_SMS_INTENT = "lockscreen_custom_sms_intent";
+        
+        /**
+         * launch a custom app
+         * 
+         * @hide
+         */
+        public static final String LOCKSCREEN_CUSTOM_APP_INTENT_1 = "lockscreen_custom_app_intent_1";
+        
+        /**
+         * launch a custom app
+         * 
+         * @hide
+         */
+        public static final String LOCKSCREEN_CUSTOM_APP_INTENT_2 = "lockscreen_custom_app_intent_2";
+        
+        /**
+         * launch a custom app
+         * 
+         * @hide
+         */
+        public static final String LOCKSCREEN_CUSTOM_APP_INTENT_3 = "lockscreen_custom_app_intent_3";
 
         /**
          * Whether volume up/down can be long pressed to skip tracks
@@ -2429,7 +2456,47 @@ public final class Settings {
          */
         public static final String HORIZONTAL_RECENTS_TASK_PANEL = "horizontal_recents_task_panel";
         
-    }
+/**
+         * Whether to show the battery bar
+         * 
+         * @hide
+         */
+        public static final String STATUSBAR_BATTERY_BAR = "statusbar_battery_bar";
+
+        /**
+         * @hide
+         */
+        public static final String STATUSBAR_BATTERY_BAR_COLOR = "statusbar_battery_bar_color";
+
+        /**
+         * Last state of the quick toggles, to restore on boot
+         * @hide
+         */
+        public static final String STATUSBAR_TOGGLES_VISIBILITY = "statusbar_toggles_visibility";
+
+        /**
+         * Whether to show the battery icon
+         * 
+         * @hide
+         */
+        public static final String STATUSBAR_BATTERY_ICON = "statusbar_battery_icon";
+
+		/**
+         * 0 = stock
+         * 1 = quad
+         * 2 = octo
+         * 
+         * @hide
+         */
+		public static final String LOCKSCREEN_LAYOUT = "lockscreen_layout";
+
+		/**
+		 * whether to hide the navigation bar on the lockscreen
+		 * 
+		 * @hide
+		 */
+        public static final String LOCKSCREEN_HIDE_NAV = "lockscreen    
+}
 
     /**
      * Secure system settings, containing system preferences that applications

@@ -55,6 +55,8 @@ public class BatteryController extends LinearLayout {
 
     private int mBatteryTextStyle = STYLE_OFFSET;
 
+    private boolean mShowIcon = true;
+
     public BatteryController(Context context, AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
@@ -140,6 +142,8 @@ public class BatteryController extends LinearLayout {
                     Settings.System.STATUSBAR_BATTERY_TEXT), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUSBAR_BATTERY_TEXT_STYLE), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.STATUSBAR_BATTERY_ICON), false, this);
         }
 
         @Override
@@ -177,7 +181,12 @@ public class BatteryController extends LinearLayout {
             mBatteryCenterText.setVisibility(View.GONE);
         }
 
-        
+        mShowIcon = Settings.System
+                .getInt(cr, Settings.System.STATUSBAR_BATTERY_ICON, 1) == 1;
+        if (mShowIcon)
+            setVisibility(View.VISIBLE);
+        else
+            setVisibility(View.GONE);
 
     }
 }

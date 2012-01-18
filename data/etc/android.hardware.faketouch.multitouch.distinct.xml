@@ -17,7 +17,6 @@
 <!-- This is the standard set of features for a indirect touch input device that supports
      independently-trackable multiple-finger multitouch. -->
 <permissions>
-    <feature name="android.hardware.faketouch.multitouch" />
     <feature name="android.hardware.faketouch.multitouch.distinct" />
     <feature name="android.hardware.faketouch" />
 </permissions>

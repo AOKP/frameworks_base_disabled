@@ -97,5 +97,10 @@ public class TorchToggle extends Toggle {
         }
         mTorch = Torch.getTorch();
     }
+    
+    @Override
+    protected boolean onLongPress() {
+    	return false;
+    }
 
 }

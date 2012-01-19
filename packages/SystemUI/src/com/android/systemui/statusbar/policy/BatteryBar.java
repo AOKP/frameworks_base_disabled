@@ -228,7 +228,7 @@ public class BatteryBar extends RelativeLayout implements Animatable {
     private void setProgress(int n) {
 
         if (vertical) {
-            int w = (int) ((getHeight() / 100.0) + 0.5d) * n;
+            int w = (int) (((getHeight() / 100.0) * n) + 0.5);
             RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) mBatteryBarLayout
                     .getLayoutParams();
 
@@ -236,12 +236,12 @@ public class BatteryBar extends RelativeLayout implements Animatable {
             mBatteryBarLayout.setLayoutParams(params);
 
         } else {
-            int w = (int) ((getWidth() / 100.0) + 0.5d) * n;
+            Log.e(TAG, "width: " + getWidth());
+            int w = (int) (((getWidth() / 100.0) * n) + 0.5);
             RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) mBatteryBarLayout
                     .getLayoutParams();
-
+            Log.e(TAG, "width: " + getWidth() + ", and calculated percent width: " + w);
             params.width = w;
-
             mBatteryBarLayout.setLayoutParams(params);
         }
 

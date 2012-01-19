@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<bool name="config_recents_thumbnail_image_fits_to_xy">false</bool>
+	<bool name="config_recents_thumbnail_image_fits_to_xy_webaokp">true</bool>
+</resources>

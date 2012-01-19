@@ -24,6 +24,10 @@
     <dimen name="status_bar_recents_app_icon_max_width">48dp</dimen>
     <!-- Upper height limit for application icon -->
     <dimen name="status_bar_recents_app_icon_max_height">48dp</dimen>
+    
+    <!-- Dimensions for WebAOKP View -->
+    <dimen name="status_bar_recents_thumbnail_width_webaokp">170.0dip</dimen>
+    <dimen name="status_bar_recents_thumbnail_height_webaokp">210.0dip</dimen>
 
     <!-- Size of application thumbnail -->
     <dimen name="status_bar_recents_thumbnail_width">164dp</dimen>

@@ -33,17 +33,18 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
-
 import com.android.systemui.R;
 
 /*
  * Torch is an LED flashlight.
  */
-public class Torch extends Activity implements SurfaceHolder.Callback {
+public class Torch extends Activity implements  SurfaceHolder.Callback {
 
-    private static final String TAG = "TorchToggle";
+  private static final String TAG = "TorchToggle";
 
-    private static final String WAKE_LOCK_TAG = "TORCH_WAKE_LOCK";
+  private static final String WAKE_LOCK_TAG = "TORCH_WAKE_LOCK";
+
+  public static final String ACTION_UPDATE = "com.android.systemui.statusbar.policy.toggles.Torch.ACTION_CHANGED";
 
     private Camera mCamera;
     private boolean lightOn;
@@ -76,20 +77,51 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
         }
     }
 
-    /*
-     * Called by the view (see main.xml)
-     */
-    private void toggleLight(View view) {
-        toggleLight();
-    }
+  private Camera mCamera;
+  private boolean lightOn;
+  private boolean previewOn;
+  private View button;
+  private SurfaceView surfaceView;
+  private SurfaceHolder surfaceHolder;
 
-    private void toggleLight() {
-        if (lightOn) {
-            turnLightOff();
-        } else {
-            turnLightOn();
-        }
+  private WakeLock wakeLock;
+
+  private static Torch torch;
+
+  public Torch() {
+    super();
+    torch = this;
+  }
+
+  public static Torch getTorch() {
+	  Log.d(TAG,"Gave Myself away!");
+    return torch;
+  }
+ 
+  private void getCamera() {
+    if (mCamera == null) {
+      try {
+        mCamera = Camera.open();
+      } catch (RuntimeException e) {
+        Log.e(TAG, "Camera.open() failed: " + e.getMessage());
+      }
     }
+  }
+
+  /*
+   * Called by the view (see main.xml)
+   */
+  private void toggleLight(View view) {
+    toggleLight();
+  }
+
+  private void toggleLight() {
+    if (lightOn) {
+      turnLightOff();
+    } else {
+      turnLightOn();
+    }
+  }
 
     private void turnLightOn() {
 
@@ -155,32 +187,58 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
             }
         }
     }
-
-    private void startPreview() {
-        if (!previewOn && mCamera != null) {
-            mCamera.startPreview();
-            previewOn = true;
-        }
+    List<String> flashModes = parameters.getSupportedFlashModes();
+    // Check if camera flash exists
+    if (flashModes == null) {
+      Log.d(TAG,"Camera Flash not Found!");
+      return;
     }
-
-    private void stopPreview() {
-        if (previewOn && mCamera != null) {
-            mCamera.stopPreview();
-            previewOn = false;
-        }
+    String flashMode = parameters.getFlashMode();
+    Log.i(TAG, "Flash mode: " + flashMode);
+    Log.i(TAG, "Flash modes: " + flashModes);
+    if (!Parameters.FLASH_MODE_TORCH.equals(flashMode)) {
+      // Turn on the flash
+      if (flashModes.contains(Parameters.FLASH_MODE_TORCH)) {
+        parameters.setFlashMode(Parameters.FLASH_MODE_TORCH);
+        mCamera.setParameters(parameters);
+        startWakeLock();
+      } else {
+        Log.e(TAG, "FLASH_MODE_TORCH not supported");
+      }
     }
+  }
 
-    private void startWakeLock() {
-        if (wakeLock == null) {
-            Log.d(TAG, "wakeLock is null, getting a new WakeLock");
-            PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-            Log.d(TAG, "PowerManager acquired");
-            wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, WAKE_LOCK_TAG);
-            Log.d(TAG, "WakeLock set");
+  private void turnLightOff() {
+    if (lightOn) {
+      // set the background to dark
+      lightOn = false;
+      if (mCamera == null) {
+        return;
+      }
+      Parameters parameters = mCamera.getParameters();
+      if (parameters == null) {
+        return;
+      }
+      List<String> flashModes = parameters.getSupportedFlashModes();
+      String flashMode = parameters.getFlashMode();
+      // Check if camera flash exists
+      if (flashModes == null) {
+        return;
+      }
+      Log.i(TAG, "Flash mode: " + flashMode);
+      Log.i(TAG, "Flash modes: " + flashModes);
+      if (!Parameters.FLASH_MODE_OFF.equals(flashMode)) {
+        // Turn off the flash
+        if (flashModes.contains(Parameters.FLASH_MODE_OFF)) {
+          parameters.setFlashMode(Parameters.FLASH_MODE_OFF);
+          mCamera.setParameters(parameters);
+          stopWakeLock();
+        } else {
+          Log.e(TAG, "FLASH_MODE_OFF not supported");
         }
-        wakeLock.acquire();
-        Log.d(TAG, "WakeLock acquired");
+      }
     }
+  }
 
     private void stopWakeLock() {
         if (wakeLock != null) {
@@ -206,26 +264,37 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
     private void disablePhoneSleep() {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
+  }
 
-    @Override
-    public void onRestart() {
-        super.onRestart();
-        Log.i(TAG, "onRestart");
+private void startPreview() {
+    if (!previewOn && mCamera != null) {
+      mCamera.startPreview();
+      previewOn = true;
     }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        Log.i(TAG, "onStart");
-        getCamera();
-        startPreview();
+  }
+  private void stopPreview() {
+    if (previewOn && mCamera != null) {
+      mCamera.stopPreview();
+      previewOn = false;
     }
+  }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        turnLightOn();
-        Log.i(TAG, "onResume");
+  private void startWakeLock() {
+    if (wakeLock == null) {
+      Log.d(TAG, "wakeLock is null, getting a new WakeLock");
+      PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+      Log.d(TAG, "PowerManager acquired");
+      wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, WAKE_LOCK_TAG);
+      Log.d(TAG, "WakeLock set");
+    }
+    wakeLock.acquire();
+    Log.d(TAG, "WakeLock acquired");
+  }
+
+  private void stopWakeLock() {
+    if (wakeLock != null) {
+      wakeLock.release();
+      Log.d(TAG, "WakeLock released");
     }
 
     @Override
@@ -243,6 +312,7 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
          */
         Log.i(TAG, "onStop");
     }
+  }
 
     @Override
     public void onDestroy() {

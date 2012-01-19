@@ -19,8 +19,13 @@
 
 package com.android.systemui.statusbar.policy.toggles;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.util.Log;
+import java.io.IOException;
+import java.util.List;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.util.Log;
 
 import com.android.systemui.R;
@@ -37,13 +42,26 @@ public class TorchToggle extends Toggle {
     private Torch mTorch;
     private int runawayflag;
 
+    
     public TorchToggle(Context context) {
         super(context);
         setLabel(R.string.toggle_torch);
         setIcon(R.drawable.toggle_torch);
         mContext = context;
+
+        IntentFilter intentFilter = new IntentFilter(Torch.ACTION_UPDATE);
+        mContext.registerReceiver(new BroadcastReceiver() {
+
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                updateState();
+            }
+        }, intentFilter);
+
+        updateState();
     }
 
+    
     @Override
     protected void updateInternalToggleState() {
         Log.d(TAG, "Updating TorchToggleState");
@@ -58,7 +76,7 @@ public class TorchToggle extends Toggle {
             }
         }
     }
-
+    
     @Override
     protected void onCheckChanged(boolean isChecked) {
         if (isChecked) {
@@ -88,5 +106,5 @@ public class TorchToggle extends Toggle {
         }
         mTorch = Torch.getTorch();
     }
-
+ 
 }

@@ -52,7 +52,10 @@ public class AutoRotateToggle extends Toggle {
         mAutoRotation = getAutoRotation();
         updateState();
         setLabel(R.string.toggle_rotate);
-        setIcon(R.drawable.toggle_rotate);
+        if (mToggle.isChecked())
+        	setIcon(R.drawable.toggle_rotate);
+        else
+        	setIcon(R.drawable.toggle_rotate_off);
     }
 
     private boolean getAutoRotation() {
@@ -84,6 +87,10 @@ public class AutoRotateToggle extends Toggle {
         if (isChecked != mAutoRotation) {
             setAutoRotation(isChecked);
         }
+        if (isChecked)
+        	setIcon(R.drawable.toggle_rotate);
+        else
+        	setIcon(R.drawable.toggle_rotate_off);
     }
 
     @Override
@@ -91,5 +98,9 @@ public class AutoRotateToggle extends Toggle {
         mToggle.setChecked(Settings.System.getInt(
                 mContext.getContentResolver(),
                 Settings.System.ACCELEROMETER_ROTATION, 0) != 0);
+        if (mToggle.isChecked())
+        	setIcon(R.drawable.toggle_rotate);
+        else
+        	setIcon(R.drawable.toggle_rotate_off);
     }
 }

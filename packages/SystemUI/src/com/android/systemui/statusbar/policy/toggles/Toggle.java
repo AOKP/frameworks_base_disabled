@@ -104,6 +104,12 @@ public abstract class Toggle implements OnCheckedChangeListener {
         }
     }
 
+   /* public void setIcon_off(int res) {
+        if (mIcon_off != null) {
+            mIcon_off.setImageResource(res);
+        }
+    }*/
+    
     public void setupInfo(boolean showIcon, boolean showText) {
         mIcon.setVisibility(showIcon ? View.VISIBLE : View.GONE);
         mText.setVisibility(showText ? View.VISIBLE : View.GONE);

@@ -52,7 +52,10 @@ public class GpsToggle extends Toggle {
             mContentQueryMap.addObserver(mSettingsObserver);
         }
         setLabel(R.string.toggle_gps);
-        setIcon(R.drawable.toggle_gps);
+        if (mToggle.isChecked())
+        	setIcon(R.drawable.toggle_gps);
+        else
+        	setIcon(R.drawable.toggle_gps_off);
         updateState();
     }
 
@@ -63,6 +66,10 @@ public class GpsToggle extends Toggle {
     protected void onCheckChanged(boolean isChecked) {
         Settings.Secure.setLocationProviderEnabled(mContext.getContentResolver(),
                 LocationManager.GPS_PROVIDER, isChecked ? true : false);
+        if (isChecked)
+        	setIcon(R.drawable.toggle_gps);
+        else
+        	setIcon(R.drawable.toggle_gps_off);
     }
 
     @Override
@@ -71,6 +78,10 @@ public class GpsToggle extends Toggle {
         boolean gpsEnabled = Settings.Secure.isLocationProviderEnabled(
                 res, LocationManager.GPS_PROVIDER);
         mToggle.setChecked(gpsEnabled);
+        if (mToggle.isChecked())
+        	setIcon(R.drawable.toggle_gps);
+        else
+        	setIcon(R.drawable.toggle_gps_off);
     }
 
 }

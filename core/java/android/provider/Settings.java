@@ -2750,7 +2750,7 @@ public final class Settings {
 
 		/**
 		 * whether to hide the navigation bar on the lockscreen
-		 * 
+		 * null
 		 * @hide
 		 */
         public static final String LOCKSCREEN_HIDE_NAV = "lockscreen_hide_nav";
@@ -2761,6 +2761,21 @@ public final class Settings {
          * @hide
          */
         public static final String HORIZONTAL_RECENTS_TASK_PANEL = "horizontal_recents_task_panel";
+
+        /**
+         * thickness of the batteyr bar (in dp)
+         * 
+         * @hide
+         */
+        public static final String STATUSBAR_BATTERY_BAR_THICKNESS = "statusbar_battery_bar_thickness";
+
+        /**
+         * 0 = regular
+         * 1 = mirrored from center
+         * 
+         * @hide
+         */
+        public static final String STATUSBAR_BATTERY_BAR_STYLE = "statusbar_battery_style";
     }
 
     /**

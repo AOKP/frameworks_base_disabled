@@ -36,5 +36,8 @@
 		<attr name="labelText" format="reference" />
 		<attr name="labelImage" format="reference" />
 	</declare-styleable>
+	<declare-styleable name="BatteryBarController">
+		<attr name="viewLocation" format="integer" />
+	</declare-styleable>
 </resources>
 

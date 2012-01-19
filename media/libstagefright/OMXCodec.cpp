@@ -3906,10 +3906,8 @@ void OMXCodec::onStateChange(OMX_STATETYPE newState) {
 
         case OMX_StateLoaded:
         {
-#ifdef QCOM_HARDWARE
             if (mState == ERROR)
                 CODEC_LOGE("We are in error state, should have been in idle->loaded");
-#endif
 
             CHECK_EQ((int)mState, (int)IDLE_TO_LOADED);
 
@@ -5282,9 +5280,7 @@ status_t OMXCodec::stop() {
 
         case ERROR:
         {
-#ifdef QCOM_HARDWARE
             CODEC_LOGE("in error state, check omx il state and decide whether to free or skip");
-#endif
 
             OMX_STATETYPE state = OMX_StateInvalid;
             status_t err = mOMX->getState(mNode, &state);
@@ -5329,6 +5325,7 @@ status_t OMXCodec::stop() {
                      mComponentName);
             }
 #endif
+
             if (state != OMX_StateExecuting) {
                 break;
             }

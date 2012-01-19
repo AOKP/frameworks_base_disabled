@@ -28,6 +28,8 @@ import android.database.Cursor;
 import android.location.LocationManager;
 import android.provider.Settings;
 import android.view.View;
+import android.content.Intent;
+
 
 public class GpsToggle extends Toggle {
 
@@ -82,6 +84,14 @@ public class GpsToggle extends Toggle {
         	setIcon(R.drawable.toggle_gps);
         else
         	setIcon(R.drawable.toggle_gps_off);
+    }
+    
+    @Override
+    protected boolean onLongPress() {
+    	Intent intent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        mContext.startActivity(intent);
+    	return true;
     }
 
 }

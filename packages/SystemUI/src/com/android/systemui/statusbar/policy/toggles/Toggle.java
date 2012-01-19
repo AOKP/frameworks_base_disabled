@@ -19,8 +19,14 @@ package com.android.systemui.statusbar.policy.toggles;
 import android.content.Context;
 import android.provider.Settings;
 import android.view.View;
+import android.view.View.OnLongClickListener;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import com.android.internal.statusbar.IStatusBarService;
+import android.os.ServiceManager;
+import android.os.RemoteException;
+
+
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -55,8 +61,26 @@ public abstract class Toggle implements OnCheckedChangeListener {
         mIcon = (ImageView) mView.findViewById(R.id.icon);
         mToggle = (CompoundButton) mView.findViewById(R.id.toggle);
         mText = (TextView) mView.findViewById(R.id.label);
+        
+        mToggle.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+        	 @Override
+        	    public final void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        	        if (mSystemChange)
+        	            return;
+        	        onCheckChanged(isChecked);
+        	 }
+        	 });
 
-        mToggle.setOnCheckedChangeListener(this);
+        mToggle.setOnLongClickListener(new OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v){
+            	 if(onLongPress()){
+            		 collapseStatusBar();
+            		 return true;
+            	 }else
+            		 return false;
+            }
+        });   
     }
 
     /**
@@ -69,18 +93,31 @@ public abstract class Toggle implements OnCheckedChangeListener {
      * this method is called when the user manually toggles, update states as needed
      */
     protected abstract void onCheckChanged(boolean isChecked);
-
+    
+    /** 
+     * this method is called when the user longpresses the toggle
+     */
+    protected abstract boolean onLongPress();
+   	
     public void updateState() {
         mSystemChange = true;
         updateInternalToggleState();
         mSystemChange = false;
     }
 
+    public void collapseStatusBar(){
+    	try {
+    		IStatusBarService sb = IStatusBarService.Stub.asInterface(
+    				ServiceManager.getService(Context.STATUS_BAR_SERVICE));
+    		sb.collapse();
+    	} catch (RemoteException e) {
+    	}
+    }
+    
     @Override
     public final void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         if (mSystemChange)
             return;
-
         onCheckChanged(isChecked);
     }
 
@@ -104,11 +141,6 @@ public abstract class Toggle implements OnCheckedChangeListener {
         }
     }
 
-   /* public void setIcon_off(int res) {
-        if (mIcon_off != null) {
-            mIcon_off.setImageResource(res);
-        }
-    }*/
     
     public void setupInfo(boolean showIcon, boolean showText) {
         mIcon.setVisibility(showIcon ? View.VISIBLE : View.GONE);

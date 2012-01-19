@@ -92,4 +92,12 @@ public class NetworkToggle extends Toggle {
         else
         	setIcon(R.drawable.toggle_data_off);
     }
+    
+    @Override
+    protected boolean onLongPress() {
+    	Intent intent = new Intent(android.provider.Settings.ACTION_WIRELESS_SETTINGS);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        mContext.startActivity(intent);
+    	return true;
+    }
 }

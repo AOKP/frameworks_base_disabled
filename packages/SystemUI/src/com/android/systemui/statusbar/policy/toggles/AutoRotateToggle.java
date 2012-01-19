@@ -19,6 +19,7 @@ package com.android.systemui.statusbar.policy.toggles;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.ContentObserver;
 import android.os.AsyncTask;
@@ -102,5 +103,13 @@ public class AutoRotateToggle extends Toggle {
         	setIcon(R.drawable.toggle_rotate);
         else
         	setIcon(R.drawable.toggle_rotate_off);
+    }
+    
+    @Override
+    protected boolean onLongPress() {
+    	Intent intent = new Intent(android.provider.Settings.ACTION_DISPLAY_SETTINGS);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        mContext.startActivity(intent);
+    	return true;
     }
 }

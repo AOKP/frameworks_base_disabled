@@ -54,4 +54,12 @@ public class SilentToggle extends Toggle {
         	setIcon(R.drawable.toggle_silence_off);
     }
     
+    @Override
+    protected boolean onLongPress() {
+    	Intent intent = new Intent(android.provider.Settings.ACTION_SOUND_SETTINGS);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        mContext.startActivity(intent);
+    	return true;
+    }
+    
 }

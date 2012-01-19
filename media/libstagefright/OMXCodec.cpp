@@ -14,9 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*--------------------------------------------------------------------------
-Copyright (c) 2011-2012, Code Aurora Forum. All rights reserved.
---------------------------------------------------------------------------*/
 
 //#define LOG_NDEBUG 0
 #define LOG_TAG "OMXCodec"
@@ -2330,18 +2327,15 @@ OMXCodec::OMXCodec(
       m3DVideoDetected(false),
 #endif
 #ifdef QCOM_HARDWARE
+      bInvalidState(false),
+      mInterlaceFormatDetected(false),
+      mSPSParsed(false),
+      mThumbnailMode(false),
+#endif
       mNativeWindow(
               (!strncmp(componentName, "OMX.google.", 11)
               || !strcmp(componentName, "OMX.Nvidia.mpeg2v.decode"))
-                        ? NULL : nativeWindow),
-      mInterlaceFormatDetected(false),
-      mSPSParsed(false),
-      mThumbnailMode(false) {
-#else
-      mNativeWindow(!strncmp(componentName, "OMX.google.", 11)
-                        ? NULL : nativeWindow),
                         ? NULL : nativeWindow) {
-#endif
 #ifdef QCOM_HARDWARE
     parseFlags();
 #endif

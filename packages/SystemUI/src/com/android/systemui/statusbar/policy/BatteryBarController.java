@@ -12,9 +12,11 @@ import android.os.BatteryManager;
 import android.os.Handler;
 import android.provider.Settings;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout.LayoutParams;
+import android.widget.RelativeLayout;
 
 public class BatteryBarController extends LinearLayout {
 
@@ -48,6 +50,10 @@ public class BatteryBarController extends LinearLayout {
                     Settings.System.getUriFor(Settings.System.STATUSBAR_BATTERY_BAR), false, this);
             resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.STATUSBAR_BATTERY_BAR_STYLE), false,
+                    this);
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.STATUSBAR_BATTERY_BAR_THICKNESS),
+                    false,
                     this);
         }
 
@@ -115,6 +121,27 @@ public class BatteryBarController extends LinearLayout {
     }
 
     public void addBars() {
+
+        // set heights
+        DisplayMetrics metrics = getContext().getResources().getDisplayMetrics();
+        float dp = (float) Settings.System.getInt(getContext().getContentResolver(),
+                Settings.System.STATUSBAR_BATTERY_BAR_THICKNESS, 1);
+        int pixels = (int) ((metrics.density * dp) + 0.5);
+
+        ViewGroup.LayoutParams params = (ViewGroup.LayoutParams) getLayoutParams();
+
+        if (isVertical)
+            params.width = pixels;
+        else
+            params.height = pixels;
+        setLayoutParams(params);
+
+        if (isVertical)
+            params.width = pixels;
+        else
+            params.height = pixels;
+        setLayoutParams(params);
+
         if (mStyle == STYLE_REGULAR) {
             addView(new BatteryBar(mContext, mBatteryCharging, mBatteryLevel, isVertical),
                     new LinearLayout.LayoutParams(

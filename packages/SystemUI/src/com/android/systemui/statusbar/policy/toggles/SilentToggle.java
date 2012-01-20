@@ -16,7 +16,10 @@ public class SilentToggle extends Toggle {
 
         updateState();
         setLabel(R.string.toggle_silent);
-        setIcon(R.drawable.toggle_silence);
+        if (mToggle.isChecked())
+        	setIcon(R.drawable.toggle_silence);
+        else
+        	setIcon(R.drawable.toggle_silence_off);
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(AudioManager.RINGER_MODE_CHANGED_ACTION);
@@ -34,6 +37,10 @@ public class SilentToggle extends Toggle {
         AudioManager am = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
         int mode = am.getRingerMode();
         mToggle.setChecked(mode == AudioManager.RINGER_MODE_SILENT);
+        if (mToggle.isChecked())
+        	setIcon(R.drawable.toggle_silence);
+        else
+        	setIcon(R.drawable.toggle_silence_off);
     }
 
     @Override
@@ -41,5 +48,10 @@ public class SilentToggle extends Toggle {
         AudioManager am = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
         am.setRingerMode(isChecked ? AudioManager.RINGER_MODE_SILENT
                 : AudioManager.RINGER_MODE_NORMAL);
+        if (isChecked)
+        	setIcon(R.drawable.toggle_silence);
+        else
+        	setIcon(R.drawable.toggle_silence_off);
     }
+    
 }

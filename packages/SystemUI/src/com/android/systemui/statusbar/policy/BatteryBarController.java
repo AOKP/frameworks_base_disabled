@@ -122,16 +122,21 @@ public class BatteryBarController extends LinearLayout {
                             LayoutParams.MATCH_PARENT, 1));
         } else if (mStyle == STYLE_SYMMETRIC) {
             BatteryBar bar1 = new BatteryBar(mContext, mBatteryCharging, mBatteryLevel, isVertical);
-            bar1.setRotation(180);
-
             BatteryBar bar2 = new BatteryBar(mContext, mBatteryCharging, mBatteryLevel, isVertical);
-            bar2.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,
-                    LayoutParams.MATCH_PARENT, 1));
 
-            addView(bar1, (new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,
-                    LayoutParams.MATCH_PARENT, 1)));
-            addView(bar2, (new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,
-                    LayoutParams.MATCH_PARENT, 1)));
+            if (isVertical) {
+                bar2.setRotation(180);
+                addView(bar2, (new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,
+                        LayoutParams.MATCH_PARENT, 1)));
+                addView(bar1, (new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,
+                        LayoutParams.MATCH_PARENT, 1)));
+            } else {
+                bar1.setRotation(180);
+                addView(bar1, (new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,
+                        LayoutParams.MATCH_PARENT, 1)));
+                addView(bar2, (new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,
+                        LayoutParams.MATCH_PARENT, 1)));
+            }
 
         }
     }

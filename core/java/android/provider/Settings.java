@@ -2736,7 +2736,7 @@ public final class Settings {
 
 		/**
 		 * whether to hide the navigation bar on the lockscreen
-		 * null
+		 *
 		 * @hide
 		 */
         public static final String LOCKSCREEN_HIDE_NAV = "lockscreen_hide_nav";
@@ -2761,7 +2761,14 @@ public final class Settings {
          * 
          * @hide
          */
-        public static final String STATUSBAR_BATTERY_BAR_STYLE = "statusbar_battery_style";
+        public static final String STATUSBAR_BATTERY_BAR_STYLE = "statusbar_battery_bar_style";
+
+        /**
+         * whether to show charging animation
+         * 
+         * @hide
+         */
+        public static final String STATUSBAR_BATTERY_BAR_ANIMATE = "statusbar_battery_bar_animate";
     }
 
     /**

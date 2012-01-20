@@ -33,6 +33,8 @@ public class BatteryBar extends RelativeLayout implements Animatable {
     private int mBatteryLevel = 0;
     private int mChargingLevel = -1;
     private boolean mBatteryCharging = false;
+    private boolean shouldAnimateCharging = true;
+    private boolean isAnimating = false;
 
     private Handler mHandler = new Handler();
 
@@ -62,6 +64,10 @@ public class BatteryBar extends RelativeLayout implements Animatable {
                     this);
             resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.STATUSBAR_BATTERY_BAR_THICKNESS),
+                    false,
+                    this);
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.STATUSBAR_BATTERY_BAR_ANIMATE),
                     false,
                     this);
         }
@@ -190,7 +196,10 @@ public class BatteryBar extends RelativeLayout implements Animatable {
         int color = Settings.System.getInt(resolver,
                 Settings.System.STATUSBAR_BATTERY_BAR_COLOR, 0xFF33B5E5);
 
-        if (mBatteryCharging && mBatteryLevel < 100) {
+        shouldAnimateCharging = Settings.System.getInt(resolver,
+                Settings.System.STATUSBAR_BATTERY_BAR_ANIMATE, 0) == 1;
+
+        if (mBatteryCharging && mBatteryLevel < 100 && shouldAnimateCharging) {
             start();
         } else {
             stop();
@@ -226,12 +235,10 @@ public class BatteryBar extends RelativeLayout implements Animatable {
     }
 
     private void setProgress(int n) {
-
         if (vertical) {
             int w = (int) (((getHeight() / 100.0) * n) + 0.5);
             RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) mBatteryBarLayout
                     .getLayoutParams();
-
             params.height = w;
             mBatteryBarLayout.setLayoutParams(params);
 
@@ -240,7 +247,6 @@ public class BatteryBar extends RelativeLayout implements Animatable {
             int w = (int) (((getWidth() / 100.0) * n) + 0.5);
             RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) mBatteryBarLayout
                     .getLayoutParams();
-            Log.e(TAG, "width: " + getWidth() + ", and calculated percent width: " + w);
             params.width = w;
             mBatteryBarLayout.setLayoutParams(params);
         }
@@ -248,12 +254,10 @@ public class BatteryBar extends RelativeLayout implements Animatable {
     }
 
     @Override
-    protected void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-    }
-
-    @Override
     public void start() {
+        if (!shouldAnimateCharging)
+            return;
+
         if (vertical) {
             TranslateAnimation a = new TranslateAnimation(getX(), getX(), getHeight(),
                     mBatteryBarLayout.getHeight());
@@ -271,17 +275,19 @@ public class BatteryBar extends RelativeLayout implements Animatable {
             mChargerLayout.startAnimation(a);
             mChargerLayout.setVisibility(View.VISIBLE);
         }
+        isAnimating = true;
     }
 
     @Override
     public void stop() {
         mChargerLayout.clearAnimation();
         mChargerLayout.setVisibility(View.GONE);
+        isAnimating = false;
     }
 
     @Override
     public boolean isRunning() {
-        return mChargingLevel != -1;
+        return isAnimating;
     }
 
 }

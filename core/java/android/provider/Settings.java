@@ -2657,7 +2657,7 @@ public final class Settings {
          * 
          * @hide
          */
-        public static final String LOCKSCREEN_CUSTOM_SMS_INTENT = "lockscreen_custom_sms_intent";
+        /** public static final String LOCKSCREEN_CUSTOM_SMS_INTENT = "lockscreen_custom_sms_intent";
         
         /**
          * launch a custom app
@@ -2679,6 +2679,61 @@ public final class Settings {
          * @hide
          */
         public static final String LOCKSCREEN_CUSTOM_APP_INTENT_3 = "lockscreen_custom_app_intent_3";
+        
+        /**
+         * launch a custom app
+         * 
+         * @hide
+         */
+        public static final String LOCKSCREEN_CUSTOM_APP_INTENT_5 = "lockscreen_custom_app_intent_5";
+        
+        /**
+         * launch a custom app
+         * 
+         * @hide
+         */
+        public static final String LOCKSCREEN_CUSTOM_APP_INTENT_6 = "lockscreen_custom_app_intent_6";
+                     
+        /**
+         * launch a custom app
+         * 
+         * @hide
+         */
+        public static final String LOCKSCREEN_CUSTOM_APP_INTENT_7 = "lockscreen_custom_app_intent_7";
+        
+        public static final String LOCKSCREEN_STYLE_MULITWAVEVIEW_3WAY =
+                "lockscreen_style_multiwaveview_3way";
+        
+        public static final String LOCKSCREEN_STYLE_MULITWAVEVIEW_4WAY =
+                "lockscreen_style_multiwaveview_4way";
+        
+        public static final String LOCKSCREEN_STYLE_MULITWAVEVIEW_8WAY =
+                "lockscreen_style_multiwaveview_8way";
+
+        /**
+         * Toggle to force multiwaveview lockscreen silent mode toggle even if
+         * we have a camera.
+         * 
+         * @hide
+         */
+        public static final String LOCKSCREEN_STYLE_MULTIWAVEVIEW_SILENTMODE =
+                "lockscreen_style_multiwaveview_silentmode";
+
+        /**
+         * Lockscreen custom app array 1 [0] - Left 2 [1] - Right 3 [2] - Top
+         * 
+         * @hide
+         */
+        public static final String[] LOCKSCREEN_CUSTOM_APP_ACTIVITIES = new String[] {
+                "lockscreen_custom_app_intent_0",
+                "lockscreen_custom_app_intent_1",
+                "lockscreen_custom_app_intent_2",
+                "lockscreen_custom_app_intent_3",
+                "lockscreen_custom_app_intent_4",
+                "lockscreen_custom_app_intent_5",
+                "lockscreen_custom_app_intent_6",
+                "lockscreen_custom_app_intent_7",
+        };
 
         /**
          * Whether volume up/down can be long pressed to skip tracks

@@ -1844,6 +1844,12 @@
        *** touch based lock / unlock ***
                                           --> <skip />
 
+    <!-- Default custom app intent -->
+    <string name="lockscreen_custom_app_default">intent:#Intent;action=android.intent.action.MAIN;component=com.android.mms/.ui.ConversationList;end</string>
+    <string name="lockscreen_custom_app_default_2">intent:#Intent;action=android.intent.action.MAIN;component=com.android.browser/.BrowserActivity;end</string>
+    <string name="lockscreen_custom_app_default_3">intent:#Intent;action=android.intent.action.MAIN;component=com.android.mms/.ui.ConversationList;end</string>
+    <string name="lockscreen_custom_app_default_4">intent:#Intent;action=android.intent.action.MAIN;component=com.android.browser/.BrowserActivity;end</string>
+
     <!-- On the keyguard screen, it shows the carrier the phone is connected to.  This is displayed if the phone is not connected to a carrier.-->
     <string name="lockscreen_carrier_default">No service.</string>
 

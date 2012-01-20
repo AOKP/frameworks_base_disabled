@@ -63,10 +63,6 @@ public class BatteryBar extends RelativeLayout implements Animatable {
                     Settings.System.getUriFor(Settings.System.STATUSBAR_BATTERY_BAR_COLOR), false,
                     this);
             resolver.registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.STATUSBAR_BATTERY_BAR_THICKNESS),
-                    false,
-                    this);
-            resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.STATUSBAR_BATTERY_BAR_ANIMATE),
                     false,
                     this);
@@ -208,30 +204,6 @@ public class BatteryBar extends RelativeLayout implements Animatable {
 
         mBatteryBar.setBackgroundColor(color);
         mCharger.setBackgroundColor(color);
-
-        // set heights
-        DisplayMetrics metrics = getContext().getResources().getDisplayMetrics();
-        float dp = (float) Settings.System.getInt(getContext().getContentResolver(),
-                Settings.System.STATUSBAR_BATTERY_BAR_THICKNESS, 1);
-        int pixels = (int) (metrics.density * dp + 0.5f);
-
-        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) mBatteryBarLayout
-                .getLayoutParams();
-
-        if (vertical)
-            params.width = pixels;
-        else
-            params.height = pixels;
-        mBatteryBarLayout.setLayoutParams(params);
-
-        params = (RelativeLayout.LayoutParams) mChargerLayout
-                .getLayoutParams();
-
-        if (vertical)
-            params.width = pixels;
-        else
-            params.height = pixels;
-        mChargerLayout.setLayoutParams(params);
     }
 
     private void setProgress(int n) {

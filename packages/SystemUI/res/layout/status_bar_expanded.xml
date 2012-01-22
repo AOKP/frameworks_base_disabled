@@ -91,11 +91,14 @@
         </RelativeLayout>
     </LinearLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:background="@drawable/status_bar_hr"
-        />
+	<View
+		android:layout_width="match_parent"
+		android:layout_height="2dp"
+		android:background="@drawable/status_bar_hr" />
+    
+    <include layout="@layout/quick_toggles" 
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
     <FrameLayout
         android:layout_width="match_parent" 

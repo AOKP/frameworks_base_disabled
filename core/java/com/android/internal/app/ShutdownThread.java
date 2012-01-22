@@ -488,3 +488,4 @@ public final class ShutdownThread extends Thread {
         Power.shutdown();
     }
 }
+

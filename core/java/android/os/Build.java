@@ -57,6 +57,9 @@ public class Build {
 
     /** The system bootloader version number. */
     public static final String BOOTLOADER = getString("ro.bootloader");
+    
+    /** The mod version number. */
+    public static final String MODVERSION = getString("ro.modversion");
 
     /**
      * The radio firmware version number.

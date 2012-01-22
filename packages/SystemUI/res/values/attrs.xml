@@ -32,5 +32,9 @@
     <declare-styleable name="NotificationRowLayout">
         <attr name="rowHeight" format="dimension" />
     </declare-styleable>
+	<declare-styleable name="Toggle">
+		<attr name="labelText" format="reference" />
+		<attr name="labelImage" format="reference" />
+	</declare-styleable>
 </resources>
 

@@ -29,6 +29,7 @@
     <FrameLayout android:id="@+id/rot0"
         android:layout_height="match_parent"
         android:layout_width="match_parent"
+        android:visibility="gone" 
         >
 
         <LinearLayout
@@ -43,12 +44,26 @@
 
             <!-- navigation controls -->
             <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:visibility="gone"
+                />
+			<com.android.systemui.statusbar.policy.KeyButtonView android:id="@+id/menu_left"
                 android:layout_width="40dp"
                 android:layout_height="match_parent"
+                android:src="@drawable/ic_sysbar_menu"
+                systemui:keyCode="82"
                 android:layout_weight="0"
+                android:contentDescription="@string/accessibility_menu"
+                systemui:glowBackground="@drawable/ic_sysbar_highlight" />
+            <View 
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
                 android:visibility="invisible"
-                />
-            <com.android.systemui.statusbar.policy.KeyButtonView android:id="@+id/back"
+                />    
+            <com.android.systemui.statusbar.policy.buttons.BackKeyWithKillButtonView android:id="@+id/back"
                 android:layout_width="80dp"
                 android:layout_height="match_parent"
                 android:src="@drawable/ic_sysbar_back"
@@ -58,6 +73,7 @@
                 android:contentDescription="@string/accessibility_back"
                 />
             <View 
+            	android:id="@+id/back_padding"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -87,16 +103,27 @@
                 systemui:glowBackground="@drawable/ic_sysbar_highlight"
                 android:contentDescription="@string/accessibility_recent"
                 />
+            <View 
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:visibility="invisible"
+                />
             <com.android.systemui.statusbar.policy.KeyButtonView android:id="@+id/menu"
                 android:layout_width="40dp"
                 android:layout_height="match_parent"
                 android:src="@drawable/ic_sysbar_menu"
                 systemui:keyCode="82"
                 android:layout_weight="0"
-                android:visibility="invisible"
                 android:contentDescription="@string/accessibility_menu"
                 systemui:glowBackground="@drawable/ic_sysbar_highlight"
                 />
+             <View 
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:visibility="gone"
+                />  
         </LinearLayout>
 
         <!-- lights out layout to match exactly -->
@@ -151,6 +178,8 @@
             android:clickable="true"
             />
     </FrameLayout>
+    
+    
 
     <FrameLayout android:id="@+id/rot90"
         android:layout_height="match_parent"
@@ -210,7 +239,7 @@
                 android:layout_weight="1"
                 android:visibility="invisible"
                 />
-            <com.android.systemui.statusbar.policy.KeyButtonView android:id="@+id/back"
+            <com.android.systemui.statusbar.policy.buttons.BackKeyWithKillButtonView android:id="@+id/back"
                 android:layout_height="80dp"
                 android:layout_width="match_parent"
                 android:src="@drawable/ic_sysbar_back_land"
@@ -219,12 +248,21 @@
                 android:contentDescription="@string/accessibility_back"
                 systemui:glowBackground="@drawable/ic_sysbar_highlight_land"
                 />
-            <View
+             <com.android.systemui.statusbar.policy.KeyButtonView android:id="@+id/menu_left"
                 android:layout_height="40dp"
                 android:layout_width="match_parent"
+                android:src="@drawable/ic_sysbar_menu_land"
+                systemui:keyCode="82"
                 android:layout_weight="0"
                 android:visibility="invisible"
-                />
+                android:contentDescription="@string/accessibility_menu"
+                systemui:glowBackground="@drawable/ic_sysbar_highlight_land" />
+<!--             <View -->
+<!--                 android:layout_height="40dp" -->
+<!--                 android:layout_width="match_parent" -->
+<!--                 android:layout_weight="0" -->
+<!--                 android:visibility="invisible" -->
+<!--                 /> -->
         </LinearLayout>
 
         <!-- lights out layout to match exactly -->
@@ -279,7 +317,7 @@
             android:clickable="true"
             />
     </FrameLayout>
-
+    
     <!-- not used -->
     <View android:id="@+id/rot270"
         android:layout_height="match_parent"

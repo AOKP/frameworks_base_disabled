@@ -18,7 +18,9 @@ package com.android.systemui.statusbar.policy;
 
 import android.content.ContentResolver;
 import android.content.Context;
+import android.database.ContentObserver;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.provider.Settings;
@@ -37,6 +39,14 @@ public class AutoRotateController implements CompoundButton.OnCheckedChangeListe
     private CompoundButton mCheckBox;
 
     private boolean mAutoRotation;
+    private boolean mSystemUpdate;
+
+    private ContentObserver mAccelerometerRotationObserver = new ContentObserver(new Handler()) {
+        @Override
+        public void onChange(boolean selfChange) {
+            updateAccelerometerRotationCheckbox();
+        }
+    };
 
     public AutoRotateController(Context context, CompoundButton checkbox) {
         mContext = context;
@@ -47,9 +57,20 @@ public class AutoRotateController implements CompoundButton.OnCheckedChangeListe
     }
 
     public void onCheckedChanged(CompoundButton view, boolean checked) {
+        if (mSystemUpdate)
+            return;
+
         if (checked != mAutoRotation) {
             setAutoRotation(checked);
         }
+    }
+
+    private void updateAccelerometerRotationCheckbox() {
+        mSystemUpdate = true;
+        mCheckBox.setChecked(Settings.System.getInt(
+                mContext.getContentResolver(),
+                Settings.System.ACCELEROMETER_ROTATION, 0) != 0);
+        mSystemUpdate = false;
     }
 
     private boolean getAutoRotation() {
@@ -60,19 +81,19 @@ public class AutoRotateController implements CompoundButton.OnCheckedChangeListe
     private void setAutoRotation(final boolean autorotate) {
         mAutoRotation = autorotate;
         AsyncTask.execute(new Runnable() {
-                public void run() {
-                    try {
-                        IWindowManager wm = IWindowManager.Stub.asInterface(
-                                ServiceManager.getService(Context.WINDOW_SERVICE));
-                        if (autorotate) {
-                            wm.thawRotation();
-                        } else {
-                            wm.freezeRotation(-1);
-                        }
-                    } catch (RemoteException exc) {
-                        Log.w(TAG, "Unable to save auto-rotate setting");
+            public void run() {
+                try {
+                    IWindowManager wm = IWindowManager.Stub.asInterface(
+                            ServiceManager.getService(Context.WINDOW_SERVICE));
+                    if (autorotate) {
+                        wm.thawRotation();
+                    } else {
+                        wm.freezeRotation(-1);
                     }
+                } catch (RemoteException exc) {
+                    Log.w(TAG, "Unable to save auto-rotate setting");
                 }
-            });
+            }
+        });
     }
 }

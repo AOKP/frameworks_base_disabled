@@ -10,6 +10,7 @@
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.GET_TASKS" />
     <uses-permission android:name="android.permission.MANAGE_USB" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:persistent="true"
@@ -117,6 +118,11 @@
                 <category android:name="android.intent.category.DEFAULT" />
 <!--                <category android:name="android.intent.category.DREAM" />-->
             </intent-filter>
+        </activity>
+         <activity
+            android:name="com.android.systemui.statusbar.policy.toggles.Torch"
+            android:theme="@android:style/Theme.Holo.Panel"
+            android:excludeFromRecents="true">
         </activity>
     </application>
 </manifest>

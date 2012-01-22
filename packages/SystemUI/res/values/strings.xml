@@ -108,6 +108,9 @@
 
     <!-- Label in system panel saying the device will use the orientation sensor to rotate [CHAR LIMIT=30] -->
     <string name="status_bar_settings_auto_rotation">Auto-rotate screen</string>
+    
+    <!-- Label in drop down to identify brightness slider -->
+    <string name="brightness_label">Brightness</string>
 
     <!-- Abbreviation / label for mute brightness mode button. Should be all caps. [CHAR LIMIT=6] -->
     <string name="status_bar_settings_mute_label">MUTE</string>
@@ -377,5 +380,21 @@
 
     <!-- Content description of the clear button in the notification panel for accessibility (not shown on the screen). [CHAR LIMIT=NONE] -->
     <string name="accessibility_clear_all">Clear all notifications.</string>
+    
+    <string name="battery_test">99</string>
+    <string name="status_bar_settings_gps_button">GPS</string>
+    <string name="toggle_bt">BT</string>
+    <string name="toggle_data">Data</string>
+    <string name="toggle_lte">LTE</string>
+    <string name="toggle_rotate">Rotate</string>
+    <string name="toggle_wifi">Wi-Fi</string>
+    <string name="toggle_gps">GPS</string>
+    <string name="toggle_2g">2G</string>
+    <string name="toggle_wifiap">Wi-Fi AP</string>
+    <string name="toggle_airplane">Airplane</string>
+    <string name="toggle_vibrate">Vibrate</string>
+    <string name="toggle_silent">Silent</string>
+    <string name="toggle_torch">Torch</string>
+    <string name="toggle_sync">Sync</string>
 </resources>
 

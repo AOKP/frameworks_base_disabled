@@ -24,6 +24,13 @@
          all of the currently visible notifications. [CHAR LIMIT=10]-->
     <string name="status_bar_clear_all_button">Clear</string>
 
+    <!-- Title for the pseudo-notification shown when notifications are disabled (do-not-disturb
+         mode) -->
+    <string name="notifications_off_title">Notifications off</string>
+
+    <!-- Content text for do-not-disturb mode notification -->
+    <string name="notifications_off_text">Tap here to turn notifications back on.</string>
+
     <!-- The text for the button in the notification window-shade that turns
          on do not disturb mode, where notifications no longer show their ticker,
          no sound plays, and no icons are visible.  The windowshade continues to show
@@ -233,6 +240,10 @@
     <string name="accessibility_phone_two_bars">Phone two bars.</string>
     <!-- Content description of the phone signal when it is three bars for accessibility (not shown on the screen). [CHAR LIMIT=NONE] -->
     <string name="accessibility_phone_three_bars">Phone three bars.</string>
+    <!-- Content description of the phone signal when it is four bars for accessibility (not shown on the screen). [CHAR LIMIT=NONE] -->
+    <string name="accessibility_phone_four_bars">Phone four bars.</string>
+    <!-- Content description of the phone signal when it is five bars for accessibility (not shown on the screen). [CHAR LIMIT=NONE] -->
+    <string name="accessibility_phone_five_bars">Phone five bars.</string>
     <!-- Content description of the phone signal when it is full for accessibility (not shown on the screen). [CHAR LIMIT=NONE] -->
     <string name="accessibility_phone_signal_full">Phone signal full.</string>
 
@@ -244,6 +255,10 @@
     <string name="accessibility_data_two_bars">Data two bars.</string>
     <!-- Content description of the data signal when it is three bars for accessibility (not shown on the screen). [CHAR LIMIT=NONE] -->
     <string name="accessibility_data_three_bars">Data three bars.</string>
+    <!-- Content description of the data signal when it is four bars for accessibility (not shown on the screen). [CHAR LIMIT=NONE] -->
+    <string name="accessibility_data_four_bars">Data four bars.</string>
+    <!-- Content description of the data signal when it is five bars for accessibility (not shown on the screen). [CHAR LIMIT=NONE] -->
+    <string name="accessibility_data_five_bars">Data five bars.</string>
     <!-- Content description of the data signal when it is full for accessibility (not shown on the screen). [CHAR LIMIT=NONE] -->
     <string name="accessibility_data_signal_full">Data signal full.</string>
 
@@ -363,3 +378,4 @@
     <!-- Content description of the clear button in the notification panel for accessibility (not shown on the screen). [CHAR LIMIT=NONE] -->
     <string name="accessibility_clear_all">Clear all notifications.</string>
 </resources>
+

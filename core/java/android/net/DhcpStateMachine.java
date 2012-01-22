@@ -349,20 +349,22 @@ public class DhcpStateMachine extends StateMachine {
             if (DBG) Log.d(TAG, "DHCP succeeded on " + mInterfaceName);
            long leaseDuration = dhcpInfoInternal.leaseDuration; //int to long conversion
 
-           //Sanity check for renewal
-           //TODO: would be good to notify the user that his network configuration is
-           //bad and that the device cannot renew below MIN_RENEWAL_TIME_SECS
-           if (leaseDuration < MIN_RENEWAL_TIME_SECS) {
-               leaseDuration = MIN_RENEWAL_TIME_SECS;
+           //To handle the leaseDuration Forever i.e 0xFFFFFFFF (in signed it is -1)
+           if(leaseDuration >= 0){
+               //Sanity check for renewal
+               //TODO: would be good to notify the user that his network configuration is
+               //bad and that the device cannot renew below MIN_RENEWAL_TIME_SECS
+               if (leaseDuration < MIN_RENEWAL_TIME_SECS) {
+                   leaseDuration = MIN_RENEWAL_TIME_SECS;
+               }
+               //Do it a bit earlier than half the lease duration time
+               //to beat the native DHCP client and avoid extra packets
+               //48% for one hour lease time = 29 minutes
+               mAlarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                      SystemClock.elapsedRealtime() +
+                      leaseDuration * 480, //in milliseconds
+                      mDhcpRenewalIntent);
            }
-           //Do it a bit earlier than half the lease duration time
-           //to beat the native DHCP client and avoid extra packets
-           //48% for one hour lease time = 29 minutes
-           mAlarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                   SystemClock.elapsedRealtime() +
-                   leaseDuration * 480, //in milliseconds
-                   mDhcpRenewalIntent);
-
             mController.obtainMessage(CMD_POST_DHCP_ACTION, DHCP_SUCCESS, 0, dhcpInfoInternal)
                 .sendToTarget();
         } else {

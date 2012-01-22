@@ -22,3 +22,4 @@ LOCAL_SHARED_LIBRARIES:= \
 LOCAL_MODULE:= libcameraservice
 
 include $(BUILD_SHARED_LIBRARY)
+

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 The Android Open Source Project
+ * Copyright (C) 2011 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
- 
 package com.android.internal.app;
 
 import android.app.ActivityManagerNative;
@@ -30,6 +29,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Handler;
+import android.os.IBinder;
+import android.os.IPowerManager;
 import android.os.Power;
 import android.os.PowerManager;
 import android.os.RemoteException;
@@ -43,12 +44,14 @@ import android.os.storage.IMountShutdownObserver;
 import com.android.internal.telephony.ITelephony;
 import android.util.Log;
 import android.view.WindowManager;
+import android.view.KeyEvent;
 
 public final class ShutdownThread extends Thread {
     // constants
     private static final String TAG = "ShutdownThread";
     private static final int MAX_NUM_PHONE_STATE_READS = 16;
     private static final int PHONE_STATE_POLL_SLEEP_MSEC = 500;
+
     // maximum time we wait for the shutdown broadcast before going on.
     private static final int MAX_BROADCAST_TIME = 10*1000;
     private static final int MAX_SHUTDOWN_WAIT_TIME = 20*1000;
@@ -60,7 +63,9 @@ public final class ShutdownThread extends Thread {
     private static Object sIsStartedGuard = new Object();
     private static boolean sIsStarted = false;
     
+    // reboot flags
     private static boolean mReboot;
+    private static boolean mRestart;
     private static String mRebootReason;
 
     // Provides shutdown assurance in case the system_server is killed
@@ -104,22 +109,65 @@ public final class ShutdownThread extends Thread {
                 ? com.android.internal.R.string.shutdown_confirm_question
                 : com.android.internal.R.string.shutdown_confirm;
 
-        Log.d(TAG, "Notifying thread to start shutdown longPressBehavior=" + longPressBehavior);
-
         if (confirm) {
-            final CloseDialogReceiver closer = new CloseDialogReceiver(context);
-            final AlertDialog dialog = new AlertDialog.Builder(context)
-                    .setTitle(com.android.internal.R.string.power_off)
-                    .setMessage(resourceId)
-                    .setPositiveButton(com.android.internal.R.string.yes, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            beginShutdownSequence(context);
-                        }
-                    })
-                    .setNegativeButton(com.android.internal.R.string.no, null)
-                    .create();
-            closer.dialog = dialog;
-            dialog.setOnDismissListener(closer);
+            final AlertDialog dialog;
+            // Set different dialog message based on whether or not we're rebooting
+            if (mReboot) {
+                dialog = new AlertDialog.Builder(context)
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setTitle(com.android.internal.R.string.reboot_system)
+                        .setSingleChoiceItems(com.android.internal.R.array.shutdown_reboot_options, 0, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                if (which < 0)
+                                    return;
+
+                                String actions[] = context.getResources().getStringArray(com.android.internal.R.array.shutdown_reboot_actions);
+
+                                if (actions != null && which < actions.length)
+                                    mRebootReason = actions[which];
+                            }
+                        })
+                        .setPositiveButton(com.android.internal.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                mReboot = true;
+                                if (mRebootReason != null && mRebootReason.equals("restart")) {
+                                    mRestart = true;
+                                }
+                                beginShutdownSequence(context);
+                            }
+                        })
+                        .setNegativeButton(com.android.internal.R.string.no, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                mReboot = false;
+                                dialog.cancel();
+                            }
+                        })
+                        .create();
+                        dialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+                            public boolean onKey (DialogInterface dialog, int keyCode, KeyEvent event) {
+                                if (keyCode == KeyEvent.KEYCODE_BACK) {
+                                    mReboot = false;
+                                    dialog.cancel();
+                                }
+                                return true;
+                            }
+                        });
+                // Initialize to the first reason
+                String actions[] = context.getResources().getStringArray(com.android.internal.R.array.shutdown_reboot_actions);
+                mRebootReason = actions[0];
+            } else {
+                dialog = new AlertDialog.Builder(context)
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setTitle(com.android.internal.R.string.power_off)
+                        .setMessage(com.android.internal.R.string.shutdown_confirm)
+                        .setPositiveButton(com.android.internal.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                beginShutdownSequence(context);
+                            }
+                        })
+                        .setNegativeButton(com.android.internal.R.string.no, null)
+                        .create();
+            }
             dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG);
             dialog.show();
         } else {
@@ -172,17 +220,25 @@ public final class ShutdownThread extends Thread {
             sIsStarted = true;
         }
 
-        // throw up an indeterminate system dialog to indicate radio is
-        // shutting down.
+        // throw up an indeterminate system dialog while services shut down
         ProgressDialog pd = new ProgressDialog(context);
-        pd.setTitle(context.getText(com.android.internal.R.string.power_off));
-        pd.setMessage(context.getText(com.android.internal.R.string.shutdown_progress));
+        if (mReboot) {
+            if (mRestart) {
+                pd.setTitle(context.getText(com.android.internal.R.string.restart_title));
+                pd.setMessage(context.getText(com.android.internal.R.string.restart_progress));
+            } else {
+                pd.setTitle(context.getText(com.android.internal.R.string.reboot_system));
+                pd.setMessage(context.getText(com.android.internal.R.string.reboot_progress));
+            }
+        } else {
+            pd.setTitle(context.getText(com.android.internal.R.string.power_off));
+            pd.setMessage(context.getText(com.android.internal.R.string.shutdown_progress));
+        }
         pd.setIndeterminate(true);
         pd.setCancelable(false);
         pd.getWindow().setType(WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG);
 
         pd.show();
-
         sInstance.mContext = context;
         sInstance.mPowerManager = (PowerManager)context.getSystemService(Context.POWER_SERVICE);
 
@@ -198,7 +254,7 @@ public final class ShutdownThread extends Thread {
             sInstance.mCpuWakeLock = null;
         }
 
-        // also make sure the screen stays on for better user experience
+        // make sure the screen stays on for better user experience
         sInstance.mScreenWakeLock = null;
         if (sInstance.mPowerManager.isScreenOn()) {
             try {
@@ -240,34 +296,36 @@ public final class ShutdownThread extends Thread {
             }
         };
 
-        /*
-         * Write a system property in case the system_server reboots before we
-         * get to the actual hardware restart. If that happens, we'll retry at
-         * the beginning of the SystemServer startup.
-         */
-        {
-            String reason = (mReboot ? "1" : "0") + (mRebootReason != null ? mRebootReason : "");
-            SystemProperties.set(SHUTDOWN_ACTION_PROPERTY, reason);
-        }
+        if (!mRestart) {
+            /*
+             * Write a system property in case the system_server reboots before we
+             * get to the actual hardware restart. If that happens, we'll retry at
+             * the beginning of the SystemServer startup.
+             */
+            {
+                String reason = (mReboot ? "1" : "0") + (mRebootReason != null ? mRebootReason : "");
+                SystemProperties.set(SHUTDOWN_ACTION_PROPERTY, reason);
+            }
 
-        Log.i(TAG, "Sending shutdown broadcast...");
-        
-        // First send the high-level shut down broadcast.
-        mActionDone = false;
-        mContext.sendOrderedBroadcast(new Intent(Intent.ACTION_SHUTDOWN), null,
-                br, mHandler, 0, null, null);
-        
-        final long endTime = SystemClock.elapsedRealtime() + MAX_BROADCAST_TIME;
-        synchronized (mActionDoneSync) {
-            while (!mActionDone) {
-                long delay = endTime - SystemClock.elapsedRealtime();
-                if (delay <= 0) {
-                    Log.w(TAG, "Shutdown broadcast timed out");
-                    break;
-                }
-                try {
-                    mActionDoneSync.wait(delay);
-                } catch (InterruptedException e) {
+            Log.i(TAG, "Sending shutdown broadcast...");
+
+            // First send the high-level shut down broadcast.
+            mActionDone = false;
+            mContext.sendOrderedBroadcast(new Intent(Intent.ACTION_SHUTDOWN), null,
+                    br, mHandler, 0, null, null);
+
+            final long endTime = SystemClock.elapsedRealtime() + MAX_BROADCAST_TIME;
+            synchronized (mActionDoneSync) {
+                while (!mActionDone) {
+                    long delay = endTime - SystemClock.elapsedRealtime();
+                    if (delay <= 0) {
+                        Log.w(TAG, "Shutdown broadcast timed out");
+                        break;
+                    }
+                    try {
+                        mActionDoneSync.wait(delay);
+                    } catch (InterruptedException e) {
+                    }
                 }
             }
         }
@@ -378,7 +436,6 @@ public final class ShutdownThread extends Thread {
                 }
             }
         }
-
         rebootOrShutdown(mReboot, mRebootReason);
     }
 
@@ -392,6 +449,19 @@ public final class ShutdownThread extends Thread {
     public static void rebootOrShutdown(boolean reboot, String reason) {
         if (reboot) {
             Log.i(TAG, "Rebooting, reason: " + reason);
+            // check if restart was requested
+            if (mRestart) {
+                // crash system server to restart framework
+                try {
+                    IBinder b = ServiceManager.getService(Context.POWER_SERVICE);
+                    IPowerManager pm = IPowerManager.Stub.asInterface(b);
+                    pm.crash("Crashed framework, now restarting");
+                } catch (RemoteException e) {
+                    Log.e(TAG, "Restart failed, will attempt reboot instead", e);
+                    reason = null;
+                }
+            }
+            // normal reboot
             try {
                 Power.reboot(reason);
             } catch (Exception e) {
@@ -404,7 +474,7 @@ public final class ShutdownThread extends Thread {
                 vibrator.vibrate(SHUTDOWN_VIBRATE_MS);
             } catch (Exception e) {
                 // Failure to vibrate shouldn't interrupt shutdown.  Just log it.
-                Log.w(TAG, "Failed to vibrate during shutdown.", e);
+                Log.w(TAG, "Failed to vibrate during shutdown", e);
             }
 
             // vibrator is asynchronous so we need to wait to avoid shutting down too soon.
@@ -413,7 +483,6 @@ public final class ShutdownThread extends Thread {
             } catch (InterruptedException unused) {
             }
         }
-
         // Shutdown power
         Log.i(TAG, "Performing low-level shutdown...");
         Power.shutdown();

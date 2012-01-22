@@ -286,12 +286,47 @@
     <string name="screen_lock">Screen lock</string>
     <!-- Button to turn off the phone, within the Phone Options dialog -->
     <string name="power_off">Power off</string>
+
     <!-- Spoken description for ringer silent option. [CHAR LIMIT=NONE] -->
     <string name="silent_mode_silent">Ringer off</string>
     <!-- Spoken description for ringer vibrate option. [CHAR LIMIT=NONE] -->
     <string name="silent_mode_vibrate">Ringer vibrate</string>
     <!-- Spoken description for ringer normal option. [CHAR LIMIT=NONE] -->
     <string name="silent_mode_ring">Ringer on</string>
+
+    <!-- Restart Progress Dialog message. Shown if the user chooses to restart option -->
+    <string name="restart_progress">Restarting\u2026</string>
+    <!-- Restart Progress Dialog title. Shown if the user chooses to restart the tablet -->
+    <string name="restart_title" product="tablet">Your tablet will restart.</string>
+    <!-- Restart Progress Dialog title. Shown if the user chooses to restart the phone -->
+    <string name="restart_title" product="default">Your phone will restart.</string>
+
+    <!-- Button to reboot the phone, within the Phone Options dialog -->
+    <string name="reboot_system" product="tablet">Reboot tablet</string>
+    <string name="reboot_system" product="default">Reboot phone</string>
+
+    <!-- label for item that screenshots in phone options dialog -->
+    <string name="global_action_screenshot">Screenshot</string>
+
+    <!-- Button to reboot the phone, within the Reboot Options dialog -->
+    <string name="reboot_reboot">Reboot</string>
+    <!-- Button to restart the phone very quickly, within the Reboot Options dialog -->
+    <string name="reboot_restart">Restart</string>
+    <!-- Button to reboot the phone into recovery, within the Reboot Options dialog -->
+    <string name="reboot_recovery">Recovery</string>
+    <!-- Button to reboot the phone into bootloader, within the Reboot Options dialog -->
+    <string name="reboot_bootloader">Bootloader</string>
+    <!-- Button to reboot the phone into bootmenu, within the Reboot Options dialog -->
+    <string name="reboot_bootmenu">Bootmenu</string>
+    <!-- Button to reboot the phone into fastboot, within the Reboot Options dialog -->
+    <string name="reboot_fastboot">Fastboot</string>
+    <!-- Button to reboot the phone into download, within the Reboot Options dialog -->
+    <string name="reboot_download">Download</string>
+
+    <!-- Reboot Progress Dialog. This is shown if the user chooses to reboot the phone. -->
+    <string name="reboot_progress">Rebooting\u2026</string>
+    <!-- Reboot Confirmation Dialog.  When the user chooses to reboot the phone, there will be a confirmation dialog.  This is the message. -->
+    <string name="reboot_confirm">Your phone will reboot.</string>
 
     <!-- Shutdown Progress Dialog. This is shown if the user chooses to power off the phone. -->
     <string name="shutdown_progress">Shutting down\u2026</string>
@@ -330,6 +365,9 @@
 
     <!-- label for item that turns off power in phone options dialog -->
     <string name="global_action_power_off">Power off</string>
+
+    <!-- label for item that reboots the phone in phone options dialog -->
+    <string name="global_action_reboot">Reboot</string>
 
     <!-- label for item that enables silent mode in phone options dialog -->
     <string name="global_action_toggle_silent_mode">Silent mode</string>
@@ -2874,9 +2912,9 @@
     <string name="extmedia_format_button_format">Format</string>
 
     <!-- Title of notification shown when ADB is actively connected to the phone. -->
-    <string name="adb_active_notification_title">USB debugging connected</string>
+    <string name="adb_active_notification_title">Android debugging enabled</string>
     <!-- Message of notification shown when ADB is actively connected to the phone. -->
-    <string name="adb_active_notification_message">Select to disable USB debugging.</string>
+    <string name="adb_active_notification_message">Select to disable debugging.</string>
 
     <!-- Used to replace %s in urls retreived from the signin server with locales.  For Some        -->
     <!-- devices we don't support all the locales we ship to and need to replace the '%s' with a    -->
@@ -3385,5 +3423,8 @@
 
     <!-- STK setup Call -->
     <string name="SetupCallDefault">Accept Call?</string>
+
+    <!--Application killed toast -->
+    <string name="app_killed_message">Application killed</string>
 
 </resources>

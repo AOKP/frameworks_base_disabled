@@ -287,6 +287,8 @@ public class PhoneStatusBar extends StatusBar {
 
         // Lastly, call to the icon policy to install/update all the icons.
         mIconPolicy = new PhoneStatusBarPolicy(mContext);
+
+        Settings.System.putInt(mContext.getContentResolver(), Settings.System.IS_TABLET, 0);
     }
 
     // ================================================================================
@@ -419,7 +421,6 @@ public class PhoneStatusBar extends StatusBar {
         filter.addAction(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
         filter.addAction(Intent.ACTION_SCREEN_OFF);
         context.registerReceiver(mBroadcastReceiver, filter);
-
 	    mPowerWidget.setupWidget();
 
         SettingsObserver observer = new SettingsObserver(new Handler());
@@ -429,7 +430,7 @@ public class PhoneStatusBar extends StatusBar {
         // restore state
         mQuickToggles.setVisibility(Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.STATUSBAR_TOGGLES_VISIBILITY, 0) == 1 ? View.VISIBLE : View.GONE);
-
+        mQuickToggles.setBar(this);
         return sb;
     }
 
@@ -2528,6 +2529,10 @@ public class PhoneStatusBar extends StatusBar {
             vibrate();
         }
     };
+    
+    public boolean isTablet() {
+        return false;
+    }
 
     public class TouchOutsideListener implements View.OnTouchListener {
         private int mMsg;

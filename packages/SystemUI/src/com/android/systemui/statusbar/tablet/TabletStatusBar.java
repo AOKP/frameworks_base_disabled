@@ -89,6 +89,7 @@ import com.android.systemui.statusbar.policy.CompatModeButton;
 import com.android.systemui.statusbar.policy.LocationController;
 import com.android.systemui.statusbar.policy.NetworkController;
 import com.android.systemui.statusbar.policy.Prefs;
+import com.android.systemui.statusbar.policy.toggles.TogglesView;
 
 public class TabletStatusBar extends StatusBar implements
         HeightReceiver.OnBarHeightChangedListener,
@@ -198,6 +199,8 @@ public class TabletStatusBar extends StatusBar implements
     private boolean mPanelSlightlyVisible;
 
     public Context getContext() { return mContext; }
+    
+    TogglesView mQuickToggles;
 
     protected void addPanelWindows() {
         final Context context = mContext;
@@ -216,6 +219,10 @@ public class TabletStatusBar extends StatusBar implements
 //        mBatteryController.addLabelView(
 //                (TextView)mNotificationPanel.findViewById(R.id.battery_text));
 
+        mQuickToggles = (TogglesView) mNotificationPanel.findViewById(R.id.quick_toggles);
+        mQuickToggles.setVisibility(View.VISIBLE);
+        mQuickToggles.setBar(this);
+        
         // Bt
         mBluetoothController.addIconView(
                 (ImageView)mNotificationPanel.findViewById(R.id.bluetooth));
@@ -402,6 +409,8 @@ public class TabletStatusBar extends StatusBar implements
     @Override
     public void start() {
         super.start(); // will add the main bar view
+
+        Settings.System.putInt(mContext.getContentResolver(), Settings.System.IS_TABLET, 1);
     }
 
     @Override
@@ -1234,9 +1243,19 @@ public class TabletStatusBar extends StatusBar implements
             Slog.d(TAG, "Set hard keyboard status: available=" + available
                     + ", enabled=" + enabled);
         }
-        mInputMethodSwitchButton.setHardKeyboardStatus(available);
-        updateNotificationIcons();
-        mInputMethodsPanel.setHardKeyboardStatus(available, enabled);
+        if (mContext.getResources().getBoolean(R.bool.config_forcefullyDisableHardwareKeyboard)) {
+            try {
+                mBarService.setHardKeyboardEnabled(false);
+            } catch (RemoteException e) {}
+            mInputMethodSwitchButton.setHardKeyboardStatus(false);
+            updateNotificationIcons();
+            mInputMethodsPanel.setHardKeyboardStatus(false, false);
+            
+        } else {
+            mInputMethodSwitchButton.setHardKeyboardStatus(available);
+            updateNotificationIcons();
+            mInputMethodsPanel.setHardKeyboardStatus(available, enabled);
+        }
     }
 
     @Override
@@ -1917,6 +1936,10 @@ public class TabletStatusBar extends StatusBar implements
             }
             return false;
         }
+    }
+    
+    public boolean isTablet() {
+        return true;
     }
 
     public void dump(FileDescriptor fd, PrintWriter pw, String[] args) {

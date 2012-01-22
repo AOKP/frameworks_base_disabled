@@ -2518,6 +2518,13 @@ public final class Settings {
          * @hide
          */
         public static final String STATUSBAR_BATTERY_BAR_ANIMATE = "statusbar_battery_bar_animate";
+
+        /**
+         * whether the device is a tablet (set by SystemUI)
+         * 
+         * @hide
+         */
+        public static final String IS_TABLET = "is_tablet";
     }
 
     /**

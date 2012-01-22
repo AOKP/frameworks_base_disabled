@@ -16,10 +16,23 @@
 
 package com.android.server;
 
-import com.android.internal.app.IBatteryStats;
-import com.android.internal.app.ShutdownThread;
-import com.android.server.am.BatteryStatsService;
+import static android.provider.Settings.System.DIM_SCREEN;
+import static android.provider.Settings.System.SCREEN_BRIGHTNESS;
+import static android.provider.Settings.System.SCREEN_BRIGHTNESS_MODE;
+import static android.provider.Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC;
+import static android.provider.Settings.System.SCREEN_OFF_TIMEOUT;
+import static android.provider.Settings.System.STAY_ON_WHILE_PLUGGED_IN;
+import static android.provider.Settings.System.TRANSITION_ANIMATION_SCALE;
+import static android.provider.Settings.System.WINDOW_ANIMATION_SCALE;
 
+import java.io.FileDescriptor;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Observable;
+import java.util.Observer;
+
+import android.R;
 import android.app.ActivityManagerNative;
 import android.app.IActivityManager;
 import android.content.BroadcastReceiver;
@@ -51,27 +64,16 @@ import android.os.Process;
 import android.os.RemoteException;
 import android.os.SystemClock;
 import android.os.WorkSource;
-import android.provider.Settings.SettingNotFoundException;
 import android.provider.Settings;
+import android.provider.Settings.SettingNotFoundException;
 import android.util.EventLog;
 import android.util.Log;
 import android.util.Slog;
 import android.view.WindowManagerPolicy;
-import static android.provider.Settings.System.DIM_SCREEN;
-import static android.provider.Settings.System.SCREEN_BRIGHTNESS;
-import static android.provider.Settings.System.SCREEN_BRIGHTNESS_MODE;
-import static android.provider.Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC;
-import static android.provider.Settings.System.SCREEN_OFF_TIMEOUT;
-import static android.provider.Settings.System.STAY_ON_WHILE_PLUGGED_IN;
-import static android.provider.Settings.System.WINDOW_ANIMATION_SCALE;
-import static android.provider.Settings.System.TRANSITION_ANIMATION_SCALE;
 
-import java.io.FileDescriptor;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Observable;
-import java.util.Observer;
+import com.android.internal.app.IBatteryStats;
+import com.android.internal.app.ShutdownThread;
+import com.android.server.am.BatteryStatsService;
 
 public class PowerManagerService extends IPowerManager.Stub
         implements LocalPowerManager, Watchdog.Monitor {
@@ -472,12 +474,14 @@ public class PowerManagerService extends IPowerManager.Stub
                 // final float windowScale = getFloat(WINDOW_ANIMATION_SCALE, 1.0f);
                 // final float transitionScale = getFloat(TRANSITION_ANIMATION_SCALE, 1.0f);
                 mAnimationSetting = 0;
-                mAnimateCrtOn = getInt(Settings.System.CRT_ON_ANIMATION, 0) == 1;
-                mAnimateCrtOff = getInt(Settings.System.CRT_OFF_ANIMATION, 1) == 1;
-                if (mAnimateCrtOff)
-                    mAnimationSetting |= ANIM_SETTING_OFF;
-                if (mAnimateCrtOn) {
-                    mAnimationSetting |= ANIM_SETTING_ON;
+                if (mContext.getResources().getBoolean(com.android.internal.R.bool.config_enableCrtAnimations)) {
+                    mAnimateCrtOn = getInt(Settings.System.CRT_ON_ANIMATION, 0) == 1;
+                    mAnimateCrtOff = getInt(Settings.System.CRT_OFF_ANIMATION, 1) == 1;
+                    if (mAnimateCrtOff)
+                        mAnimationSetting |= ANIM_SETTING_OFF;
+                    if (mAnimateCrtOn) {
+                        mAnimationSetting |= ANIM_SETTING_ON;
+                    }
                 }
                 // if (windowScale > 0.5f) {
                 // mAnimationSetting |= ANIM_SETTING_OFF;

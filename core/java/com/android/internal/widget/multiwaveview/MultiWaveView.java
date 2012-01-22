@@ -16,6 +16,8 @@
 
 package com.android.internal.widget.multiwaveview;
 
+import java.util.ArrayList;
+
 import android.animation.Animator;
 import android.animation.Animator.AnimatorListener;
 import android.animation.AnimatorListenerAdapter;
@@ -39,8 +41,6 @@ import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityManager;
 
 import com.android.internal.R;
-
-import java.util.ArrayList;
 
 /**
  * A special widget containing a center and outer ring. Moving the center ring to the outer ring
@@ -141,6 +141,7 @@ public class MultiWaveView extends View {
     };
     private int mTargetResourceId;
     private int mTargetDescriptionsResourceId;
+    private Drawable[] mTargetDrawableArray;
     private int mDirectionDescriptionsResourceId;
 
     public MultiWaveView(Context context) {
@@ -527,6 +528,18 @@ public class MultiWaveView extends View {
         mTargetDrawables = targetDrawables;
         updateTargetPositions();
     }
+    
+    private void internalSetTargetResources(Drawable[] drawables) {
+        Resources res = getContext().getResources();
+        int count = drawables.length;
+        ArrayList<TargetDrawable> targetDrawables = new ArrayList<TargetDrawable>();
+        for (int i = 0; i < count; i++) {
+            targetDrawables.add(new TargetDrawable(res, drawables[i]));
+        }
+        mTargetDrawableArray = drawables;
+        mTargetDrawables = targetDrawables;
+        updateTargetPositions();
+    }
 
     /**
      * Loads an array of drawables from the given resourceId.
@@ -541,9 +554,22 @@ public class MultiWaveView extends View {
             internalSetTargetResources(resourceId);
         }
     }
+    
+    public void setTargetResources(Drawable[] drawables) {
+        if (mAnimatingTargets) {
+            // postpone this change until we return to the initial state
+            //mNewTargetResources = resourceId;
+        } else {
+            internalSetTargetResources(drawables);
+        }
+    }
 
     public int getTargetResourceId() {
         return mTargetResourceId;
+    }
+    
+    public Drawable[] getTargetDrawableArray() {
+        return mTargetDrawableArray;
     }
 
     /**

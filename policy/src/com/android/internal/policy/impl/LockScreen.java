@@ -274,7 +274,26 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
         public void onTrigger(View v, int target) {
             if (DBG) Log.v(TAG, "onTrigger: target = " + target);
             if (DBG) Log.v(TAG, "onTrigger: Orientation = " + mCreationOrientation);
-            doWork(target);
+            try {
+                doWork(target);
+            } catch (NullPointerException e) {
+                // default behavior
+                if (target == 0 || target == 1) { // 0 = unlock/portrait, 1 = unlock/landscape
+                    mCallback.goToUnlockScreen();
+                } else if (target == 2 || target == 3) { // 2 = alt/portrait, 3 = alt/landscape
+                    if (!mCameraDisabled) {
+                        // Start the Camera
+                        Intent intent = new Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        mContext.startActivity(intent);
+                        mCallback.goToUnlockScreen();
+                    } else {
+                        toggleRingMode();
+                        mUnlockWidgetMethods.updateResources();
+                        mCallback.pokeWakelock();
+                    }
+                }
+            }
         }
 
         public void onGrabbedStateChange(View v, int handle) {
@@ -301,8 +320,13 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
     
     private String getMappingUri(int target) {
         String uri;
+        
+        try {
         uri = Settings.System.getString(mContext.getContentResolver(),
                 Settings.System.LOCKSCREEN_CUSTOM_APP_ACTIVITIES[target]);
+        } catch (ArrayIndexOutOfBoundsException e) {
+            uri = null;
+        }
 
         if (uri == null) {
             if (target == 0) {

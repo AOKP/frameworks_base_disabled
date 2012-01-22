@@ -2773,13 +2773,6 @@ public final class Settings {
          */
         public static final String STATUSBAR_BATTERY_ICON = "statusbar_battery_icon";
 
-        /**
-         * Whether or not to animate battery
-         * 
-         * @hide
-         */
-        public static final String STATUSBAR_BATTERY_BAR_ANIMATE = "statusbar_battery_bar_animate";
-
 		/**
          * 0 = stock
          * 1 = quad

@@ -2719,25 +2719,11 @@ public final class Settings {
         public static final String STATUSBAR_BATTERY_ICON = "statusbar_battery_icon";
 
         /**
-         * Style of the status bar battery
-         * 
-         * @hide
-         */
-        public static final String STATUSBAR_BATTERY_BAR_STYLE = "statusbar_battery_bar_style";
-
-        /**
          * Whether or not to animate battery
          * 
          * @hide
          */
         public static final String STATUSBAR_BATTERY_BAR_ANIMATE = "statusbar_battery_bar_animate";
-
-        /**
-         * Thickness of the status bar battery
-         * 
-         * @hide
-         */
-        public static final String STATUSBAR_BATTERY_BAR_THICKNESS = "statusbar_battery_bar_thickness";
 
 		/**
          * 0 = stock

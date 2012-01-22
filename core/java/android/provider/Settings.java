@@ -2718,6 +2718,27 @@ public final class Settings {
          */
         public static final String STATUSBAR_BATTERY_ICON = "statusbar_battery_icon";
 
+        /**
+         * Style of the status bar battery
+         * 
+         * @hide
+         */
+        public static final String STATUSBAR_BATTERY_BAR_STYLE = "statusbar_battery_bar_style";
+
+        /**
+         * Whether or not to animate battery
+         * 
+         * @hide
+         */
+        public static final String STATUSBAR_BATTERY_BAR_ANIMATE = "statusbar_battery_bar_animate";
+
+        /**
+         * Thickness of the status bar battery
+         * 
+         * @hide
+         */
+        public static final String STATUSBAR_BATTERY_BAR_THICKNESS = "statusbar_battery_bar_thickness";
+
 		/**
          * 0 = stock
          * 1 = quad
@@ -2733,6 +2754,13 @@ public final class Settings {
 		 * @hide
 		 */
         public static final String LOCKSCREEN_HIDE_NAV = "lockscreen_hide_nav";
+
+		/**
+		 * whether the recent tasks panel is horizontal or vertical
+		 * 
+		 * @hide
+		 */
+        public static final String HORIZONTAL_RECENTS_TASK_PANEL = "horizontal_recents_task_panel";
     }
 
     /**

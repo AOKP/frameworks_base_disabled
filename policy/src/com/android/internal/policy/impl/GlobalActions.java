@@ -84,6 +84,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
     private boolean mIsWaitingForEcmExit = false;
     private boolean mEnablePowerSaverToggle = true;
     private boolean mEnableScreenshotToggle = false;
+    private boolean mEnableEasterEggToggle = false;
 
     /**
      * @param context everything needs a context :(
@@ -130,7 +131,10 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 Settings.System.POWER_DIALOG_SHOW_POWER_SAVER, 1) == 1;
         
         mEnableScreenshotToggle = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.POWER_DIALOG_SHOW_SCREENSHOT, 0) == 1;        
+                Settings.System.POWER_DIALOG_SHOW_SCREENSHOT, 0) == 1;  
+
+        mEnableEasterEggToggle = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.POWER_DIALOG_SHOW_EASTER_EGG, 0) == 1;        
 
         mSilentModeAction = new SilentModeAction(mAudioManager, mHandler);
 
@@ -273,6 +277,33 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             });
         } else {
             Slog.e(TAG, "Not adding screenshot");
+        }
+
+        // next: easter egg shortcut
+        if (mEnableEasterEggToggle) {
+            Slog.e(TAG, "Adding easter egg");
+            mItems.add(new SinglePressAction(com.android.internal.R.drawable.ic_lock_screenshot,
+                    R.string.global_action_easter_egg) {
+                public void onPress() {
+                    Intent egg = new Intent(Intent.ACTION_MAIN);
+                    egg.setClassName("android", com.android.internal.app.PlatLogoActivity.class.getName());
+                    try {
+                        startActivity(egg);
+                    } catch (Exception e) {
+                        Log.e(LOG_TAG, "Unable to start activity " + intent.toString());
+                    }
+                }
+
+                public boolean showDuringKeyguard() {
+                    return true;
+                }
+
+                public boolean showBeforeProvisioning() {
+                    return true;
+                }
+            });
+        } else {
+            Slog.e(TAG, "Not adding easter egg");
         }
 
         // last: silent mode
@@ -808,4 +839,3 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         mContext.sendBroadcast(intent);
     }
 }
-

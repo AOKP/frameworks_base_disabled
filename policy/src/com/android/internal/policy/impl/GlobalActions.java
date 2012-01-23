@@ -21,6 +21,7 @@ import java.util.ArrayList;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -286,10 +287,13 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             mItems.add(new SinglePressAction(com.android.internal.R.drawable.ic_lock_screenshot,
                     R.string.global_action_easter_egg) {
                 public void onPress() {
-                    Intent egg = new Intent(this, com.android.internal.app.PlatLogoActivity.class);
                     try {
-                        startActivity(egg);
-                    } catch (Exception e) {
+                    startActivity(new Intent(Intent.ACTION_MAIN)
+                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                            | Intent.FLAG_ACTIVITY_CLEAR_TASK
+                            | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)
+                        .setClassName("com.android.systemui","com.android.systemui.Nyandroid"));
+                    } catch (ActivityNotFoundException ex) {
                         Log.e(TAG, "Unable to start activity " + egg.toString());
                     }
                 }
@@ -811,7 +815,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
     private static final int MESSAGE_DISMISS = 0;
     private static final int MESSAGE_REFRESH = 1;
-    private static final int DIALOG_DISMISS_DELAY = 300; // ms
+    private static final int DIALOG_DISMISS_DELAY = 50; // ms
 
     private Handler mHandler = new Handler() {
         public void handleMessage(Message msg) {

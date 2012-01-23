@@ -78,7 +78,6 @@ import android.widget.TextView;
 
 import com.android.internal.statusbar.StatusBarIcon;
 import com.android.internal.statusbar.StatusBarNotification;
-import com.android.systemui.statusbar.powerwidget.PowerWidget;
 import com.android.internal.telephony.Phone;
 
 import com.android.systemui.R;
@@ -209,9 +208,6 @@ public class PhoneStatusBar extends StatusBar {
     WindowManager.LayoutParams mTrackingParams;
     int mTrackingPosition; // the position of the top of the tracking view.
     private boolean mPanelSlightlyVisible;
-
-    // the power widget
-    PowerWidget mPowerWidget;
 
     // ticker
     private Ticker mTicker;
@@ -363,25 +359,6 @@ public class PhoneStatusBar extends StatusBar {
         mScrollView = (ScrollView) expanded.findViewById(R.id.scroll);
 
         mQuickToggles = (TogglesView) expanded.findViewById(R.id.quick_toggles);
-
-
-        mPowerWidget = (PowerWidget)expanded.findViewById(R.id.exp_power_stat);
-        mPowerWidget.setupSettingsObserver(mHandler);
-        mPowerWidget.setGlobalButtonOnClickListener(new View.OnClickListener() {
-                    public void onClick(View v) {
-                        if(Settings.System.getInt(mContext.getContentResolver(),
-                                Settings.System.EXPANDED_HIDE_ONCHANGE, 0) == 1) {
-                            animateCollapse();
-                        }
-                    }
-                });
-        mPowerWidget.setGlobalButtonOnLongClickListener(new View.OnLongClickListener() {
-            public boolean onLongClick(View v) {
-                animateCollapse();
-                return true;
-            }
-        });
-
         mTicker = new MyTicker(context, sb);
 
         TickerView tickerView = (TickerView) sb.findViewById(R.id.tickerText);
@@ -421,7 +398,6 @@ public class PhoneStatusBar extends StatusBar {
         filter.addAction(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
         filter.addAction(Intent.ACTION_SCREEN_OFF);
         context.registerReceiver(mBroadcastReceiver, filter);
-	    mPowerWidget.setupWidget();
 
         SettingsObserver observer = new SettingsObserver(new Handler());
         observer.observe();
@@ -591,7 +567,6 @@ public class PhoneStatusBar extends StatusBar {
         StatusBarIconView view = new StatusBarIconView(mContext, slot, null);
         view.set(icon);
         mStatusIcons.addView(view, viewIndex, new LinearLayout.LayoutParams(mIconSize, mIconSize));
-	mPowerWidget.updateWidget();
     }
 
     public void updateIcon(String slot, int index, int viewIndex,

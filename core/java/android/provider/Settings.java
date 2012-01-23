@@ -2583,6 +2583,11 @@ public final class Settings {
         /**
          * @hide
          */
+        public static final String POWER_DIALOG_SHOW_EASTER_EGG = "power_dialog_show_easter_egg";
+
+        /**
+         * @hide
+         */
         public static final String STATUSBAR_CLOCK_LOCKSCREEN_HIDE = "statusbar_clock_lockscreen_hide";
 
         /**

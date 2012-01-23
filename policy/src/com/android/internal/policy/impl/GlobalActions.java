@@ -287,8 +287,9 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             mItems.add(new SinglePressAction(com.android.internal.R.drawable.ic_lock_screenshot,
                     R.string.global_action_easter_egg) {
                 public void onPress() {
+                    Log.d(TAG, "easter egg pressed");
                     try {
-                        Context.startActivity(new Intent(Intent.ACTION_MAIN).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                        mContext.startActivity(new Intent(Intent.ACTION_MAIN).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
                             | Intent.FLAG_ACTIVITY_CLEAR_TASK
                             | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)
                         .setClassName("com.android.systemui","com.android.systemui.Nyandroid"));

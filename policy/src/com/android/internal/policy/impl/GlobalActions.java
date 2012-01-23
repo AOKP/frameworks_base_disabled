@@ -19,6 +19,7 @@ package com.android.internal.policy.impl;
 
 import java.util.ArrayList;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -285,12 +286,11 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             mItems.add(new SinglePressAction(com.android.internal.R.drawable.ic_lock_screenshot,
                     R.string.global_action_easter_egg) {
                 public void onPress() {
-                    Intent egg = new Intent(Intent.ACTION_MAIN);
-                    egg.setClassName("android", com.android.internal.app.PlatLogoActivity.class.getName());
+                    Intent egg = new Intent(this, com.android.internal.app.PlatLogoActivity.class);
                     try {
                         startActivity(egg);
                     } catch (Exception e) {
-                        Log.e(LOG_TAG, "Unable to start activity " + intent.toString());
+                        Log.e(TAG, "Unable to start activity " + egg.toString());
                     }
                 }
 

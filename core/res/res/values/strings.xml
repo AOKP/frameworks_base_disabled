@@ -308,6 +308,9 @@
     <!-- label for item that screenshots in phone options dialog -->
     <string name="global_action_screenshot">Screenshot</string>
 
+    <!-- label for power menu shortcut to easter egg -->
+    <string name="global_action_easter_egg">ICS easter egg</string>
+
     <!-- Button to reboot the phone, within the Reboot Options dialog -->
     <string name="reboot_reboot">Reboot</string>
     <!-- Button to restart the phone very quickly, within the Reboot Options dialog -->

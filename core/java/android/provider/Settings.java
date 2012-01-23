@@ -4505,6 +4505,12 @@ public final class Settings {
         public static final String KILL_APP_LONGPRESS_BACK = "kill_app_longpress_back";
 
         /**
+         * Whether to allow longpress for app tasker
+         * @hide
+         */
+        public static final String LONGPRESS_APP_TASKER_INTENT = "longpress_app_tasker_intent";
+
+        /**
          * The {@link ComponentName} string of the service to be used as the voice recognition
          * service.
          *

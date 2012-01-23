@@ -52,12 +52,8 @@ public class RecentsKey extends KeyButtonView {
 
     Runnable mFirstLongClickOption = new Runnable() {
         public void run() {
-            try {
-                //TODO do stuff here
-            } catch (RemoteException RE) {
-                //swallowed exception should probably
-                //be handled with more grace
-            }
+            Log.d(TAG, "Longpress has been detected on app tasker");
+            //TODO do stuff here
         }
     };
 

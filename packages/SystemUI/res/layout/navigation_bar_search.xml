@@ -200,7 +200,7 @@
 			android:animateLayoutChanges="true">
 
 			<!-- navigation controls -->
-			<com.android.systemui.statusbar.policy.KeyButtonView
+			<com.android.systemui.statusbar.policy.buttons.RecentKeys
 				android:id="@+id/menu"
 				android:layout_height="40dp"
 				android:layout_width="match_parent"

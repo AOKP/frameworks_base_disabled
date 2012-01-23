@@ -76,7 +76,7 @@ public class BackKeyWithKillButtonView extends KeyButtonView {
         public boolean onLongClick(View v) {
             if (Settings.Secure.getInt(mContext.getContentResolver(),
                     Settings.Secure.KILL_APP_LONGPRESS_BACK, 0) == 1) {
-                mHandler.postDelayed(mBackLongPress, ViewConfiguration.getGlobalActionKeyTimeout());
+                mHandler.post(mBackLongPress);
             }
             return true;
         }

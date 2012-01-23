@@ -2621,6 +2621,27 @@ public class PowerManagerService extends IPowerManager.Stub
             }
         }
     };
+    
+    private void lightFilterStop() {
+        if (mDebugLightSensor) {
+            Slog.d(TAGF, "stop");
+        }
+        mLightFilterRunning = false;
+        mHandler.removeCallbacks(mLightFilterTask);
+        mLightFilterSample = -1;
+    }
+
+    private void lightFilterReset(int initial) {
+        mLightFilterEqualCounter = 0;
+        mLightFilterIndex = 0;
+        mLightFilterSamples = new int[(mLightFilterWindow / mLightFilterInterval)];
+        mLightFilterSampleCounter = initial == -1 ? 0 : mLightFilterSamples.length;
+        mLightFilterSum = initial == -1 ? 0 : initial * mLightFilterSamples.length;
+        java.util.Arrays.fill(mLightFilterSamples, initial);
+        if (mDebugLightSensor) {
+            Slog.d(TAGF, "reset: " + initial);
+        }
+    }
 
     private void resetLastLightValues() {
         mLastLcdValue = -1;

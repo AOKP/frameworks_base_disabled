@@ -288,13 +288,12 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                     R.string.global_action_easter_egg) {
                 public void onPress() {
                     try {
-                    startActivity(new Intent(Intent.ACTION_MAIN)
-                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                        Context.startActivity(new Intent(Intent.ACTION_MAIN).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
                             | Intent.FLAG_ACTIVITY_CLEAR_TASK
                             | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)
                         .setClassName("com.android.systemui","com.android.systemui.Nyandroid"));
                     } catch (ActivityNotFoundException ex) {
-                        Log.e(TAG, "Unable to start activity " + egg.toString());
+                        Log.e(TAG, "Unable to start easter egg");
                     }
                 }
 

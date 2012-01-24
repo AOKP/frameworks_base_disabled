@@ -2857,16 +2857,36 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 isWakeKey = false;
             }
 
-            // volume-wake: fake a power key press
-            if (mVolumeWakeScreen && isWakeKey && ((keyCode == KeyEvent.KEYCODE_VOLUME_UP)
-                    || (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN)))
-                keyCode = KeyEvent.KEYCODE_POWER;
+            // music is playing, don't wake the screen in case we need to skip track
+            if (isMusicActive() && down 
+                    && mVolumeWakeScreen 
+                    && isWakeKey 
+                    && ((keyCode == KeyEvent.KEYCODE_VOLUME_UP) || (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN)))
+                isWakeKey = false;
 
-            if (down && isWakeKey) {
+            // music is playing, we need to wake the screen on volume action up
+            if (isWakeKey 
+                    && (keyCode == KeyEvent.KEYCODE_VOLUME_UP) || (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) 
+                    && !down 
+                    && isMusicActive()) {
                 if (keyguardActive) {
-                    // If the keyguard is showing, let it decide what to do with the wake key.
-                    mKeyguardMediator.onWakeKeyWhenKeyguardShowingTq(keyCode,
+                    mKeyguardMediator.onWakeKeyWhenKeyguardShowingTq(KeyEvent.KEYCODE_POWER,
                             mDockMode != Intent.EXTRA_DOCK_STATE_UNDOCKED);
+                } else {
+                    // Otherwise, wake the device ourselves.
+                    result |= ACTION_POKE_USER_ACTIVITY;
+                }
+            } else if (down && isWakeKey) {
+                if (keyguardActive) {
+                    // send power key code to wake the screen
+                    if((keyCode == KeyEvent.KEYCODE_VOLUME_UP) || (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) && isWakeKey) {
+                        mKeyguardMediator.onWakeKeyWhenKeyguardShowingTq(KeyEvent.KEYCODE_POWER,
+                                mDockMode != Intent.EXTRA_DOCK_STATE_UNDOCKED);
+                    } else {
+                        // If the keyguard is showing, let it decide what to do with the wake key.
+                        mKeyguardMediator.onWakeKeyWhenKeyguardShowingTq(keyCode,
+                                mDockMode != Intent.EXTRA_DOCK_STATE_UNDOCKED);
+                    }
                 } else {
                     // Otherwise, wake the device ourselves.
                     result |= ACTION_POKE_USER_ACTIVITY;

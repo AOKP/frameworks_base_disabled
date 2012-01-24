@@ -250,6 +250,7 @@ public class PowerSaverService extends BroadcastReceiver {
         if (telephony.getCallState() == TelephonyManager.CALL_STATE_OFFHOOK
                 || telephony.getCallState() == TelephonyManager.CALL_STATE_RINGING) {
             Slog.w(TAG, "Phone is ringing or in a phone call, not enabling power saver");
+            return;
         }
 
         Calendar timeToStart = Calendar.getInstance();

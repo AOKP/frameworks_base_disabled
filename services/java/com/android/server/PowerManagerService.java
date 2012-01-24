@@ -104,7 +104,7 @@ public class PowerManagerService extends IPowerManager.Stub
     private static final int LONG_DIM_TIME = 7000;              // t+N-5 sec
 
     // How long to wait to debounce light sensor changes in milliseconds
-    private static final int LIGHT_SENSOR_DELAY = 2000;
+    private static final int LIGHT_SENSOR_DELAY = 4000;
 
     // light sensor events rate in microseconds
     private static final int LIGHT_SENSOR_RATE = 1000000;

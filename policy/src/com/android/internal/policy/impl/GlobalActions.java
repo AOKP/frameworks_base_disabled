@@ -139,9 +139,9 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 Settings.System.POWER_DIALOG_SHOW_EASTER_EGG, 0) == 1;
 
         //debugging
-        if (mEnabledPowerSaverToggle) {Log.d(TAG, "PowerSaver enabled");}else{Log.d(TAG, "PowerSaver disabled");}
-        if (mEnabledScreenshotToggle) {Log.d(TAG, "Screenshot enabled");}else{Log.d(TAG, "Screenshot disabled");}
-        if (mEnabledEasterEggToggle) {Log.d(TAG, "EasterEgg enabled");}else{Log.d(TAG, "EasterEgg disabled");}
+        if (mEnablePowerSaverToggle) {Log.d(TAG, "PowerSaver enabled");}else{Log.d(TAG, "PowerSaver disabled");}
+        if (mEnableScreenshotToggle) {Log.d(TAG, "Screenshot enabled");}else{Log.d(TAG, "Screenshot disabled");}
+        if (mEnableEasterEggToggle) {Log.d(TAG, "EasterEgg enabled");}else{Log.d(TAG, "EasterEgg disabled");}
 
         mSilentModeAction = new SilentModeAction(mAudioManager, mHandler);
 

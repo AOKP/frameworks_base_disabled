@@ -2580,7 +2580,29 @@ public final class Settings {
          * @hide
          */
         public static final String IS_TABLET = "is_tablet";
+        
+        
+        /**
+         * Allow Landscape in call
+         */
+        
+        public static final String CALL_ENABLE_LANDSCAPE = "call_enable_landscape";
+        
+        /**
+         * Enable use of statusbar while in call
+         * 
+   		*/
+        
+        public static final String CALL_ENABLE_STATUSBAR = "call_enable_statusbar";
+        
+        /**
+         * Disable Lighouts while in call
+         * 
+         */
+        
+        public static final String CALL_DISABLE_LIGHTSOUT = "call_disable_lightsout";
     }
+   
 
     /**
      * Secure system settings, containing system preferences that applications

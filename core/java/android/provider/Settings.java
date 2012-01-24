@@ -2486,17 +2486,17 @@ public final class Settings {
         /**
          * @hide
          */
-        public static final int POWER_DIALOG_SHOW_POWER_SAVER = 0;
+        public static final String POWER_DIALOG_SHOW_POWER_SAVER = "power_dialog_show_power_saver";
 
         /**
          * @hide
          */
-        public static final int POWER_DIALOG_SHOW_SCREENSHOT = 0;
+        public static final String POWER_DIALOG_SHOW_SCREENSHOT = "power_dialog_show_screenshot";
 
         /**
          * @hide
          */
-        public static final int POWER_DIALOG_SHOW_EASTER_EGG = 0;
+        public static final String POWER_DIALOG_SHOW_EASTER_EGG = "power_dialog_show_easter_egg";
 
         /**
          * @hide

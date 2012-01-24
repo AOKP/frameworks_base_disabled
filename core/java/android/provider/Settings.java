@@ -2587,6 +2587,23 @@ public final class Settings {
          * @hide
          */
         public static final String LOCKSCREEN_LANDSCAPE = "lockscreen_landscape";
+
+        /**
+         * [0] = how long to animate glow off
+         * [1] = how long to animate glow on
+         * 
+         * @hide
+         */
+        public static final String[] NAVIGATION_BAR_GLOW_DURATION = new String[] {
+                "navigation_bar_glow_duration_off",
+                "navigation_bar_glow_duration_on"
+        };
+
+        /**
+         * 
+         * @hide
+         */
+        public static final String NAVIGATION_BAR_BUTTON_ALPHA = "navigation_bar_button_alpha";
     }
 
     /**

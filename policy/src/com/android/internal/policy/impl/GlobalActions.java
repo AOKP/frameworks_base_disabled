@@ -43,7 +43,6 @@ import android.telephony.PhoneStateListener;
 import android.telephony.ServiceState;
 import android.telephony.TelephonyManager;
 import android.util.Log;
-import android.util.Slog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -84,7 +83,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
     private boolean mDeviceProvisioned = false;
     private ToggleAction.State mAirplaneState = ToggleAction.State.Off;
     private boolean mIsWaitingForEcmExit = false;
-    private boolean mEnablePowerSaverToggle = true;
+    private boolean mEnablePowerSaverToggle = false;
     private boolean mEnableScreenshotToggle = false;
     private boolean mEnableEasterEggToggle = false;
 
@@ -255,10 +254,10 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             Settings.Secure.getInt(mContext.getContentResolver(),
                     Settings.Secure.POWER_SAVER_MODE);
             if(mEnablePowerSaverToggle) {
-                Slog.e(TAG, "Adding powersaver");
+                Log.d(TAG, "Adding powersaver");
                 mItems.add(mPowerSaverOn); 
             } else {
-                Slog.e(TAG, "not adding power saver");
+                Log.d(TAG, "not adding power saver");
             }
         } catch (SettingNotFoundException e) {
             //Power Saver hasn't yet been initialized so we don't want to make it easy for the user without
@@ -267,7 +266,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
         // next: screenshot
         if (mEnableScreenshotToggle) {
-            Slog.e(TAG, "Adding screenshot");
+            Log.d(TAG, "Adding screenshot");
             mItems.add(new SinglePressAction(com.android.internal.R.drawable.ic_lock_screenshot,
                     R.string.global_action_screenshot) {
                 public void onPress() {
@@ -283,12 +282,12 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 }
             });
         } else {
-            Slog.e(TAG, "Not adding screenshot");
+            Log.d(TAG, "Not adding screenshot");
         }
 
         // next: easter egg shortcut
         if (mEnableEasterEggToggle) {
-            Slog.e(TAG, "Adding easter egg");
+            log.d(TAG, "Adding easter egg");
             mItems.add(new SinglePressAction(com.android.internal.R.drawable.ic_lock_screenshot,
                     R.string.global_action_easter_egg) {
                 public void onPress() {
@@ -312,7 +311,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 }
             });
         } else {
-            Slog.e(TAG, "Not adding easter egg");
+            Log.d(TAG, "Not adding easter egg");
         }
 
         // last: silent mode

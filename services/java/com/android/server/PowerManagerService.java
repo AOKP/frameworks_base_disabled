@@ -2957,7 +2957,7 @@ public class PowerManagerService extends IPowerManager.Stub
         mCustomLightEnabled = Settings.System.getInt(cr,
                 Settings.System.LIGHT_SENSOR_CUSTOM, 0) != 0;
         mLightDecrease = Settings.System.getInt(cr,
-                Settings.System.LIGHT_DECREASE, 0) != 0;
+                Settings.System.LIGHT_DECREASE, 1) != 0;
         mLightHysteresis = Settings.System.getInt(cr,
                 Settings.System.LIGHT_HYSTERESIS, 50) / 100f;
         mLightFilterEnabled = Settings.System.getInt(cr,

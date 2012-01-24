@@ -2742,6 +2742,13 @@ public final class Settings {
          * @hide
          */
         public static final String IS_TABLET = "is_tablet";
+
+        /**
+         * Whether to allow the device to use landscape lockscreen layouts
+         * 
+         * @hide
+         */
+        public static final String LOCKSCREEN_LANDSCAPE = "lockscreen_landscape";
     }
 
     /**

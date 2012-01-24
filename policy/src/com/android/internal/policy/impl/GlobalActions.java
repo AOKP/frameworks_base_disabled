@@ -64,7 +64,7 @@ import com.android.internal.telephony.TelephonyProperties;
  */
 class GlobalActions implements DialogInterface.OnDismissListener, DialogInterface.OnClickListener  {
 
-    private static final String TAG = "GlobalActions";
+    private static final String TAG = "SYSTEM :GlobalActions";
 
     private static final boolean SHOW_SILENT_TOGGLE = true;
 
@@ -133,10 +133,15 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 Settings.System.POWER_DIALOG_SHOW_POWER_SAVER, 1) == 1;
         
         mEnableScreenshotToggle = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.POWER_DIALOG_SHOW_SCREENSHOT, 0) == 1;  
+                Settings.System.POWER_DIALOG_SHOW_SCREENSHOT, 1) == 1;
 
         mEnableEasterEggToggle = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.POWER_DIALOG_SHOW_EASTER_EGG, 0) == 1;        
+                Settings.System.POWER_DIALOG_SHOW_EASTER_EGG, 0) == 1;
+
+        //debugging
+        if (mEnabledPowerSaverToggle) {Log.d(TAG, "PowerSaver enabled");}else{Log.d(TAG, "PowerSaver disabled");}
+        if (mEnabledScreenshotToggle) {Log.d(TAG, "Screenshot enabled");}else{Log.d(TAG, "Screenshot disabled");}
+        if (mEnabledEasterEggToggle) {Log.d(TAG, "EasterEgg enabled");}else{Log.d(TAG, "EasterEgg disabled");}
 
         mSilentModeAction = new SilentModeAction(mAudioManager, mHandler);
 
@@ -319,8 +324,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
         final AlertDialog.Builder ab = new AlertDialog.Builder(mContext);
 
-        ab.setAdapter(mAdapter, this)
-                .setInverseBackgroundForced(true);
+        ab.setAdapter(mAdapter, this).setInverseBackgroundForced(true);
 
         final AlertDialog dialog = ab.create();
         dialog.getListView().setItemsCanFocus(true);

@@ -287,7 +287,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
         // next: easter egg shortcut
         if (mEnableEasterEggToggle) {
-            log.d(TAG, "Adding easter egg");
+            Log.d(TAG, "Adding easter egg");
             mItems.add(new SinglePressAction(com.android.internal.R.drawable.ic_lock_screenshot,
                     R.string.global_action_easter_egg) {
                 public void onPress() {

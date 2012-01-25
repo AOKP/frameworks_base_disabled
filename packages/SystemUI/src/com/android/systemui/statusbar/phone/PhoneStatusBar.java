@@ -28,6 +28,7 @@ import android.app.KeyguardManager;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.StatusBarManager;
+import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -357,6 +358,12 @@ public class PhoneStatusBar extends StatusBar {
         mSettingsButton.setOnClickListener(mSettingsButtonListener);
         mSettingsButton.setOnLongClickListener(mSettingsLongClickListener);
         mScrollView = (ScrollView) expanded.findViewById(R.id.scroll);
+
+        //LiquidControl quick access
+        mLiquidButton = expanded.findViewById(R.id.liquid_button);
+        mLiquidButton.setOnClickListener(mLiquidButtonListener);
+        //we do not have anything to do but we will set up a long click listener
+        mLiquidButton.setOnLongClickListener(mLiquidButtonLongClickListener);
 
         mQuickToggles = (TogglesView) expanded.findViewById(R.id.quick_toggles);
         mTicker = new MyTicker(context, sb);
@@ -2299,6 +2306,38 @@ public class PhoneStatusBar extends StatusBar {
             return true;
         }
     };
+
+    private View.OnClickListener mLiquidButtonListener = new View.OnClickListener() {
+        public boolean onClick(View v) {
+        try {
+            // Dismiss the lock screen when LiquidControl starts.
+            ActivityManagerNative.getDefault().dismissKeyguardOnNextActivity();
+        } catch (RemoteException e) {
+        }
+        try {
+            mContext.startActivity(new Intent("com.liquid.control.LiquidActivity")
+                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            animateCollapse();
+        } catch (ActivityNotFoundExeption anfe) {
+            Log.d(TAG, "...could not find Liquid Control");
+        }
+    }
+
+    private View.OnLongClickListener mLiquidButtonLongClickListener = new View.OnClickListener() {
+        public boolean onLongClick(View v) {
+        try {
+            // Dismiss the lock screen when LiquidControl starts.
+            ActivityManagerNative.getDefault().dismissKeyguardOnNextActivity();
+        } catch (RemoteException e) {
+        }
+        try {
+            mContext.startActivity(new Intent("com.liquid.control.fragments.Performance")
+                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            animateCollapse();
+        } catch (ActivityNotFoundExeption anfe) {
+            Log.d(TAG, "...could not find Liquid Control");
+        }
+    }
 
     private void mSettingsBehaviorOpenSettings() {
         try {

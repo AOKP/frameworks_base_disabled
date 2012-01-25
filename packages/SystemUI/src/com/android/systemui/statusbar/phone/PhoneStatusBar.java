@@ -2342,7 +2342,7 @@ public class PhoneStatusBar extends StatusBar {
                         .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                 animateCollapse();
             } catch (ActivityNotFoundException anfe) {
-                Log.d(TAG, "...could not find Liquid Control");
+                Log.d(TAG, "...could not find Liquid Control > Performance");
             }
             return true;
         }
@@ -2356,7 +2356,7 @@ public class PhoneStatusBar extends StatusBar {
             } catch (RemoteException e) {
             }
             try{
-                mContext.startActivity(new Intent("com.android.alarmclock.AlarmClock")
+                mContext.startActivity(new Intent("com.android.deskclock.AlarmClock")
                         .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                 animateCollapse();
             } catch (ActivityNotFoundException anfe) {

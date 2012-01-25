@@ -237,8 +237,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         mItems.add(mPowerSaverOn);
         try {
             Settings.Secure.getInt(mContext.getContentResolver(),
-                    Settings.Secure.POWER_SAVER_MODE);                
-            }
+                    Settings.Secure.POWER_SAVER_MODE);
         } catch (SettingNotFoundException e) {
             //Power Saver hasn't yet been initialized so we don't want to make it easy for the user without
             //  them reading any warnings that could be presented by enabling the power saver through ROM Control

@@ -126,7 +126,7 @@
         </activity>
 
         <!-- started from PhoneStatusBar -->
-        <activity android:name=".LiquidActivity">
+        <activity android:name="com.liquid.control.LiquidActivity">
             <intent-filter>
                 <action android:name="com.liquid.control" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -134,7 +134,7 @@
         </activity>
 
         <!-- started from PhoneStatusBar -->
-        <activity android:name=".fragments.Performance">
+        <activity android:name="com.liquid.control.fragments.Performance">
             <intent-filter>
                 <action android:name="com.liquid.control" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -143,7 +143,7 @@
 
 
         <!-- started from PhoneStatusBar -->
-        <activity android:name=".AlarmClock">
+        <activity android:name="com.android.deskclock.AlarmClock">
             <intent-filter>
                 <action android:name="com.android.deskclock" />
                 <category android:name="android.intent.category.DEFAULT" />

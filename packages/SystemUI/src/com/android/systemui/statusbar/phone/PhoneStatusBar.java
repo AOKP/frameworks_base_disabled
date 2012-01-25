@@ -2319,8 +2319,8 @@ public class PhoneStatusBar extends StatusBar {
             } catch (RemoteException e) {
             }
             try {
-                mContext.startActivity(new Intent("com.liquid.control.LiquidActivity")
-                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                v.getContext().startActivity(new Intent("android.liquid.CONTROL")
+                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                 animateCollapse();
             } catch (ActivityNotFoundException anfe) {
                 Log.d(TAG, "...could not find Liquid Control");
@@ -2338,11 +2338,14 @@ public class PhoneStatusBar extends StatusBar {
             } catch (RemoteException e) {
             }
             try {
-                mContext.startActivity(new Intent("com.liquid.control.fragments.Performance")
-                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                v.getContext().startActivity(new Intent(Intent.ACTION_MAIN).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                    | Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)
+                .setClassName("com.liquid.control", "com.liquid.control.fragments.Performance"));
                 animateCollapse();
             } catch (ActivityNotFoundException anfe) {
                 Log.d(TAG, "...could not find Liquid Control > Performance");
+                Log.d(TAG, anfe.printStackTrace());
             }
             return true;
         }
@@ -2356,11 +2359,14 @@ public class PhoneStatusBar extends StatusBar {
             } catch (RemoteException e) {
             }
             try{
-                mContext.startActivity(new Intent("com.android.deskclock.AlarmClock")
-                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                v.getContext().startActivity(new Intent(Intent.ACTION_MAIN).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                    | Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)
+                .setClassName("com.android.deskclock", "com.android.deskclock.AlarmClock"));
                 animateCollapse();
             } catch (ActivityNotFoundException anfe) {
                 Log.d(TAG, "...could not find AlarmClock");
+                Log.d(TAG, anfe.printStackTrace());
             }
         }
     };

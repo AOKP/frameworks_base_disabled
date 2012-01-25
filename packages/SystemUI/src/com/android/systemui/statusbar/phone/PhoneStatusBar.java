@@ -2337,7 +2337,7 @@ public class PhoneStatusBar extends StatusBar {
                 v.getContext().startActivity(new Intent(Intent.ACTION_MAIN).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
                     | Intent.FLAG_ACTIVITY_CLEAR_TASK
                     | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)
-                .setClassName("com.android.deskclock", "com.android.deskclock.SetAlarm"));
+                .setClassName("com.android.deskclock", "com.android.deskclock.AlarmClock"));
                 animateCollapse();
             } catch (ActivityNotFoundException anfe) {
                 Log.d(TAG, "...could not find AlarmClock");

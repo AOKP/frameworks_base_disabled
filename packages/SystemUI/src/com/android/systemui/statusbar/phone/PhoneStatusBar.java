@@ -2358,7 +2358,8 @@ public class PhoneStatusBar extends StatusBar {
                         .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                 animateCollapse();
             } catch (ActivityNotFoundExeption anfe) {
-            Log.d(TAG, "...could not find AlarmClock");
+                Log.d(TAG, "...could not find AlarmClock");
+            }
         }
     };
 

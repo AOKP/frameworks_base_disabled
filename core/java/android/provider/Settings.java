@@ -2609,6 +2609,18 @@ public final class Settings {
          * @hide
          */
         public static final String LOCKSCREEN_LANDSCAPE = "lockscreen_landscape";
+        
+        /**
+         * User selectable animation times on Nav Bar (times ins MS for on/off)
+         * 
+         * 0 = 0 / 0
+         * 1 = 10 / 100   
+         * 2 = 40 / 250 (Stock AOKP)
+         * 3 = 50 / 500 (Stock ICS)
+         * 
+         */
+        public static final String NAV_BAR_ANIMATION_TIME = "nav_bar_animation_time";
+        
     }
    
 

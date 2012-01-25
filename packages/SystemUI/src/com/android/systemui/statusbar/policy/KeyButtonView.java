@@ -44,6 +44,8 @@ import android.view.ViewConfiguration;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.ImageView;
 
+import android.provider.Settings;
+
 import com.android.systemui.R;
 import com.android.systemui.statusbar.policy.Clock.SettingsObserver;
 
@@ -52,6 +54,8 @@ public class KeyButtonView extends ImageView {
 
     final float GLOW_MAX_SCALE_FACTOR = 1.8f;
     final float BUTTON_QUIESCENT_ALPHA = 0.6f;
+    
+    public Context mContext;
 
     IWindowManager mWindowManager;
     long mDownTime;
@@ -84,6 +88,8 @@ public class KeyButtonView extends ImageView {
     public KeyButtonView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs);
 
+        mContext = context;
+        
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.KeyButtonView,
                 defStyle, 0);
 
@@ -127,7 +133,42 @@ public class KeyButtonView extends ImageView {
             canvas.restore();
         }
     }
-
+/**  The next two functions return user definable animation times for 'fast glow'
+ * 
+ */
+    public int getAnimationOnTime() {
+    	switch(Settings.System.getInt(mContext.getContentResolver(), 
+        		Settings.System.NAV_BAR_ANIMATION_TIME, 0)) {
+    	case 0:
+    		return 0;
+    	case 1:
+    		return 10;
+    	case 2:
+    		return 40;
+    	case 3:
+    		return 50;
+    	default:
+    		return 40;
+    	}
+    }
+    
+    public int getAnimationOffTime() {
+        switch(Settings.System.getInt(mContext.getContentResolver(), 
+        		Settings.System.NAV_BAR_ANIMATION_TIME, 0)) {
+        case 0:
+        	return 0;
+        case 1:
+        	return 100;
+        case 2:
+        	return 250;
+        case 3:
+        	return 500;
+        default:
+        	return 250;
+        	}
+               
+    }
+    
     public void setSupportsLongPress(boolean supports) {
         mSupportsLongpress = supports;
     }
@@ -215,7 +256,7 @@ public class KeyButtonView extends ImageView {
                             ObjectAnimator.ofFloat(this, "glowScale", GLOW_MAX_SCALE_FACTOR)
                             );
                     //as.setDuration(50);
-                    as.setDuration(40);
+                    as.setDuration(getAnimationOnTime());
                 } else {
                     as.playTogether(
                             ObjectAnimator.ofFloat(this, "glowAlpha", 0f),
@@ -223,7 +264,7 @@ public class KeyButtonView extends ImageView {
                             ObjectAnimator.ofFloat(this, "drawingAlpha", BUTTON_QUIESCENT_ALPHA)
                             );
                     //as.setDuration(500);
-                    as.setDuration(250);
+                    as.setDuration(getAnimationOffTime());
                 }
                 as.start();
             }
@@ -311,6 +352,7 @@ public class KeyButtonView extends ImageView {
             // System process is dead
         }
     }
+   
 
     class SettingsObserver extends ContentObserver {
         SettingsObserver(Handler handler) {

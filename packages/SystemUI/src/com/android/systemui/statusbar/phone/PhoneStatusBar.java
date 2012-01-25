@@ -2312,43 +2312,47 @@ public class PhoneStatusBar extends StatusBar {
 
     private View.OnClickListener mLiquidButtonListener = new View.OnClickListener() {
         public boolean onClick(View v) {
-        try {
-            // Dismiss the lock screen when LiquidControl starts.
-            ActivityManagerNative.getDefault().dismissKeyguardOnNextActivity();
-        } catch (RemoteException e) {
+            try {
+                // Dismiss the lock screen when LiquidControl starts.
+                ActivityManagerNative.getDefault().dismissKeyguardOnNextActivity();
+            } catch (RemoteException e) {
+            }
+            try {
+                mContext.startActivity(new Intent("com.liquid.control.LiquidActivity")
+                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                animateCollapse();
+            } catch (ActivityNotFoundExeption anfe) {
+                Log.d(TAG, "...could not find Liquid Control");
+            }
         }
-        try {
-            mContext.startActivity(new Intent("com.liquid.control.LiquidActivity")
-                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-            animateCollapse();
-        } catch (ActivityNotFoundExeption anfe) {
-            Log.d(TAG, "...could not find Liquid Control");
-        }
-    }
+    };
 
     private View.OnLongClickListener mLiquidButtonLongClickListener = new View.OnClickListener() {
+
+        @Override
         public boolean onLongClick(View v) {
-        try {
-            // Dismiss the lock screen when LiquidControl starts.
-            ActivityManagerNative.getDefault().dismissKeyguardOnNextActivity();
-        } catch (RemoteException e) {
+            try {
+                // Dismiss the lock screen when LiquidControl starts.
+                ActivityManagerNative.getDefault().dismissKeyguardOnNextActivity();
+            } catch (RemoteException e) {
+            }
+            try {
+                mContext.startActivity(new Intent("com.liquid.control.fragments.Performance")
+                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                animateCollapse();
+            } catch (ActivityNotFoundExeption anfe) {
+                Log.d(TAG, "...could not find Liquid Control");
+            }
         }
-        try {
-            mContext.startActivity(new Intent("com.liquid.control.fragments.Performance")
-                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-            animateCollapse();
-        } catch (ActivityNotFoundExeption anfe) {
-            Log.d(TAG, "...could not find Liquid Control");
-        }
-    }
+    };
 
     private View.OnClickListener mDateListener = new View.OnClickListener() {
         public boolean onClick(View v) {
-        try {
-            // Dismiss the lock screen when LiquidControl starts.
-            ActivityManagerNative.getDefault().dismissKeyguardOnNextActivity();
-        } catch (RemoteException e) {
-        }
+            try {
+                // Dismiss the lock screen when LiquidControl starts.
+                ActivityManagerNative.getDefault().dismissKeyguardOnNextActivity();
+            } catch (RemoteException e) {
+            }
             try{
                 mContext.startActivity(new Intent("com.android.alarmclock.AlarmClock")
                         .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
@@ -2356,6 +2360,7 @@ public class PhoneStatusBar extends StatusBar {
             } catch (ActivityNotFoundExeption anfe) {
             Log.d(TAG, "...could not find AlarmClock");
         }
+    };
 
     private void mSettingsBehaviorOpenSettings() {
         try {

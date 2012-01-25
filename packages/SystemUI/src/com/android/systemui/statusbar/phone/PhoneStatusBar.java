@@ -28,6 +28,7 @@ import android.app.KeyguardManager;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.StatusBarManager;
+import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -178,6 +179,7 @@ public class PhoneStatusBar extends StatusBar {
     TextView mNoNotificationsTitle;
     View mClearButton;
     View mSettingsButton;
+    View mLiquidButton;
 
     TogglesView mQuickToggles;
     BrightnessController mBrightness;
@@ -357,6 +359,15 @@ public class PhoneStatusBar extends StatusBar {
         mSettingsButton.setOnClickListener(mSettingsButtonListener);
         mSettingsButton.setOnLongClickListener(mSettingsLongClickListener);
         mScrollView = (ScrollView) expanded.findViewById(R.id.scroll);
+
+        //LiquidControl quick access
+        mLiquidButton = expanded.findViewById(R.id.liquid_button);
+        mLiquidButton.setOnClickListener(mLiquidButtonListener);
+        //long click lanuches LiquidControl>Performance
+        mLiquidButton.setOnLongClickListener(mLiquidButtonLongClickListener);
+
+        //lanuch clock app when we click on the date
+        mDateView.setOnClickListener(mDateListener);
 
         mQuickToggles = (TogglesView) expanded.findViewById(R.id.quick_toggles);
         mTicker = new MyTicker(context, sb);
@@ -2297,6 +2308,60 @@ public class PhoneStatusBar extends StatusBar {
             else
                 mSettingsBehaviorOpenSettings();
             return true;
+        }
+    };
+
+    private View.OnClickListener mLiquidButtonListener = new View.OnClickListener() {
+        public void onClick(View v) {
+            try {
+                // Dismiss the lock screen when LiquidControl starts.
+                ActivityManagerNative.getDefault().dismissKeyguardOnNextActivity();
+            } catch (RemoteException e) {
+            }
+            try {
+                mContext.startActivity(new Intent("com.liquid.control.LiquidActivity")
+                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                animateCollapse();
+            } catch (ActivityNotFoundException anfe) {
+                Log.d(TAG, "...could not find Liquid Control");
+            }
+        }
+    };
+
+    private View.OnLongClickListener mLiquidButtonLongClickListener = new View.OnLongClickListener() {
+
+        @Override
+        public boolean onLongClick(View v) {
+            try {
+                // Dismiss the lock screen when LiquidControl starts.
+                ActivityManagerNative.getDefault().dismissKeyguardOnNextActivity();
+            } catch (RemoteException e) {
+            }
+            try {
+                mContext.startActivity(new Intent("com.liquid.control.fragments.Performance")
+                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                animateCollapse();
+            } catch (ActivityNotFoundException anfe) {
+                Log.d(TAG, "...could not find Liquid Control > Performance");
+            }
+            return true;
+        }
+    };
+
+    private View.OnClickListener mDateListener = new View.OnClickListener() {
+        public void onClick(View v) {
+            try {
+                // Dismiss the lock screen when LiquidControl starts.
+                ActivityManagerNative.getDefault().dismissKeyguardOnNextActivity();
+            } catch (RemoteException e) {
+            }
+            try{
+                mContext.startActivity(new Intent("com.android.deskclock.AlarmClock")
+                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                animateCollapse();
+            } catch (ActivityNotFoundException anfe) {
+                Log.d(TAG, "...could not find AlarmClock");
+            }
         }
     };
 

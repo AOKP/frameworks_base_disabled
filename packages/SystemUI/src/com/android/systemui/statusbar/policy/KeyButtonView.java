@@ -51,7 +51,7 @@ public class KeyButtonView extends ImageView {
     protected static final String TAG = "StatusBar.KeyButtonView";
 
     final float GLOW_MAX_SCALE_FACTOR = 1.8f;
-    final float BUTTON_QUIESCENT_ALPHA = 0.6f;
+    final float BUTTON_QUIESCENT_ALPHA = 1f;
 
     IWindowManager mWindowManager;
     long mDownTime;
@@ -61,6 +61,9 @@ public class KeyButtonView extends ImageView {
     float mGlowAlpha = 0f, mGlowScale = 1f, mDrawingAlpha = 1f;
     protected boolean mSupportsLongpress = true;
     RectF mRect = new RectF(0f, 0f, 0f, 0f);
+
+    int durationSpeedOn = 500;
+    int durationSpeedOff = 50;
 
     Runnable mCheckLongPress = new Runnable() {
         public void run() {
@@ -214,16 +217,14 @@ public class KeyButtonView extends ImageView {
                             ObjectAnimator.ofFloat(this, "glowAlpha", 1f),
                             ObjectAnimator.ofFloat(this, "glowScale", GLOW_MAX_SCALE_FACTOR)
                             );
-                    //as.setDuration(50);
-                    as.setDuration(40);
+                    as.setDuration(durationSpeedOff);
                 } else {
                     as.playTogether(
                             ObjectAnimator.ofFloat(this, "glowAlpha", 0f),
                             ObjectAnimator.ofFloat(this, "glowScale", 1f),
                             ObjectAnimator.ofFloat(this, "drawingAlpha", BUTTON_QUIESCENT_ALPHA)
                             );
-                    //as.setDuration(500);
-                    as.setDuration(250);
+                    as.setDuration(durationSpeedOn);
                 }
                 as.start();
             }
@@ -333,6 +334,13 @@ public class KeyButtonView extends ImageView {
 
     protected void updateSettings() {
         ContentResolver resolver = mContext.getContentResolver();
+
+        durationSpeedOff = Settings.System.getInt(resolver,
+                Settings.System.NAVIGATION_BAR_GLOW_DURATION[0], 50);
+        durationSpeedOn = Settings.System.getInt(resolver,
+                Settings.System.NAVIGATION_BAR_GLOW_DURATION[1], 500);
+        setAlpha(Settings.System.getFloat(resolver, Settings.System.NAVIGATION_BAR_BUTTON_ALPHA,
+                0.6f));
 
         try {
             setColorFilter(null);

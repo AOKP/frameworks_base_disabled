@@ -363,8 +363,6 @@ public class PhoneStatusBar extends StatusBar {
         //LiquidControl quick access
         mLiquidButton = expanded.findViewById(R.id.liquid_button);
         mLiquidButton.setOnClickListener(mLiquidButtonListener);
-        //long click lanuches LiquidControl>Performance
-        mLiquidButton.setOnLongClickListener(mLiquidButtonLongClickListener);
 
         //lanuch clock app when we click on the date
         mDateView.setOnClickListener(mDateListener);
@@ -2328,28 +2326,6 @@ public class PhoneStatusBar extends StatusBar {
         }
     };
 
-    private View.OnLongClickListener mLiquidButtonLongClickListener = new View.OnLongClickListener() {
-
-        @Override
-        public boolean onLongClick(View v) {
-            try {
-                // Dismiss the lock screen when LiquidControl starts.
-                ActivityManagerNative.getDefault().dismissKeyguardOnNextActivity();
-            } catch (RemoteException e) {
-            }
-            try {
-                v.getContext().startActivity(new Intent(Intent.ACTION_MAIN).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                    | Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)
-                .setClassName("com.liquid.control", "com.liquid.control.fragments.Performance"));
-                animateCollapse();
-            } catch (ActivityNotFoundException anfe) {
-                Log.d(TAG, "...could not find Liquid Control > Performance");
-            }
-            return true;
-        }
-    };
-
     private View.OnClickListener mDateListener = new View.OnClickListener() {
         public void onClick(View v) {
             try {
@@ -2361,7 +2337,7 @@ public class PhoneStatusBar extends StatusBar {
                 v.getContext().startActivity(new Intent(Intent.ACTION_MAIN).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
                     | Intent.FLAG_ACTIVITY_CLEAR_TASK
                     | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)
-                .setClassName("com.android.deskclock", "com.android.deskclock.AlarmClock"));
+                .setClassName("com.android.deskclock", "com.android.deskclock.SetAlarm"));
                 animateCollapse();
             } catch (ActivityNotFoundException anfe) {
                 Log.d(TAG, "...could not find AlarmClock");

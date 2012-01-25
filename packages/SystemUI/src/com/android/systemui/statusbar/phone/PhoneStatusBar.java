@@ -179,6 +179,7 @@ public class PhoneStatusBar extends StatusBar {
     TextView mNoNotificationsTitle;
     View mClearButton;
     View mSettingsButton;
+    View mLiquidButton;
 
     TogglesView mQuickToggles;
     BrightnessController mBrightness;

@@ -1092,7 +1092,9 @@ public class WifiService extends IWifiManager.Stub {
                 mWifiStateMachine.setHighPerfModeEnabled(strongestLockMode
                         == WifiManager.WIFI_MODE_FULL_HIGH_PERF);
             } else {
-                mWifiStateMachine.setDriverStart(false, mEmergencyCallbackMode);
+                /* This is an idle disconnect, we want to disconnect wifi right away.
+                 * To do that pretend that we are in ECM mode */
+                mWifiStateMachine.setDriverStart(false, true);
             }
         } else {
             mWifiStateMachine.setWifiEnabled(false);

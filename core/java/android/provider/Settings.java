@@ -2601,6 +2601,14 @@ public final class Settings {
          */
         
         public static final String CALL_DISABLE_LIGHTSOUT = "call_disable_lightsout";
+
+
+        /**
+         * Whether to allow the device to use landscape lockscreen layouts
+         * 
+         * @hide
+         */
+        public static final String LOCKSCREEN_LANDSCAPE = "lockscreen_landscape";
     }
    
 

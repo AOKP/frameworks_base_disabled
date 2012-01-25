@@ -28,6 +28,28 @@
         android:layout_height="@*android:dimen/status_bar_height"
         android:layout_gravity="bottom"
         >
+        
+        <RelativeLayout
+			android:layout_height="match_parent"
+			android:layout_width="match_parent">
+
+			<com.android.systemui.statusbar.policy.BatteryBarController
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:visibility="gone"
+				systemui:viewLocation="2"
+				android:layout_alignParentTop="true" />
+
+
+			<com.android.systemui.statusbar.policy.BatteryBarController
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:visibility="gone"
+				systemui:viewLocation="3"
+				android:layout_alignParentBottom="true" />
+
+		</RelativeLayout>
+		
         <RelativeLayout
             android:id="@+id/bar_contents"
             android:layout_width="match_parent"

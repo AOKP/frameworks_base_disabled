@@ -351,7 +351,7 @@ public class StatusBarManagerService extends IStatusBarService.Stub
             } catch (RemoteException ex) {}
         }
     }
-
+    
     private void enforceStatusBar() {
         mContext.enforceCallingOrSelfPermission(android.Manifest.permission.STATUS_BAR,
                 "StatusBarManagerService");

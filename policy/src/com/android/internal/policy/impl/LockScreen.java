@@ -440,10 +440,20 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
                         Settings.System.LOCKSCREEN_CUSTOM_APP_ACTIVITIES[i]);
                 Target t = new Target(i);
                 if (settingUri == null) {
-                    if(numTargets / 2 == (i))
+                    if(i == 0) {
+                        t.action = Target.ACTION_UNLOCK;
+                        t.setDrawable();
+                        targets.add(t);
+                    } else if (numTargets == 2 && i == 1) {
                         t.action = Target.ACTION_APP_CAMERA;
+                        t.setDrawable();
+                        targets.add(t);   
+                    } else if ((numTargets / 2) == (i+1)) {
+                        t.action = Target.ACTION_APP_CAMERA;
+                        t.setDrawable();
+                        targets.add(t); 
+                    }
                 } else {
-
                     if (settingUri.equals(Target.ACTION_UNLOCK)) {
                         t.action = Target.ACTION_UNLOCK;
                         unlockTarget = i;
@@ -460,15 +470,16 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
                     t.setDrawable();
                     targets.add(t);
                 }
+
             }
 
             if (unlockTarget == -1)
-                if(targets.size() > 0)
+                if(targets.size() > 1)
                     targets.get(0).action = Target.ACTION_UNLOCK;
                 else {
                     Target t = new Target(0);
                     t.action = Target.ACTION_UNLOCK;
-                    targets.add(t);
+                    targets.add(0, t);
                 }
         }
         

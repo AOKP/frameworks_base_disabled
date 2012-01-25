@@ -336,8 +336,8 @@ public class RecentsPanelView extends RelativeLayout implements OnItemClickListe
 
         if (Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.HORIZONTAL_RECENTS_TASK_PANEL,0) == 1) {
-        	mThumbnailWidth = Math.round(res.getDimension(R.dimen.status_bar_recents_thumbnail_width_webaokp));
         	mFitThumbnailToXY = res.getBoolean(R.bool.config_recents_thumbnail_image_fits_to_xy_webaokp);
+        	mThumbnailWidth = Math.round(res.getDimension(R.dimen.status_bar_recents_thumbnail_width_webaokp));
         }
         else{
             mFitThumbnailToXY = res.getBoolean(R.bool.config_recents_thumbnail_image_fits_to_xy);

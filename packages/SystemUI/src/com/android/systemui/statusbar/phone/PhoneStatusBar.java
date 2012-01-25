@@ -2345,7 +2345,6 @@ public class PhoneStatusBar extends StatusBar {
                 animateCollapse();
             } catch (ActivityNotFoundException anfe) {
                 Log.d(TAG, "...could not find Liquid Control > Performance");
-                Log.d(TAG, anfe.printStackTrace());
             }
             return true;
         }
@@ -2366,7 +2365,6 @@ public class PhoneStatusBar extends StatusBar {
                 animateCollapse();
             } catch (ActivityNotFoundException anfe) {
                 Log.d(TAG, "...could not find AlarmClock");
-                Log.d(TAG, anfe.printStackTrace());
             }
         }
     };

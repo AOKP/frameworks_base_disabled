@@ -2344,6 +2344,7 @@ public class PhoneStatusBar extends StatusBar {
             } catch (ActivityNotFoundException anfe) {
                 Log.d(TAG, "...could not find Liquid Control");
             }
+            return true;
         }
     };
 

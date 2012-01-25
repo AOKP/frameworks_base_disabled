@@ -99,6 +99,7 @@ private:
     bool mSyncQueues;
 
     bool mPaused;
+    bool mWasPaused; // if paused then store the info
 
     int64_t mLastPositionUpdateUs;
     int64_t mVideoLateByUs;

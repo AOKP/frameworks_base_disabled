@@ -2721,7 +2721,7 @@ public class PowerManagerService extends IPowerManager.Stub
             mLightSensorValue = value;
             if ((mPowerState & BATTERY_LOW_BIT) == 0) {
                 int lcdValue = getAutoBrightnessValue(
-                        (!mIsDocked ? value : mHighestLightSensorValue), mLastLcdValue,
+                        (mIsDocked ? value : mHighestLightSensorValue), mLastLcdValue,
                         (mCustomLightEnabled ? mCustomLightLevels : mAutoBrightnessLevels),
                         (mCustomLightEnabled ? mCustomLcdValues : mLcdBacklightValues));
 

@@ -18,20 +18,40 @@
 */
 -->
 
-<FrameLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@id/recent_item"
+    android:orientation="vertical"
     android:layout_height="match_parent"
     android:layout_width="wrap_content"
     android:paddingLeft="@dimen/status_bar_recents_item_padding"
     android:paddingRight="@dimen/status_bar_recents_item_padding">
-
-    <RelativeLayout android:id="@id/recent_item"
-        android:layout_gravity="center_vertical"
+    
+    <LinearLayout
+    	android:orientation="horizontal"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        android:paddingTop="0.0dip" 
-        android:layout_centerInParent="true">
-
+        android:paddingTop="0.0dip" >
+    
+        	
+        <TextView 
+        	android:id="@id/app_label"
+            android:textSize="@dimen/status_bar_recents_app_label_text_size" 
+			android:textColor="@color/status_bar_recents_app_label_color" 
+			android:ellipsize="marquee" 
+			android:paddingTop="0.0dip" 
+			android:fadingEdge="horizontal" 
+			android:fadingEdgeLength="@dimen/status_bar_recents_fading_edge_length" 
+			android:layout_width="wrap_content" 
+			android:layout_height="match_parent" 
+			android:layout_marginLeft="@dimen/status_bar_recents_app_label_left_margin" 
+			android:layout_marginTop="0.0dip" 
+			android:scrollHorizontally="true" 
+			android:singleLine="true" 
+			android:layout_gravity="center"
+			android:gravity="center"/>
+	
+	</LinearLayout>
 
         <FrameLayout android:id="@id/app_thumbnail"
             android:layout_width="wrap_content"
@@ -45,10 +65,10 @@
                 android:layout_width="@dimen/status_bar_recents_thumbnail_width_webaokp"
                 android:layout_height="@dimen/status_bar_recents_thumbnail_height_webaokp"
             />
-            <ImageView android:id="@id/app_icon"
-            	android:layout_width="wrap_content"
-            	android:layout_height="wrap_content"
-            	android:layout_marginTop="0.0dip"
+            <ImageView 
+        		android:id="@id/app_icon"
+        		android:layout_width="wrap_content"
+        		android:layout_height="wrap_content"
             	android:layout_marginLeft="@dimen/status_bar_recents_app_icon_left_margin"
             	android:layout_alignParentLeft="true"
             	android:layout_alignParentTop="true"
@@ -59,40 +79,19 @@
         	/>
         </FrameLayout>
 
-        <TextView android:id="@id/app_label"
-            android:textSize="@dimen/status_bar_recents_app_label_text_size" 
-			android:textColor="@color/status_bar_recents_app_label_color" 
-			android:ellipsize="marquee" 
-			android:paddingTop="0.0dip" 
-			android:fadingEdge="horizontal" 
-			android:fadingEdgeLength="@dimen/status_bar_recents_fading_edge_length" 
-			android:layout_width="@dimen/status_bar_recents_app_label_width" 
-			android:layout_height="fill_parent" 
-			android:layout_marginLeft="@dimen/status_bar_recents_app_label_left_margin" 
-			android:layout_marginTop="185.0dip" 
-			android:scrollHorizontally="true" 
-			android:singleLine="true" 
-			android:layout_below="@id/app_thumbnail" 
-			android:layout_alignLeft="@id/app_thumbnail" 
-			android:layout_alignParentBottom="true"
-        />
+    <TextView 
+        android:textSize="@dimen/status_bar_recents_app_description_text_size" 
+		android:ellipsize="marquee" 
+		android:id="@id/app_description" 
+		android:fadingEdge="horizontal" 
+		android:fadingEdgeLength="@dimen/status_bar_recents_fading_edge_length" 
+		android:layout_width="@dimen/status_bar_recents_app_label_width" 	
+		android:layout_height="wrap_content" 	
+		android:layout_marginLeft="@dimen/status_bar_recents_app_label_left_margin" 
+		android:scrollHorizontally="true" 
+		android:singleLine="true" 
+		android:layout_below="@id/app_label" 
+		android:layout_alignLeft="@id/app_thumbnail" 
+		android:layout_alignParentBottom="true" />
 
-        <TextView 
-        	android:textSize="@dimen/status_bar_recents_app_description_text_size" 
-			android:ellipsize="marquee" 
-			android:id="@id/app_description" 
-			android:fadingEdge="horizontal" 
-			android:fadingEdgeLength="@dimen/status_bar_recents_fading_edge_length" 
-			android:layout_width="@dimen/status_bar_recents_app_label_width" 
-			android:layout_height="wrap_content" 
-			android:layout_marginLeft="@dimen/status_bar_recents_app_label_left_margin" 
-			android:layout_marginTop="60.0dip" 
-			android:scrollHorizontally="true" 
-			android:singleLine="true" 
-			android:layout_below="@id/app_label" 
-			android:layout_alignLeft="@id/app_thumbnail" 
-			android:layout_alignParentBottom="true" />
-        />
-
-    </RelativeLayout>
-</FrameLayout>
+</LinearLayout>

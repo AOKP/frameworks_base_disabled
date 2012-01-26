@@ -2858,25 +2858,13 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             }
 
             // music is playing, don't wake the screen in case we need to skip track
-            if (isMusicActive() && down 
-                    && mVolumeWakeScreen 
-                    && isWakeKey 
+            if (isMusicActive()  
+                    && mVolumeWakeScreen
+                    && isWakeKey
                     && ((keyCode == KeyEvent.KEYCODE_VOLUME_UP) || (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN)))
                 isWakeKey = false;
 
-            // music is playing, we need to wake the screen on volume action up
-            if (isWakeKey 
-                    && (keyCode == KeyEvent.KEYCODE_VOLUME_UP) || (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) 
-                    && !down 
-                    && isMusicActive()) {
-                if (keyguardActive) {
-                    mKeyguardMediator.onWakeKeyWhenKeyguardShowingTq(KeyEvent.KEYCODE_POWER,
-                            mDockMode != Intent.EXTRA_DOCK_STATE_UNDOCKED);
-                } else {
-                    // Otherwise, wake the device ourselves.
-                    result |= ACTION_POKE_USER_ACTIVITY;
-                }
-            } else if (down && isWakeKey) {
+            if (down && isWakeKey) {
                 if (keyguardActive) {
                     // send power key code to wake the screen
                     if((keyCode == KeyEvent.KEYCODE_VOLUME_UP) || (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) && isWakeKey) {

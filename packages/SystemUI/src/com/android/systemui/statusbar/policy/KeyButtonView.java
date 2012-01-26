@@ -53,7 +53,7 @@ public class KeyButtonView extends ImageView {
     protected static final String TAG = "StatusBar.KeyButtonView";
 
     final float GLOW_MAX_SCALE_FACTOR = 1.8f;
-    final float BUTTON_QUIESCENT_ALPHA = 1f;
+    float BUTTON_QUIESCENT_ALPHA = 1f;
 
     IWindowManager mWindowManager;
     long mDownTime;
@@ -251,7 +251,7 @@ public class KeyButtonView extends ImageView {
                         mGlowScale = GLOW_MAX_SCALE_FACTOR;
                     if (mGlowAlpha < BUTTON_QUIESCENT_ALPHA)
                         mGlowAlpha = BUTTON_QUIESCENT_ALPHA;
-                    setDrawingAlpha(1f);
+                    setDrawingAlpha(BUTTON_QUIESCENT_ALPHA);
                     as.playTogether(
                             ObjectAnimator.ofFloat(this, "glowAlpha", 1f),
                             ObjectAnimator.ofFloat(this, "glowScale", GLOW_MAX_SCALE_FACTOR)
@@ -363,6 +363,13 @@ public class KeyButtonView extends ImageView {
             resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_TINT), false,
                     this);
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_GLOW_DURATION[1]),
+                    false,
+                    this);
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_BUTTON_ALPHA), false,
+                    this);
             updateSettings();
         }
 
@@ -379,8 +386,11 @@ public class KeyButtonView extends ImageView {
                 Settings.System.NAVIGATION_BAR_GLOW_DURATION[0], 50);
         durationSpeedOn = Settings.System.getInt(resolver,
                 Settings.System.NAVIGATION_BAR_GLOW_DURATION[1], 500);
-        setAlpha(Settings.System.getFloat(resolver, Settings.System.NAVIGATION_BAR_BUTTON_ALPHA,
-                0.6f));
+        BUTTON_QUIESCENT_ALPHA = Settings.System.getFloat(resolver,
+                Settings.System.NAVIGATION_BAR_BUTTON_ALPHA,
+                0.6f);
+        setDrawingAlpha(BUTTON_QUIESCENT_ALPHA);
+        invalidate();
 
         try {
             setColorFilter(null);

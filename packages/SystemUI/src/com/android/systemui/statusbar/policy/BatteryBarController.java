@@ -78,6 +78,8 @@ public class BatteryBarController extends LinearLayout {
         super.onConfigurationChanged(newConfig);
 
         updateSettings();
+
+        invalidate();
     }
 
     @Override
@@ -112,12 +114,12 @@ public class BatteryBarController extends LinearLayout {
 
     @Override
     protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
 
         if (isAttached) {
             isAttached = false;
             removeBars();
         }
+        super.onDetachedFromWindow();
     }
 
     public void addBars() {
@@ -170,8 +172,6 @@ public class BatteryBarController extends LinearLayout {
 
     public void removeBars() {
         removeAllViews();
-        if (isAttached)
-            postInvalidate();
     }
 
     public void updateSettings() {

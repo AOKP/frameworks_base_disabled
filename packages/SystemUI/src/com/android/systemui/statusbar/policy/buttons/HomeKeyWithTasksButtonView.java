@@ -35,7 +35,6 @@ public class HomeKeyWithTasksButtonView extends KeyButtonView {
             mSupportsLongpress = false;
 
         setOnLongClickListener(mLongPressListener);
-        Log.e(TAG, "Created");
 
     }
 

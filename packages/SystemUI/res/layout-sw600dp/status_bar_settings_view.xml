@@ -28,55 +28,6 @@
         android:orientation="vertical"
         >
 
-    <!-- Airplane mode -->
-    <LinearLayout
-            android:id="@+id/airplane"
-            style="@style/StatusBarPanelSettingsRow"
-            >
-        <ImageView
-                android:id="@+id/airplane_icon"
-                style="@style/StatusBarPanelSettingsIcon"
-                android:src="@drawable/ic_sysbar_airplane_on"
-                />
-        <TextView
-                android:id="@+id/airplane_label"
-                style="@style/StatusBarPanelSettingsContents"
-                android:text="@string/status_bar_settings_airplane"
-                />
-        <Switch
-                android:id="@+id/airplane_checkbox"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginRight="5dp"
-                />
-    </LinearLayout>
-    <View style="@style/StatusBarPanelSettingsPanelSeparator" />
-
-    <!-- Notifications / Do not disturb -->
-    <LinearLayout
-            android:id="@+id/do_not_disturb"
-            style="@style/StatusBarPanelSettingsRow"
-            >
-        <ImageView
-                android:id="@+id/do_not_disturb_icon"
-                style="@style/StatusBarPanelSettingsIcon"
-                android:src="@drawable/ic_notification_open"
-                />
-        <TextView
-                style="@style/StatusBarPanelSettingsContents"
-                android:text="@string/status_bar_settings_notifications"
-                />
-        <Switch
-                android:id="@+id/do_not_disturb_checkbox"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginRight="5dp"
-                />
-    </LinearLayout>
-    <View style="@style/StatusBarPanelSettingsPanelSeparator" />
-
     <!-- Link to settings -->
     <LinearLayout
             android:id="@+id/settings"

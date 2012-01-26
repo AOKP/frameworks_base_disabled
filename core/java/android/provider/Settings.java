@@ -2609,18 +2609,23 @@ public final class Settings {
          * @hide
          */
         public static final String LOCKSCREEN_LANDSCAPE = "lockscreen_landscape";
-        
+
         /**
-         * User selectable animation times on Nav Bar (times ins MS for on/off)
+         * [0] = how long to animate glow off
+         * [1] = how long to animate glow on
          * 
-         * 0 = 0 / 0
-         * 1 = 10 / 100   
-         * 2 = 40 / 250 (Stock AOKP)
-         * 3 = 50 / 500 (Stock ICS)
-         * 
+         * @hide
          */
-        public static final String NAV_BAR_ANIMATION_TIME = "nav_bar_animation_time";
-        
+        public static final String[] NAVIGATION_BAR_GLOW_DURATION = new String[] {
+                "navigation_bar_glow_duration_off",
+                "navigation_bar_glow_duration_on"
+        };
+
+        /**
+         * 
+         * @hide
+         */
+        public static final String NAVIGATION_BAR_BUTTON_ALPHA = "navigation_bar_button_alpha";
     }
    
 

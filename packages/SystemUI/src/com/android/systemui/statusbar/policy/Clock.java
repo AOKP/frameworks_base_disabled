@@ -75,8 +75,6 @@ public class Clock extends TextView {
     public Clock(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
 
-        SettingsObserver settingsObserver = new SettingsObserver(new Handler());
-        settingsObserver.observe();
     }
 
     @Override
@@ -93,6 +91,10 @@ public class Clock extends TextView {
             filter.addAction(Intent.ACTION_CONFIGURATION_CHANGED);
 
             getContext().registerReceiver(mIntentReceiver, filter, null, getHandler());
+
+            SettingsObserver settingsObserver = new SettingsObserver(new Handler());
+            settingsObserver.observe();
+            updateSettings();
         }
 
         // NOTE: It's safe to do these after registering the receiver since the receiver always runs
@@ -101,9 +103,7 @@ public class Clock extends TextView {
         // The time zone may have changed while the receiver wasn't registered, so update the Time
         mCalendar = Calendar.getInstance(TimeZone.getDefault());
 
-        updateSettings();
         // Make sure we update to the current time
-        // updateClock();
     }
 
     @Override
@@ -252,10 +252,6 @@ public class Clock extends TextView {
         mAmPmStyle = Settings.System.getInt(resolver, Settings.System.STATUSBAR_CLOCK_AM_PM_STYLE,
                 AM_PM_STYLE_GONE);
 
-        if (mAttached) {
-            updateClock();
-        }
-
         mClockColor = Settings.System.getInt(resolver, Settings.System.STATUSBAR_CLOCK_COLOR,
                 0xFF33B5E5);
         if (mClockColor == Integer.MIN_VALUE) {
@@ -269,7 +265,6 @@ public class Clock extends TextView {
 
         mShowClockDuringLockscreen = (Settings.System.getInt(resolver,
                 Settings.System.STATUSBAR_CLOCK_LOCKSCREEN_HIDE, 1) == 1);
-
     }
 
     protected void updateClockVisibility() {

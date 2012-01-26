@@ -46,8 +46,7 @@
 			android:orientation="horizontal"
 			android:id="@+id/lights_out"
 			android:visibility="gone" />
-			
-		
+
 		<RelativeLayout
 			android:layout_height="match_parent"
 			android:layout_width="match_parent">
@@ -76,6 +75,8 @@
 			android:layout_gravity="top"
 			android:clickable="true" />
 
+
+
 	</FrameLayout>
 
 	<FrameLayout
@@ -84,6 +85,30 @@
 		android:layout_width="match_parent"
 		android:visibility="gone"
 		android:paddingTop="0dp">
+
+		<LinearLayout
+			android:layout_height="match_parent"
+			android:layout_width="match_parent"
+			android:orientation="vertical"
+			android:clipChildren="false"
+			android:clipToPadding="false"
+			android:id="@+id/nav_buttons"
+			android:animateLayoutChanges="true" />
+
+		<LinearLayout
+			android:layout_height="match_parent"
+			android:layout_width="match_parent"
+			android:orientation="vertical"
+			android:id="@+id/lights_out"
+			android:visibility="gone" />
+
+		<View
+			android:id="@+id/deadzone"
+			android:layout_width="@dimen/navigation_bar_deadzone_size"
+			android:layout_height="match_parent"
+			android:layout_gravity="left"
+			android:clickable="true" />
+
 
 		<RelativeLayout
 			android:layout_height="match_parent"
@@ -108,29 +133,6 @@
 				android:rotation="180" />
 
 		</RelativeLayout>
-
-		<LinearLayout
-			android:layout_height="match_parent"
-			android:layout_width="match_parent"
-			android:orientation="vertical"
-			android:clipChildren="false"
-			android:clipToPadding="false"
-			android:id="@+id/nav_buttons"
-			android:animateLayoutChanges="true" />
-
-		<LinearLayout
-			android:layout_height="match_parent"
-			android:layout_width="match_parent"
-			android:orientation="vertical"
-			android:id="@+id/lights_out"
-			android:visibility="gone" />
-
-		<View
-			android:id="@+id/deadzone"
-			android:layout_width="@dimen/navigation_bar_deadzone_size"
-			android:layout_height="match_parent"
-			android:layout_gravity="left"
-			android:clickable="true" />
 	</FrameLayout>
     
     <!-- not used -->

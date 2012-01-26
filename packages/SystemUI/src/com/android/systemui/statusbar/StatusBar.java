@@ -23,6 +23,7 @@ import android.graphics.PixelFormat;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.os.ServiceManager;
+import android.os.SystemProperties;
 import android.provider.Settings;
 import android.util.Slog;
 import android.util.Log;
@@ -116,8 +117,10 @@ public abstract class StatusBar extends SystemUI implements CommandQueue.Callbac
 
         // Put up the view
         final int height = getStatusBarHeight();
+        final WindowManager.LayoutParams lp;
 
-        final WindowManager.LayoutParams lp = new WindowManager.LayoutParams(
+        if (!SystemProperties.OMAP_ENHANCEMENT) {
+        lp = new WindowManager.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 height,
                 WindowManager.LayoutParams.TYPE_STATUS_BAR,
@@ -128,7 +131,18 @@ public abstract class StatusBar extends SystemUI implements CommandQueue.Callbac
                 // to ensure that the layer can be handled by HWComposer.  On some devices the
                 // HWComposer is unable to handle SW-rendered RGBX_8888 layers.
                 PixelFormat.RGB_565);
-        
+        } else {
+        lp = new WindowManager.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                height,
+                WindowManager.LayoutParams.TYPE_STATUS_BAR,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                    | WindowManager.LayoutParams.FLAG_TOUCHABLE_WHEN_WAKING
+                    | WindowManager.LayoutParams.FLAG_SPLIT_TOUCH
+                    | WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
+                    PixelFormat.OPAQUE);
+        }
+
         // the status bar should be in an overlay if possible
         final Display defaultDisplay 
             = ((WindowManager)mContext.getSystemService(Context.WINDOW_SERVICE))

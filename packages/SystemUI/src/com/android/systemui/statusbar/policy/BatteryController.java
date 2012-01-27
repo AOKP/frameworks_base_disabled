@@ -16,10 +16,10 @@
 
 package com.android.systemui.statusbar.policy;
 
-import java.awt.Color;
 import java.util.ArrayList;
 
 import android.content.BroadcastReceiver;
+import android.graphics.Color;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -49,6 +49,8 @@ public class BatteryController extends LinearLayout {
 	private TextView mBatteryCenterText;
 	private ViewGroup mBatteryGroup;
 	private TextView mBatteryTextOnly;
+	
+	private static int mBatteryStyle;
 
 	public static final int STYLE_ICON_ONLY = 0;
 	public static final int STYLE_TEXT_ONLY = 1;

@@ -44,6 +44,8 @@ import android.view.ViewConfiguration;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.ImageView;
 
+import android.provider.Settings;
+
 import com.android.systemui.R;
 import com.android.systemui.statusbar.policy.Clock.SettingsObserver;
 
@@ -87,6 +89,8 @@ public class KeyButtonView extends ImageView {
     public KeyButtonView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs);
 
+        mContext = context;
+        
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.KeyButtonView,
                 defStyle, 0);
 
@@ -130,7 +134,42 @@ public class KeyButtonView extends ImageView {
             canvas.restore();
         }
     }
-
+/**  The next two functions return user definable animation times for 'fast glow'
+ * 
+ */
+    public int getAnimationOnTime() {
+    	switch(Settings.System.getInt(mContext.getContentResolver(), 
+        		Settings.System.NAV_BAR_ANIMATION_TIME, 0)) {
+    	case 0:
+    		return 0;
+    	case 1:
+    		return 10;
+    	case 2:
+    		return 40;
+    	case 3:
+    		return 50;
+    	default:
+    		return 40;
+    	}
+    }
+    
+    public int getAnimationOffTime() {
+        switch(Settings.System.getInt(mContext.getContentResolver(), 
+        		Settings.System.NAV_BAR_ANIMATION_TIME, 0)) {
+        case 0:
+        	return 0;
+        case 1:
+        	return 100;
+        case 2:
+        	return 250;
+        case 3:
+        	return 500;
+        default:
+        	return 250;
+        	}
+               
+    }
+    
     public void setSupportsLongPress(boolean supports) {
         mSupportsLongpress = supports;
     }
@@ -312,6 +351,7 @@ public class KeyButtonView extends ImageView {
             // System process is dead
         }
     }
+   
 
     class SettingsObserver extends ContentObserver {
         SettingsObserver(Handler handler) {

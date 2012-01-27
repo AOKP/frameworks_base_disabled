@@ -1389,10 +1389,13 @@ status_t StagefrightRecorder::setupVideoEncoder(
     CHECK_EQ(client.connect(), OK);
 
     uint32_t encoder_flags = 0;
+
+    /* Comment out as temporary hack for camcorder
     if (mIsMetaDataStoredInVideoBuffers) {
         encoder_flags |= OMXCodec::kHardwareCodecsOnly;
         encoder_flags |= OMXCodec::kStoreMetaDataInVideoBuffers;
     }
+    */
 
     // Do not wait for all the input buffers to become available.
     // This give timelapse video recording faster response in

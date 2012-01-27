@@ -20,6 +20,10 @@ import java.util.ArrayList;
 
 import android.content.BroadcastReceiver;
 import android.graphics.Color;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.RelativeSizeSpan;
+import android.text.style.CharacterStyle;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -180,7 +184,7 @@ public class BatteryController extends LinearLayout {
 		// Slog.i(TAG, "updated settings values");
 		ContentResolver cr = mContext.getContentResolver();
 		mBatteryStyle = Settings.System.getInt(cr,
-				Settings.System.STATUSBAR_BATTERY_ICON, 0) == 1;
+				Settings.System.STATUSBAR_BATTERY_ICON, 0);
 
 		switch (mBatteryStyle) {
 		case STYLE_ICON_ONLY:

@@ -151,12 +151,12 @@ public class BatteryController extends LinearLayout {
 						Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
 			}
 			mBatteryTextOnly.setText(formatted);
-			if (plugged) { // colors hardcoded so far, colorpicker can be added if needed
+			if (plugged) { // colors hardcoded by now, maybe colorpicker can be added if needed
 				mBatteryTextOnly.setTextColor(Color.GREEN);
 			} else if (level < 16) {
 				mBatteryTextOnly.setTextColor(Color.RED);
 			} else {
-				mBatteryTextOnly.setTextColor(R.color.ICS_color);
+				mBatteryTextOnly.setTextColor(0xFF33B5E5);
 			}
 
 		}
@@ -192,35 +192,42 @@ public class BatteryController extends LinearLayout {
 			mBatteryText.setVisibility(View.GONE);
 			mBatteryIcon.setVisibility(View.VISIBLE);
 			mBatteryTextOnly.setVisibility(View.GONE);
+			setVisibility(View.VISIBLE);
 			break;
 		case STYLE_TEXT_ONLY:
 			mBatteryText.setVisibility(View.GONE);
 			mBatteryCenterText.setVisibility(View.GONE);
 			mBatteryIcon.setVisibility(View.GONE);
 			mBatteryTextOnly.setVisibility(View.VISIBLE);
+			setVisibility(View.VISIBLE);
 			break;
 		case STYLE_ICON_TEXT:
 			mBatteryText.setVisibility(View.VISIBLE);
 			mBatteryCenterText.setVisibility(View.GONE);
 			mBatteryIcon.setVisibility(View.VISIBLE);
 			mBatteryTextOnly.setVisibility(View.GONE);
+			setVisibility(View.VISIBLE);
 			break;
 		case STYLE_ICON_CENTERED_TEXT:
 			mBatteryText.setVisibility(View.GONE);
 			mBatteryCenterText.setVisibility(View.VISIBLE);
 			mBatteryIcon.setVisibility(View.VISIBLE);
 			mBatteryTextOnly.setVisibility(View.GONE);
+			setVisibility(View.VISIBLE);
 			break;
 		case STYLE_HIDE:
 			mBatteryText.setVisibility(View.GONE);
 			mBatteryCenterText.setVisibility(View.GONE);
 			mBatteryIcon.setVisibility(View.GONE);
 			mBatteryTextOnly.setVisibility(View.GONE);
+			setVisibility(View.GONE);
+			break;
 		default:
 			mBatteryText.setVisibility(View.GONE);
 			mBatteryCenterText.setVisibility(View.GONE);
 			mBatteryIcon.setVisibility(View.VISIBLE);
 			mBatteryTextOnly.setVisibility(View.GONE);
+			setVisibility(View.VISIBLE);
 			break;
 		}
 

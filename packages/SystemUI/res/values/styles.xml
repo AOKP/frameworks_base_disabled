@@ -47,7 +47,7 @@
         <item name="android:textColor">@android:color/holo_blue_light</item>
     </style>
 
-    <style name="TextAppearance.StatusBar.BatteryTextOnly" parent="@*android:style/TextAppearance.StatusBa$
+    <style name="TextAppearance.StatusBar.BatteryTextOnly" parent="@*android:style/TextAppearance.StatusBar.Icon">
         <!-- Note: must be dp to fit in status bar -->
         <item name="android:textSize">16dp</item>
         <item name="android:textStyle">normal</item>

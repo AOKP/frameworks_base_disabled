@@ -19,6 +19,11 @@ package com.android.systemui.statusbar.policy;
 import java.util.ArrayList;
 
 import android.content.BroadcastReceiver;
+import android.graphics.Color;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.RelativeSizeSpan;
+import android.text.style.CharacterStyle;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -37,156 +42,196 @@ import android.widget.TextView;
 import com.android.systemui.R;
 
 public class BatteryController extends LinearLayout {
-    private static final String TAG = "StatusBar.BatteryController";
+	private static final String TAG = "StatusBar.BatteryController";
 
-    private Context mContext;
-    private ArrayList<ImageView> mIconViews = new ArrayList<ImageView>();
-    private ArrayList<TextView> mLabelViews = new ArrayList<TextView>();
+	private Context mContext;
+	private ArrayList<ImageView> mIconViews = new ArrayList<ImageView>();
+	private ArrayList<TextView> mLabelViews = new ArrayList<TextView>();
 
-    private ImageView mBatteryIcon;
-    private TextView mBatteryText;
-    private TextView mBatteryCenterText;
-    private ViewGroup mBatteryGroup;
+	private ImageView mBatteryIcon;
+	private TextView mBatteryText;
+	private TextView mBatteryCenterText;
+	private ViewGroup mBatteryGroup;
+	private TextView mBatteryTextOnly;
+	
+	private static int mBatteryStyle;
 
-    private boolean mShowBatteryText;
+	public static final int STYLE_ICON_ONLY = 0;
+	public static final int STYLE_TEXT_ONLY = 1;
+	public static final int STYLE_ICON_TEXT = 2;
+	public static final int STYLE_ICON_CENTERED_TEXT = 3;
+	public static final int STYLE_HIDE = 4;
 
-    public static final int STYLE_OFFSET = 0;
-    public static final int STYLE_CENTER = 1;
+	public BatteryController(Context context, AttributeSet attrs) {
+		super(context, attrs);
+		mContext = context;
 
-    private int mBatteryTextStyle = STYLE_OFFSET;
+	}
 
-    private boolean mShowIcon = true;
+	@Override
+	protected void onAttachedToWindow() {
+		super.onAttachedToWindow();
+		init();
+		mBatteryGroup = (ViewGroup) findViewById(R.id.battery_combo);
+		mBatteryIcon = (ImageView) findViewById(R.id.battery);
+		mBatteryText = (TextView) findViewById(R.id.battery_text);
+		mBatteryCenterText = (TextView) findViewById(R.id.battery_text_center);
+		mBatteryTextOnly = (TextView) findViewById(R.id.battery_text_only);
+		addIconView(mBatteryIcon);
 
-    public BatteryController(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        mContext = context;
+		SettingsObserver settingsObserver = new SettingsObserver(new Handler());
+		settingsObserver.observe();
+		updateSettings(); // to initialize values
 
-    }
+	}
 
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        init();
-        mBatteryGroup = (ViewGroup) findViewById(R.id.battery_combo);
-        mBatteryIcon = (ImageView) findViewById(R.id.battery);
-        mBatteryText = (TextView) findViewById(R.id.battery_text);
-        mBatteryCenterText = (TextView) findViewById(R.id.battery_text_center);
-        addIconView(mBatteryIcon);
+	private void init() {
+		IntentFilter filter = new IntentFilter();
+		filter.addAction(Intent.ACTION_BATTERY_CHANGED);
+		mContext.registerReceiver(mBatteryBroadcastReceiver, filter);
+	}
 
-        SettingsObserver settingsObserver = new SettingsObserver(new Handler());
-        settingsObserver.observe();
-        updateSettings(); // to initialize values
-    }
+	public void addIconView(ImageView v) {
+		mIconViews.add(v);
+	}
 
-    private void init() {
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(Intent.ACTION_BATTERY_CHANGED);
-        mContext.registerReceiver(mBatteryBroadcastReceiver, filter);
-    }
+	public void addLabelView(TextView v) {
+		mLabelViews.add(v);
+	}
 
-    public void addIconView(ImageView v) {
-        mIconViews.add(v);
-    }
+	private BroadcastReceiver mBatteryBroadcastReceiver = new BroadcastReceiver() {
 
-    public void addLabelView(TextView v) {
-        mLabelViews.add(v);
-    }
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			final String action = intent.getAction();
+			if (action.equals(Intent.ACTION_BATTERY_CHANGED)) {
+				final int level = intent.getIntExtra(
+						BatteryManager.EXTRA_LEVEL, 0);
+				final boolean plugged = intent.getIntExtra(
+						BatteryManager.EXTRA_PLUGGED, 0) != 0;
+				setBatteryIcon(level, plugged);
+			}
+		}
+	};
 
-    private BroadcastReceiver mBatteryBroadcastReceiver = new BroadcastReceiver() {
+	private void setBatteryIcon(int level, boolean plugged) {
+		final int icon = plugged ? R.drawable.stat_sys_battery_charge
+				: R.drawable.stat_sys_battery;
+		int N = mIconViews.size();
+		for (int i = 0; i < N; i++) {
+			ImageView v = mIconViews.get(i);
+			v.setImageResource(icon);
+			v.setImageLevel(level);
+			v.setContentDescription(mContext.getString(
+					R.string.accessibility_battery_level, level));
+		}
+		N = mLabelViews.size();
+		for (int i = 0; i < N; i++) {
+			TextView v = mLabelViews.get(i);
+			v.setText(mContext.getString(
+					R.string.status_bar_settings_battery_meter_format, level));
+		}
 
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            final String action = intent.getAction();
-            if (action.equals(Intent.ACTION_BATTERY_CHANGED)) {
-                final int level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0);
-                final boolean plugged = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0) != 0;
-                setBatteryIcon(level, plugged);
-            }
-        }
-    };
+		// do my stuff here
+		if (mBatteryGroup != null) {
+			mBatteryText.setText(Integer.toString(level));
+			mBatteryCenterText.setText(Integer.toString(level));
+			mBatteryTextOnly.setText(Integer.toString(level));
+			SpannableStringBuilder formatted = new SpannableStringBuilder(
+					Integer.toString(level) + "%");
+			CharacterStyle style = new RelativeSizeSpan(0.7f); // beautiful formatting
+			if (level < 10) { // level < 10, 2nd char is %
+				formatted.setSpan(style, 1, 2,
+						Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
+			} else if (level < 100) { // level 10-99, 3rd char is %
+				formatted.setSpan(style, 2, 3,
+						Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
+			} else { // level 100, 4th char is %
+				formatted.setSpan(style, 3, 4,
+						Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
+			}
+			mBatteryTextOnly.setText(formatted);
+			if (plugged) { // colors hardcoded by now, maybe colorpicker can be added if needed
+				mBatteryTextOnly.setTextColor(Color.GREEN);
+			} else if (level < 16) {
+				mBatteryTextOnly.setTextColor(Color.RED);
+			} else {
+				mBatteryTextOnly.setTextColor(0xFF33B5E5);
+			}
 
-    private void setBatteryIcon(int level, boolean plugged) {
-        final int icon = plugged ? R.drawable.stat_sys_battery_charge
-                : R.drawable.stat_sys_battery;
-        int N = mIconViews.size();
-        for (int i = 0; i < N; i++) {
-            ImageView v = mIconViews.get(i);
-            v.setImageResource(icon);
-            v.setImageLevel(level);
-            v.setContentDescription(mContext.getString(
-                    R.string.accessibility_battery_level,
-                    level));
-        }
-        N = mLabelViews.size();
-        for (int i = 0; i < N; i++) {
-            TextView v = mLabelViews.get(i);
-            v.setText(mContext.getString(R.string.status_bar_settings_battery_meter_format,
-                    level));
-        }
+		}
+	}
 
-        // do my stuff here
-        if (mBatteryGroup != null) {
-            mBatteryText.setText(Integer.toString(level));
-            mBatteryCenterText.setText(Integer.toString(level));
-        }
-    }
+	class SettingsObserver extends ContentObserver {
+		SettingsObserver(Handler handler) {
+			super(handler);
+		}
 
-    class SettingsObserver extends ContentObserver {
-        SettingsObserver(Handler handler) {
-            super(handler);
-        }
+		void observe() {
+			ContentResolver resolver = mContext.getContentResolver();
+			resolver.registerContentObserver(Settings.System
+					.getUriFor(Settings.System.STATUSBAR_BATTERY_ICON), false,
+					this);
+		}
 
-        void observe() {
-            ContentResolver resolver = mContext.getContentResolver();
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.STATUSBAR_BATTERY_TEXT), false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.STATUSBAR_BATTERY_TEXT_STYLE), false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.STATUSBAR_BATTERY_ICON), false, this);
-        }
+		@Override
+		public void onChange(boolean selfChange) {
+			updateSettings();
+		}
+	}
 
-        @Override
-        public void onChange(boolean selfChange) {
-            updateSettings();
-        }
-    }
+	private void updateSettings() {
+		// Slog.i(TAG, "updated settings values");
+		ContentResolver cr = mContext.getContentResolver();
+		mBatteryStyle = Settings.System.getInt(cr,
+				Settings.System.STATUSBAR_BATTERY_ICON, 0);
 
-    private void updateSettings() {
-        // Slog.i(TAG, "updated settings values");
-        ContentResolver cr = mContext.getContentResolver();
-        mShowBatteryText = Settings.System
-                .getInt(cr, Settings.System.STATUSBAR_BATTERY_TEXT, 0) == 1;
+		switch (mBatteryStyle) {
+		case STYLE_ICON_ONLY:
+			mBatteryCenterText.setVisibility(View.GONE);
+			mBatteryText.setVisibility(View.GONE);
+			mBatteryIcon.setVisibility(View.VISIBLE);
+			mBatteryTextOnly.setVisibility(View.GONE);
+			setVisibility(View.VISIBLE);
+			break;
+		case STYLE_TEXT_ONLY:
+			mBatteryText.setVisibility(View.GONE);
+			mBatteryCenterText.setVisibility(View.GONE);
+			mBatteryIcon.setVisibility(View.GONE);
+			mBatteryTextOnly.setVisibility(View.VISIBLE);
+			setVisibility(View.VISIBLE);
+			break;
+		case STYLE_ICON_TEXT:
+			mBatteryText.setVisibility(View.VISIBLE);
+			mBatteryCenterText.setVisibility(View.GONE);
+			mBatteryIcon.setVisibility(View.VISIBLE);
+			mBatteryTextOnly.setVisibility(View.GONE);
+			setVisibility(View.VISIBLE);
+			break;
+		case STYLE_ICON_CENTERED_TEXT:
+			mBatteryText.setVisibility(View.GONE);
+			mBatteryCenterText.setVisibility(View.VISIBLE);
+			mBatteryIcon.setVisibility(View.VISIBLE);
+			mBatteryTextOnly.setVisibility(View.GONE);
+			setVisibility(View.VISIBLE);
+			break;
+		case STYLE_HIDE:
+			mBatteryText.setVisibility(View.GONE);
+			mBatteryCenterText.setVisibility(View.GONE);
+			mBatteryIcon.setVisibility(View.GONE);
+			mBatteryTextOnly.setVisibility(View.GONE);
+			setVisibility(View.GONE);
+			break;
+		default:
+			mBatteryText.setVisibility(View.GONE);
+			mBatteryCenterText.setVisibility(View.GONE);
+			mBatteryIcon.setVisibility(View.VISIBLE);
+			mBatteryTextOnly.setVisibility(View.GONE);
+			setVisibility(View.VISIBLE);
+			break;
+		}
 
-        mBatteryTextStyle = Settings.System
-                .getInt(cr, Settings.System.STATUSBAR_BATTERY_TEXT_STYLE, STYLE_OFFSET);
+		setVisibility(View.VISIBLE);
 
-        if (mShowBatteryText) {
-            switch (mBatteryTextStyle) {
-                case STYLE_OFFSET:
-                    mBatteryCenterText.setVisibility(View.GONE);
-                    mBatteryText.setVisibility(View.VISIBLE);
-                    break;
-                case STYLE_CENTER:
-                    mBatteryText.setVisibility(View.GONE);
-                    mBatteryCenterText.setVisibility(View.VISIBLE);
-                    break;
-                default:
-                    mBatteryText.setVisibility(View.GONE);
-                    mBatteryCenterText.setVisibility(View.GONE);
-                    break;
-            }
-        } else {
-            mBatteryText.setVisibility(View.GONE);
-            mBatteryCenterText.setVisibility(View.GONE);
-        }
-
-        mShowIcon = Settings.System
-                .getInt(cr, Settings.System.STATUSBAR_BATTERY_ICON, 1) == 1;
-        if (mShowIcon)
-            setVisibility(View.VISIBLE);
-        else
-            setVisibility(View.GONE);
-
-    }
+	}
 }

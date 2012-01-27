@@ -17545,6 +17545,9 @@ package android.provider {
     field public static final deprecated java.lang.String HTTP_PROXY = "http_proxy";
     field public static final deprecated java.lang.String INSTALL_NON_MARKET_APPS = "install_non_market_apps";
     field public static final deprecated java.lang.String LOCATION_PROVIDERS_ALLOWED = "location_providers_allowed";
+    field public static final java.lang.String LOCKSCREEN_STYLE_MULITWAVEVIEW_3WAY = "lockscreen_style_multiwaveview_3way";
+    field public static final java.lang.String LOCKSCREEN_STYLE_MULITWAVEVIEW_4WAY = "lockscreen_style_multiwaveview_4way";
+    field public static final java.lang.String LOCKSCREEN_STYLE_MULITWAVEVIEW_8WAY = "lockscreen_style_multiwaveview_8way";
     field public static final deprecated java.lang.String LOCK_PATTERN_ENABLED = "lock_pattern_autolock";
     field public static final deprecated java.lang.String LOCK_PATTERN_TACTILE_FEEDBACK_ENABLED = "lock_pattern_tactile_feedback_enabled";
     field public static final deprecated java.lang.String LOCK_PATTERN_VISIBLE = "lock_pattern_visible_pattern";

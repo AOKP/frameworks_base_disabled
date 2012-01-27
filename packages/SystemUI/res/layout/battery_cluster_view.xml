@@ -47,5 +47,14 @@
 			android:shadowDy="0"
 			android:shadowRadius="2.5"
 			android:visibility="gone" />
+			
+		<TextView
+			android:id="@+id/battery_text_only"
+			android:textAppearance="@style/TextAppearance.StatusBar.BatteryTextOnly"
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:text="@string/battery_test"
+			android:singleLine="true"
+			android:visibility="gone" />
 	</FrameLayout>
 </com.android.systemui.statusbar.policy.BatteryController>

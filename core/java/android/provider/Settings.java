@@ -2403,13 +2403,6 @@ public final class Settings {
         public static final String NAVIGATION_BAR_LAYOUT = "navigation_bar_layout";
 
         /**
-         * Whether to show the battery text next to the battery icon. Boolean value.
-         * 
-         * @hide
-         */
-        public static final String STATUSBAR_BATTERY_TEXT = "statusbar_battery_text";
-
-        /**
          * How long to keep the notification LED on (in milliseconds)
          * 
          * @hide
@@ -2452,11 +2445,6 @@ public final class Settings {
          * @hide
          */
         public static final String STATUSBAR_QUICKTOGGLES_AUTOHIDE = "statusbar_quicktoggles_autohide";
-
-        /**
-         * @hide
-         */
-        public static final String STATUSBAR_BATTERY_TEXT_STYLE = "statusbar_battery_text_style";
 
         /**
          * @hide
@@ -2672,6 +2660,13 @@ public final class Settings {
          * @hide
          */
         public static final String STATUSBAR_BATTERY_BAR = "statusbar_battery_bar";
+        
+        /**
+         * Style of the battery icon
+         * 
+         * @hide
+         */
+        public static final String STATUSBAR_BATTERY_ICON = "statusbar_battery_icon";
 
         /**
          * @hide
@@ -2683,13 +2678,6 @@ public final class Settings {
          * @hide
          */
         public static final String STATUSBAR_TOGGLES_VISIBILITY = "statusbar_toggles_visibility";
-
-        /**
-         * Whether to show the battery icon
-         * 
-         * @hide
-         */
-        public static final String STATUSBAR_BATTERY_ICON = "statusbar_battery_icon";
 
 		/**
          * 0 = stock

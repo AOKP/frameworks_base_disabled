@@ -27,6 +27,54 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         >
+        
+    <!-- Toggles Toggle -->
+    <LinearLayout
+            android:id="@+id/toggles"
+            style="@style/StatusBarPanelSettingsRow"
+            >
+        <ImageView
+                android:id="@+id/do_not_disturb_icon"
+                style="@style/StatusBarPanelSettingsIcon"
+                android:src="@drawable/ic_sysbar_quicksettings"
+                />
+        <TextView
+                style="@style/StatusBarPanelSettingsContents"
+                android:text="@string/status_bar_settings_toggles"
+                />
+        <Switch
+                android:id="@+id/toggles_toggle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="5dp"
+                />
+    </LinearLayout>
+    <View style="@style/StatusBarPanelSettingsPanelSeparator" />    
+        
+    <!-- Notifications / Do not disturb -->
+    <LinearLayout
+            android:id="@+id/do_not_disturb"
+            style="@style/StatusBarPanelSettingsRow"
+            >
+        <ImageView
+                android:id="@+id/do_not_disturb_icon"
+                style="@style/StatusBarPanelSettingsIcon"
+                android:src="@drawable/ic_notification_open"
+                />
+        <TextView
+                style="@style/StatusBarPanelSettingsContents"
+                android:text="@string/status_bar_settings_notifications"
+                />
+        <Switch
+                android:id="@+id/do_not_disturb_checkbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="5dp"
+                />
+    </LinearLayout>
+    <View style="@style/StatusBarPanelSettingsPanelSeparator" />
 
     <!-- Link to settings -->
     <LinearLayout

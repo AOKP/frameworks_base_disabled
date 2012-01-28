@@ -36,6 +36,7 @@ import android.view.animation.Interpolator;
 import android.widget.RelativeLayout;
 
 import com.android.systemui.R;
+import com.android.systemui.statusbar.policy.Prefs;
 import com.android.systemui.statusbar.policy.toggles.TogglesView;
 
 public class NotificationPanel extends RelativeLayout implements StatusBarPanel,
@@ -67,6 +68,7 @@ public class NotificationPanel extends RelativeLayout implements StatusBarPanel,
     Choreographer mChoreo = new Choreographer();
 
     TogglesView mQuickToggles;
+    boolean togglesVisible;
 
     public NotificationPanel(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
@@ -105,6 +107,7 @@ public class NotificationPanel extends RelativeLayout implements StatusBarPanel,
         mShowing = false;
 
         mQuickToggles = (TogglesView) findViewById(R.id.quick_toggles);
+        setToggleVisibility();
 
         setContentFrameVisible(mNotificationCount > 0, false);
     }
@@ -120,6 +123,7 @@ public class NotificationPanel extends RelativeLayout implements StatusBarPanel,
     }
 
     public void show(boolean show, boolean animate) {
+        setToggleVisibility();
         if (show && !mShowing) {
             setContentFrameVisible(mSettingsView != null || mNotificationCount > 0, false);
         }
@@ -221,7 +225,23 @@ public class NotificationPanel extends RelativeLayout implements StatusBarPanel,
         mNotificationCount = n;
     }
 
+    private void setToggleVisibility() {
+        togglesVisible = Prefs.read(getContext()).getBoolean(Prefs.SHOW_TOGGLES, true);
+        mQuickToggles
+                .setVisibility(togglesVisible ? View.VISIBLE
+                        : View.GONE);
+
+        DisplayMetrics metrics = getContext().getResources().getDisplayMetrics();
+        float dp = -50f;
+        int pixels = (int) (metrics.density * dp + 0.5f);
+
+        LayoutParams lp = (LayoutParams) mContentFrame.getLayoutParams();
+        lp.bottomMargin = (!togglesVisible ? pixels : 0);
+        mContentFrame.setLayoutParams(lp);
+    }
+
     private void adjustQuickToggles(boolean showing) {
+
         DisplayMetrics metrics = getContext().getResources().getDisplayMetrics();
         float dp = -50f;
         int pixels = (int) (metrics.density * dp + 0.5f);
@@ -232,6 +252,7 @@ public class NotificationPanel extends RelativeLayout implements StatusBarPanel,
     }
 
     public void setContentFrameVisible(final boolean showing, boolean animate) {
+        setToggleVisibility();
         if (!animate) {
             mContentFrame.setVisibility(showing ? View.VISIBLE : View.GONE);
             adjustQuickToggles(showing);
@@ -270,6 +291,7 @@ public class NotificationPanel extends RelativeLayout implements StatusBarPanel,
     }
 
     public void swapPanels() {
+        setToggleVisibility();
         final View toShow, toHide;
         if (mSettingsView == null) {
             addSettingsView();
@@ -304,6 +326,7 @@ public class NotificationPanel extends RelativeLayout implements StatusBarPanel,
                 }
                 updateClearButton();
                 updatePanelModeButtons();
+                setToggleVisibility();
             }
         });
         a.start();

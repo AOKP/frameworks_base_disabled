@@ -64,7 +64,6 @@ public class TogglesView extends LinearLayout {
     public static final String STOCK_TOGGLES = TOGGLE_WIFI + TOGGLE_DELIMITER
             + TOGGLE_BLUETOOTH + TOGGLE_DELIMITER
             + TOGGLE_GPS + TOGGLE_DELIMITER
-            + TOGGLE_DATA + TOGGLE_DELIMITER
             + TOGGLE_AUTOROTATE;
 
     View mBrightnessSlider;

@@ -134,41 +134,6 @@ public class KeyButtonView extends ImageView {
             canvas.restore();
         }
     }
-/**  The next two functions return user definable animation times for 'fast glow'
- * 
- */
-    public int getAnimationOnTime() {
-    	switch(Settings.System.getInt(mContext.getContentResolver(), 
-        		Settings.System.NAV_BAR_ANIMATION_TIME, 0)) {
-    	case 0:
-    		return 0;
-    	case 1:
-    		return 10;
-    	case 2:
-    		return 40;
-    	case 3:
-    		return 50;
-    	default:
-    		return 40;
-    	}
-    }
-    
-    public int getAnimationOffTime() {
-        switch(Settings.System.getInt(mContext.getContentResolver(), 
-        		Settings.System.NAV_BAR_ANIMATION_TIME, 0)) {
-        case 0:
-        	return 0;
-        case 1:
-        	return 100;
-        case 2:
-        	return 250;
-        case 3:
-        	return 500;
-        default:
-        	return 250;
-        	}
-               
-    }
     
     public void setSupportsLongPress(boolean supports) {
         mSupportsLongpress = supports;

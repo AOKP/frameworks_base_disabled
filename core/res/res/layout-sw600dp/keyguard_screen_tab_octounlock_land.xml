@@ -19,28 +19,26 @@
 
 <!-- This is the general lock screen which shows information about the
   state of the device, as well as instructions on how to get past it
-  depending on the state of the device.  It is the same for landscape
-  and portrait.-->
+  depending on the state of the device.-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tabunlock="http://schemas.android.com/apk/res/com.android.tabunlock"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     android:id="@+id/root">
 
-    <!-- top: status -->
+    <!-- left side: status and music -->
     <RelativeLayout
-        android:layout_height="0dip"
+        android:layout_height="match_parent"
         android:layout_weight="1"
-        android:layout_width="match_parent"
+        android:layout_width="0dip"
         android:gravity="center">
 
         <RelativeLayout android:id="@+id/transport_bg_protect"
             android:layout_width="512dip"
-            android:layout_height="wrap_content"
-            android:gravity="center">
+            android:layout_height="wrap_content">
 
-            <!-- Music transport control -->
+            <!-- Music transport control underneath -->
             <include android:id="@+id/transport"
                 layout="@layout/keyguard_transport_control"
                 android:layout_row="0"
@@ -52,12 +50,12 @@
                 android:layout_height="512dip"
                 />
 
-            <include layout="@layout/keyguard_screen_status_port"
-                android:layout_width="wrap_content"
+            <include layout="@layout/keyguard_screen_status_land"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="50dip"
                 android:layout_marginTop="50dip"
-                android:layout_marginBottom="100dip"
+                android:layout_marginBottom="82dip"
                 android:layout_marginRight="64dip"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentLeft="true"/>
@@ -66,29 +64,30 @@
 
     </RelativeLayout>
 
-    <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dip"
-            android:layout_weight="1"
-            android:orientation="vertical">
+    <!-- right side -->
+    <RelativeLayout
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:layout_width="0dip"
+        android:gravity="center_horizontal|center_vertical">
 
         <TextView
             android:id="@+id/screenLocked"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="24dip"
             android:textAppearance="?android:attr/textAppearanceMedium"
+            android:gravity="center"
             android:layout_marginTop="12dip"
-            android:drawablePadding="4dip"
-            />
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:drawablePadding="4dip"/>
 
         <com.android.internal.widget.multiwaveview.MultiWaveView
             android:id="@+id/unlock_widget"
-            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_alignParentBottom="true"
-            android:layout_gravity="center"
+            android:layout_rowSpan="7"
+            android:layout_gravity="center_vertical|center_horizontal"
 
             android:targetDrawables="@array/lockscreen_targets_with_camera"
             android:targetDescriptions="@array/lockscreen_target_descriptions_with_camera"
@@ -99,26 +98,26 @@
             android:snapMargin="@dimen/multiwaveview_snap_margin"
             android:hitRadius="@dimen/multiwaveview_hit_radius"
             android:rightChevronDrawable="@drawable/ic_lockscreen_chevron_right"
-            android:horizontalOffset="0dip"
-            android:verticalOffset="0dip"
             android:feedbackCount="3"
             android:vibrationDuration="20"
-            />
+            android:horizontalOffset="0dip"
+            android:verticalOffset="0dip"
+        />
 
         <!-- emergency call button shown when sim is PUKd and tab_selector is hidden -->
         <Button
             android:id="@+id/emergencyCallButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:drawableLeft="@drawable/ic_emergency"
-            android:layout_centerInParent="true"
+            android:layout_marginRight="80dip"
+            android:layout_marginBottom="80dip"
+            android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
-            android:layout_marginBottom="90dip"
+            android:drawableLeft="@drawable/ic_emergency"
             style="@style/Widget.Button.Transparent"
             android:drawablePadding="8dip"
-            android:visibility="gone"
-            />
-    </LinearLayout>
+            android:visibility="gone"/>
+
+    </RelativeLayout>>
 
 </LinearLayout>
-

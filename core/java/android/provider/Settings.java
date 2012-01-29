@@ -2583,27 +2583,6 @@ public final class Settings {
         
         
         /**
-         * Allow Landscape in call
-         */
-        
-        public static final String CALL_ENABLE_LANDSCAPE = "call_enable_landscape";
-        
-        /**
-         * Enable use of statusbar while in call
-         * 
-   		*/
-        
-        public static final String CALL_ENABLE_STATUSBAR = "call_enable_statusbar";
-        
-        /**
-         * Disable Lighouts while in call
-         * 
-         */
-        
-        public static final String CALL_DISABLE_LIGHTSOUT = "call_disable_lightsout";
-
-
-        /**
          * Whether to allow the device to use landscape lockscreen layouts
          * 
          * @hide

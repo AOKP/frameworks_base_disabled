@@ -60,7 +60,8 @@ public class BatteryController extends LinearLayout {
     public static final int STYLE_TEXT_ONLY = 1;
     public static final int STYLE_ICON_TEXT = 2;
     public static final int STYLE_ICON_CENTERED_TEXT = 3;
-    public static final int STYLE_HIDE = 4;
+    public static final int STYLE_ICON_CIRCLE = 4;
+    public static final int STYLE_HIDE = 5;
 
     public BatteryController(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -115,8 +116,17 @@ public class BatteryController extends LinearLayout {
     };
 
     private void setBatteryIcon(int level, boolean plugged) {
-        final int icon = plugged ? R.drawable.stat_sys_battery_charge
-                : R.drawable.stat_sys_battery;
+    	ContentResolver cr = mContext.getContentResolver();
+        mBatteryStyle = Settings.System.getInt(cr,
+                Settings.System.STATUSBAR_BATTERY_ICON, 0);
+        int icon;
+        if (mBatteryStyle == STYLE_ICON_CIRCLE) {
+        	icon = plugged ? R.drawable.stat_sys_battery_charge_circle
+                    : R.drawable.stat_sys_battery_circle;
+        } else {
+        	icon = plugged ? R.drawable.stat_sys_battery_charge
+        			: R.drawable.stat_sys_battery;
+        }
         int N = mIconViews.size();
         for (int i = 0; i < N; i++) {
             ImageView v = mIconViews.get(i);
@@ -222,6 +232,13 @@ public class BatteryController extends LinearLayout {
                 mBatteryTextOnly.setVisibility(View.GONE);
                 setVisibility(View.GONE);
                 break;
+            case STYLE_ICON_CIRCLE:
+                mBatteryText.setVisibility(View.GONE);
+                mBatteryCenterText.setVisibility(View.GONE);
+                mBatteryIcon.setVisibility(View.VISIBLE);
+                mBatteryTextOnly.setVisibility(View.GONE);
+                setVisibility(View.VISIBLE);
+                break;
             default:
                 mBatteryText.setVisibility(View.GONE);
                 mBatteryCenterText.setVisibility(View.GONE);
@@ -231,7 +248,7 @@ public class BatteryController extends LinearLayout {
                 break;
         }
 
-        setVisibility(View.VISIBLE);
+        //setVisibility(View.VISIBLE);
 
     }
 }

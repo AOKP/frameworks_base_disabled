@@ -979,7 +979,7 @@ public final class Settings {
          * with that name.  Note that internally setting values are always
          * stored as strings, so this function converts the given value to a
          * string (1 or 0) before storing it.
-         * 
+         *
          * @param cr The ContentResolver to access.
          * @param name The name of the setting to modify.
          * @param value The new value for the setting.
@@ -2560,6 +2560,12 @@ public final class Settings {
         public static final String ENABLE_VOLUME_OPTIONS = "enable_volume_options";
 
         /**
+         * Whether to use the custom quick unlock screen control
+         * @hide
+         */
+        public static final String LOCKSCREEN_QUICK_UNLOCK_CONTROL = "lockscreen_quick_unlock_control";
+
+        /**
          * Setting to Link Ringtone and Notification.
          *
          * @hide
@@ -2695,7 +2701,7 @@ public final class Settings {
 
         /**
          * Whether to show the battery bar
-         * 
+         *
          * @hide
          */
         public static final String STATUSBAR_BATTERY_BAR = "statusbar_battery_bar";
@@ -2707,7 +2713,7 @@ public final class Settings {
 
         /**
          * thickness of the batteyr bar (in dp)
-         * 
+         *
          * @hide
          */
         public static final String STATUSBAR_BATTERY_BAR_THICKNESS = "statusbar_battery_bar_thickness";
@@ -2715,14 +2721,14 @@ public final class Settings {
         /**
          * 0 = regular
          * 1 = mirrored from center
-         * 
+         *
          * @hide
          */
         public static final String STATUSBAR_BATTERY_BAR_STYLE = "statusbar_battery_bar_style";
 
         /**
          * whether to show charging animation
-         * 
+         *
          * @hide
          */
         public static final String STATUSBAR_BATTERY_BAR_ANIMATE = "statusbar_battery_bar_animate";
@@ -2768,34 +2774,34 @@ public final class Settings {
          * @hide
          */
         public static final String QUIET_HOURS_DIM = "quiet_hours_dim";
-        
+
         /**
          * where to show the legacy menu key
          * 0 = right (default)
          * 1 = left
          * 2 = both
-         * 
+         *
          * @hide
          */
         public static final String MENU_LOCATION = "menu_location";
 
         /**
          * Menu visibility style
-         * 
+         *
          * @hide
          */
         public static final String MENU_VISIBILITY = "menu_visibility";
-        
+
         /**
          * Number of custom navbar buttons
          *
          * @hide
          */
         public static final String NAVIGATION_BAR_BUTTONS_QTY = "navigation_bar_buttons_qty";
-        
+
         /**
          * Custom navigation bar intents (short press)
-         * 
+         *
          * @hide
          */
         public static final String[] NAVIGATION_CUSTOM_ACTIVITIES = new String[] {
@@ -2805,10 +2811,10 @@ public final class Settings {
                 "navigation_custom_app_intent_3",
                 "navigation_custom_app_intent_4",
         };
-        
+
         /**
          * Custom navigation bar intents (long press)
-         * 
+         *
          * @hide
          */
         public static final String[] NAVIGATION_LONGPRESS_ACTIVITIES = new String[] {
@@ -2818,7 +2824,7 @@ public final class Settings {
                 "navigation_longpress_app_intent_3",
                 "navigation_longpress_app_intent_4",
         };
-        
+
         /**
          * Drawable URIs, each index needs to be matched up to NAVIGATION_CUSTOM_ACTIVITIES
          *

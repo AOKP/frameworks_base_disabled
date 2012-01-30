@@ -31,7 +31,6 @@ ifeq ($(TARGET_BOARD_PLATFORM), s5pc110)
 	LOCAL_CFLAGS += -DREFRESH_RATE=56
 endif
 
-
 LOCAL_SHARED_LIBRARIES := \
 	libcutils \
 	libhardware \
@@ -45,10 +44,26 @@ LOCAL_SHARED_LIBRARIES := \
 # this is only needed for DDMS debugging
 LOCAL_SHARED_LIBRARIES += libdvm libandroid_runtime
 
+ifeq ($(BOARD_USES_LGE_HDMI_ROTATION),true)
+LOCAL_CFLAGS += -DUSE_LGE_HDMI
+LOCAL_SHARED_LIBRARIES += \
+	libnvdispmgr_d
+endif
+
 LOCAL_C_INCLUDES := \
 	$(call include-path-for, corecg graphics)
 
 LOCAL_C_INCLUDES += hardware/libhardware/modules/gralloc
+
+ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
+LOCAL_SHARED_LIBRARIES += \
+	libQcomUI
+LOCAL_C_INCLUDES += hardware/qcom/display/libqcomui
+LOCAL_CFLAGS += -DQCOM_HARDWARE
+ifeq ($(TARGET_QCOM_HDMI_OUT),true)
+LOCAL_CFLAGS += -DQCOM_HDMI_OUT
+endif
+endif
 
 LOCAL_MODULE:= libsurfaceflinger
 

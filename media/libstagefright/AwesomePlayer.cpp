@@ -441,6 +441,12 @@ status_t AwesomePlayer::setDataSource_l(const sp<MediaExtractor> &extractor) {
                 mDisplayWidth = displayWidth;
                 mDisplayHeight = displayHeight;
             }
+#ifdef OMAP_ENHANCEMENT
+            else{
+                success=meta->findInt32(kKeyWidth, &mDisplayWidth);
+                success=meta->findInt32(kKeyHeight, &mDisplayHeight);
+            }
+#endif
 
             {
                 Mutex::Autolock autoLock(mStatsLock);

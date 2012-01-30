@@ -149,6 +149,7 @@ public class NavigationBarView extends LinearLayout {
         mBarSize = res.getDimensionPixelSize(R.dimen.navigation_bar_size);
         mVertical = false;
         mShowMenu = false;
+        originalHeight = getHeight();
     }
 
     FrameLayout rot0;
@@ -438,11 +439,13 @@ public class NavigationBarView extends LinearLayout {
         final boolean hideBar = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.LOCKSCREEN_HIDE_NAV, 0) == 1;
         if (hideBar && disableHome && disableRecent && disableBack) {
-            this.setVisibility(View.INVISIBLE);
+            
         } else {
-            this.setVisibility(View.VISIBLE);
+           
         }
     }
+    
+    int originalHeight = 0;
 
     public void setMenuVisibility(final boolean show) {
         setMenuVisibility(show, false);

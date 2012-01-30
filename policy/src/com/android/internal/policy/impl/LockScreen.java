@@ -322,6 +322,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
         public static final String ACTION_SOUND_TOGGLE = "**sound**";
         public static final String ACTION_APP_PHONE = "**phone**";
         public static final String ACTION_APP_CAMERA = "**camera**";
+        public static final String ACTION_APP_MMS = "**mms**";
         public static final String ACTION_APP_CUSTOM = "**app**";
         public static final String ACTION_NULL = "**null**";
 
@@ -352,6 +353,9 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
             } else if (action.equals(ACTION_APP_CAMERA)) {
                 resId = R.drawable.ic_lockscreen_camera;
                 drawable = res.getDrawable(resId);
+            } else if (action.equals(ACTION_APP_MMS)) {
+                    resId = R.drawable.ic_lockscreen_sms;
+                    drawable = res.getDrawable(resId);
             } else if (action.equals(ACTION_SOUND_TOGGLE)) {
                 resId = mSilentMode ? R.drawable.ic_lockscreen_silent
                         : R.drawable.ic_lockscreen_soundon;
@@ -380,6 +384,14 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
                         "com.android.contacts.activities.DialtactsActivity");
                 phoneIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 mContext.startActivity(phoneIntent);
+                mCallback.goToUnlockScreen();
+            } else if (action.equals(ACTION_APP_MMS)) {
+                Intent intent = new Intent(Intent.ACTION_MAIN);
+                intent.addCategory(Intent.CATEGORY_LAUNCHER);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                        | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+                intent.setClassName("com.android.mms", "com.android.mms.ui.ConversationList");
+                mContext.startActivity(intent);
                 mCallback.goToUnlockScreen();
             } else if (action.equals(ACTION_APP_CAMERA)) {
                 Intent intent = new Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA);
@@ -461,6 +473,8 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
                         t.action = Target.ACTION_APP_PHONE;
                     } else if (settingUri.equals(Target.ACTION_SOUND_TOGGLE)) {
                         t.action = Target.ACTION_SOUND_TOGGLE;
+                    } else if (settingUri.equals(Target.ACTION_APP_MMS)) {
+                        t.action = Target.ACTION_APP_MMS;
                     } else {
                         t.action = Target.ACTION_APP_CUSTOM;
                         t.customAppIntentUri = settingUri;

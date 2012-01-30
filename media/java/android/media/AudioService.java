@@ -459,6 +459,15 @@ public class AudioService extends IAudioService.Stub {
         } else {
             mRingerModeAffectedStreams |= (1 << AudioSystem.STREAM_MUSIC);
         }
+        
+        boolean linkNotificationWithVolume = Settings.System.getInt(mContentResolver,
+                Settings.System.VOLUME_LINK_NOTIFICATION, 1) == 1;
+        if (linkNotificationWithVolume) {
+            STREAM_VOLUME_ALIAS[AudioSystem.STREAM_NOTIFICATION] = AudioSystem.STREAM_RING;
+        } else {
+            STREAM_VOLUME_ALIAS[AudioSystem.STREAM_NOTIFICATION] = AudioSystem.STREAM_NOTIFICATION;
+        }
+        
         Settings.System.putInt(cr,
                 Settings.System.MODE_RINGER_STREAMS_AFFECTED, mRingerModeAffectedStreams);
 

@@ -56,11 +56,15 @@ public class BatteryController extends LinearLayout {
 
     private static int mBatteryStyle;
 
+    private int mLevel = -1;
+    private boolean mPlugged = false;
+
     public static final int STYLE_ICON_ONLY = 0;
     public static final int STYLE_TEXT_ONLY = 1;
     public static final int STYLE_ICON_TEXT = 2;
     public static final int STYLE_ICON_CENTERED_TEXT = 3;
-    public static final int STYLE_HIDE = 4;
+    public static final int STYLE_ICON_CIRCLE = 4;
+    public static final int STYLE_HIDE = 5;
 
     public BatteryController(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -115,8 +119,19 @@ public class BatteryController extends LinearLayout {
     };
 
     private void setBatteryIcon(int level, boolean plugged) {
-        final int icon = plugged ? R.drawable.stat_sys_battery_charge
-                : R.drawable.stat_sys_battery;
+        mLevel = level;
+        mPlugged = plugged;
+        ContentResolver cr = mContext.getContentResolver();
+        mBatteryStyle = Settings.System.getInt(cr,
+                Settings.System.STATUSBAR_BATTERY_ICON, 0);
+        int icon;
+        if (mBatteryStyle == STYLE_ICON_CIRCLE) {
+            icon = plugged ? R.drawable.stat_sys_battery_charge_circle
+                    : R.drawable.stat_sys_battery_circle;
+        } else {
+            icon = plugged ? R.drawable.stat_sys_battery_charge
+                    : R.drawable.stat_sys_battery;
+        }
         int N = mIconViews.size();
         for (int i = 0; i < N; i++) {
             ImageView v = mIconViews.get(i);
@@ -139,7 +154,8 @@ public class BatteryController extends LinearLayout {
             mBatteryTextOnly.setText(Integer.toString(level));
             SpannableStringBuilder formatted = new SpannableStringBuilder(
                     Integer.toString(level) + "%");
-            CharacterStyle style = new RelativeSizeSpan(0.7f); // beautiful formatting
+            CharacterStyle style = new RelativeSizeSpan(0.7f); // beautiful
+                                                               // formatting
             if (level < 10) { // level < 10, 2nd char is %
                 formatted.setSpan(style, 1, 2,
                         Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
@@ -151,7 +167,8 @@ public class BatteryController extends LinearLayout {
                         Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
             }
             mBatteryTextOnly.setText(formatted);
-            if (plugged) { // colors hardcoded by now, maybe colorpicker can be added if needed
+            if (plugged) { // colors hardcoded by now, maybe colorpicker can be
+                           // added if needed
                 mBatteryTextOnly.setTextColor(Color.GREEN);
             } else if (level < 16) {
                 mBatteryTextOnly.setTextColor(Color.RED);
@@ -222,6 +239,13 @@ public class BatteryController extends LinearLayout {
                 mBatteryTextOnly.setVisibility(View.GONE);
                 setVisibility(View.GONE);
                 break;
+            case STYLE_ICON_CIRCLE:
+                mBatteryText.setVisibility(View.GONE);
+                mBatteryCenterText.setVisibility(View.GONE);
+                mBatteryIcon.setVisibility(View.VISIBLE);
+                mBatteryTextOnly.setVisibility(View.GONE);
+                setVisibility(View.VISIBLE);
+                break;
             default:
                 mBatteryText.setVisibility(View.GONE);
                 mBatteryCenterText.setVisibility(View.GONE);
@@ -231,7 +255,7 @@ public class BatteryController extends LinearLayout {
                 break;
         }
 
-        setVisibility(View.VISIBLE);
+        setBatteryIcon(mLevel, mPlugged);
 
     }
 }

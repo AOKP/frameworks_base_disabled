@@ -72,10 +72,6 @@
 
 #define DISPLAY_COUNT       1
 
-#ifdef USE_LGE_HDMI
-extern "C" void NvDispMgrAutoOrientation(int rotation);
-#endif
-
 namespace android {
 // ---------------------------------------------------------------------------
 
@@ -1390,6 +1386,7 @@ void SurfaceFlinger::updateHwcHDMI(bool enable)
 {
     invalidateHwcGeometry();
     const DisplayHardware& hw(graphicPlane(0).displayHardware());
+    mDirtyRegion.set(hw.bounds());
     HWComposer& hwc(hw.getHwComposer());
     hwc.enableHDMIOutput(enable);
 }
@@ -2716,7 +2713,10 @@ status_t Client::destroySurface(SurfaceID sid) {
 
 // ---------------------------------------------------------------------------
 
-GraphicBufferAlloc::GraphicBufferAlloc() {}
+GraphicBufferAlloc::GraphicBufferAlloc() {
+    mFreedIndex = -1;
+    mSize = 0;
+}
 
 GraphicBufferAlloc::~GraphicBufferAlloc() {}
 
@@ -2735,8 +2735,14 @@ sp<GraphicBuffer> GraphicBufferAlloc::createGraphicBuffer(uint32_t w, uint32_t h
         return 0;
     }
 #ifdef QCOM_HARDWARE
+	checkBuffer((native_handle_t *)graphicBuffer->handle, mSize, usage);
     Mutex::Autolock _l(mLock);
-    mBuffers.add(graphicBuffer);
+    if (-1 != mFreedIndex) {
+        mBuffers.insertAt(graphicBuffer, mFreedIndex);
+        mFreedIndex = -1;
+    } else {
+        mBuffers.add(graphicBuffer);
+    }
 #endif
     return graphicBuffer;
 }
@@ -2751,6 +2757,21 @@ void GraphicBufferAlloc::freeAllGraphicBuffersExcept(int bufIdx) {
     } else {
         mBuffers.clear();
     }
+    mFreedIndex = -1;
+}
+
+void GraphicBufferAlloc::freeGraphicBufferAtIndex(int bufIdx) {
+     Mutex::Autolock _l(mLock);
+     if (0 <= bufIdx && bufIdx < mBuffers.size()) {
+        mBuffers.removeItemsAt(bufIdx);
+        mFreedIndex = bufIdx;
+     } else {
+        mFreedIndex = -1;
+     }
+}
+
+void GraphicBufferAlloc::setGraphicBufferSize(int size) {
+    mSize = size;
 }
 #endif
 // ---------------------------------------------------------------------------
@@ -2849,9 +2870,6 @@ status_t GraphicPlane::setOrientation(int orientation)
     mWidth = int(w);
     mHeight = int(h);
 
-#ifdef USE_LGE_HDMI
-    NvDispMgrAutoOrientation(orientation);
-#endif
     Transform orientationTransform;
     GraphicPlane::orientationToTransfrom(orientation, w, h,
             &orientationTransform);

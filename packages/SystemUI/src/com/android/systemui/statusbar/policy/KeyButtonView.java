@@ -356,8 +356,6 @@ public class KeyButtonView extends ImageView {
             int color = Settings.System.getInt(resolver, Settings.System.NAVIGATION_BAR_TINT);
 
             if (color == Integer.MIN_VALUE) {
-                BUTTON_QUIESCENT_ALPHA = 0.6f;
-                setDrawingAlpha(BUTTON_QUIESCENT_ALPHA);
                 setColorFilter(null);
             } else {
                 setColorFilter(null);

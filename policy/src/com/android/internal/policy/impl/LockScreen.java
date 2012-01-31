@@ -454,12 +454,8 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
                 if (settingUri == null) {
                     if (i == 0) {
                         t.action = Target.ACTION_UNLOCK;
-                        t.setDrawable();
-                        targets.add(t);
                     } else if (numTargets == 2 && i == 1) {
                         t.action = Target.ACTION_APP_CAMERA;
-                        t.setDrawable();
-                        targets.add(t);
                     } else if ((numTargets / 2) == (i + 1)) {
                         t.action = Target.ACTION_APP_CAMERA;
                     }
@@ -495,7 +491,8 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
         }
 
         public Drawable[] getDrawables() {
-            Drawable[] d = new Drawable[targets.size()];
+            int size = targets.size();
+            Drawable[] d = new Drawable[size];
             for (int i = 0; i < targets.size(); i++)
                 d[i] = targets.get(i).getDrawable();
 

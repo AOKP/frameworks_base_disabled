@@ -358,8 +358,15 @@ public class KeyButtonView extends ImageView {
         invalidate();
 
         try {
-            setColorFilter(null);
-            setColorFilter(Settings.System.getInt(resolver, Settings.System.NAVIGATION_BAR_TINT));
+            int color = Settings.System.getInt(resolver, Settings.System.NAVIGATION_BAR_TINT);
+
+            if (color == Integer.MIN_VALUE) {
+                setColorFilter(null);
+            } else {
+                setColorFilter(null);
+                setColorFilter(Settings.System
+                        .getInt(resolver, Settings.System.NAVIGATION_BAR_TINT));
+            }
         } catch (SettingNotFoundException e) {
         }
 

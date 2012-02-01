@@ -418,6 +418,16 @@ class ServerThread extends Thread {
                 reportWtf("starting Notification Manager", e);
             }
 
+	    //QCOM HDMI OUT
+            if (SystemProperties.QCOM_HDMI_OUT ) {
+                try {
+                    Slog.i(TAG, "HDMI Service");
+                    ServiceManager.addService("hdmi", new HDMIService(context));
+                } catch (Throwable e) {
+                    Slog.e(TAG, "Failure starting HDMI Service ", e);
+                }
+            }
+
             try {
                 Slog.i(TAG, "Device Storage Monitor");
                 ServiceManager.addService(DeviceStorageMonitorService.SERVICE,

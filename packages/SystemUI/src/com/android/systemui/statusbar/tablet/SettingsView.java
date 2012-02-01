@@ -21,18 +21,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.provider.Settings;
 import android.util.AttributeSet;
-import android.util.Slog;
-import android.widget.LinearLayout;
 import android.view.View;
 import android.widget.CompoundButton;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.LinearLayout;
 
 import com.android.systemui.R;
-import com.android.systemui.statusbar.policy.VolumeController;
+import com.android.systemui.statusbar.policy.DoNotDisturbController;
+import com.android.systemui.statusbar.policy.ToggleController;
 
 public class SettingsView extends LinearLayout implements View.OnClickListener {
     static final String TAG = "SettingsView";
+
+    DoNotDisturbController mDoNotDisturb;
+    ToggleController mToggles;
 
     public SettingsView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
@@ -47,6 +48,12 @@ public class SettingsView extends LinearLayout implements View.OnClickListener {
         super.onFinishInflate();
 
         final Context context = getContext();
+
+        mDoNotDisturb = new DoNotDisturbController(context,
+                (CompoundButton) findViewById(R.id.do_not_disturb_checkbox));
+
+        mToggles = new ToggleController(context,
+                (CompoundButton) findViewById(R.id.toggles_toggle));
 
         findViewById(R.id.settings).setOnClickListener(this);
     }
@@ -65,7 +72,7 @@ public class SettingsView extends LinearLayout implements View.OnClickListener {
     }
 
     private StatusBarManager getStatusBarManager() {
-        return (StatusBarManager)getContext().getSystemService(Context.STATUS_BAR_SERVICE);
+        return (StatusBarManager) getContext().getSystemService(Context.STATUS_BAR_SERVICE);
     }
 
     // Settings
@@ -76,4 +83,3 @@ public class SettingsView extends LinearLayout implements View.OnClickListener {
         getStatusBarManager().collapse();
     }
 }
-

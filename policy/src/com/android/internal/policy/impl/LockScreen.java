@@ -708,6 +708,11 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
     }
 
     /** {@inheritDoc} */
+    public boolean checkInProgress() {
+        return false;
+    }
+
+    /** {@inheritDoc} */
     public boolean needsInput() {
         return false;
     }

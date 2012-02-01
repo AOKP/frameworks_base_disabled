@@ -34,8 +34,6 @@ enum {
     CREATE_GRAPHIC_BUFFER = IBinder::FIRST_CALL_TRANSACTION,
 #ifdef QCOM_HARDWARE
     FREE_ALL_GRAPHIC_BUFFERS_EXCEPT,
-    FREE_GRAPHIC_BUFFER_AT_INDEX,
-    SET_GRAPHIC_BUFFER_SIZE,
 #endif
 };
 
@@ -76,22 +74,6 @@ public:
                 IGraphicBufferAlloc::getInterfaceDescriptor());
         data.writeInt32(bufIdx);
         remote()->transact(FREE_ALL_GRAPHIC_BUFFERS_EXCEPT, data, &reply);
-    }
-
-    virtual void freeGraphicBufferAtIndex(int bufIdx) {
-        Parcel data, reply;
-        data.writeInterfaceToken(
-                IGraphicBufferAlloc::getInterfaceDescriptor());
-        data.writeInt32(bufIdx);
-        remote()->transact(FREE_GRAPHIC_BUFFER_AT_INDEX, data, &reply);
-    }
-
-    virtual void setGraphicBufferSize(int size) {
-        Parcel data, reply;
-        data.writeInterfaceToken(
-                IGraphicBufferAlloc::getInterfaceDescriptor());
-        data.writeInt32(size);
-        remote()->transact(SET_GRAPHIC_BUFFER_SIZE, data, &reply);
     }
 #endif
 };
@@ -144,18 +126,6 @@ status_t BnGraphicBufferAlloc::onTransact(
             CHECK_INTERFACE(IGraphicBufferAlloc, data, reply);
             int bufIdx = data.readInt32();
             freeAllGraphicBuffersExcept(bufIdx);
-            return NO_ERROR;
-        } break;
-        case FREE_GRAPHIC_BUFFER_AT_INDEX: {
-            CHECK_INTERFACE(IGraphicBufferAlloc, data, reply);
-            int bufIdx = data.readInt32();
-            freeGraphicBufferAtIndex(bufIdx);
-            return NO_ERROR;
-        } break;
-        case SET_GRAPHIC_BUFFER_SIZE: {
-            CHECK_INTERFACE(IGraphicBufferAlloc, data, reply);
-            int size = data.readInt32();
-            setGraphicBufferSize(size);
             return NO_ERROR;
         } break;
 #endif

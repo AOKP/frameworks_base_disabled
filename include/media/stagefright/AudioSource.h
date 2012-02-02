@@ -77,6 +77,9 @@ private:
     status_t mInitCheck;
     bool mStarted;
     int32_t mSampleRate;
+#ifdef OMAP_ENHANCEMENT
+    uint32_t mChannels;
+#endif
 
     bool mTrackMaxAmplitude;
     int64_t mStartTimeUs;

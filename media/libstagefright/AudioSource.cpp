@@ -55,6 +55,9 @@ AudioSource::AudioSource(
         int inputSource, uint32_t sampleRate, uint32_t channels)
     : mStarted(false),
       mSampleRate(sampleRate),
+#ifdef OMAP_ENHANCEMENT
+      mChannels(channels),
+#endif
       mPrevSampleTimeUs(0),
       mNumFramesReceived(0),
       mNumClientOwnedBuffers(0),
@@ -380,6 +383,13 @@ status_t AudioSource::dataCallbackTimestamp(
     timestampUs += recordDurationUs;
 
 
+#ifdef OMAP_ENHANCEMENT
+    timestampUs += (1000000LL * bufferSize) /
+                    (sizeof(int16_t) * mChannels * mSampleRate);
+#else
+    timestampUs += ((1000000LL * (bufferSize >> 1)) +
+                    (mSampleRate >> 1)) / mSampleRate;
+#endif
     if (mNumFramesReceived == 0) {
         buffer->meta_data()->setInt64(kKeyAnchorTime, mStartTimeUs);
     }

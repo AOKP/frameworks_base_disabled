@@ -78,7 +78,7 @@ public abstract class PowerButton {
         BUTTONS.put(BUTTON_MEDIA_PREVIOUS, MediaPreviousButton.class);
         BUTTONS.put(BUTTON_MEDIA_NEXT, MediaNextButton.class);
         BUTTONS.put(BUTTON_LTE, LTEButton.class);
-        /* BUTTONS.put(BUTTON_WIMAX, WimaxButton.class); */
+        BUTTONS.put(BUTTON_WIMAX, WimaxButton.class);
     }
     // this is a list of our currently loaded buttons
     private static final HashMap<String, PowerButton> BUTTONS_LOADED = new HashMap<String, PowerButton>();

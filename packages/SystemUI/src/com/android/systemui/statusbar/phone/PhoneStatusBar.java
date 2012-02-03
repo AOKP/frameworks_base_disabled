@@ -2333,14 +2333,28 @@ public class PhoneStatusBar extends StatusBar {
                 ActivityManagerNative.getDefault().dismissKeyguardOnNextActivity();
             } catch (RemoteException e) {
             }
-            try{
-                v.getContext().startActivity(new Intent(Intent.ACTION_MAIN).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                    | Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)
-                .setClassName("com.android.deskclock", "com.android.deskclock.AlarmClock"));
-                animateCollapse();
-            } catch (ActivityNotFoundException anfe) {
-                Log.d(TAG, "...could not find AlarmClock");
+            if (mDropdownDateBehavior) {
+                //launch calender
+                try{
+                    v.getContext().startActivity(new Intent(Intent.ACTION_MAIN).setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+                        | Intent.FLAG_ACTIVITY_SINGLE_TOP
+                        | Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    .setClassName("com.android.calendar","com.android.calendar.AgendaActivity"));
+                    animateCollapse();
+                } catch (ActivityNotFoundException anfe) {
+                    Log.d(TAG, "...could not find Calender");
+                }
+            } else {
+                //launch alarm clock manageer
+                try{
+                    v.getContext().startActivity(new Intent(Intent.ACTION_MAIN).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                        | Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)
+                    .setClassName("com.android.deskclock", "com.android.deskclock.AlarmClock"));
+                    animateCollapse();
+                } catch (ActivityNotFoundException anfe) {
+                    Log.d(TAG, "...could not find AlarmClock");
+                }
             }
         }
     };
@@ -2426,6 +2440,7 @@ public class PhoneStatusBar extends StatusBar {
     }
 
     boolean mDropdownSettingsDefualtBehavior = true;
+    boolean mDropdownDateBehavior = true;
 
     private void updateSettings() {
         // Slog.i(TAG, "updated settings values");
@@ -2435,6 +2450,9 @@ public class PhoneStatusBar extends StatusBar {
 
         mQuickTogglesHideAfterCollapse = Settings.System.getInt(cr,
                 Settings.System.STATUSBAR_QUICKTOGGLES_AUTOHIDE, 1) == 1;
+
+        mDropdownDateBehavior = Settings.System.getInt(cr,
+                Settings.System.STATUSBAR_DATE_BEHAVIOR, 0) == 1;
 
     }
 

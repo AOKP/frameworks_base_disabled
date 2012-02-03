@@ -141,7 +141,6 @@
             </intent-filter>
         </activity>
 
-
         <!-- started from PhoneStatusBar -->
         <activity android:name="com.android.deskclock.AlarmClock">
             <intent-filter>
@@ -150,6 +149,12 @@
             </intent-filter>
         </activity>
 
-
+        <!-- started from PhoneStatusBar -->
+        <activity android:name="com.android.calendar.AgendaActivity">
+            <intent-filter>
+                <action android:name="com.android.calendar" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
     </application>
 </manifest>

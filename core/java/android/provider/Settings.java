@@ -2447,6 +2447,15 @@ public final class Settings {
         public static final String STATUSBAR_QUICKTOGGLES_AUTOHIDE = "statusbar_quicktoggles_autohide";
 
         /**
+         * Date drop down. Boolean value
+         * 0 = defualt, click to launch alarm
+         * 1 = click to launch calender
+         * 
+         * @hide
+         */
+        public static final String STATUSBAR_DATE_BEHAVIOR = "statusbar_date_behavior";
+
+        /**
          * @hide
          */
         public static final String GOOGLE_MUSIC_IS_PLAYING = "google_music_is_playing";

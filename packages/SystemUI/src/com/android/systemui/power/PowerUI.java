@@ -38,6 +38,7 @@ import android.util.Slog;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
+import android.telephony.TelephonyManager;
 
 import com.android.systemui.R;
 import com.android.systemui.SystemUI;
@@ -233,6 +234,9 @@ public class PowerUI extends SystemUI {
         }
 
         final ContentResolver cr = mContext.getContentResolver();
+        TelephonyManager tm = (TelephonyManager) mContext.getSystemService(
+                Context.TELEPHONY_SERVICE);
+
         if (Settings.System.getInt(cr, Settings.System.POWER_SOUNDS_ENABLED, 1) == 1) {
             final String soundPath = Settings.System.getString(cr,
                     Settings.System.LOW_BATTERY_SOUND);
@@ -241,7 +245,10 @@ public class PowerUI extends SystemUI {
                 if (soundUri != null) {
                     final Ringtone sfx = RingtoneManager.getRingtone(mContext, soundUri);
                     if (sfx != null) {
-                        sfx.setStreamType(AudioManager.STREAM_NOTIFICATION);
+                        sfx.setStreamType(tm.getCallState() ==
+                                TelephonyManager.CALL_STATE_IDLE ?
+                                AudioManager.STREAM_NOTIFICATION :
+                                AudioManager.STREAM_VOICE_CALL);
                         sfx.play();
                     }
                 }

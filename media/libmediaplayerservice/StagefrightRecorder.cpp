@@ -1497,6 +1497,17 @@ status_t StagefrightRecorder::setupVideoEncoder(
     CHECK(meta->findInt32(kKeySliceHeight, &sliceHeight));
     CHECK(meta->findInt32(kKeyColorFormat, &colorFormat));
 
+#ifdef QCOM_HARDWARE
+    hfr = 0;
+    if (!meta->findInt32(kKeyHFR, &hfr)) {
+        LOGW("hfr not found, default to 0");
+    }
+
+    if(hfr) {
+      mMaxFileDurationUs = mMaxFileDurationUs * (hfr/mFrameRate);
+    }
+#endif
+
     enc_meta->setInt32(kKeyWidth, width);
     enc_meta->setInt32(kKeyHeight, height);
     enc_meta->setInt32(kKeyIFramesInterval, mIFramesIntervalSec);

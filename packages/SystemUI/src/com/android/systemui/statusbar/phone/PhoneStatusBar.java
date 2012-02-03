@@ -2338,7 +2338,8 @@ public class PhoneStatusBar extends StatusBar {
                 try{
                     v.getContext().startActivity(new Intent(Intent.ACTION_MAIN).setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
                         | Intent.FLAG_ACTIVITY_SINGLE_TOP
-                        | Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                        | Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        | Intent.FLAG_ACTIVITY_NEW_TASK)
                     .setClassName("com.android.calendar","com.android.calendar.AgendaActivity"));
                     animateCollapse();
                 } catch (ActivityNotFoundException anfe) {

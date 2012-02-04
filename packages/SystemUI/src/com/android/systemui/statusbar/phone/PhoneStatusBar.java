@@ -2340,7 +2340,7 @@ public class PhoneStatusBar extends StatusBar {
                         | Intent.FLAG_ACTIVITY_SINGLE_TOP
                         | Intent.FLAG_ACTIVITY_CLEAR_TASK
                         | Intent.FLAG_ACTIVITY_NEW_TASK)
-                    .setClassName("com.android.calendar","com.android.calendar.AgendaActivity"));
+                    .setClassName("com.android.calendar","com.android.calendar.LaunchActivity"));
                     animateCollapse();
                 } catch (ActivityNotFoundException anfe) {
                     Log.d(TAG, "...could not find Calender");
@@ -2349,8 +2349,7 @@ public class PhoneStatusBar extends StatusBar {
                 //launch alarm clock manageer
                 try{
                     v.getContext().startActivity(new Intent(Intent.ACTION_MAIN).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                        | Intent.FLAG_ACTIVITY_CLEAR_TASK
-                        | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)
+                        | Intent.FLAG_ACTIVITY_CLEAR_TASK)
                     .setClassName("com.android.deskclock", "com.android.deskclock.AlarmClock"));
                     animateCollapse();
                 } catch (ActivityNotFoundException anfe) {
@@ -2431,6 +2430,8 @@ public class PhoneStatusBar extends StatusBar {
                     Settings.System.STATUSBAR_SETTINGS_BEHAVIOR), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUSBAR_QUICKTOGGLES_AUTOHIDE), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.STATUSBAR_DATE_BEHAVIOR), false, this);
 
         }
 

@@ -42,8 +42,6 @@ import android.speech.tts.TextToSpeech;
 import android.text.TextUtils;
 import android.util.AndroidException;
 import android.util.Log;
-import android.view.WindowOrientationListener;
-
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -2288,6 +2286,13 @@ public final class Settings {
          * @hide
          */
         public static final String STATUSBAR_QUICKTOGGLES_AUTOHIDE = "statusbar_quicktoggles_autohide";
+
+        /**
+         * Whether to control brightness from status bar
+         * 
+         * @hide
+         */
+        public static final String STATUS_BAR_BRIGHTNESS_TOGGLE = "status_bar_brightness_toggle";
 
         /**
          * @hide

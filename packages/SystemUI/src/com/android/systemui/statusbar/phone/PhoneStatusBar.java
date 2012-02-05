@@ -44,12 +44,12 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.IPowerManager;
 import android.os.Message;
 import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.os.SystemClock;
 import android.provider.Settings;
-import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -78,7 +78,6 @@ import android.widget.TextView;
 
 import com.android.internal.statusbar.StatusBarIcon;
 import com.android.internal.statusbar.StatusBarNotification;
-import com.android.internal.telephony.Phone;
 import com.android.systemui.R;
 import com.android.systemui.recent.RecentTasksLoader;
 import com.android.systemui.recent.RecentsPanelView;
@@ -94,11 +93,6 @@ import com.android.systemui.statusbar.policy.DateView;
 import com.android.systemui.statusbar.policy.LocationController;
 import com.android.systemui.statusbar.policy.NetworkController;
 import com.android.systemui.statusbar.policy.NotificationRowLayout;
-import com.android.systemui.statusbar.policy.ToggleSlider;
-import com.android.systemui.statusbar.policy.WifiController;
-import com.android.systemui.statusbar.policy.toggles.BluetoothToggle;
-import com.android.systemui.statusbar.policy.toggles.GpsToggle;
-import com.android.systemui.statusbar.policy.toggles.LteToggle;
 import com.android.systemui.statusbar.policy.toggles.TogglesView;
 
 public class PhoneStatusBar extends StatusBar {
@@ -141,7 +135,9 @@ public class PhoneStatusBar extends StatusBar {
 
     private float mExpandAccelPx; // classic value: 2000px/s/s
     private float mCollapseAccelPx; // classic value: 2000px/s/s (will be negated to collapse "up")
-
+    private float mScreenWidth;
+    private int mMinBrightness;
+    
     PhoneStatusBarPolicy mIconPolicy;
 
     // These are no longer handled by the policy, because we need custom strategies for them
@@ -233,6 +229,7 @@ public class PhoneStatusBar extends StatusBar {
     boolean mAnimatingReveal = false;
     int mViewDelta;
     int[] mAbsPos = new int[2];
+    int mLinger = 0;
     Runnable mPostCollapseCleanup = null;
 
     boolean mQuickTogglesHideAfterCollapse = true;
@@ -298,7 +295,9 @@ public class PhoneStatusBar extends StatusBar {
         loadDimens();
 
         mIconSize = res.getDimensionPixelSize(com.android.internal.R.dimen.status_bar_icon_size);
-
+        mScreenWidth = (float) context.getResources().getDisplayMetrics().widthPixels;
+        mMinBrightness = context.getResources().getInteger(
+                com.android.internal.R.integer.config_screenBrightnessDim);
         ExpandedView expanded = (ExpandedView) View.inflate(context,
                 R.layout.status_bar_expanded, null);
         if (DEBUG) {
@@ -1544,6 +1543,7 @@ public class PhoneStatusBar extends StatusBar {
         final int hitSize = statusBarSize * 2;
         final int y = (int) event.getRawY();
         if (action == MotionEvent.ACTION_DOWN) {
+            mLinger = 0;
             if (!mExpanded) {
                 mViewDelta = statusBarSize - y;
             } else {
@@ -1559,7 +1559,8 @@ public class PhoneStatusBar extends StatusBar {
                 int x = (int) event.getRawX();
                 final int edgeBorder = mEdgeBorder;
                 if (x >= edgeBorder && x < mDisplayMetrics.widthPixels - edgeBorder) {
-                    prepareTracking(y, !mExpanded);// opening if we're not already fully visible
+                    prepareTracking(y, !mExpanded);// opening if we're not
+                                                   // already fully visible
                     trackMovement(event);
                 }
             }
@@ -1568,7 +1569,46 @@ public class PhoneStatusBar extends StatusBar {
             final int minY = statusBarSize + mCloseView.getHeight();
             if (action == MotionEvent.ACTION_MOVE) {
                 if (mAnimatingReveal && y < minY) {
-                    // nothing
+                    boolean brightnessControl = Settings.System.getInt(mStatusBarView.getContext()
+                            .getContentResolver(),
+                            Settings.System.STATUS_BAR_BRIGHTNESS_TOGGLE, 0) == 1;
+                    if (brightnessControl) {
+                        mVelocityTracker.computeCurrentVelocity(1000);
+                        float yVel = mVelocityTracker.getYVelocity();
+                        yVel = Math.abs(yVel);
+                        if (yVel < 50.0f) {
+                            if (mLinger > 20) {
+                                Context context = mStatusBarView.getContext();
+                                boolean autoBrightness = Settings.System.getInt(
+                                        context.getContentResolver(),
+                                        Settings.System.SCREEN_BRIGHTNESS_MODE, 0) == Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC;
+                                if (!autoBrightness) {
+                                    float x = (float) event.getRawX();
+                                    int newBrightness = (int) Math
+                                            .round(((x / mScreenWidth) * android.os.Power.BRIGHTNESS_ON));
+                                    newBrightness = Math.min(newBrightness,
+                                            android.os.Power.BRIGHTNESS_ON);
+                                    newBrightness = Math.max(newBrightness, mMinBrightness);
+                                    try {
+                                        IPowerManager power = IPowerManager.Stub
+                                                .asInterface(ServiceManager.getService("power"));
+                                        if (power != null) {
+                                            power.setBacklightBrightness(newBrightness);
+                                            Settings.System.putInt(context.getContentResolver(),
+                                                    Settings.System.SCREEN_BRIGHTNESS,
+                                                    newBrightness);
+                                        }
+                                    } catch (RemoteException e) {
+                                        Slog.w(TAG, "Setting Brightness failed: " + e);
+                                    }
+                                }
+                            } else {
+                                mLinger++;
+                            }
+                        } else {
+                            mLinger = 0;
+                        }
+                    }
                 } else {
                     mAnimatingReveal = false;
                     updateExpandedViewPos(y + mViewDelta);
@@ -1585,7 +1625,8 @@ public class PhoneStatusBar extends StatusBar {
                     xVel = -xVel;
                 }
                 if (xVel > mFlingGestureMaxXVelocityPx) {
-                    xVel = mFlingGestureMaxXVelocityPx; // limit how much we care about the x axis
+                    xVel = mFlingGestureMaxXVelocityPx; // limit how much we
+                                                        // care about the x axis
                 }
 
                 float vel = (float) Math.hypot(yVel, xVel);

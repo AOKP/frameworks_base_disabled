@@ -2604,6 +2604,11 @@ public final class Settings {
          * @hide
          */
         public static final String LOCKSCREEN_QUICK_UNLOCK_CONTROL = "lockscreen_quick_unlock_control";
+
+        /**
+         * @hide
+         */
+        public static final String USE_WEATHER = "use_weather";
     }
 
     /**

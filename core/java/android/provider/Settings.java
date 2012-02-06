@@ -2375,8 +2375,8 @@ public final class Settings {
          * 
          * @hide
          */
-        public static final String CRT_ON_ANIMATION = "crt_on_animation";
-
+        public static final String CRT_ON_ANIMATION = "crt_on_animation";    
+        
         /**
          * Whether to enable unlocking from lockscreen via menu key
          * 
@@ -2660,6 +2660,12 @@ public final class Settings {
          * @hide
          */
         public static final String VOLUME_MUSIC_CONTROLS = "volume_music_controls";
+        
+        /**
+         * Setting to allow % on lockscreen always showing.
+         * @hide
+         */
+        public static final String LOCKSCREEN_BATTERY = "lockscreen_battery";
 
         /**
          * The action to take when long pressing home

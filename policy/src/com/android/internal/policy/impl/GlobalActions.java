@@ -24,11 +24,13 @@ import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.database.ContentObserver;
 import android.media.AudioManager;
 import android.os.Handler;
 import android.os.IBinder;
@@ -83,11 +85,17 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
     private boolean mDeviceProvisioned = false;
     private ToggleAction.State mAirplaneState = ToggleAction.State.Off;
     private boolean mIsWaitingForEcmExit = false;
+    private boolean mEnablePowerSaverToggle = false;
+    private boolean mEnableEasterEggToggle = false;
 
     /**
      * @param context everything needs a context :(
      */
     public GlobalActions(Context context) {
+        SettingsObserver observer = new SettingsObserver(new Handler());
+        observer.observe();
+        updateSettings();
+
         mContext = context;
         mAudioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
 
@@ -125,6 +133,11 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
      * @return A new dialog.
      */
     private AlertDialog createDialog() {
+
+        mEnablePowerSaverToggle = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.POWER_DIALOG_SHOW_POWER_SAVER, 1) == 1;
+        mEnableEasterEggToggle = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.POWER_DIALOG_SHOW_EASTER_EGG, 0) == 1;
 
         mSilentModeAction = new SilentModeAction(mAudioManager, mHandler);
 
@@ -234,13 +247,15 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         mItems.add(mAirplaneModeOn);
         
         // next: power saver
-        mItems.add(mPowerSaverOn);
-        try {
-            Settings.Secure.getInt(mContext.getContentResolver(),
-                    Settings.Secure.POWER_SAVER_MODE);
-        } catch (SettingNotFoundException e) {
-            //Power Saver hasn't yet been initialized so we don't want to make it easy for the user without
-            //  them reading any warnings that could be presented by enabling the power saver through ROM Control
+        if (mEnablePowerSaverToggle) {
+            mItems.add(mPowerSaverOn);
+            try {
+                Settings.Secure.getInt(mContext.getContentResolver(),
+                        Settings.Secure.POWER_SAVER_MODE);
+            } catch (SettingNotFoundException e) {
+                //Power Saver hasn't yet been initialized so we don't want to make it easy for the user without
+                //  them reading any warnings that could be presented by enabling the power saver through ROM Control
+            }
         }
 
         // next: screenshot
@@ -259,27 +274,29 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         });
 
         // next: easter egg shortcut
-        mItems.add(new SinglePressAction(com.android.internal.R.drawable.ic_lock_nyandroid, R.string.global_action_easter_egg) {
-            public void onPress() {
-                Log.d(TAG, "easter egg pressed");
-                try {
-                    mContext.startActivity(new Intent(Intent.ACTION_MAIN).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                        | Intent.FLAG_ACTIVITY_CLEAR_TASK
-                        | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)
-                    .setClassName("com.android.systemui","com.android.systemui.Nyandroid"));
-                } catch (ActivityNotFoundException ex) {
-                    Log.e(TAG, "Unable to start easter egg");
+        if (mEnableEasterEggToggle) {
+            mItems.add(new SinglePressAction(com.android.internal.R.drawable.ic_lock_nyandroid, R.string.global_action_easter_egg) {
+                public void onPress() {
+                    Log.d(TAG, "easter egg pressed");
+                    try {
+                        mContext.startActivity(new Intent(Intent.ACTION_MAIN).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                            | Intent.FLAG_ACTIVITY_CLEAR_TASK
+                            | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)
+                        .setClassName("com.android.systemui","com.android.systemui.Nyandroid"));
+                    } catch (ActivityNotFoundException ex) {
+                        Log.e(TAG, "Unable to start easter egg");
+                    }
                 }
-            }
 
-            public boolean showDuringKeyguard() {
-                return true;
-            }
+                public boolean showDuringKeyguard() {
+                    return true;
+                }
 
-            public boolean showBeforeProvisioning() {
-                return true;
-            }
-        });
+                public boolean showBeforeProvisioning() {
+                    return true;
+                }
+            });
+        }
 
         // last: silent mode
         if (SHOW_SILENT_TOGGLE) {
@@ -418,6 +435,26 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             dialog.dismiss();
         }
         mAdapter.getItem(which).onPress();
+    }
+
+    // A class to watch our settings and update if needed
+    class SettingsObserver extends ContentObserver {
+        SettingsObserver(Handler handler) {
+            super(handler);
+        }
+
+        void observe() {
+            ContentResolver resolver = mContext.getContentResolver();
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.POWER_DIALOG_SHOW_POWER_SAVER), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.POWER_DIALOG_SHOW_EASTER_EGG), false, this);
+        }
+
+        @Override
+        public void onChange(boolean selfChange) {
+            updateScreen();
+        }
     }
 
     /**
@@ -811,5 +848,11 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         intent.addFlags(Intent.FLAG_RECEIVER_REPLACE_PENDING);
         intent.putExtra("state", on);
         mContext.sendBroadcast(intent);
+    }
+
+    private void updateScreen {
+        ContentResolver cr = mContext.getContentResolver();
+        mEnablePowerSaverToggle = Settings.System.getInt(cr, Settings.System.POWER_DIALOG_SHOW_POWER_SAVER, 0) == 1;
+        mEnableEasterEggToggle = Settings.System.getInt(cr, Settings.System.POWER_DIALOG_SHOW_EASTER_EGG, 1) == 1;
     }
 }

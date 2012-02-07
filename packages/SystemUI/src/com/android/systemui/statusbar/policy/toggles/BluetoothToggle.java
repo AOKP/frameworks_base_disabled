@@ -47,10 +47,10 @@ public class BluetoothToggle extends Toggle {
             }
         }, new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
         setLabel(R.string.toggle_bt);
-        if (mToggle.isChecked())
+//        if (mToggle.isChecked())
         	setIcon(R.drawable.toggle_bluetooth);
-        else
-        	setIcon(R.drawable.toggle_bluetooth_off);
+//        else
+//        	setIcon(R.drawable.toggle_bluetooth_off);
     }
 
     @Override
@@ -59,11 +59,11 @@ public class BluetoothToggle extends Toggle {
         if (adapter != null) {
             if (isChecked) {
                 adapter.enable();
-                setIcon(R.drawable.toggle_bluetooth);
+//                setIcon(R.drawable.toggle_bluetooth);
             }
             else {
                 adapter.disable();
-                setIcon(R.drawable.toggle_bluetooth_off);
+//                setIcon(R.drawable.toggle_bluetooth_off);
             }
         }
 
@@ -90,10 +90,10 @@ public class BluetoothToggle extends Toggle {
                 mToggle.setEnabled(true);
                 break;
         }
-        if (mToggle.isChecked())
-        	setIcon(R.drawable.toggle_bluetooth);
-        else
-        	setIcon(R.drawable.toggle_bluetooth_off);
+//        if (mToggle.isChecked())
+//        	setIcon(R.drawable.toggle_bluetooth);
+//        else
+//        	setIcon(R.drawable.toggle_bluetooth_off);
     }
 
     @Override

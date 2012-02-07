@@ -42,10 +42,7 @@ public class WifiToggle extends Toggle {
         mContext.registerReceiver(mBroadcastReceiver, wifiFilter);
 
         setLabel(R.string.toggle_wifi);
-        if (mToggle.isChecked())
-        	setIcon(R.drawable.toggle_wifi);
-        else
-        	setIcon(R.drawable.toggle_wifi_off);
+        setIcon(R.drawable.toggle_wifi);
     }
 
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
@@ -134,10 +131,6 @@ public class WifiToggle extends Toggle {
                 mToggle.setEnabled(false);
                 break;
         }
-        if (mToggle.isChecked())
-        	setIcon(R.drawable.toggle_wifi);
-        else
-        	setIcon(R.drawable.toggle_wifi_off);
     }
 
     @Override
@@ -145,19 +138,14 @@ public class WifiToggle extends Toggle {
         if (isChecked != mIsWifiOn) {
             changeWifiState(isChecked);
         }
-        if (isChecked)
-        	setIcon(R.drawable.toggle_wifi);
-        else
-        	setIcon(R.drawable.toggle_wifi_off);
-
     }
-    
+
     @Override
     protected boolean onLongPress() {
-    	Intent intent = new Intent(android.provider.Settings.ACTION_WIFI_SETTINGS);
+        Intent intent = new Intent(android.provider.Settings.ACTION_WIFI_SETTINGS);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         mContext.startActivity(intent);
-    	return true;
+        return true;
     }
 
 }

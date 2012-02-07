@@ -48,6 +48,8 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.RemoteException;
 import android.os.ServiceManager;
+import android.os.storage.StorageManager;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Slog;
 import android.view.accessibility.AccessibilityEvent;
@@ -202,6 +204,8 @@ public class TabletStatusBar extends StatusBar implements
     
     TogglesView mQuickToggles;
 
+    private StorageManager mStorageManager;
+
     protected void addPanelWindows() {
         final Context context = mContext;
         final Resources res = mContext.getResources();
@@ -226,6 +230,11 @@ public class TabletStatusBar extends StatusBar implements
         // Bt
         mBluetoothController.addIconView(
                 (ImageView)mNotificationPanel.findViewById(R.id.bluetooth));
+
+        // storage
+        mStorageManager = (StorageManager) context.getSystemService(Context.STORAGE_SERVICE);
+        mStorageManager.registerListener(
+                new com.android.systemui.usb.StorageNotification(context));
 
         // network icons: either a combo icon that switches between mobile and data, or distinct
         // mobile and data icons
@@ -1243,19 +1252,9 @@ public class TabletStatusBar extends StatusBar implements
             Slog.d(TAG, "Set hard keyboard status: available=" + available
                     + ", enabled=" + enabled);
         }
-        if (mContext.getResources().getBoolean(R.bool.config_forcefullyDisableHardwareKeyboard)) {
-            try {
-                mBarService.setHardKeyboardEnabled(false);
-            } catch (RemoteException e) {}
-            mInputMethodSwitchButton.setHardKeyboardStatus(false);
-            updateNotificationIcons();
-            mInputMethodsPanel.setHardKeyboardStatus(false, false);
-            
-        } else {
-            mInputMethodSwitchButton.setHardKeyboardStatus(available);
-            updateNotificationIcons();
-            mInputMethodsPanel.setHardKeyboardStatus(available, enabled);
-        }
+        mInputMethodSwitchButton.setHardKeyboardStatus(available);
+        updateNotificationIcons();
+        mInputMethodsPanel.setHardKeyboardStatus(available, enabled);
     }
 
     @Override

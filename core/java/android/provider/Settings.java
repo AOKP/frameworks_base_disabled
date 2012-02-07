@@ -42,8 +42,6 @@ import android.speech.tts.TextToSpeech;
 import android.text.TextUtils;
 import android.util.AndroidException;
 import android.util.Log;
-import android.view.WindowOrientationListener;
-
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -2220,8 +2218,8 @@ public final class Settings {
          * 
          * @hide
          */
-        public static final String CRT_ON_ANIMATION = "crt_on_animation";
-
+        public static final String CRT_ON_ANIMATION = "crt_on_animation";    
+        
         /**
          * Whether to enable unlocking from lockscreen via menu key
          * 
@@ -2288,6 +2286,13 @@ public final class Settings {
          * @hide
          */
         public static final String STATUSBAR_QUICKTOGGLES_AUTOHIDE = "statusbar_quicktoggles_autohide";
+
+        /**
+         * Whether to control brightness from status bar
+         * 
+         * @hide
+         */
+        public static final String STATUS_BAR_BRIGHTNESS_TOGGLE = "status_bar_brightness_toggle";
 
         /**
          * @hide
@@ -2484,6 +2489,12 @@ public final class Settings {
          * @hide
          */
         public static final String VOLUME_MUSIC_CONTROLS = "volume_music_controls";
+        
+        /**
+         * Setting to allow % on lockscreen always showing.
+         * @hide
+         */
+        public static final String LOCKSCREEN_BATTERY = "lockscreen_battery";
 
         /**
          * The action to take when long pressing home
@@ -2605,6 +2616,11 @@ public final class Settings {
          * @hide
          */
         public static final String LOCKSCREEN_QUICK_UNLOCK_CONTROL = "lockscreen_quick_unlock_control";
+
+        /**
+         * @hide
+         */
+        public static final String USE_WEATHER = "use_weather";
     }
    
 

@@ -34,10 +34,10 @@ public class NetworkToggle extends Toggle {
         super(context);
         updateState();
         setLabel(R.string.toggle_data);
-        if (mToggle.isChecked())
+//        if (mToggle.isChecked())
         	setIcon(R.drawable.toggle_data);
-        else
-        	setIcon(R.drawable.toggle_data_off);
+//        else
+//        	setIcon(R.drawable.toggle_data_off);
     }
 
     private boolean isMobileDataEnabled() {
@@ -58,10 +58,10 @@ public class NetworkToggle extends Toggle {
         if (adapter != null) {
             setMobileDataEnabled(isChecked);
         }
-        if (isChecked)
+//        if (isChecked)
         	setIcon(R.drawable.toggle_data);
-        else
-        	setIcon(R.drawable.toggle_data_off);
+//        else
+//        	setIcon(R.drawable.toggle_data_off);
     }
 
     protected BroadcastReceiver getBroadcastReceiver() {
@@ -87,10 +87,10 @@ public class NetworkToggle extends Toggle {
     @Override
     protected void updateInternalToggleState() {
         mToggle.setChecked(isMobileDataEnabled());
-        if (mToggle.isChecked())
+//        if (mToggle.isChecked())
         	setIcon(R.drawable.toggle_data);
-        else
-        	setIcon(R.drawable.toggle_data_off);
+//        else
+//        	setIcon(R.drawable.toggle_data_off);
     }
     
     @Override

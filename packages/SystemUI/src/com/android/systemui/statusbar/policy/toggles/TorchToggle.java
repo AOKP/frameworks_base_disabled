@@ -49,10 +49,7 @@ public class TorchToggle extends Toggle implements OnSharedPreferenceChangeListe
     public TorchToggle(Context context) {
         super(context);
         setLabel(R.string.toggle_torch);
-        if (mToggle.isChecked())
-        	setIcon(R.drawable.toggle_torch);
-        else
-        	setIcon(R.drawable.toggle_torch_off);
+        setIcon(R.drawable.toggle_torch);
         mContext = context;
         prefs = mContext.getSharedPreferences("torch", Context.MODE_WORLD_READABLE);
         prefs.registerOnSharedPreferenceChangeListener(this);
@@ -84,10 +81,10 @@ public class TorchToggle extends Toggle implements OnSharedPreferenceChangeListe
                     0);  
         }
     }
-    
+
     @Override
     protected boolean onLongPress() {
-    	return false;
+        return false;
     }
 
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,String key) 

@@ -94,7 +94,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
     public GlobalActions(Context context) {
         SettingsObserver observer = new SettingsObserver(new Handler());
         observer.observe();
-        updateSettings();
+        updateScreen();
 
         mContext = context;
         mAudioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
@@ -850,7 +850,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         mContext.sendBroadcast(intent);
     }
 
-    private void updateScreen {
+    private void updateScreen() {
         ContentResolver cr = mContext.getContentResolver();
         mEnablePowerSaverToggle = Settings.System.getInt(cr, Settings.System.POWER_DIALOG_SHOW_POWER_SAVER, 0) == 1;
         mEnableEasterEggToggle = Settings.System.getInt(cr, Settings.System.POWER_DIALOG_SHOW_EASTER_EGG, 1) == 1;

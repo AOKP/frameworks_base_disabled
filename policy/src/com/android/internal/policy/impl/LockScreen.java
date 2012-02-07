@@ -21,9 +21,11 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 import android.app.ActivityManager;
+import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
@@ -50,6 +52,7 @@ import com.android.internal.widget.SlidingTab;
 import com.android.internal.widget.WaveView;
 import com.android.internal.widget.multiwaveview.MultiWaveView;
 
+
 /**
  * The screen within {@link LockPatternKeyguardView} that shows general information about the device
  * depending on its state, and how to get past it, as applicable.
@@ -62,6 +65,9 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
     private static final String ENABLE_MENU_KEY_FILE = "/data/local/enable_menu_key";
     private static final int WAIT_FOR_ANIMATION_TIMEOUT = 0;
     private static final int STAY_ON_WHILE_GRABBED_TIMEOUT = 30000;
+    
+    public static final String INTENT_TORCH_ON = "com.android.systemui.INTENT_TORCH_ON";
+    public static final String INTENT_TORCH_OFF = "com.android.systemui.INTENT_TORCH_OFF";
 
     public static final int LAYOUT_STOCK = 2;
     public static final int LAYOUT_QUAD = 6;
@@ -88,6 +94,8 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
     private TextView mCarrier;
 
     private Drawable[] lockDrawables;
+    
+    private boolean mFastTorchOn;
 
     ArrayList<Target> lockTargets = new ArrayList<Target>();
 
@@ -611,7 +619,28 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
         if (DBG)
             Log.v(TAG, "*** LockScreen accel is "
                     + (mUnlockWidget.isHardwareAccelerated() ? "on" : "off"));
+        
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Intent.ACTION_SCREEN_ON);
+        filter.addAction(Intent.ACTION_SCREEN_OFF);
+        context.registerReceiver(mBroadcastReceiver, filter);
     }
+    
+    boolean isScreenOn;
+    
+    private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
+        
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (Intent.ACTION_SCREEN_OFF.equals(action)) {
+                isScreenOn = false;
+            } else if (Intent.ACTION_SCREEN_ON.equals(action)) {
+                isScreenOn = true;
+            }
+            
+        }
+    };
 
     private boolean isSilentMode() {
         return mAudioManager.getRingerMode() != AudioManager.RINGER_MODE_NORMAL;
@@ -662,15 +691,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 
     private Runnable mPendingR1;
     private Runnable mPendingR2;
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_MENU && mEnableMenuKeyInLockScreen) {
-            mCallback.goToUnlockScreen();
-        }
-        return false;
-    }
-
+    
     void updateConfiguration() {
         Configuration newConfig = getResources().getConfiguration();
         if (newConfig.orientation != mCreationOrientation) {
@@ -791,5 +812,21 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
         mLockscreenTargets = Settings.System.getInt(resolver,
                 Settings.System.LOCKSCREEN_LAYOUT, LAYOUT_STOCK);
 
+    }
+    
+    protected void startTorch(){
+        Intent i = new Intent(INTENT_TORCH_ON);
+        i.setAction(INTENT_TORCH_ON);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        mContext.startService(i);
+        mFastTorchOn = true;
+    }
+    
+    protected void quitTorch(){
+    	Intent i = new Intent(INTENT_TORCH_OFF);
+    	i.setAction(INTENT_TORCH_OFF);
+    	i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    	mContext.startService(i);
+    	mFastTorchOn = false;
     }
 }

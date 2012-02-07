@@ -22,71 +22,58 @@ package com.android.systemui.statusbar.policy.toggles;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
-
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.app.PendingIntent;
 import com.android.systemui.R;
-
 /**
  * TODO: Fix the WakeLock
  */
-public class TorchToggle extends Toggle {
+public class TorchToggle extends Toggle implements OnSharedPreferenceChangeListener {
 
     private static final String TAG = "TorchToggle";
+    
+    public static final String KEY_TORCH_ON = "torch_on";
+    public static final String INTENT_TORCH_ON = "com.android.systemui.INTENT_TORCH_ON";
+    public static final String INTENT_TORCH_OFF = "com.android.systemui.INTENT_TORCH_OFF";
 
     private boolean mIsTorchOn;
     private Context mContext;
-    private Torch mTorch;
-    private int runawayflag;
-
+    
+    SharedPreferences prefs;
+    
+    PendingIntent torchIntent;
+    
     public TorchToggle(Context context) {
         super(context);
         setLabel(R.string.toggle_torch);
         setIcon(R.drawable.toggle_torch);
         mContext = context;
+        prefs = mContext.getSharedPreferences("torch", Context.MODE_WORLD_READABLE);
+        prefs.registerOnSharedPreferenceChangeListener(this);
+        mIsTorchOn = prefs.getBoolean(KEY_TORCH_ON,false);
+        updateState();
     }
 
     @Override
     protected void updateInternalToggleState() {
-        Log.d(TAG, "Updating TorchToggleState");
-        if (mIsTorchOn) {
-            if (mTorch == null) {
-                onCheckChanged(true); // It looks like we are 'on' but don't have a torch reference
-                                      // .. try to restart?
-            }
-        } else {
-            if (mTorch != null) {
-                mTorch.finish(); // looks like we are 'off', but still have a torch .. finish it.
-            }
-        }
+        mToggle.setChecked(mIsTorchOn);
     }
 
     @Override
     protected void onCheckChanged(boolean isChecked) {
         if (isChecked) {
-            Log.d(TAG, "Starting Torch Intent");
-            Intent intent = new Intent(mContext, Torch.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            mContext.startActivity(intent);
-            mIsTorchOn = true;
-            runawayflag = 0;
+            Intent i = new Intent(INTENT_TORCH_ON);
+            i.setAction(INTENT_TORCH_ON);
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            mContext.startService(i);
         }
         else {
-            if (mTorch != null) {
-                Log.d(TAG, "Destroying Torch");
-                mTorch.finish();
-            } else {
-                Log.d(TAG, "Tried to destroy Torch that was NULL!"); // I'm going to try a little
-                                                                     // recursion here.
-                if (++runawayflag > 10) {
-                    Log.d(TAG, "Tried 10 times to get Torch!"); // I don't want an uncontrolled
-                                                                // loop.
-                } else {
-                    mTorch = Torch.getTorch(); // let's try to get torch and retry the procedure
-                    onCheckChanged(false); // I love recursion!
-                }
-            }
-            mIsTorchOn = false;
+        	Intent i = new Intent(INTENT_TORCH_OFF);
+        	i.setAction(INTENT_TORCH_OFF);
+        	i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        	mContext.startService(i);
         }
-        mTorch = Torch.getTorch();
     }
 
     @Override
@@ -94,4 +81,9 @@ public class TorchToggle extends Toggle {
         return false;
     }
 
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,String key) 
+    {
+      mIsTorchOn = sharedPreferences.getBoolean(KEY_TORCH_ON,false);
+      updateState();
+    }
 }

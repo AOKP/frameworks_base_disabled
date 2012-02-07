@@ -43,10 +43,10 @@ public class LteToggle extends Toggle {
         SettingsObserver obs = new SettingsObserver(new Handler());
         obs.observe();
         setLabel(R.string.toggle_lte);
-        if (mToggle.isChecked())
+//        if (mToggle.isChecked())
         	setIcon(R.drawable.toggle_lte);
-        else
-        	setIcon(R.drawable.toggle_lte_off);
+//        else
+//        	setIcon(R.drawable.toggle_lte_off);
 
     }
 
@@ -55,10 +55,10 @@ public class LteToggle extends Toggle {
         TelephonyManager tm = (TelephonyManager) mView.getContext()
                 .getSystemService(Context.TELEPHONY_SERVICE);
         tm.toggleLTE(isChecked);
-        if (isChecked)
+//        if (isChecked)
         	setIcon(R.drawable.toggle_lte);
-        else
-        	setIcon(R.drawable.toggle_lte_off);
+//        else
+//        	setIcon(R.drawable.toggle_lte_off);
     }
 
     class SettingsObserver extends ContentObserver {
@@ -134,10 +134,10 @@ public class LteToggle extends Toggle {
         mNetworkMode = getCurrentPreferredNetworkMode(mContext);
         if (mToggle != null)
             mToggle.setChecked(mNetworkMode == Phone.NT_MODE_GLOBAL);
-        if (mToggle.isChecked())
+//        if (mToggle.isChecked())
         	setIcon(R.drawable.toggle_lte);
-        else
-        	setIcon(R.drawable.toggle_lte_off);
+//        else
+//        	setIcon(R.drawable.toggle_lte_off);
     }
     
     @Override

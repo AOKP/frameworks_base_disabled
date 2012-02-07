@@ -158,22 +158,23 @@ public class TogglesView extends LinearLayout {
                     (useAltButtonLayout ? PARAMS_TOGGLE_SCROLL : PARAMS_TOGGLE));
         }
         if (useAltButtonLayout) {
-            LinearLayout TogglesRowLayout;
-            HorizontalScrollView ToggleScrollView = new HorizontalScrollView(mContext);
+            LinearLayout togglesRowLayout;
+            HorizontalScrollView toggleScrollView = new HorizontalScrollView(mContext);
             // ToggleScrollView.setFillViewport(true);
             try {
-                TogglesRowLayout = rows.get(rows.size() - 1);
+                togglesRowLayout = rows.get(rows.size() - 1);
             } catch (ArrayIndexOutOfBoundsException e) {
                 // happens when brightness bar is below buttons
-                TogglesRowLayout = new LinearLayout(mContext);
-                rows.add(TogglesRowLayout);
+                togglesRowLayout = new LinearLayout(mContext);
+                rows.add(togglesRowLayout);
             }
-            TogglesRowLayout.setGravity(Gravity.CENTER_HORIZONTAL);
-            ToggleScrollView.addView(TogglesRowLayout, PARAMS_TOGGLE);
+            togglesRowLayout.setGravity(Gravity.CENTER_HORIZONTAL);
+            toggleScrollView.setHorizontalFadingEdgeEnabled(true);
+            toggleScrollView.addView(togglesRowLayout, PARAMS_TOGGLE);
             LinearLayout ll = new LinearLayout(mContext);
             ll.setOrientation(LinearLayout.VERTICAL);
             ll.setGravity(Gravity.CENTER_HORIZONTAL);
-            ll.addView(ToggleScrollView, PARAMS_TOGGLE_SCROLL);
+            ll.addView(toggleScrollView, PARAMS_TOGGLE_SCROLL);
             rows.remove(rows.size() - 1);
             rows.add(ll);
 

@@ -56,10 +56,12 @@ LOCAL_C_INCLUDES := \
 LOCAL_C_INCLUDES += hardware/libhardware/modules/gralloc
 
 ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
+ifneq ($(BOARD_USES_LEGACY_QCOM),true)
 LOCAL_SHARED_LIBRARIES += \
 	libQcomUI
 LOCAL_C_INCLUDES += hardware/qcom/display/libqcomui
 LOCAL_CFLAGS += -DQCOM_HARDWARE
+endif
 ifeq ($(TARGET_QCOM_HDMI_OUT),true)
 LOCAL_CFLAGS += -DQCOM_HDMI_OUT
 endif

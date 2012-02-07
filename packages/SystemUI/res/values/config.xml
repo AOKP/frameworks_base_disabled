@@ -49,7 +49,5 @@
 
     <!-- When true, show 1/2G networks as 3G. -->
     <bool name="config_showMin3G">false</bool>
-    
-    <bool name="config_forcefullyDisableHardwareKeyboard">false</bool>
 </resources>
 

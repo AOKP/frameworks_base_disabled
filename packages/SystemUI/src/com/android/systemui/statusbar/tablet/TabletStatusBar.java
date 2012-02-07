@@ -1252,19 +1252,9 @@ public class TabletStatusBar extends StatusBar implements
             Slog.d(TAG, "Set hard keyboard status: available=" + available
                     + ", enabled=" + enabled);
         }
-        if (mContext.getResources().getBoolean(R.bool.config_forcefullyDisableHardwareKeyboard)) {
-            try {
-                mBarService.setHardKeyboardEnabled(false);
-            } catch (RemoteException e) {}
-            mInputMethodSwitchButton.setHardKeyboardStatus(false);
-            updateNotificationIcons();
-            mInputMethodsPanel.setHardKeyboardStatus(false, false);
-            
-        } else {
-            mInputMethodSwitchButton.setHardKeyboardStatus(available);
-            updateNotificationIcons();
-            mInputMethodsPanel.setHardKeyboardStatus(available, enabled);
-        }
+        mInputMethodSwitchButton.setHardKeyboardStatus(available);
+        updateNotificationIcons();
+        mInputMethodsPanel.setHardKeyboardStatus(available, enabled);
     }
 
     @Override

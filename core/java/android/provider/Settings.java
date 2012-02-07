@@ -2779,6 +2779,13 @@ public final class Settings {
          * @hide
          */
         public static final String LOCKSCREEN_QUICK_UNLOCK_CONTROL = "lockscreen_quick_unlock_control";
+
+        /**
+         * Whether to enable torch by long pressing power from a screen-off state
+         * 
+         * @hide
+         */
+        public static final String ENABLE_FAST_TORCH = "enable_fast_torch";
     }
 
     /**

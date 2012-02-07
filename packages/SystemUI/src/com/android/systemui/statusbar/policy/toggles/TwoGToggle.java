@@ -43,10 +43,7 @@ public class TwoGToggle extends Toggle {
         SettingsObserver obs = new SettingsObserver(new Handler());
         obs.observe();
         setLabel(R.string.toggle_2g);
-        if (mToggle.isChecked())
-        	setIcon(R.drawable.toggle_2g_1);
-        else
-        	setIcon(R.drawable.toggle_2g_1_off);
+        setIcon(R.drawable.toggle_2g_1);
     }
 
     @Override
@@ -54,10 +51,6 @@ public class TwoGToggle extends Toggle {
         TelephonyManager tm = (TelephonyManager) mView.getContext()
                 .getSystemService(Context.TELEPHONY_SERVICE);
         tm.toggle2G(isChecked);
-        if (isChecked)
-        	setIcon(R.drawable.toggle_2g_1);
-        else
-        	setIcon(R.drawable.toggle_2g_1_off);
 
     }
 
@@ -133,18 +126,14 @@ public class TwoGToggle extends Toggle {
         mNetworkMode = getCurrentPreferredNetworkMode(mContext);
         if (mToggle != null)
             mToggle.setChecked(mNetworkMode == Phone.NT_MODE_GSM_ONLY);
-        if (mToggle.isChecked())
-        	setIcon(R.drawable.toggle_2g_1);
-        else
-        	setIcon(R.drawable.toggle_2g_1_off);
     }
-    
+
     @Override
     protected boolean onLongPress() {
-    	Intent intent = new Intent(android.provider.Settings.ACTION_WIRELESS_SETTINGS);
+        Intent intent = new Intent(android.provider.Settings.ACTION_WIRELESS_SETTINGS);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         mContext.startActivity(intent);
-    	return true;
+        return true;
     }
 
 }

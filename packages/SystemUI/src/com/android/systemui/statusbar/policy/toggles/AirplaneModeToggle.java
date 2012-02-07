@@ -25,10 +25,10 @@ public class AirplaneModeToggle extends Toggle {
 
         updateState();
         setLabel(R.string.toggle_airplane);
-        if (mToggle.isChecked())
+//        if (mToggle.isChecked())
         	setIcon(R.drawable.toggle_airplane);
-        else
-        	setIcon(R.drawable.toggle_airplane_off);
+//        else
+//        	setIcon(R.drawable.toggle_airplane_off);
 
     }
 
@@ -72,10 +72,10 @@ public class AirplaneModeToggle extends Toggle {
     protected void updateInternalToggleState() {
         mAirplaneMode = getAirplaneMode();
         mToggle.setChecked(mAirplaneMode);
-        if (mToggle.isChecked())
-        	setIcon(R.drawable.toggle_airplane);
-        else
-        	setIcon(R.drawable.toggle_airplane_off);
+//        if (mToggle.isChecked())
+//        	setIcon(R.drawable.toggle_airplane);
+//        else
+//        	setIcon(R.drawable.toggle_airplane_off);
     }
 
     @Override

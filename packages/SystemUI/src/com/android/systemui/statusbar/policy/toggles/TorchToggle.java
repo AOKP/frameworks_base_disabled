@@ -40,10 +40,7 @@ public class TorchToggle extends Toggle {
     public TorchToggle(Context context) {
         super(context);
         setLabel(R.string.toggle_torch);
-        if (mToggle.isChecked())
-        	setIcon(R.drawable.toggle_torch);
-        else
-        	setIcon(R.drawable.toggle_torch_off);
+        setIcon(R.drawable.toggle_torch);
         mContext = context;
     }
 
@@ -60,10 +57,6 @@ public class TorchToggle extends Toggle {
                 mTorch.finish(); // looks like we are 'off', but still have a torch .. finish it.
             }
         }
-        if (mToggle.isChecked())
-        	setIcon(R.drawable.toggle_torch);
-        else
-        	setIcon(R.drawable.toggle_torch_off);
     }
 
     @Override
@@ -75,10 +68,8 @@ public class TorchToggle extends Toggle {
             mContext.startActivity(intent);
             mIsTorchOn = true;
             runawayflag = 0;
-            setIcon(R.drawable.toggle_torch);
         }
         else {
-        	setIcon(R.drawable.toggle_torch_off);
             if (mTorch != null) {
                 Log.d(TAG, "Destroying Torch");
                 mTorch.finish();
@@ -97,10 +88,10 @@ public class TorchToggle extends Toggle {
         }
         mTorch = Torch.getTorch();
     }
-    
+
     @Override
     protected boolean onLongPress() {
-    	return false;
+        return false;
     }
 
 }

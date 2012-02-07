@@ -227,8 +227,7 @@ public class LockPatternKeyguardView extends KeyguardViewBase implements Handler
 
     private Runnable mRecreateRunnable = new Runnable() {
         public void run() {
-            final boolean checkInProgress = (mUnlockScreen != null && ((KeyguardScreen) mUnlockScreen).checkInProgress());
-            updateScreen(mMode, !checkInProgress);
+            updateScreen(mMode, true);
             restoreWidgetState();
         }
     };

@@ -2293,6 +2293,13 @@ public final class Settings {
          * @hide
          */
         public static final String STATUS_BAR_BRIGHTNESS_TOGGLE = "status_bar_brightness_toggle";
+        
+        /**
+         * Whether to use CirclesMOD status bar icon style
+         * 
+         * @hide
+         */
+        public static final String STATUS_BAR_CIRCLESMOD = "status_bar_circlesmod";
 
         /**
          * @hide

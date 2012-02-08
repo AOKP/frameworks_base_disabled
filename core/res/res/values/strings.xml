@@ -3413,9 +3413,12 @@
 
     <!-- STK setup Call -->
     <string name="SetupCallDefault">Accept Call?</string>
-    
-     <!-- Button to reboot the phone, within the Phone Options dialog -->
-    <string name="reboot_system">Reboot phone</string>
+
+	<!-- Title of the Power Options dialog -->
+    <string name="reboot_system" product="tablet">Reboot tablet</string>
+
+	<!-- Title of the Power Options dialog -->
+    <string name="reboot_system" product="default">Reboot phone</string>
 
 	<!-- label for item that screenshots in phone options dialog -->
 	<string name="global_action_screenshot">Screenshot</string>

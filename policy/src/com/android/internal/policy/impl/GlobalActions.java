@@ -1,6 +1,5 @@
 /*
  * Copyright (C) 2008 The Android Open Source Project
- * Copyright (C) 2011 David van Tonder
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,13 +23,11 @@ import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.database.ContentObserver;
 import android.media.AudioManager;
 import android.os.Handler;
 import android.os.IBinder;
@@ -66,19 +63,16 @@ import com.android.internal.telephony.TelephonyProperties;
 class GlobalActions implements DialogInterface.OnDismissListener, DialogInterface.OnClickListener  {
 
     private static final String TAG = "SYSTEM :GlobalActions";
-
     private static final boolean SHOW_SILENT_TOGGLE = true;
 
     private final Context mContext;
     private final AudioManager mAudioManager;
-
     private ArrayList<Action> mItems;
     private AlertDialog mDialog;
 
     private SilentModeAction mSilentModeAction;
     private ToggleAction mAirplaneModeOn;
     private ToggleAction mPowerSaverOn;
-
     private MyAdapter mAdapter;
 
     private boolean mKeyguardShowing = false;
@@ -86,16 +80,13 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
     private ToggleAction.State mAirplaneState = ToggleAction.State.Off;
     private boolean mIsWaitingForEcmExit = false;
     private boolean mEnablePowerSaverToggle = false;
+    private boolean mEnableScreenshotToggle = false;
     private boolean mEnableEasterEggToggle = false;
 
     /**
      * @param context everything needs a context :(
      */
     public GlobalActions(Context context) {
-        SettingsObserver observer = new SettingsObserver(new Handler());
-        observer.observe();
-        updateScreen();
-
         mContext = context;
         mAudioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
 
@@ -123,7 +114,6 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             mDialog = createDialog();
         }
         prepareDialog();
-
         mDialog.show();
         mDialog.getWindow().getDecorView().setSystemUiVisibility(View.STATUS_BAR_DISABLE_EXPAND);
     }
@@ -133,11 +123,19 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
      * @return A new dialog.
      */
     private AlertDialog createDialog() {
-
         mEnablePowerSaverToggle = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.POWER_DIALOG_SHOW_POWER_SAVER, 1) == 1;
+                Settings.System.POWER_DIALOG_SHOW_POWER_SAVER, 0) == 1;
+        
+        mEnableScreenshotToggle = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.POWER_DIALOG_SHOW_SCREENSHOT, 1) == 1;
+
         mEnableEasterEggToggle = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.POWER_DIALOG_SHOW_EASTER_EGG, 0) == 1;
+
+        //debugging
+        if (mEnablePowerSaverToggle) {Log.d(TAG, "PowerSaver enabled");}else{Log.d(TAG, "PowerSaver disabled");}
+        if (mEnableScreenshotToggle) {Log.d(TAG, "Screenshot enabled");}else{Log.d(TAG, "Screenshot disabled");}
+        if (mEnableEasterEggToggle) {Log.d(TAG, "EasterEgg enabled");}else{Log.d(TAG, "EasterEgg disabled");}
 
         mSilentModeAction = new SilentModeAction(mAudioManager, mHandler);
 
@@ -247,35 +245,46 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         mItems.add(mAirplaneModeOn);
         
         // next: power saver
-        if (mEnablePowerSaverToggle) {
-            mItems.add(mPowerSaverOn);
-            try {
-                Settings.Secure.getInt(mContext.getContentResolver(),
-                        Settings.Secure.POWER_SAVER_MODE);
-            } catch (SettingNotFoundException e) {
-                //Power Saver hasn't yet been initialized so we don't want to make it easy for the user without
-                //  them reading any warnings that could be presented by enabling the power saver through ROM Control
+        try {
+            Settings.Secure.getInt(mContext.getContentResolver(),
+                    Settings.Secure.POWER_SAVER_MODE);
+            if(mEnablePowerSaverToggle) {
+                Log.d(TAG, "Adding powersaver");
+                mItems.add(mPowerSaverOn); 
+            } else {
+                Log.d(TAG, "not adding power saver");
             }
+        } catch (SettingNotFoundException e) {
+            //Power Saver hasn't yet been initialized so we don't want to make it easy for the user without
+            //  them reading any warnings that could be presented by enabling the power saver through ROM Control
         }
 
         // next: screenshot
-        mItems.add(new SinglePressAction(com.android.internal.R.drawable.ic_lock_screenshot, R.string.global_action_screenshot) {
-            public void onPress() {
-                takeScreenshot();
-            }
+        if (mEnableScreenshotToggle) {
+            Log.d(TAG, "Adding screenshot");
+            mItems.add(new SinglePressAction(com.android.internal.R.drawable.ic_lock_screenshot,
+                    R.string.global_action_screenshot) {
+                public void onPress() {
+                    takeScreenshot();
+                }
 
-            public boolean showDuringKeyguard() {
-                return true;
-            }
+                public boolean showDuringKeyguard() {
+                    return true;
+                }
 
-            public boolean showBeforeProvisioning() {
-                return true;
-            }
-        });
+                public boolean showBeforeProvisioning() {
+                    return true;
+                }
+            });
+        } else {
+            Log.d(TAG, "Not adding screenshot");
+        }
 
         // next: easter egg shortcut
         if (mEnableEasterEggToggle) {
-            mItems.add(new SinglePressAction(com.android.internal.R.drawable.ic_lock_nyandroid, R.string.global_action_easter_egg) {
+            log.d(TAG, "Adding easter egg");
+            mItems.add(new SinglePressAction(com.android.internal.R.drawable.ic_lock_nyandroid,
+                    R.string.global_action_easter_egg) {
                 public void onPress() {
                     Log.d(TAG, "easter egg pressed");
                     try {
@@ -296,6 +305,8 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                     return true;
                 }
             });
+        } else {
+            Log.d(TAG, "Not adding easter egg");
         }
 
         // last: silent mode
@@ -304,9 +315,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         }
 
         mAdapter = new MyAdapter();
-
         final AlertDialog.Builder ab = new AlertDialog.Builder(mContext);
-
         ab.setAdapter(mAdapter, this).setInverseBackgroundForced(true);
 
         final AlertDialog dialog = ab.create();
@@ -314,7 +323,6 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG);
 
         dialog.setOnDismissListener(this);
-
         return dialog;
     }
     
@@ -368,14 +376,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                            }
                        };
                        msg.replyTo = new Messenger(h);
-                       msg.arg1 = msg.arg2 = 0;
-
-                       /*  remove for the time being
-                       if (mStatusBar != null && mStatusBar.isVisibleLw())
-                           msg.arg1 = 1;
-                       if (mNavigationBar != null && mNavigationBar.isVisibleLw())
-                           msg.arg2 = 1;
-                        */                        
+                       msg.arg1 = msg.arg2 = 0;                   
 
                        /* wait for the dislog box to close */
                        try {
@@ -418,9 +419,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         final boolean powerSaverOn = Settings.Secure.getInt(mContext.getContentResolver(),
                 Settings.Secure.POWER_SAVER_MODE, PowerSaverService.POWER_SAVER_MODE_OFF) == PowerSaverService.POWER_SAVER_MODE_ON;
         mPowerSaverOn.updateState(powerSaverOn ? ToggleAction.State.On : ToggleAction.State.Off);
-
     }
-
 
     /** {@inheritDoc} */
     public void onDismiss(DialogInterface dialog) {
@@ -435,26 +434,6 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             dialog.dismiss();
         }
         mAdapter.getItem(which).onPress();
-    }
-
-    // A class to watch our settings and update if needed
-    class SettingsObserver extends ContentObserver {
-        SettingsObserver(Handler handler) {
-            super(handler);
-        }
-
-        void observe() {
-            ContentResolver resolver = mContext.getContentResolver();
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.POWER_DIALOG_SHOW_POWER_SAVER), false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.POWER_DIALOG_SHOW_EASTER_EGG), false, this);
-        }
-
-        @Override
-        public void onChange(boolean selfChange) {
-            updateScreen();
-        }
     }
 
     /**
@@ -515,7 +494,6 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                     + ", keyguardshowing=" + mKeyguardShowing
                     + ", provisioned=" + mDeviceProvisioned);
         }
-
 
         public long getItemId(int position) {
             return position;
@@ -647,7 +625,6 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
          * View.
          */
         void willCreate() {
-
         }
 
         public View create(Context context, View convertView, ViewGroup parent,
@@ -689,7 +666,6 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 Log.w(TAG, "shouldn't be able to toggle when in transition");
                 return;
             }
-
             final boolean nowOn = !(mState == State.On);
             onToggle(nowOn);
             changeStateFromPress(nowOn);
@@ -849,10 +825,5 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         intent.putExtra("state", on);
         mContext.sendBroadcast(intent);
     }
-
-    private void updateScreen() {
-        ContentResolver cr = mContext.getContentResolver();
-        mEnablePowerSaverToggle = Settings.System.getInt(cr, Settings.System.POWER_DIALOG_SHOW_POWER_SAVER, 0) == 1;
-        mEnableEasterEggToggle = Settings.System.getInt(cr, Settings.System.POWER_DIALOG_SHOW_EASTER_EGG, 1) == 1;
-    }
 }
+

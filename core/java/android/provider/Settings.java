@@ -3047,6 +3047,11 @@ public final class Settings {
          * Whether ADB is enabled.
          */
         public static final String ADB_ENABLED = "adb_enabled";
+        
+        /**
+         * Whether to display the ADB notification.
+         */
+        public static final String ADB_ICON = "adb_icon";
 
         /**
          * The TCP/IP port to run ADB on, or -1 for USB

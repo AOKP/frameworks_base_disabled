@@ -150,7 +150,7 @@
         </activity>
 
         <!-- started from PhoneStatusBar -->
-        <activity android:name="com.android.calendar.AgendaActivity">
+        <activity android:name="com.android.calendar.AllInOneActivity">
             <intent-filter>
                 <action android:name="com.android.calendar" />
                 <category android:name="android.intent.category.DEFAULT" />

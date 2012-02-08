@@ -404,7 +404,7 @@ public class PhoneStatusBar extends StatusBar {
         
         // restore state
         mQuickToggles.setVisibility(Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.STATUSBAR_TOGGLES_VISIBILITY, 0) == 1 ? View.VISIBLE : View.GONE);
+                Settings.System.STATUSBAR_TOGGLES_VISIBILITY, 1) == 1 ? View.VISIBLE : View.GONE);
         mQuickToggles.setBar(this);
         
         return sb;
@@ -2431,7 +2431,7 @@ public class PhoneStatusBar extends StatusBar {
                 Settings.System.STATUSBAR_SETTINGS_BEHAVIOR, 0) == 1;
 
         mQuickTogglesHideAfterCollapse = Settings.System.getInt(cr,
-                Settings.System.STATUSBAR_QUICKTOGGLES_AUTOHIDE, 1) == 1;
+                Settings.System.STATUSBAR_QUICKTOGGLES_AUTOHIDE, 0) == 1;
 
     }
 

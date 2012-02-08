@@ -2890,6 +2890,11 @@ public final class Settings {
          * Whether ADB is enabled.
          */
         public static final String ADB_ENABLED = "adb_enabled";
+        
+        /**
+         * Whether to display the ADB notification.
+         */
+        public static final String ADB_ICON = "adb_icon";
 
         /**
          * Setting to allow mock locations and location provider status to be injected into the

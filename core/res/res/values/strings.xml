@@ -833,6 +833,11 @@
     <string name="permdesc_movePackage">Allows an application to move application resources from internal to external media and vice versa.</string>
 
     <!-- Title of an application permission, listed so the user can choose whether they want to allow the application to do this. -->
+    <string name="permlab_preventpower">prevent power key</string>
+    <!-- Description of an application permission, listed so the user can choose whether they want to allow the application to do this. -->
+    <string name="permdesc_preventpower">Allows an application to override the power key</string>
+
+    <!-- Title of an application permission, listed so the user can choose whether they want to allow the application to do this. -->
     <string name="permlab_readLogs">read sensitive log data</string>
     <!-- Description of an application permission, listed so the user can choose whether they want to allow the application to do this. -->
     <string name="permdesc_readLogs" product="tablet">Allows an application to read from the
@@ -3408,9 +3413,12 @@
 
     <!-- STK setup Call -->
     <string name="SetupCallDefault">Accept Call?</string>
-    
-     <!-- Button to reboot the phone, within the Phone Options dialog -->
-    <string name="reboot_system">Reboot phone</string>
+
+	<!-- Title of the Power Options dialog -->
+    <string name="reboot_system" product="tablet">Reboot tablet</string>
+
+	<!-- Title of the Power Options dialog -->
+    <string name="reboot_system" product="default">Reboot phone</string>
 
 	<!-- label for item that screenshots in phone options dialog -->
 	<string name="global_action_screenshot">Screenshot</string>

@@ -668,9 +668,22 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
         if (keyCode == KeyEvent.KEYCODE_MENU && mEnableMenuKeyInLockScreen) {
             mCallback.goToUnlockScreen();
         }
+        if (keyCode == KeyEvent.KEYCODE_POWER){
+        	Log.d("TORCH","Caught onKeyDown - Power");
+        	return true;
+        }
         return false;
     }
-
+   
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event){
+    	if (keyCode == KeyEvent.KEYCODE_POWER){
+    		quitTorch();
+    		return true;
+    	}
+    	return false;
+    } 
+    
     void updateConfiguration() {
         Configuration newConfig = getResources().getConfiguration();
         if (newConfig.orientation != mCreationOrientation) {
@@ -791,5 +804,13 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
         mLockscreenTargets = Settings.System.getInt(resolver,
                 Settings.System.LOCKSCREEN_LAYOUT, LAYOUT_STOCK);
 
+    }
+    
+    protected void startTorch(){
+    	Log.d("TORCH","Starting Torch from Lockscreen");
+    }
+    
+    protected void quitTorch(){
+    	Log.d("TORCH","Quitting Torch from Lockscreen");
     }
 }

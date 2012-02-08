@@ -25,9 +25,7 @@ import android.util.Log;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.app.PendingIntent;
-import com.roman.romcontrol.service;
 import com.android.systemui.R;
-
 /**
  * TODO: Fix the WakeLock
  */
@@ -68,17 +66,26 @@ public class TorchToggle extends Toggle implements OnSharedPreferenceChangeListe
     protected void onCheckChanged(boolean isChecked) {
         if (isChecked) {
             Log.d(TAG, "Starting Torch_ON Intent");
-            Intent i = new Intent(mContext, TorchService.class);
-            i.setAction(TorchService.INTENT_TORCH_ON);
-            torchIntent = PendingIntent.getService(mContext, 0, i,
-                    0);             
+            try {
+            	Intent i = new Intent(mContext, Class.forName("com.roman.romcontrol.service.TorchService"));
+            	i.setAction(INTENT_TORCH_ON);
+            	torchIntent = PendingIntent.getService(mContext, 0, i,
+                    0); 
+            } catch ( ClassNotFoundException e ) {
+            	Log.e(TAG,"Uh oh .. ClassNotFound .. that ain't good");
+            }
         }
         else {
         	Log.d(TAG, "Starting Torch_OFF Intent");
-            Intent i = new Intent(mContext, TorchService.class);
-            i.setAction(TorchService.INTENT_TORCH_OFF);
-            torchIntent = PendingIntent.getService(mContext, 0, i,
-                    0);  
+        	try {
+        		Intent i = new Intent(mContext,  Class.forName("com.roman.romcontrol.service.TorchService"));
+        		i.setAction(INTENT_TORCH_OFF);
+        		torchIntent = PendingIntent.getService(mContext, 0, i,
+                    0);
+        	} catch ( ClassNotFoundException e ) {
+            	Log.e(TAG,"Uh oh .. ClassNotFound .. that ain't good");
+        	
+        	}
         }
     }
 

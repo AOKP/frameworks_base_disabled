@@ -119,10 +119,5 @@
 <!--                <category android:name="android.intent.category.DREAM" />-->
             </intent-filter>
         </activity>
-         <activity
-            android:name="com.android.systemui.statusbar.policy.toggles.Torch"
-            android:theme="@android:style/Theme.Holo.Panel"
-            android:excludeFromRecents="true">
-        </activity>
     </application>
 </manifest>

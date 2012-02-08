@@ -2380,7 +2380,7 @@ public class PhoneStatusBar extends StatusBar {
                         | Intent.FLAG_ACTIVITY_SINGLE_TOP
                         | Intent.FLAG_ACTIVITY_CLEAR_TASK
                         | Intent.FLAG_ACTIVITY_NEW_TASK)
-                    .setClassName("com.android.calendar","com.android.calendar.AllInOneActivity"));
+                    .setClassName("com.google.android.calendar", "com.android.calendar.AllInOneActivity"));
                     animateCollapse();
                 } catch (ActivityNotFoundException anfe) {
                     Log.d(TAG, "...could not find Calender");

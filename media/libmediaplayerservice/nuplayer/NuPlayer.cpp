@@ -578,7 +578,6 @@ void NuPlayer::onMessageReceived(const sp<AMessage> &msg) {
 
                // get the new seeked position
                mSource->getNewSeekTime(&newSeekTime);
-
                LOGV("newSeekTime %lld", newSeekTime);
             }
             if( (newSeekTime >= 0 ) && (mLiveSourceType != kHttpDashSource)) {

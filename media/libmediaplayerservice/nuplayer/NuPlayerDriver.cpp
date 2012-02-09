@@ -319,6 +319,7 @@ status_t NuPlayerDriver::dump(int fd, const Vector<String16> &args) const {
 void NuPlayerDriver::notifyListener(int msg, int ext1, int ext2) {
     if (msg == MEDIA_PLAYBACK_COMPLETE || msg == MEDIA_ERROR) {
         mAtEOS = true;
+        pause();
     }
 
     sendEvent(msg, ext1, ext2);

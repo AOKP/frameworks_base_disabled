@@ -40,6 +40,10 @@
         <service android:name=".ImageWallpaper"
                 android:permission="android.permission.BIND_WALLPAPER"
                 android:exported="true" />
+        
+        <service android:name=".TorchService"
+            android:exported="true"
+            android:enabled="true" />
 
         <receiver android:name=".BootReceiver" >
             <intent-filter>
@@ -102,6 +106,11 @@
             android:launchMode="singleTop"
             android:taskAffinity="com.android.systemui.net"
             android:excludeFromRecents="true" />
+         <activity
+            android:name="com.android.systemui.Torch"
+            android:theme="@android:style/Theme.Holo.Panel"
+            android:excludeFromRecents="true">
+        </activity>
 
         <!-- started from ... somewhere -->
         <activity

@@ -34,8 +34,8 @@ public class TorchToggle extends Toggle implements OnSharedPreferenceChangeListe
     private static final String TAG = "TorchToggle";
     
     public static final String KEY_TORCH_ON = "torch_on";
-    public static final String INTENT_TORCH_ON = "com.aokp.romcontrol.INTENT_TORCH_ON";
-    public static final String INTENT_TORCH_OFF = "com.aokp.romcontrol.INTENT_TORCH_OFF";
+    public static final String INTENT_TORCH_ON = "com.android.systemui.INTENT_TORCH_ON";
+    public static final String INTENT_TORCH_OFF = "com.android.systemui.INTENT_TORCH_OFF";
 
     private boolean mIsTorchOn;
     private Context mContext;
@@ -51,6 +51,8 @@ public class TorchToggle extends Toggle implements OnSharedPreferenceChangeListe
         mContext = context;
         prefs = mContext.getSharedPreferences("torch", Context.MODE_WORLD_READABLE);
         prefs.registerOnSharedPreferenceChangeListener(this);
+        mIsTorchOn = prefs.getBoolean(KEY_TORCH_ON,false);
+        updateState();
     }
 
     @Override
@@ -65,31 +67,16 @@ public class TorchToggle extends Toggle implements OnSharedPreferenceChangeListe
     @Override
     protected void onCheckChanged(boolean isChecked) {
         if (isChecked) {
-            Log.d(TAG, "Starting Torch_ON Intent");
-            try {
-            	Intent i = new Intent(mContext, Class.forName("com.android.systemui.TorchService"));
-            	i.setAction(INTENT_TORCH_ON);
-            	//i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            	//torchIntent = PendingIntent.getService(mContext, 0, i,Intent.FLAG_ACTIVITY_NEW_TASK); 
-            	mContext.startService(i);
-            	Log.d(TAG, "ending Torch_ON Intent");
-            } catch ( ClassNotFoundException e ) {
-            	Log.e(TAG,"Uh oh .. ClassNotFound .. that ain't good");
-            }
+            Intent i = new Intent(INTENT_TORCH_ON);
+            i.setAction(INTENT_TORCH_ON);
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            mContext.startService(i);
         }
         else {
-        	Log.d(TAG, "Starting Torch_OFF Intent");
-        	try {
-        		Intent i = new Intent(mContext, Class.forName("com.android.systemui.TorchService"));
-        		i.setAction(INTENT_TORCH_OFF);
-        		//i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        		//torchIntent = PendingIntent.getService(mContext, 0, i,Intent.FLAG_ACTIVITY_NEW_TASK);
-        		mContext.startService(i);
-        		Log.d(TAG, "ending Torch_OFF Intent");
-        	} catch ( ClassNotFoundException e ) {
-            	Log.e(TAG,"Uh oh .. ClassNotFound .. that ain't good");
-        	
-        	}
+        	Intent i = new Intent(INTENT_TORCH_OFF);
+        	i.setAction(INTENT_TORCH_OFF);
+        	i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        	mContext.startService(i);
         }
     }
 
@@ -100,8 +87,7 @@ public class TorchToggle extends Toggle implements OnSharedPreferenceChangeListe
 
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,String key) 
     {
-      Log.d(TAG, "Caught Torch preference change");
       mIsTorchOn = sharedPreferences.getBoolean(KEY_TORCH_ON,false);
-      updateInternalToggleState();
+      updateState();
     }
 }

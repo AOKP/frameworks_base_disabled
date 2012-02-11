@@ -2579,7 +2579,8 @@ public final class Settings {
          * @hide
          */
         public static final String IS_TABLET = "is_tablet";
-
+        
+        
         /**
          * Whether to allow the device to use landscape lockscreen layouts
          * 
@@ -2621,6 +2622,7 @@ public final class Settings {
          */
         public static final String USE_WEATHER = "use_weather";
     }
+   
 
     /**
      * Secure system settings, containing system preferences that applications

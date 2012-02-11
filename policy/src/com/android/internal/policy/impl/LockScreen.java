@@ -20,6 +20,8 @@ import java.io.File;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 
+import dalvik.system.DexFile;
+
 import android.app.ActivityManager;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -34,6 +36,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.os.Handler;
+import android.os.PowerManager;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.util.Log;
@@ -50,6 +53,7 @@ import com.android.internal.widget.SlidingTab;
 import com.android.internal.widget.WaveView;
 import com.android.internal.widget.multiwaveview.MultiWaveView;
 
+
 /**
  * The screen within {@link LockPatternKeyguardView} that shows general information about the device
  * depending on its state, and how to get past it, as applicable.
@@ -62,6 +66,9 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
     private static final String ENABLE_MENU_KEY_FILE = "/data/local/enable_menu_key";
     private static final int WAIT_FOR_ANIMATION_TIMEOUT = 0;
     private static final int STAY_ON_WHILE_GRABBED_TIMEOUT = 30000;
+    
+    public static final String INTENT_TORCH_ON = "com.android.systemui.INTENT_TORCH_ON";
+    public static final String INTENT_TORCH_OFF = "com.android.systemui.INTENT_TORCH_OFF";
 
     public static final int LAYOUT_STOCK = 2;
     public static final int LAYOUT_QUAD = 6;
@@ -88,6 +95,8 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
     private TextView mCarrier;
 
     private Drawable[] lockDrawables;
+    
+    private boolean mFastTorchOn;
 
     ArrayList<Target> lockTargets = new ArrayList<Target>();
 
@@ -668,9 +677,24 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
         if (keyCode == KeyEvent.KEYCODE_MENU && mEnableMenuKeyInLockScreen) {
             mCallback.goToUnlockScreen();
         }
+        if (keyCode == KeyEvent.KEYCODE_POWER && !mFastTorchOn){
+        	// We got Power down lets do fastTorch if it's not already on
+        	startTorch();
+        	return true; // we consumed the power key
+        }
         return false;
     }
-
+   
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event){
+    	if ((keyCode == KeyEvent.KEYCODE_POWER) && (mFastTorchOn)){
+    		// caught power key up, and torch is on, let's turn it off.
+    		quitTorch();
+    		return true;
+    	}
+    	return false;
+    } 
+    
     void updateConfiguration() {
         Configuration newConfig = getResources().getConfiguration();
         if (newConfig.orientation != mCreationOrientation) {
@@ -791,5 +815,21 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
         mLockscreenTargets = Settings.System.getInt(resolver,
                 Settings.System.LOCKSCREEN_LAYOUT, LAYOUT_STOCK);
 
+    }
+    
+    protected void startTorch(){
+        Intent i = new Intent(INTENT_TORCH_ON);
+        i.setAction(INTENT_TORCH_ON);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        mContext.startService(i);
+        mFastTorchOn = true;
+    }
+    
+    protected void quitTorch(){
+    	Intent i = new Intent(INTENT_TORCH_OFF);
+    	i.setAction(INTENT_TORCH_OFF);
+    	i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    	mContext.startService(i);
+    	mFastTorchOn = false;
     }
 }

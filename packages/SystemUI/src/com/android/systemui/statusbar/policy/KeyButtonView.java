@@ -44,6 +44,8 @@ import android.view.ViewConfiguration;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.ImageView;
 
+import android.provider.Settings;
+
 import com.android.systemui.R;
 import com.android.systemui.statusbar.policy.Clock.SettingsObserver;
 
@@ -87,6 +89,8 @@ public class KeyButtonView extends ImageView {
     public KeyButtonView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs);
 
+        mContext = context;
+        
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.KeyButtonView,
                 defStyle, 0);
 
@@ -130,7 +134,7 @@ public class KeyButtonView extends ImageView {
             canvas.restore();
         }
     }
-
+    
     public void setSupportsLongPress(boolean supports) {
         mSupportsLongpress = supports;
     }
@@ -312,6 +316,7 @@ public class KeyButtonView extends ImageView {
             // System process is dead
         }
     }
+   
 
     class SettingsObserver extends ContentObserver {
         SettingsObserver(Handler handler) {

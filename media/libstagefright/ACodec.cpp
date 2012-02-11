@@ -2857,6 +2857,14 @@ bool ACodec::FlushingOutputState::onMessageReceived(const sp<AMessage> &msg) {
             mCodec->deferMessage(msg);
             break;
         }
+
+        case kWhatInputBufferFilled:
+        {
+           mCodec->deferMessage(msg);
+           changeStateIfWeOwnAllBuffers();
+           break;
+        }
+
         default:
             handled = BaseState::onMessageReceived(msg);
             break;

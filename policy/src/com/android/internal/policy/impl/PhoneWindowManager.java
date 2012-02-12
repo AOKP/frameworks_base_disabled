@@ -2833,24 +2833,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             }
         }
     }
-    
-    protected void startTorch() {
-        if (mEnableQuickTorch) {
-            Intent i = new Intent(INTENT_TORCH_ON);
-            i.setAction(INTENT_TORCH_ON);
-            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            mContext.startService(i);
-            mFastTorchOn = true;
-        }
-    }
-
-    protected void quitTorch(){
-        Intent i = new Intent(INTENT_TORCH_OFF);
-        i.setAction(INTENT_TORCH_OFF);
-        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        mContext.startService(i);
-        mFastTorchOn = false;
-    }
 
     /** {@inheritDoc} */
     @Override
@@ -3075,7 +3057,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                         interceptScreenshotChord();
                     }
                     
-                    if(!isScreenOn) {
+                    if(!isScreenOn && mEnableQuickTorch) {
                         handleChangeTorchState(true);
                     }
 

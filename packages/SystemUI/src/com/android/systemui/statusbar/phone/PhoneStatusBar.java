@@ -362,7 +362,7 @@ public class PhoneStatusBar extends StatusBar {
         mLiquidButton = expanded.findViewById(R.id.liquid_button);
         mLiquidButton.setOnClickListener(mLiquidButtonListener);
 
-        //lanuch clock app when we click on the date
+        //lanuch clock or calender app when we click on the date
         mDateView.setOnClickListener(mDateListener);
 
         mQuickToggles = (TogglesView) expanded.findViewById(R.id.quick_toggles);
@@ -2202,7 +2202,7 @@ public class PhoneStatusBar extends StatusBar {
     }
 
     /**
-     * The LEDs are turned o)ff when the notification panel is shown, even just a little bit. This
+     * The LEDs are turned off when the notification panel is shown, even just a little bit. This
      * was added last-minute and is inconsistent with the way the rest of the notifications are
      * handled, because the notification isn't really cancelled. The lights are just turned off. If
      * any other notifications happen, the lights will turn back on. Steve says this is what he
@@ -2472,7 +2472,8 @@ public class PhoneStatusBar extends StatusBar {
                     Settings.System.STATUSBAR_QUICKTOGGLES_AUTOHIDE), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUSBAR_DATE_BEHAVIOR), false, this);
-
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.STATUSBAR_REMOVE_LIQUIDCONTROL_LINK), false, this);
         }
 
         @Override
@@ -2483,9 +2484,11 @@ public class PhoneStatusBar extends StatusBar {
 
     boolean mDropdownSettingsDefualtBehavior = true;
     boolean mDropdownDateBehavior = true;
+    boolean mControlLiquidIcon = true;
+    boolean mControlAospSettingsIcon = true;
 
     private void updateSettings() {
-        // Slog.i(TAG, "updated settings values");
+        // Check all our settings and respond accordingly
         ContentResolver cr = mContext.getContentResolver();
         mDropdownSettingsDefualtBehavior = Settings.System.getInt(cr,
                 Settings.System.STATUSBAR_SETTINGS_BEHAVIOR, 0) == 1;
@@ -2496,6 +2499,21 @@ public class PhoneStatusBar extends StatusBar {
         mDropdownDateBehavior = Settings.System.getInt(cr,
                 Settings.System.STATUSBAR_DATE_BEHAVIOR, 0) == 1;
 
+        mControlLiquidIcon = Settings.System.getInt(cr,
+                Settings.System.STATUSBAR_REMOVE_LIQUIDCONTROL_LINK, 0) == 1;
+        if (mControlLiquidIcon) {
+            mLiquidButton.setVisibility(View.INVISIBLE);
+        } else {
+            mLiquidButton.setVisibility(View.VISIBLE);
+        }
+
+        mControlAospSettingsIcon = Settings.System.getInt(cr,
+                Settings.System.STATUSBAR_REMOVE_AOSP_SETTINGS_LINK, 0) == 1;
+        if (mControlAospSettingsIcon) {
+            mSettingsButton.setVisibility(View.INVISIBLE);
+        } else {
+            mSettingsButton.setVisibility(View.VISIBLE);
+        }
     }
 
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {

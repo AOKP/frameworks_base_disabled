@@ -2433,17 +2433,45 @@ public final class Settings {
         public static final String STATUSBAR_QUICKTOGGLES_AUTOHIDE = "statusbar_quicktoggles_autohide";
 
         /**
-         * Date drop down. Boolean value
+         * Date drop down, boolean value
          * 0 = defualt, click to launch alarm
          * 1 = click to launch calender
-         * 
+         *
          * @hide
          */
         public static final String STATUSBAR_DATE_BEHAVIOR = "statusbar_date_behavior";
 
         /**
+         * display LiquidControl icon in statusbar, boolean value
+         * 0 = defualt, show icon
+         * 1 = no icon
+         *
+         * @hide
+         */
+        public static final String STATUSBAR_REMOVE_LIQUIDCONTROL_LINK = "statusbar_remove_liquidcontrol_link";
+
+        /**
+         * display AOSP settings icon in statusbar, boolean value
+         * 0 = defualt, show icon
+         * 1 = no icon
+         *
+         * @hide
+         */
+        public static final String STATUSBAR_REMOVE_AOSP_SETTINGS_LINK = "statusbar_remove_aosp_settings_link";
+
+        /**
+         * ScreenShot Shutter sound, boolean value
+         *
+         * 0 = default, play sound
+         * 1 = screen shot without sound
+         *
+         * @hide
+         */
+        public static final String SCREENSHOT_CAMERA_SOUND = "screenshot_camera_sound";
+
+        /**
          * Whether to control brightness from status bar
-         * 
+         *
          * @hide
          */
         public static final String STATUS_BAR_BRIGHTNESS_TOGGLE = "status_bar_brightness_toggle";
@@ -2692,20 +2720,20 @@ public final class Settings {
          */
         public static final String STATUSBAR_TOGGLES_VISIBILITY = "statusbar_toggles_visibility";
 
-		/**
+        /**
          * 0 = stock
          * 1 = quad
          * 2 = octo
          * 
          * @hide
          */
-		public static final String LOCKSCREEN_LAYOUT = "lockscreen_layout";
+        public static final String LOCKSCREEN_LAYOUT = "lockscreen_layout";
 
-		/**
-		 * whether to hide the navigation bar on the lockscreen
-		 *
-		 * @hide
-		 */
+        /**
+         * whether to hide the navigation bar on the lockscreen
+         *
+         * @hide
+         */
         public static final String LOCKSCREEN_HIDE_NAV = "lockscreen_hide_nav";
 
         /** 
@@ -4789,7 +4817,6 @@ public final class Settings {
          * @hide
          */
         public static final String POWER_SAVER_SYNC_MOBILE_PREFERENCE = "power_saver_sync_mobile_preference";
-
 
         /**
          * Helper method for determining if a location provider is enabled.

@@ -269,6 +269,13 @@ public class PowerManagerService extends IPowerManager.Stub
     // power states.
     private boolean mAutoBrightnessButtonKeyboard;
 
+    // When using software auto-brightness, determines whether (true) button
+    // and keyboard backlights should also be under automatic brightness
+    // control (i.e., for dimmable backlights), or (false) if they should use
+    // hard-coded brightness settings that timeout-to-off in subsequent screen
+    // power states.
+    private boolean mAutoBrightnessButtonKeyboard;
+
     // Must match with the ISurfaceComposer constants in C++.
     private static final int ANIM_SETTING_ON = 0x01;
     private static final int ANIM_SETTING_OFF = 0x10;

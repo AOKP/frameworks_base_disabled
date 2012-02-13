@@ -266,8 +266,6 @@ public class Clock extends TextView {
 
         mShowClockDuringLockscreen = (Settings.System.getInt(resolver,
                 Settings.System.STATUSBAR_CLOCK_LOCKSCREEN_HIDE, 1) == 1);
-        
-        updateClock();
     }
 
     protected void updateClockVisibility() {

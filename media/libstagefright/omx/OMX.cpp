@@ -13,10 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*--------------------------------------------------------------------------
-Copyright (c) 2011, Code Aurora Forum. All rights reserved.
---------------------------------------------------------------------------*/
-
 
 //#define LOG_NDEBUG 0
 #define LOG_TAG "OMX"
@@ -119,7 +115,7 @@ void OMX::CallbackDispatcher::post(const omx_message &msg) {
 
 void OMX::CallbackDispatcher::dispatch(const omx_message &msg) {
     if (mOwner == NULL) {
-        ALOGV("Would have dispatched a message to a node that's already gone.");
+        LOGV("Would have dispatched a message to a node that's already gone.");
         return;
     }
     mOwner->onMessage(msg);
@@ -235,7 +231,7 @@ status_t OMX::allocateNode(
             instance, &handle);
 
     if (err != OMX_ErrorNone) {
-        ALOGV("FAILED to allocate omx component '%s'", name);
+        LOGV("FAILED to allocate omx component '%s'", name);
 
         instance->onGetHandleFailed();
 
@@ -255,10 +251,12 @@ status_t OMX::allocateNode(
 
 status_t OMX::freeNode(node_id node) {
     OMXNodeInstance *instance = findInstance(node);
-
-    ssize_t index = mLiveNodes.indexOfKey(instance->observer()->asBinder());
-    CHECK(index >= 0);
-    mLiveNodes.removeItemsAt(index);
+    {
+        Mutex::Autolock autoLock(mLock);
+        ssize_t index = mLiveNodes.indexOfKey(instance->observer()->asBinder());
+        CHECK(index >= 0);
+        mLiveNodes.removeItemsAt(index);
+    }
 
     instance->observer()->asBinder()->unlinkToDeath(this);
 
@@ -266,7 +264,7 @@ status_t OMX::freeNode(node_id node) {
 
     {
         Mutex::Autolock autoLock(mLock);
-        index = mDispatchers.indexOfKey(node);
+        ssize_t index = mDispatchers.indexOfKey(node);
         CHECK(index >= 0);
         mDispatchers.removeItemsAt(index);
     }
@@ -388,7 +386,7 @@ OMX_ERRORTYPE OMX::OnEvent(
         OMX_IN OMX_U32 nData1,
         OMX_IN OMX_U32 nData2,
         OMX_IN OMX_PTR pEventData) {
-    ALOGV("OnEvent(%d, %ld, %ld)", eEvent, nData1, nData2);
+    LOGV("OnEvent(%d, %ld, %ld)", eEvent, nData1, nData2);
 
     omx_message msg;
     msg.type = omx_message::EVENT;
@@ -404,7 +402,7 @@ OMX_ERRORTYPE OMX::OnEvent(
 
 OMX_ERRORTYPE OMX::OnEmptyBufferDone(
         node_id node, OMX_IN OMX_BUFFERHEADERTYPE *pBuffer) {
-    ALOGV("OnEmptyBufferDone buffer=%p", pBuffer);
+    LOGV("OnEmptyBufferDone buffer=%p", pBuffer);
 
     omx_message msg;
     msg.type = omx_message::EMPTY_BUFFER_DONE;
@@ -418,7 +416,7 @@ OMX_ERRORTYPE OMX::OnEmptyBufferDone(
 
 OMX_ERRORTYPE OMX::OnFillBufferDone(
         node_id node, OMX_IN OMX_BUFFERHEADERTYPE *pBuffer) {
-    ALOGV("OnFillBufferDone buffer=%p", pBuffer);
+    LOGV("OnFillBufferDone buffer=%p", pBuffer);
 
     omx_message msg;
     msg.type = omx_message::FILL_BUFFER_DONE;
@@ -472,3 +470,4 @@ void OMX::invalidateNodeID_l(node_id node) {
 }
 
 }  // namespace android
+

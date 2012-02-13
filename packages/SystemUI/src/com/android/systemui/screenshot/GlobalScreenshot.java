@@ -427,7 +427,7 @@ class GlobalScreenshot {
                 // check if the user wants sound and play if needed
                 boolean mNeedsSound = false;
                 mNeedsSound = Settings.System.getInt(mContext.getContentResolver(), Settings.System.SCREENSHOT_CAMERA_SOUND, 1) == 1;
-                if (mNeedsSound) mCameraSound.playSound(CameraSound.SHUTTER_CLICK);
+                if (!mNeedsSound) mCameraSound.playSound(CameraSound.SHUTTER_CLICK);
 
                 mScreenshotView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
                 mScreenshotView.buildLayer();

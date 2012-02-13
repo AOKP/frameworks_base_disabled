@@ -2474,6 +2474,8 @@ public class PhoneStatusBar extends StatusBar {
                     Settings.System.STATUSBAR_DATE_BEHAVIOR), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUSBAR_REMOVE_LIQUIDCONTROL_LINK), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.STATUSBAR_REMOVE_AOSP_SETTINGS_LINK), false, this);
         }
 
         @Override

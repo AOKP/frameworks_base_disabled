@@ -16,33 +16,28 @@
 
 package com.android.systemui.statusbar.tablet;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.TimeZone;
+
 import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.AssetManager;
-import android.content.res.Resources;
-import android.content.res.TypedArray;
-import android.graphics.Canvas;
+import android.database.ContentObserver;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
+import android.os.Handler;
+import android.provider.Settings;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.format.DateFormat;
 import android.text.style.CharacterStyle;
-import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
-import android.text.style.RelativeSizeSpan;
-import android.text.style.StyleSpan;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
-
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.TimeZone;
 
 import com.android.systemui.R;
 
@@ -59,6 +54,13 @@ public class HoloClock extends FrameLayout {
 
     private static Typeface sBackgroundType, sForegroundType, sSolidType;
     private TextView mSolidText, mBgText, mFgText;
+
+    public static final int STYLE_HIDE_CLOCK = 0;
+    public static final int STYLE_CLOCK_RIGHT = 1;
+
+    protected int mClockStyle = STYLE_CLOCK_RIGHT;
+    
+    protected int mClockColor = com.android.internal.R.color.holo_blue_light;
 
     public HoloClock(Context context) {
         this(context, null);
@@ -95,6 +97,8 @@ public class HoloClock extends FrameLayout {
         if (mSolidText != null) {
             mSolidText.setTypeface(sSolidType);
         }
+        
+        updateClockVisibility();
     }
 
     @Override
@@ -111,6 +115,10 @@ public class HoloClock extends FrameLayout {
             filter.addAction(Intent.ACTION_CONFIGURATION_CHANGED);
 
             getContext().registerReceiver(mIntentReceiver, filter, null, getHandler());
+            
+            SettingsObserver settingsObserver = new SettingsObserver(new Handler());
+            settingsObserver.observe();
+            updateSettings();
         }
 
         // NOTE: It's safe to do these after registering the receiver since the receiver always runs
@@ -154,7 +162,21 @@ public class HoloClock extends FrameLayout {
         if (mFgText != null) mFgText.setText(txt);
         if (mSolidText != null) mSolidText.setText(txt);
     }
-
+    
+    final void updateClockColor(int color) {
+        //if (mBgText != null) mBgText.setTextColor(color);
+        //if (mFgText != null) mFgText.setTextColor(color);
+        if (mSolidText != null) mSolidText.setTextColor(color);
+    }
+    
+    final void updateClockVisibility() {
+        if (mClockStyle == STYLE_CLOCK_RIGHT) {
+            if (mSolidText != null) mSolidText.setVisibility(View.VISIBLE);
+        } else {
+            if (mSolidText != null) mSolidText.setVisibility(View.GONE);
+        }
+    }
+    
     private final CharSequence getTimeText() {
         Context context = getContext();
         int res = DateFormat.is24HourFormat(context)
@@ -173,6 +195,41 @@ public class HoloClock extends FrameLayout {
         }
         String result = sdf.format(mCalendar.getTime());
         return result;
+    }
+    
+    class SettingsObserver extends ContentObserver {
+        SettingsObserver(Handler handler) {
+            super(handler);
+        }
+
+        void observe() {
+            ContentResolver resolver = mContext.getContentResolver();
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.STATUSBAR_CLOCK_STYLE), false, this);
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.STATUSBAR_CLOCK_COLOR), false, this);
+            updateSettings();
+        }
+
+        @Override
+        public void onChange(boolean selfChange) {
+            updateSettings();
+        }
+    }
+
+    protected void updateSettings() {
+        ContentResolver resolver = mContext.getContentResolver();
+
+        mClockColor = Settings.System.getInt(resolver, Settings.System.STATUSBAR_CLOCK_COLOR,
+                0xFF33B5E5);
+        if (mClockColor == Integer.MIN_VALUE) {
+            // flag to reset the color
+            mClockColor = 0xFF33B5E5;
+        }
+        updateClockColor(mClockColor);
+
+        mClockStyle = Settings.System.getInt(resolver, Settings.System.STATUSBAR_CLOCK_STYLE, 1);
+        updateClockVisibility();
     }
 }
 

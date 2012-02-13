@@ -21,9 +21,11 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 import android.app.ActivityManager;
+import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
@@ -50,6 +52,7 @@ import com.android.internal.widget.SlidingTab;
 import com.android.internal.widget.WaveView;
 import com.android.internal.widget.multiwaveview.MultiWaveView;
 
+
 /**
  * The screen within {@link LockPatternKeyguardView} that shows general information about the device
  * depending on its state, and how to get past it, as applicable.
@@ -62,7 +65,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
     private static final String ENABLE_MENU_KEY_FILE = "/data/local/enable_menu_key";
     private static final int WAIT_FOR_ANIMATION_TIMEOUT = 0;
     private static final int STAY_ON_WHILE_GRABBED_TIMEOUT = 30000;
-
+    
     public static final int LAYOUT_STOCK = 2;
     public static final int LAYOUT_QUAD = 6;
     public static final int LAYOUT_OCTO = 8;
@@ -88,7 +91,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
     private TextView mCarrier;
 
     private Drawable[] lockDrawables;
-
+    
     ArrayList<Target> lockTargets = new ArrayList<Target>();
 
     private interface UnlockWidgetCommonMethods {
@@ -662,15 +665,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 
     private Runnable mPendingR1;
     private Runnable mPendingR2;
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_MENU && mEnableMenuKeyInLockScreen) {
-            mCallback.goToUnlockScreen();
-        }
-        return false;
-    }
-
+    
     void updateConfiguration() {
         Configuration newConfig = getResources().getConfiguration();
         if (newConfig.orientation != mCreationOrientation) {

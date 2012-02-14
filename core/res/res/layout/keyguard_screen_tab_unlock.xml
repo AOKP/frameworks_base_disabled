@@ -27,6 +27,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center_horizontal">
+    
+<!--     <com.android.internal.policy.impl.LockscreenWallpaper -->
+<!--     	android:id="@+id/lockscreen_wallpaper" -->
+<!--     	android:layout_width="match_parent" -->
+<!--     	android:layout_height="match_parent" /> -->
 
     <com.android.internal.widget.DigitalClock android:id="@+id/time"
         android:layout_marginTop="@dimen/keyguard_lockscreen_status_line_clockfont_top_margin"

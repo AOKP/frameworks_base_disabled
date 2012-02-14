@@ -75,6 +75,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
     private SilentModeAction mSilentModeAction;
     private ToggleAction mAirplaneModeOn;
     private ToggleAction mPowerSaverOn;
+    private ToggleAction mTorchToggle;
 
     private MyAdapter mAdapter;
 
@@ -84,6 +85,10 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
     private boolean mIsWaitingForEcmExit = false;
     private boolean mEnablePowerSaverToggle = true;
     private boolean mEnableScreenshotToggle = false;
+    private boolean mEnableTorchToggle = true;
+    
+    public static final String INTENT_TORCH_ON = "com.android.systemui.INTENT_TORCH_ON";
+    public static final String INTENT_TORCH_OFF = "com.android.systemui.INTENT_TORCH_OFF";
 
     /**
      * @param context everything needs a context :(
@@ -131,7 +136,10 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 Settings.System.POWER_DIALOG_SHOW_POWER_SAVER, 1) == 1;
         
         mEnableScreenshotToggle = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.POWER_DIALOG_SHOW_SCREENSHOT, 0) == 1;        
+                Settings.System.POWER_DIALOG_SHOW_SCREENSHOT, 0) == 1;  
+        
+        mEnableTorchToggle = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.POWER_DIALOG_SHOW_TORCH_TOGGLE, 0) == 1;
         
         mSilentModeAction = new SilentModeAction(mAudioManager, mHandler);
 
@@ -187,6 +195,37 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                         Settings.Secure.POWER_SAVER_MODE,
                          on ? PowerSaverService.POWER_SAVER_MODE_ON
                                 : PowerSaverService.POWER_SAVER_MODE_OFF);
+            }
+
+            public boolean showDuringKeyguard() {
+                return true;
+            }
+
+            public boolean showBeforeProvisioning() {
+                return false;
+            }
+        };
+        
+        mTorchToggle = new ToggleAction(
+                R.drawable.ic_lock_torch,
+                R.drawable.ic_lock_torch,
+                R.string.global_actions_toggle_torch,
+                R.string.global_actions_torch_on_status,
+                R.string.global_actions_torch_off_status) {
+
+            void onToggle(boolean on) {
+            	if (on) {
+                    Intent i = new Intent(INTENT_TORCH_ON);
+                    i.setAction(INTENT_TORCH_ON);
+                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    mContext.startService(i);
+                }
+                else {
+                	Intent i = new Intent(INTENT_TORCH_OFF);
+                	i.setAction(INTENT_TORCH_OFF);
+                	i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                	mContext.startService(i);
+                }
             }
 
             public boolean showDuringKeyguard() {
@@ -277,6 +316,14 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             Slog.e(TAG, "Not adding screenshot");
         }
 
+        // Next Torch
+        if(mEnableTorchToggle) {
+            Slog.e(TAG, "Adding TorchToggle");
+            mItems.add(mTorchToggle); 
+        } else {
+            Slog.e(TAG, "not adding TorchToggle");
+        }
+        
         // last: silent mode
         if (SHOW_SILENT_TOGGLE) {
             mItems.add(mSilentModeAction);

@@ -2477,7 +2477,7 @@ public class PhoneStatusBar extends StatusBar {
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUSBAR_REMOVE_AOSP_SETTINGS_LINK), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.STATUSBAR_REMOVE_DATE), false, this);
+                    Settings.System.STATUSBAR_SHOW_DATE), false, this);
         }
 
         @Override
@@ -2528,7 +2528,7 @@ public class PhoneStatusBar extends StatusBar {
             mSettingsButton.setVisibility(View.VISIBLE);
         }
 
-        mShowDate = Settings.System.getInt(cr, Settings.System.STATUSBAR_REMOVE_DATE, 1) == 1;
+        mShowDate = Settings.System.getInt(cr, Settings.System.STATUSBAR_SHOW_DATE, 1) == 1;
         if (mShowDate) {
             mDateView.setVisibility(View.INVISIBLE);
         } else {

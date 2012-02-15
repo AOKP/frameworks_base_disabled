@@ -1,6 +1,8 @@
 /*
  * Copyright (C) 2008 The Android Open Source Project
  *
+ * Updated 2012 LiquidSmoothROMs Project @jbirdvegas
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,11 +19,14 @@
 package com.android.systemui.statusbar.policy;
 
 import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.provider.Settings;
 import android.text.format.DateFormat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewParent;
 import android.widget.TextView;
@@ -32,6 +37,7 @@ import java.util.Date;
 
 public final class DateView extends TextView {
     private static final String TAG = "DateView";
+    private static final boolean DEBUG = true;
 
     private boolean mAttachedToWindow;
     private boolean mWindowVisible;
@@ -88,10 +94,62 @@ public final class DateView extends TextView {
 
     private final void updateClock() {
         final Context context = getContext();
+        ContentResolver cr = context.getContentResolver();
         Date now = new Date();
-        CharSequence dow = DateFormat.format("EEEE", now);
+
+        // get date in simple formats
+        CharSequence dow_long = DateFormat.format("EEEE", now);
+        CharSequence dow_short = DateFormat.format("EEE", now);
+        CharSequence day_number = DateFormat.format("D", now);
+        CharSequence month_short = DateFormat.format("MMM", now);
+        CharSequence today = DateFormat.format("d", now);
+        CharSequence year = DateFormat.format("yyyy", now);
         CharSequence date = DateFormat.getLongDateFormat(context).format(now);
-        setText(context.getString(R.string.status_bar_date_formatter, dow, date));
+
+        // setup final formating
+        String dateFormat_long = String.format("%s %s", dow_long, date);
+        String dateFormat_short = String.format("%s %s", dow_short, date);
+        String date_default = context.getString(R.string.status_bar_date_formatter, dow_long, date);
+        String date_short = String.format("%s %s %s", dow_short, month_short, today);
+        String day_of_year = String.format("day %s of %s", day_number, year);
+
+        // check if user has preference
+        int style = Settings.System.getInt(cr, Settings.System.STATUSBAR_DATE_FORMAT, 2);
+
+        // set the date in the correct format
+        String debug_string = "Statusbar date format: %s";
+        switch (style) {
+            case 0:
+                // default, February 14, 2012
+                setText(date_default);
+                if (DEBUG) Log.d(TAG, String.format(debug_string, date_default));
+            break;
+            case 1:
+                // Tuesday February 14, 2012
+                setText(dateFormat_long);
+                if (DEBUG) Log.d(TAG, String.format(debug_string, dateFormat_long));
+            break;
+            case 2:
+                // Tues February 14, 2012
+                setText(dateFormat_short);
+                if (DEBUG) Log.d(TAG, String.format(debug_string, dateFormat_short));
+            break;
+            case 3:
+                // Tuesday
+                setText(dow_long);
+                if (DEBUG) Log.d(TAG, String.format(debug_string, dow_long));
+            break;
+            case 4:
+                // 45th day of 2012
+                setText(day_of_year);
+                if (DEBUG) Log.d(TAG, String.format(debug_string, day_of_year));
+            break;
+            case 5:
+                // Tues Feb 14
+                setText(date_short);
+                if (DEBUG) Log.d(TAG, String.format(debug_string, date_short));
+            break;
+        }
     }
 
     private boolean isVisible() {

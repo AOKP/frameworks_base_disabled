@@ -2460,6 +2460,30 @@ public final class Settings {
         public static final String STATUSBAR_REMOVE_AOSP_SETTINGS_LINK = "statusbar_remove_aosp_settings_link";
 
         /**
+         * display date in statusbar, boolean value
+         * 0 = default, show date
+         * 1 = hide date
+         *
+         * @hide
+         *
+         */
+        public static final String STATUSBAR_SHOW_DATE = "statusbar_show_date";
+
+        /**
+         * dynamic date display options, int value
+         *
+         * 0 = default, Febuary 14, 2012
+         * 1 = Tuesday Febuary 14, 2012
+         * 2 = Tuesday, 14th
+         * 3 = Tuesday
+         * 4 = 45 day of 2012
+         * 5 = Tues Feb 14
+         *
+         * @hide
+         */
+        public static final String STATUSBAR_DATE_FORMAT = "statusbar_date_format";
+
+        /**
          * ScreenShot Shutter sound, boolean value
          *
          * 0 = default, play sound
@@ -2489,6 +2513,8 @@ public final class Settings {
         /**
          * @hide
          */
+
+
         public static final String NOTIFICATION_LIGHT_COLOR = "notification_light_color";
 
         /**

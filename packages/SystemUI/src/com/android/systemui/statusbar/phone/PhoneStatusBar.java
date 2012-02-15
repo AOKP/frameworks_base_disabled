@@ -2476,6 +2476,8 @@ public class PhoneStatusBar extends StatusBar {
                     Settings.System.STATUSBAR_REMOVE_LIQUIDCONTROL_LINK), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUSBAR_REMOVE_AOSP_SETTINGS_LINK), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.STATUSBAR_REMOVE_DATE), false, this);
         }
 
         @Override
@@ -2488,6 +2490,7 @@ public class PhoneStatusBar extends StatusBar {
     boolean mDropdownDateBehavior = true;
     boolean mControlLiquidIcon = true;
     boolean mControlAospSettingsIcon = true;
+    boolean mShowDate = false;
 
     private void updateSettings() {
         // Check all our settings and respond accordingly
@@ -2515,6 +2518,21 @@ public class PhoneStatusBar extends StatusBar {
             mSettingsButton.setVisibility(View.INVISIBLE);
         } else {
             mSettingsButton.setVisibility(View.VISIBLE);
+        }
+
+        mControlAospSettingsIcon = Settings.System.getInt(cr,
+                Settings.System.STATUSBAR_REMOVE_AOSP_SETTINGS_LINK, 0) == 1;
+        if (mControlAospSettingsIcon) {
+            mSettingsButton.setVisibility(View.INVISIBLE);
+        } else {
+            mSettingsButton.setVisibility(View.VISIBLE);
+        }
+
+        mShowDate = Settings.System.getInt(cr, Settings.System.STATUSBAR_REMOVE_DATE, 1) == 1;
+        if (mShowDate) {
+            mDateView.setVisibility(View.INVISIBLE);
+        } else {
+            mDateView.setVisibility(View.VISIBLE);
         }
     }
 

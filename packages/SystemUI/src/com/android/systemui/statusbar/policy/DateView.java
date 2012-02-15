@@ -97,7 +97,7 @@ public final class DateView extends TextView {
         return 0;
     }
 
-    private final void updateClock() {
+    public final void updateClock() {
         final Context context = getContext();
         ContentResolver cr = context.getContentResolver();
         Calendar time_now = Calendar.getInstance();

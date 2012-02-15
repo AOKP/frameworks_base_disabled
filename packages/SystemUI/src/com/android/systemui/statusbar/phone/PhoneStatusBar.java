@@ -2478,11 +2478,14 @@ public class PhoneStatusBar extends StatusBar {
                     Settings.System.STATUSBAR_REMOVE_AOSP_SETTINGS_LINK), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUSBAR_SHOW_DATE), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.STATUSBAR_DATE_FORMAT), false, this);
         }
 
         @Override
         public void onChange(boolean selfChange) {
             updateSettings();
+            mDateView.updateClock();
         }
     }
 

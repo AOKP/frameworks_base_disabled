@@ -2490,7 +2490,7 @@ public class PhoneStatusBar extends StatusBar {
     boolean mDropdownDateBehavior = true;
     boolean mControlLiquidIcon = true;
     boolean mControlAospSettingsIcon = true;
-    boolean mShowDate = false;
+    boolean mShowDate = true;
 
     private void updateSettings() {
         // Check all our settings and respond accordingly
@@ -2528,7 +2528,7 @@ public class PhoneStatusBar extends StatusBar {
             mSettingsButton.setVisibility(View.VISIBLE);
         }
 
-        mShowDate = Settings.System.getInt(cr, Settings.System.STATUSBAR_SHOW_DATE, 1) == 1;
+        mShowDate = Settings.System.getInt(cr, Settings.System.STATUSBAR_SHOW_DATE, 0) == 1;
         if (mShowDate) {
             mDateView.setVisibility(View.INVISIBLE);
         } else {

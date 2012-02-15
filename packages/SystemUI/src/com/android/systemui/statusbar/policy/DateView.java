@@ -33,6 +33,8 @@ import android.widget.TextView;
 
 import com.android.systemui.R;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 public final class DateView extends TextView {
@@ -48,6 +50,9 @@ public final class DateView extends TextView {
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
             if (Intent.ACTION_TIME_TICK.equals(action)
+                    || Intent.ACTION_SCREEN_ON.equals(action)
+                    || Intent.ACTION_SCREEN_OFF.equals(action)
+                    || Intent.ACTION_CONFIGURATION_CHANGED.equals(action)
                     || Intent.ACTION_TIME_CHANGED.equals(action)
                     || Intent.ACTION_TIMEZONE_CHANGED.equals(action)) {
                 updateClock();
@@ -95,12 +100,13 @@ public final class DateView extends TextView {
     private final void updateClock() {
         final Context context = getContext();
         ContentResolver cr = context.getContentResolver();
+        Calendar time_now = Calendar.getInstance();
         Date now = new Date();
+        SimpleDateFormat simpleDate = new SimpleDateFormat("D");
 
         // get date in simple formats
         CharSequence dow_long = DateFormat.format("EEEE", now);
         CharSequence dow_short = DateFormat.format("EEE", now);
-        CharSequence day_number = DateFormat.format("D", now);
         CharSequence month_short = DateFormat.format("MMM", now);
         CharSequence today = DateFormat.format("d", now);
         CharSequence year = DateFormat.format("yyyy", now);
@@ -111,10 +117,11 @@ public final class DateView extends TextView {
         String dateFormat_short = String.format("%s %s", dow_short, date);
         String date_default = context.getString(R.string.status_bar_date_formatter, dow_long, date);
         String date_short = String.format("%s %s %s", dow_short, month_short, today);
-        String day_of_year = String.format("day %s of %s", day_number, year);
+        String d_o_y = simpleDate.format(time_now.getTime());
+        String day_of_year = String.format("day %s of %s", d_o_y, year);
 
         // check if user has preference
-        int style = Settings.System.getInt(cr, Settings.System.STATUSBAR_DATE_FORMAT, 2);
+        int style = Settings.System.getInt(cr, Settings.System.STATUSBAR_DATE_FORMAT, 0);
 
         // set the date in the correct format
         String debug_string = "Statusbar date format: %s";
@@ -140,7 +147,7 @@ public final class DateView extends TextView {
                 if (DEBUG) Log.d(TAG, String.format(debug_string, dow_long));
             break;
             case 4:
-                // 45th day of 2012
+                // day 45 of 2012
                 setText(day_of_year);
                 if (DEBUG) Log.d(TAG, String.format(debug_string, day_of_year));
             break;

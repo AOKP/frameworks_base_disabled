@@ -2620,6 +2620,13 @@ public final class Settings {
          * @hide
          */
         public static final String USE_WEATHER = "use_weather";
+
+        /**
+         * Whether to enable torch by long pressing power from a screen-off state
+         * 
+         * @hide
+         */
+        public static final String ENABLE_FAST_TORCH = "enable_fast_torch";
     }
 
     /**

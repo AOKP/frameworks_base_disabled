@@ -995,7 +995,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 : com.android.internal.R.dimen.system_bar_height);
 
         mUserNavigationBar = (Settings.System.getInt(mContext.getContentResolver(),
-            Settings.System.NAVIGATION_BAR_VISIBLE, 0) == 1);
+            Settings.System.NAVIGATION_BAR_VISIBLE, 1) == 1);
 
         // Allow a system property to override this. Used by the emulator.
         // See also hasNavigationBar().

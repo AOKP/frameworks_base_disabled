@@ -1051,8 +1051,11 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             if (mHasNavigationBar != hasNavBarChanged) { 
             	mHasNavigationBar = hasNavBarChanged;
             	Log.d("NavBar", "Resetting window");
-            	Intent i = new Intent("com.aokp.romcontrol.ACTION_RESTART_SYSTEMUI");
-            	mContext.startActivity(i);
+            	try {
+            		 Runtime.getRuntime().exec("pkill -TERM -f  com.android.systemui");          		 
+            	} catch (IOException e) {
+            		  e.printStackTrace();
+            	}
             }
 
             if (mAccelerometerDefault != accelerometerDefault) {

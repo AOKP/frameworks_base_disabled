@@ -2548,6 +2548,14 @@ public final class Settings {
         public static final String POWER_DIALOG_SHOW_EASTER_EGG = "power_dialog_show_easter_egg";
 
         /**
+         * PowerMenu
+         * decide if we want the navigation bar or not, boolean value
+         *
+         * @hide
+         */
+        public static final String POWER_DIALOG_FULLSCREEN = "power_dialog_fullscreen";
+
+        /**
          * @hide
          */
         public static final String STATUSBAR_CLOCK_LOCKSCREEN_HIDE = "statusbar_clock_lockscreen_hide";

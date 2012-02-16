@@ -81,6 +81,11 @@ private:
     };
 
     enum {
+       kMinAVInterleavingOffset = 256 * 1024,
+       kMaxAVInterleavingOffset = 2 * 1024 * 1024,
+    };
+
+    enum {
         kWhatFetchMore  = 'fetc',
         kWhatRead       = 'read',
     };

@@ -113,13 +113,13 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         mKeyguardShowing = keyguardShowing;
         mDeviceProvisioned = isDeviceProvisioned;
 
-        // dismiss previous dialogs and rebuild a new one
-        if (mDialog != null) {
+        if(mDialog != null)
             mDialog.dismiss();
-        }
+        //always update the PowerMenu dialog
         mDialog = createDialog();
 
         prepareDialog();
+
         mDialog.show();
         mDialog.getWindow().getDecorView().setSystemUiVisibility(View.STATUS_BAR_DISABLE_EXPAND);
     }

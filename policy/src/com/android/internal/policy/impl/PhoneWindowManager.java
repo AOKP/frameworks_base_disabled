@@ -1095,7 +1095,19 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             }
         }
         mUserNavigationBar = (Settings.System.getInt(resolver,
-            Settings.System.NAVIGATION_BAR_VISIBLE, 0) == 1);
+            Settings.System.NAVIGATION_BAR_VISIBLE, 1) == 1);
+
+        // Allow user to override this if phone has hard keys (eg. nav bar is
+        // not enabled by default in the configuration)
+        if(!mHasNavigationBar) {
+            mHasNavigationBar = mUserNavigationBar;
+        }
+        mNavigationBarHeight = mHasNavigationBar
+                ? mContext.getResources().getDimensionPixelSize(
+                    com.android.internal.R.dimen.navigation_bar_height) : 0;
+        mNavigationBarWidth = mHasNavigationBar
+                ? mContext.getResources().getDimensionPixelSize(
+                    com.android.internal.R.dimen.navigation_bar_width) : 0;
 
         if (updateRotation) {
             updateRotation(true);

@@ -111,7 +111,13 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
     public void showDialog(boolean keyguardShowing, boolean isDeviceProvisioned) {
         mKeyguardShowing = keyguardShowing;
         mDeviceProvisioned = isDeviceProvisioned;
+
+        // dismiss previous dialogs and rebuild a new one
+        if (mDialog != null) {
+            mDialog.dismiss();
+        }
         mDialog = createDialog();
+
         prepareDialog();
         mDialog.show();
         mDialog.getWindow().getDecorView().setSystemUiVisibility(View.STATUS_BAR_DISABLE_EXPAND);

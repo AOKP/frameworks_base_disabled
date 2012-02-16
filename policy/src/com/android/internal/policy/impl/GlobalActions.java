@@ -118,6 +118,8 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         mKeyguardShowing = keyguardShowing;
         mDeviceProvisioned = isDeviceProvisioned;
         
+        if(mDialog != null)
+            mDialog.dismiss();
         //always update the PowerMenu dialog
         mDialog = createDialog();
 

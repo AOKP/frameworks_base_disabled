@@ -2682,15 +2682,6 @@ public final class Settings {
          * @hide
          */
         public static final String LOCKSCREEN_CUSTOM_APP_INTENT_7 = "lockscreen_custom_app_intent_7";
-        
-        public static final String LOCKSCREEN_STYLE_MULITWAVEVIEW_3WAY =
-                "lockscreen_style_multiwaveview_3way";
-        
-        public static final String LOCKSCREEN_STYLE_MULITWAVEVIEW_4WAY =
-                "lockscreen_style_multiwaveview_4way";
-        
-        public static final String LOCKSCREEN_STYLE_MULITWAVEVIEW_8WAY =
-                "lockscreen_style_multiwaveview_8way";
 
         /**
          * Toggle to force multiwaveview lockscreen silent mode toggle even if

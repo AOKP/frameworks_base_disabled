@@ -2328,6 +2328,11 @@ public final class Settings {
          * @hide
          */
         public static final String POWER_DIALOG_SHOW_TORCH_TOGGLE = "power_dialog_show_torch_toggle";
+        
+        /**
+         * @hide
+         */
+        public static final String POWER_DIALOG_SHOW_NAVBAR_HIDE = "power_dialog_show_navbar_hide";
 
         /**
          * @hide
@@ -2399,11 +2404,17 @@ public final class Settings {
         public static final String STATUSBAR_TOGGLES_USE_BUTTONS = "statusbar_toggles_use_buttons";
 
         /**
-         * Order of phone navigation buttons
+         * Whether to hide the NavBar Buttons
          *
          * @hide
          */
         public static final String NAVIGATION_BAR_BUTTONS = "navigation_bar_buttons";
+        /**
+         * Order of phone navigation buttons
+         *
+         * @hide
+         */
+        public static final String NAVIGATION_BAR_BUTTONS_HIDE = "navigation_bar_buttons_hide";
         /**
          * whether volume keys wake the screen. boolean value
          * 

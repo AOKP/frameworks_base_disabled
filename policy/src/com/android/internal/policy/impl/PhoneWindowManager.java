@@ -511,6 +511,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     Settings.System.ACCELEROMETER_ROTATION_ANGLES), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.ENABLE_FAST_TORCH), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.NAVIGATION_BAR_BUTTONS_HIDE), false, this);
             updateSettings();
         }
 
@@ -990,8 +992,10 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 ? com.android.internal.R.dimen.status_bar_height
                 : com.android.internal.R.dimen.system_bar_height);
 
-        mHasNavigationBar = mContext.getResources().getBoolean(
-                com.android.internal.R.bool.config_showNavigationBar);
+        /* mHasNavigationBar = mContext.getResources().getBoolean(
+                com.android.internal.R.bool.config_showNavigationBar);*/
+        mHasNavigationBar = Settings.System.getInt(mContext.getContentResolver(), 
+        		Settings.System.NAVIGATION_BAR_BUTTONS_HIDE, 0) == 0;
         // Allow a system property to override this. Used by the emulator.
         // See also hasNavigationBar().
         String navBarOverride = SystemProperties.get("qemu.hw.mainkeys");
@@ -1042,6 +1046,14 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     Settings.System.ACCELEROMETER_ROTATION_ANGLES, -1);
             mEnableQuickTorch = Settings.System.getInt(resolver, Settings.System.ENABLE_FAST_TORCH,
                     0) == 1;
+            boolean hasNavBarChanged = Settings.System.getInt(resolver, Settings.System.NAVIGATION_BAR_BUTTONS_HIDE,
+                            0) == 0;
+            if (mHasNavigationBar != hasNavBarChanged) { 
+            	mHasNavigationBar = hasNavBarChanged;
+            	Log.d("NavBar", "Resetting window");
+            	Intent i = new Intent("com.aokp.romcontrol.ACTION_RESTART_SYSTEMUI");
+            	mContext.startActivity(i);
+            }
 
             if (mAccelerometerDefault != accelerometerDefault) {
                 mAccelerometerDefault = accelerometerDefault;
@@ -2823,7 +2835,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             }
         }
     }
-
+    
     /** {@inheritDoc} */
     @Override
     public int interceptKeyBeforeQueueing(KeyEvent event, int policyFlags, boolean isScreenOn) {

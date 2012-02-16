@@ -510,7 +510,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             resolver.registerContentObserver(Settings.System.getUriFor(
                     "fancy_rotation_anim"), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.NAVIGATION_BAR_VISIBLE), false, this);
+                    Settings.System.POWER_DIALOG_FULLSCREEN), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.ACCELEROMETER_ROTATION_ANGLES), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
@@ -995,7 +995,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 : com.android.internal.R.dimen.system_bar_height);
 
         mUserNavigationBar = (Settings.System.getInt(mContext.getContentResolver(),
-            Settings.System.NAVIGATION_BAR_VISIBLE, 1) == 1);
+            Settings.System.POWER_DIALOG_FULLSCREEN, 1) == 1);
 
         // Allow a system property to override this. Used by the emulator.
         // See also hasNavigationBar().
@@ -1095,7 +1095,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             }
         }
         mUserNavigationBar = (Settings.System.getInt(resolver,
-            Settings.System.NAVIGATION_BAR_VISIBLE, 1) == 1);
+            Settings.System.POWER_DIALOG_FULLSCREEN, 1) == 1);
 
         // Allow user to override this if phone has hard keys (eg. nav bar is
         // not enabled by default in the configuration)

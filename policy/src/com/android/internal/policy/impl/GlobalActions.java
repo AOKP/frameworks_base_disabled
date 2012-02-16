@@ -16,8 +16,6 @@
 
 package com.android.internal.policy.impl;
 
-import java.util.ArrayList;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
@@ -54,6 +52,9 @@ import com.android.internal.R;
 import com.android.internal.app.ShutdownThread;
 import com.android.internal.telephony.TelephonyIntents;
 import com.android.internal.telephony.TelephonyProperties;
+
+import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * Helper to show the global actions dialog.  Each item is an {@link Action} that
@@ -273,12 +274,23 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         mItems.add(
                 new SinglePressAction(icon, name) {
                     public void onPress() {
+                        // when user selects we kill SystemUI forcing our new settings
                         if (onOff == 1) {
                             Settings.System.putInt(mContext.getContentResolver(),
                                     Settings.System.POWER_DIALOG_FULLSCREEN, 0);
+                            try {
+                                Runtime.getRuntime().exec("pkill -TERM -f  com.android.systemui");          		 
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
                         } else {
                             Settings.System.putInt(mContext.getContentResolver(),
                                     Settings.System.POWER_DIALOG_FULLSCREEN, 1);
+                            try {
+                                Runtime.getRuntime().exec("pkill -TERM -f  com.android.systemui");          		 
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
                         }
                     }
 

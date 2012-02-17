@@ -40,16 +40,6 @@
         <service android:name=".ImageWallpaper"
                 android:permission="android.permission.BIND_WALLPAPER"
                 android:exported="true" />
-        
-        <service android:name=".TorchService" >
-            android:exported="true"
-            android:enabled="true"
-             <intent-filter>
-                 <action android:name="com.android.systemui.INTENT_TORCH_ON"/>
-                 <action android:name="com.android.systemui.INTENT_TORCH_OFF"/>
-                 <category android:name="android.intent.category.DEFAULT" />
-             </intent-filter>
-          </service>
 
         <receiver android:name=".BootReceiver" >
             <intent-filter>
@@ -117,6 +107,11 @@
             android:theme="@android:style/Theme.Holo.Panel"
             android:excludeFromRecents="true"
             android:launchMode="singleTop" >
+            <intent-filter>
+                 <action android:name="com.android.systemui.INTENT_TORCH_ON"/>
+                 <action android:name="com.android.systemui.INTENT_TORCH_OFF"/>
+                 <category android:name="android.intent.category.DEFAULT" />
+             </intent-filter>
         </activity>
 
         <!-- started from ... somewhere -->

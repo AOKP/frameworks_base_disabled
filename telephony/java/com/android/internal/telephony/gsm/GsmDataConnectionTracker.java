@@ -475,7 +475,7 @@ public final class GsmDataConnectionTracker extends DataConnectionTracker {
             if (DBG) log("enableApnType: return APN_ALREADY_ACTIVE");
             return Phone.APN_ALREADY_ACTIVE;
         }
-        if (mPhone.mCM.needsOldRilFeature("singlepdp") && !Phone.APN_TYPE_DEFAULT.equals(apnType)) {
+        if (needsOldRilFeature("singlepdp") && !Phone.APN_TYPE_DEFAULT.equals(apnType)) {
             ApnContext defContext = mApnContexts.get(Phone.APN_TYPE_DEFAULT);
             if (defContext.isEnabled()) {
                 setEnabled(apnTypeToId(Phone.APN_TYPE_DEFAULT), false);
@@ -515,7 +515,11 @@ public final class GsmDataConnectionTracker extends DataConnectionTracker {
 
         if (apnContext != null) {
             setEnabled(apnTypeToId(type), false);
+<<<<<<< HEAD
             if (mPhone.mCM.needsOldRilFeature("singlepdp") && !Phone.APN_TYPE_DEFAULT.equals(type)) {
+=======
+            if (needsOldRilFeature("singlepdp") && !Phone.APN_TYPE_DEFAULT.equals(type)) {
+>>>>>>> 094b6b4... Telephony: Add "singlepdp" RIL feature
                 setEnabled(apnTypeToId(Phone.APN_TYPE_DEFAULT), true);
             }
             if (apnContext.getState() != State.IDLE && apnContext.getState() != State.FAILED) {
@@ -2468,4 +2472,17 @@ public final class GsmDataConnectionTracker extends DataConnectionTracker {
         Log.e(LOG_TAG, "[GsmDCT] " + s);
     }
 
+<<<<<<< HEAD
+=======
+    /** Maybe we should share this from RIL */
+    protected boolean needsOldRilFeature(String feature) {
+        String[] features = SystemProperties.get("ro.telephony.ril.v3", "").split(",");
+        for (String found: features) {
+            if (found.equals(feature))
+                return true;
+        }
+        return false;
+    }
+
+>>>>>>> 094b6b4... Telephony: Add "singlepdp" RIL feature
 }

@@ -86,6 +86,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
     private boolean mEnablePowerSaverToggle = true;
     private boolean mEnableScreenshotToggle = false;
     private boolean mEnableTorchToggle = true;
+    private boolean mReceiverRegistered = false;
     
     public static final String INTENT_TORCH_ON = "com.android.systemui.INTENT_TORCH_ON";
     public static final String INTENT_TORCH_OFF = "com.android.systemui.INTENT_TORCH_OFF";
@@ -118,8 +119,11 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         mKeyguardShowing = keyguardShowing;
         mDeviceProvisioned = isDeviceProvisioned;
         
-        if(mDialog != null)
-            mDialog.dismiss();
+        if(mDialog != null) {
+            mReceiverRegistered = false;
+            mDialog.cancel();
+            
+        }
         //always update the PowerMenu dialog
         mDialog = createDialog();
 
@@ -443,6 +447,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         if (SHOW_SILENT_TOGGLE) {
             IntentFilter filter = new IntentFilter(AudioManager.RINGER_MODE_CHANGED_ACTION);
             mContext.registerReceiver(mRingerModeReceiver, filter);
+            mReceiverRegistered = true;
         }
         final boolean powerSaverOn = Settings.Secure.getInt(mContext.getContentResolver(),
                 Settings.Secure.POWER_SAVER_MODE, PowerSaverService.POWER_SAVER_MODE_OFF) == PowerSaverService.POWER_SAVER_MODE_ON;
@@ -454,7 +459,10 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
     /** {@inheritDoc} */
     public void onDismiss(DialogInterface dialog) {
         if (SHOW_SILENT_TOGGLE) {
-            mContext.unregisterReceiver(mRingerModeReceiver);
+            if(mReceiverRegistered) {
+                mContext.unregisterReceiver(mRingerModeReceiver);
+                mReceiverRegistered = false;
+            }
         }
     }
 

@@ -90,7 +90,7 @@ bool DataSource::sniff(
 #endif
 
         String8 newMimeType;
-        float newConfidence;
+        float newConfidence = 0.0;
         sp<AMessage> newMeta;
         if ((*it)(this, &newMimeType, &newConfidence, &newMeta)) {
             if (newConfidence > *confidence) {
@@ -111,7 +111,7 @@ bool DataSource::sniff(
                         //if this is fragmented or not.
                         LOGV("calling Extended Sniff if mimeType = %s ",(*mimeType).string());
                         String8 tmpMimeType;
-                        float tmpConfidence;
+                        float tmpConfidence = 0.0 ;
                         sp<AMessage> tmpMeta;
                         (*extendedSnifferPosition)(this, &tmpMimeType, &tmpConfidence, &tmpMeta);
                         if (tmpConfidence > *confidence) {

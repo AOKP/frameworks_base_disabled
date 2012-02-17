@@ -1241,9 +1241,7 @@ public class NotificationManagerService extends INotificationManager.Stub
         // even if the screen was turned off.
         boolean forceWithScreenOff = (mLedNotification.notification.flags &
                 Notification.FLAG_FORCE_LED_SCREEN_OFF) != 0;
-
-        // Don't flash while we are in a call or screen is on
-		// Depending on Liquid Control "Screen ON flash" flag
+	
         // Don't flash while we are in a call, screen is on or we are in quiet hours with light dimmed
         if (mLedNotification == null || mInCall || (mScreenOn && !ledScreenOn)
         || (inQuietHours() && mQuietHoursDim) || (wasScreenOn && !forceWithScreenOff)) {

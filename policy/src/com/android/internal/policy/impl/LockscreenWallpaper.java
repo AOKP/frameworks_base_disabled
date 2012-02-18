@@ -7,6 +7,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -20,7 +21,7 @@ class LockscreenWallpaper extends FrameLayout {
 
     private ImageView mLockScreenWallpaperImage;
 
-    Bitmap bitmap = null;
+    Bitmap bitmapWallpaper;
 
     public LockscreenWallpaper(Context context, AttributeSet attrs) {
         super(context);
@@ -35,10 +36,20 @@ class LockscreenWallpaper extends FrameLayout {
             mLockScreenWallpaperImage = new ImageView(getContext());
             mLockScreenWallpaperImage.setScaleType(ScaleType.CENTER_CROP);
             addView(mLockScreenWallpaperImage, -1, -1);
-            Bitmap lockb = BitmapFactory.decodeFile(WALLPAPER_IMAGE_PATH);
-            mLockScreenWallpaperImage.setImageDrawable(new BitmapDrawable(getResources(), lockb));
+            bitmapWallpaper = BitmapFactory.decodeFile(WALLPAPER_IMAGE_PATH);
+            Drawable d = new BitmapDrawable(getResources(), bitmapWallpaper);
+            mLockScreenWallpaperImage.setImageDrawable(d);
         } else {
             removeAllViews();
         }
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        if (bitmapWallpaper != null)
+            bitmapWallpaper.recycle();
+
+        System.gc();
+        super.onDetachedFromWindow();
     }
 }

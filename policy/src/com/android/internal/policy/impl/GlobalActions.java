@@ -89,6 +89,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
     private boolean mEnableTorchToggle = true;
     private boolean mReceiverRegistered = false;
     private boolean mEnableTorchToggle = true;
+    private boolean mEnableAirplaneToggle = true;
     
     public static final String INTENT_TORCH_ON = "com.android.systemui.INTENT_TORCH_ON";
     public static final String INTENT_TORCH_OFF = "com.android.systemui.INTENT_TORCH_OFF";
@@ -153,6 +154,9 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
  
         mEnableTorchToggle = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.POWER_DIALOG_SHOW_TORCH_TOGGLE, 0) == 1;
+        
+        mEnableAirplaneToggle = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.POWER_DIALOG_SHOW_AIRPLANE_TOGGLE, 1) == 1;
         
         mSilentModeAction = new SilentModeAction(mAudioManager, mHandler);
 
@@ -333,6 +337,13 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                     });
         } else {
             Log.d(TAG, "POWERMENU: not adding fullscreen");
+        }
+
+        if(mEnableAirplaneToggle) {
+            Slog.e(TAG, "Adding AirplaneToggle");
+            mItems.add(mAirplaneModeOn); 
+        } else {
+            Slog.e(TAG, "not adding AirplaneToggle");
         }
 
         // next: power saver

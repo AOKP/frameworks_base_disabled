@@ -200,7 +200,7 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
     		startPreview();
     		turnLightOn();
     		SharedPreferences.Editor editor = prefs.edit();
-        	editor.putBoolean(KEY_TORCH_ON,false);
+        	editor.putBoolean(KEY_TORCH_ON,true);
         	editor.commit();
         	startingTorch = false;
     	}

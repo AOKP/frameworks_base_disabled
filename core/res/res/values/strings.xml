@@ -357,6 +357,15 @@
 
     <!-- status message in phone options dialog for when power saver is off -->
     <string name="global_actions_power_saver_off_status">Power saver is OFF</string>
+    
+     <!-- label for item that toggles torch -->
+    <string name="global_actions_toggle_torch">Torch flashlight</string>
+
+    <!-- status message in phone options dialog for when torch is on -->
+    <string name="global_actions_torch_on_status">Torch is ON</string>
+
+    <!-- status message in phone options dialog for when torch is off -->
+    <string name="global_actions_torch_off_status">Torch is OFF</string>
 
     <!-- Text to use when the number in a notification info is too large
          (greater than status_bar_notification_info_maxnum, defined in

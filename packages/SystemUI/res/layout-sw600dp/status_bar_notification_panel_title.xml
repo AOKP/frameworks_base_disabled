@@ -183,4 +183,16 @@
         android:textColor="#ffffff"
         />
 
+	<com.android.systemui.statusbar.policy.WeatherText
+		android:id="@+id/weather"
+		style="@style/StatusBarNotificationText"
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content"
+		android:layout_above="@id/date"
+		android:layout_alignParentLeft="true"
+		android:gravity="left"
+		android:layout_marginLeft="16dp"
+		android:textColor="#ffffff"
+		/>
+
 </com.android.systemui.statusbar.tablet.NotificationPanelTitle>

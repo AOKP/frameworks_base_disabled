@@ -2334,7 +2334,17 @@ public final class Settings {
         /**
          * @hide
          */
+        public static final String POWER_DIALOG_SHOW_TORCH_TOGGLE = "power_dialog_show_torch_toggle";
+
+        /**
+         * @hide
+         */
         public static final String POWER_DIALOG_SHOW_SCREENSHOT = "power_dialog_show_screenshot";
+        
+        /**
+         * @hide
+         */
+        public static final String POWER_DIALOG_SHOW_AIRPLANE_TOGGLE = "power_dialog_show_airplane_toggle";
 
         /**
          * @hide
@@ -2456,15 +2466,6 @@ public final class Settings {
          * @hide
          */
         public static final String LOCKSCREEN_CUSTOM_APP_INTENT_7 = "lockscreen_custom_app_intent_7";
-        
-        public static final String LOCKSCREEN_STYLE_MULITWAVEVIEW_3WAY =
-                "lockscreen_style_multiwaveview_3way";
-        
-        public static final String LOCKSCREEN_STYLE_MULITWAVEVIEW_4WAY =
-                "lockscreen_style_multiwaveview_4way";
-        
-        public static final String LOCKSCREEN_STYLE_MULITWAVEVIEW_8WAY =
-                "lockscreen_style_multiwaveview_8way";
 
         /**
          * Toggle to force multiwaveview lockscreen silent mode toggle even if
@@ -2627,6 +2628,13 @@ public final class Settings {
          * @hide
          */
         public static final String USE_WEATHER = "use_weather";
+
+        /**
+         * Whether to enable torch by long pressing power from a screen-off state
+         * 
+         * @hide
+         */
+        public static final String ENABLE_FAST_TORCH = "enable_fast_torch";
     }
 
     /**
@@ -2898,6 +2906,8 @@ public final class Settings {
         
         /**
          * Whether to display the ADB notification.
+         * 
+         * @hide
          */
         public static final String ADB_ICON = "adb_icon";
 

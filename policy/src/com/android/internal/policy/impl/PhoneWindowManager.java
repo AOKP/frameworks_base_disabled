@@ -295,6 +295,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     final ArrayList<WindowState> mStatusBarPanels = new ArrayList<WindowState>();
     WindowState mNavigationBar = null;
     boolean mHasNavigationBar = false;
+    // in order to properly setup the NavBar and still be able to hide it when the user
+    // selects to, I need to know if its first boot.
+    private boolean mNavBarFirstBootFlag = true;  
     int mNavigationBarWidth = 0, mNavigationBarHeight = 0;
 
     WindowState mKeyguard = null;
@@ -991,11 +994,19 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 mStatusBarCanHide
                 ? com.android.internal.R.dimen.status_bar_height
                 : com.android.internal.R.dimen.system_bar_height);
-
-        /* mHasNavigationBar = mContext.getResources().getBoolean(
-                com.android.internal.R.bool.config_showNavigationBar);*/
-        mHasNavigationBar = Settings.System.getInt(mContext.getContentResolver(), 
+        if (mNavBarFirstBootFlag){
+        	// this is our first time here.  Let's obey the framework setup
+        	mHasNavigationBar = mContext.getResources().getBoolean(
+                com.android.internal.R.bool.config_showNavigationBar);
+        	// I also want to clear out any stale Navigation Hide settings
+        	Settings.System.putInt(mContext.getContentResolver(), 
+            		Settings.System.NAVIGATION_BAR_BUTTONS_HIDE, 
+            		mHasNavigationBar ? 0 : 1);
+        	mNavBarFirstBootFlag = false;
+        } else {
+        	mHasNavigationBar = Settings.System.getInt(mContext.getContentResolver(), 
         		Settings.System.NAVIGATION_BAR_BUTTONS_HIDE, 0) == 0;
+        }
         // Allow a system property to override this. Used by the emulator.
         // See also hasNavigationBar().
         String navBarOverride = SystemProperties.get("qemu.hw.mainkeys");
@@ -1049,13 +1060,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             boolean hasNavBarChanged = Settings.System.getInt(resolver, Settings.System.NAVIGATION_BAR_BUTTONS_HIDE,
                             0) == 0;
             if (mHasNavigationBar != hasNavBarChanged) { 
+            	// NavBar setting has changed, need to reset screen.
             	mHasNavigationBar = hasNavBarChanged;
-            	Log.d("NavBar", "Resetting window");
-            	try {
-            		 Runtime.getRuntime().exec("pkill -TERM -f  com.android.systemui");          		 
-            	} catch (IOException e) {
-            		  e.printStackTrace();
-            	}
+            	setInitialDisplaySize(mUnrestrictedScreenWidth,mUnrestrictedScreenHeight);
             }
 
             if (mAccelerometerDefault != accelerometerDefault) {

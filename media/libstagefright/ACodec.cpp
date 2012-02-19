@@ -1035,6 +1035,21 @@ status_t ACodec::setSupportedOutputFormat() {
     format.nPortIndex = kPortIndexOutput;
     format.nIndex = 0;
 
+#ifdef QCOM_HARDWARE
+    if (!strncmp(mComponentName.c_str(), "OMX.qcom",8)) {
+        int32_t reqdColorFormat = ColorFormatInfo::getPreferredFormat();
+        for(format.nIndex = 0;
+                (OK == mOMX->getParameter(mNode, OMX_IndexParamVideoPortFormat, &format, sizeof(format)));
+                format.nIndex++) {
+            if(format.eColorFormat == reqdColorFormat)
+                break;
+        }
+    }
+
+    LOGV("Video O/P format.nIndex 0x%x",format.nIndex);
+    LOGW("Video O/P format.eColorFormat 0x%x",format.eColorFormat);
+#endif
+
     status_t err = mOMX->getParameter(
             mNode, OMX_IndexParamVideoPortFormat,
             &format, sizeof(format));
@@ -1045,7 +1060,12 @@ status_t ACodec::setSupportedOutputFormat() {
            || format.eColorFormat == OMX_COLOR_FormatYUV420SemiPlanar
            || format.eColorFormat == OMX_COLOR_FormatCbYCrY
            || format.eColorFormat == OMX_TI_COLOR_FormatYUV420PackedSemiPlanar
+#ifdef QCOM_HARDWARE
+           || format.eColorFormat == (OMX_COLOR_FORMATTYPE)OMX_QCOM_COLOR_FormatYVU420SemiPlanar
+           || format.eColorFormat ==  (OMX_COLOR_FORMATTYPE)QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka);
+#else
            || format.eColorFormat == OMX_QCOM_COLOR_FormatYVU420SemiPlanar);
+#endif
 
     return mOMX->setParameter(
             mNode, OMX_IndexParamVideoPortFormat,

@@ -99,7 +99,7 @@ LOCAL_C_INCLUDES += \
 	$(TOP)/external/alsa-lib/include/sound \
         $(TOP)/hardware/qcom/display/libgralloc \
         $(TOP)/hardware/qcom/display/libqcomui \
-        $(TOP)/vendor/qcom-opensource/omx/mm-core/omxcore/inc \
+        $(TOP)/hardware/qcom/media/mm-core/omxcore/inc \
         $(TOP)/system/core/include \
         $(TOP)/hardware/libhardware_legacy/include
 
@@ -121,26 +121,29 @@ LOCAL_CFLAGS += -DQCOM_HARDWARE
 #        LOCAL_SRC_FILES += LPAPlayer.cpp
 #endif
 
-ifeq ($(call is-board-platform-in-list,msm7627a msm7627_surf),true)
+ifeq ($(TARGET_BOARD_PLATFORM),msm7627a)
+    LOCAL_CFLAGS += -DUSE_AAC_HW_DEC
+endif
+ifeq ($(TARGET_BOARD_PLATFORM),msm7627_surf)
     LOCAL_CFLAGS += -DUSE_AAC_HW_DEC
 endif
 
-ifeq ($(call is-chipset-in-board-platform,msm7627),true)
+ifeq ($(TARGET_BOARD_PLATFORM),msm7627)
     LOCAL_CFLAGS += -DTARGET7x27
 endif
-ifeq ($(call is-board-platform,msm7627a),true)
+ifeq ($(TARGET_BOARD_PLATFORM),msm7627a)
     LOCAL_CFLAGS += -DTARGET7x27A
 endif
-ifeq ($(call is-chipset-in-board-platform,msm7630),true)
+ifeq ($(TARGET_BOARD_PLATFORM),msm7630)
     LOCAL_CFLAGS += -DTARGET7x30
 endif
-ifeq ($(call is-board-platform-in-list,$(QSD8K_BOARD_PLATFORMS)),true)
+ifeq ($(TARGET_BOARD_PLATFORM),qsd8k)
     LOCAL_CFLAGS += -DTARGET8x50
 endif
 ifeq ($(TARGET_BOARD_PLATFORM),msm8660)
     LOCAL_CFLAGS += -DTARGET8x60
 endif
-ifeq ($(call is-board-platform-in-list,msm8660 msm8960),true)
+ifeq ($(TARGET_BOARD_PLATFORM),msm8960)
     LOCAL_CFLAGS += -DTARGET8x60
 endif
 endif

@@ -2846,6 +2846,20 @@ public final class Settings {
          * @hide
          */
         public static final String ENABLE_FAST_TORCH = "enable_fast_torch";
+
+        /**
+         * Whether to show statusbar signal text
+         * 
+         * @hide
+         */
+        public static final String STATUSBAR_SIGNAL_TEXT = "statusbar_signal_text";
+
+        /**
+         * statusbar signal text color
+         * 
+         * @hide
+         */
+        public static final String STATUSBAR_SIGNAL_TEXT_COLOR = "statusbar_signal_text_color";
     }
 
     /**

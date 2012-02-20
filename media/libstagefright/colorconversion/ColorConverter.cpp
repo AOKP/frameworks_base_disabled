@@ -145,7 +145,7 @@ status_t ColorConverter::convert(
 
                 typedef int (*convertFn)(ColorConvertParams src, ColorConvertParams dst, uint8_t *adjustedClip);
 
-                convertFn convertNV12Tile = (convertFn)dlsym(lib, "_ZN7android7convertENS_18ColorConvertParamsES0_Ph");
+                convertFn convertNV12Tile = (convertFn)dlsym(lib, "_Z15convertNV12TileN7android18ColorConvertParamsES0_Ph");
                 if (!convertNV12Tile) {
                     dlclose(lib);
                     LOGE("dlsym on libmm-color-convertor failed with errno %d", errno);

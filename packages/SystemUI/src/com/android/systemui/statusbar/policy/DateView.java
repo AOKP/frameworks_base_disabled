@@ -51,8 +51,6 @@ public final class DateView extends TextView {
             final String action = intent.getAction();
             if (Intent.ACTION_TIME_TICK.equals(action)
                     || Intent.ACTION_SCREEN_ON.equals(action)
-                    || Intent.ACTION_SCREEN_OFF.equals(action)
-                    || Intent.ACTION_CONFIGURATION_CHANGED.equals(action)
                     || Intent.ACTION_TIME_CHANGED.equals(action)
                     || Intent.ACTION_TIMEZONE_CHANGED.equals(action)) {
                 updateClock();

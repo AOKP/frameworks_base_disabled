@@ -2510,7 +2510,7 @@ public class PhoneStatusBar extends StatusBar {
         mControlLiquidIcon = Settings.System.getInt(cr,
                 Settings.System.STATUSBAR_REMOVE_LIQUIDCONTROL_LINK, 0) == 1;
         if (mControlLiquidIcon) {
-            mLiquidButton.setVisibility(View.INVISIBLE);
+            mLiquidButton.setVisibility(View.GONE);
         } else {
             mLiquidButton.setVisibility(View.VISIBLE);
         }
@@ -2518,7 +2518,7 @@ public class PhoneStatusBar extends StatusBar {
         mControlAospSettingsIcon = Settings.System.getInt(cr,
                 Settings.System.STATUSBAR_REMOVE_AOSP_SETTINGS_LINK, 0) == 1;
         if (mControlAospSettingsIcon) {
-            mSettingsButton.setVisibility(View.INVISIBLE);
+            mSettingsButton.setVisibility(View.GONE);
         } else {
             mSettingsButton.setVisibility(View.VISIBLE);
         }
@@ -2526,14 +2526,14 @@ public class PhoneStatusBar extends StatusBar {
         mControlAospSettingsIcon = Settings.System.getInt(cr,
                 Settings.System.STATUSBAR_REMOVE_AOSP_SETTINGS_LINK, 0) == 1;
         if (mControlAospSettingsIcon) {
-            mSettingsButton.setVisibility(View.INVISIBLE);
+            mSettingsButton.setVisibility(View.GONE);
         } else {
             mSettingsButton.setVisibility(View.VISIBLE);
         }
 
         mShowDate = Settings.System.getInt(cr, Settings.System.STATUSBAR_SHOW_DATE, 0) == 1;
         if (mShowDate) {
-            mDateView.setVisibility(View.INVISIBLE);
+            mDateView.setVisibility(View.GONE);
         } else {
             mDateView.setVisibility(View.VISIBLE);
         }

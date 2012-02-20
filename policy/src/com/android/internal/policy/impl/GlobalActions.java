@@ -258,7 +258,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         final int onOff = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.POWER_DIALOG_FULLSCREEN, 0);
         boolean showFull = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.POWER_DIALOG_SHOW_FULLSCREEN, 0) == 0;
+                Settings.System.POWER_DIALOG_SHOW_FULLSCREEN, 1) == 1;
         int name = 0;
         int icon = 0;
 

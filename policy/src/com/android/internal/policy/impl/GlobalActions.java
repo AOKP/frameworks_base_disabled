@@ -257,6 +257,8 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         // next: full screen
         final int onOff = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.POWER_DIALOG_FULLSCREEN, 0);
+        boolean showFull = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.POWER_DIALOG_SHOW_FULLSCREEN, 0) == 0;
         int name = 0;
         int icon = 0;
 
@@ -271,37 +273,31 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 icon = com.android.internal.R.drawable.ic_lock_nyandroid;
             break;
         }
-        mItems.add(
-                new SinglePressAction(icon, name) {
-                    public void onPress() {
-                        // when user selects we kill SystemUI forcing our new settings
-                        if (onOff == 1) {
-                            Settings.System.putInt(mContext.getContentResolver(),
-                                    Settings.System.POWER_DIALOG_FULLSCREEN, 0);
-                            try {
-                                Runtime.getRuntime().exec("pkill -TERM -f  com.android.systemui");          		 
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        } else {
-                            Settings.System.putInt(mContext.getContentResolver(),
-                                    Settings.System.POWER_DIALOG_FULLSCREEN, 1);
-                            try {
-                                Runtime.getRuntime().exec("pkill -TERM -f  com.android.systemui");          		 
-                            } catch (IOException e) {
-                                e.printStackTrace();
+        if (showFull) {
+            mItems.add(
+                    new SinglePressAction(icon, name) {
+                        public void onPress() {
+                            // just set the int and allow PhoneWindowManager to do the work
+                            if (onOff == 1) {
+                                Settings.System.putInt(mContext.getContentResolver(),
+                                        Settings.System.POWER_DIALOG_FULLSCREEN, 0);
+                            } else {
+                                Settings.System.putInt(mContext.getContentResolver(),
+                                        Settings.System.POWER_DIALOG_FULLSCREEN, 1);
                             }
                         }
-                    }
 
-                    public boolean showDuringKeyguard() {
-                        return true;
-                    }
+                        public boolean showDuringKeyguard() {
+                            return true;
+                        }
 
-                    public boolean showBeforeProvisioning() {
-                        return true;
-                    }
-                });
+                        public boolean showBeforeProvisioning() {
+                            return true;
+                        }
+                    });
+        } else {
+            Log.d(TAG, "POWERMENU: not adding fullscreen");
+        }
 
         // next: power saver
         try {

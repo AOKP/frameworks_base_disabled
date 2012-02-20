@@ -299,6 +299,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     boolean mUserNavigationBar = false;
     int mNavigationBarWidth = 0, mNavigationBarHeight = 0;
 
+    // on every boot reset fullscreen mode to off
+    private boolean mNavBarFirstBootFlag = true;
+
     WindowState mKeyguard = null;
     KeyguardViewMediator mKeyguardMediator;
     GlobalActions mGlobalActions;
@@ -994,8 +997,19 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 ? com.android.internal.R.dimen.status_bar_height
                 : com.android.internal.R.dimen.system_bar_height);
 
-        mUserNavigationBar = (Settings.System.getInt(mContext.getContentResolver(),
-            Settings.System.POWER_DIALOG_FULLSCREEN, 1) == 1);
+        if (mNavBarFirstBootFlag){
+        	// this is our first time here.  Let's obey the framework setup
+        	mHasNavigationBar = mContext.getResources().getBoolean(
+                com.android.internal.R.bool.config_showNavigationBar);
+        	// I also want to clear out any stale Navigation Hide settings
+        	Settings.System.putInt(mContext.getContentResolver(), 
+            		Settings.System.POWER_DIALOG_FULLSCREEN, 
+            		mHasNavigationBar ? 0 : 1);
+        	mNavBarFirstBootFlag = false;
+        } else {
+        	mHasNavigationBar = Settings.System.getInt(mContext.getContentResolver(), 
+        		Settings.System.POWER_DIALOG_FULLSCREEN, 0) == 0;
+        }
 
         // Allow a system property to override this. Used by the emulator.
         // See also hasNavigationBar().
@@ -1009,6 +1023,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         if(!mHasNavigationBar) {
             mHasNavigationBar = mUserNavigationBar;
         }
+
         mNavigationBarHeight = mHasNavigationBar
                 ? mContext.getResources().getDimensionPixelSize(
                     com.android.internal.R.dimen.navigation_bar_height)
@@ -1094,20 +1109,12 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 updateRotation = true;
             }
         }
-        mUserNavigationBar = (Settings.System.getInt(resolver,
-            Settings.System.POWER_DIALOG_FULLSCREEN, 1) == 1);
-
-        // Allow user to override this if phone has hard keys (eg. nav bar is
-        // not enabled by default in the configuration)
-        if(!mHasNavigationBar) {
-            mHasNavigationBar = mUserNavigationBar;
+        boolean hasNavBarChanged = Settings.System.getInt(resolver, Settings.System.POWER_DIALOG_FULLSCREEN, 0) == 0;
+        if (mHasNavigationBar != hasNavBarChanged) { 
+            // NavBar setting has changed, need to reset screen.
+            mHasNavigationBar = hasNavBarChanged;
+            setInitialDisplaySize(mUnrestrictedScreenWidth, mUnrestrictedScreenHeight);
         }
-        mNavigationBarHeight = mHasNavigationBar
-                ? mContext.getResources().getDimensionPixelSize(
-                    com.android.internal.R.dimen.navigation_bar_height) : 0;
-        mNavigationBarWidth = mHasNavigationBar
-                ? mContext.getResources().getDimensionPixelSize(
-                    com.android.internal.R.dimen.navigation_bar_width) : 0;
 
         if (updateRotation) {
             updateRotation(true);

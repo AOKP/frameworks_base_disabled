@@ -2548,6 +2548,13 @@ public final class Settings {
         public static final String POWER_DIALOG_SHOW_EASTER_EGG = "power_dialog_show_easter_egg";
 
         /**
+         * decide if we and to show fullscreen mode option, boolean value
+         *
+         * @hide
+         */
+        public static final String POWER_DIALOG_SHOW_FULLSCREEN = "power_dialog_show_fullscreen";
+
+        /**
          * PowerMenu
          * decide if we want the navigation bar or not, boolean value
          *

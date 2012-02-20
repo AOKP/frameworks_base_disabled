@@ -295,6 +295,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     final ArrayList<WindowState> mStatusBarPanels = new ArrayList<WindowState>();
     WindowState mNavigationBar = null;
     boolean mHasNavigationBar = false;
+    // in order to properly setup the NavBar and still be able to hide it when the user
+    // selects to, I need to know if its first boot.
+    private boolean mNavBarFirstBootFlag = true;  
     int mNavigationBarWidth = 0, mNavigationBarHeight = 0;
 
     WindowState mKeyguard = null;
@@ -511,6 +514,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     Settings.System.ACCELEROMETER_ROTATION_ANGLES), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.ENABLE_FAST_TORCH), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.NAVIGATION_BAR_BUTTONS_HIDE), false, this);
             updateSettings();
         }
 
@@ -664,7 +669,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             Intent i = new Intent(INTENT_TORCH_ON);
             i.setAction(INTENT_TORCH_ON);
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            mContext.startService(i);
+            mContext.startActivity(i);
             mFastTorchOn = true;
         };
     };
@@ -674,7 +679,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             Intent i = new Intent(INTENT_TORCH_OFF);
             i.setAction(INTENT_TORCH_OFF);
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            mContext.startService(i);
+            mContext.startActivity(i);
             mFastTorchOn = false;
         };
     };
@@ -989,9 +994,19 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 mStatusBarCanHide
                 ? com.android.internal.R.dimen.status_bar_height
                 : com.android.internal.R.dimen.system_bar_height);
-
-        mHasNavigationBar = mContext.getResources().getBoolean(
+        if (mNavBarFirstBootFlag){
+        	// this is our first time here.  Let's obey the framework setup
+        	mHasNavigationBar = mContext.getResources().getBoolean(
                 com.android.internal.R.bool.config_showNavigationBar);
+        	// I also want to clear out any stale Navigation Hide settings
+        	Settings.System.putInt(mContext.getContentResolver(), 
+            		Settings.System.NAVIGATION_BAR_BUTTONS_HIDE, 
+            		mHasNavigationBar ? 0 : 1);
+        	mNavBarFirstBootFlag = false;
+        } else {
+        	mHasNavigationBar = Settings.System.getInt(mContext.getContentResolver(), 
+        		Settings.System.NAVIGATION_BAR_BUTTONS_HIDE, 0) == 0;
+        }
         // Allow a system property to override this. Used by the emulator.
         // See also hasNavigationBar().
         String navBarOverride = SystemProperties.get("qemu.hw.mainkeys");
@@ -1042,6 +1057,13 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     Settings.System.ACCELEROMETER_ROTATION_ANGLES, -1);
             mEnableQuickTorch = Settings.System.getInt(resolver, Settings.System.ENABLE_FAST_TORCH,
                     0) == 1;
+            boolean hasNavBarChanged = Settings.System.getInt(resolver, Settings.System.NAVIGATION_BAR_BUTTONS_HIDE,
+                            0) == 0;
+            if (mHasNavigationBar != hasNavBarChanged) { 
+            	// NavBar setting has changed, need to reset screen.
+            	mHasNavigationBar = hasNavBarChanged;
+            	setInitialDisplaySize(mUnrestrictedScreenWidth,mUnrestrictedScreenHeight);
+            }
 
             if (mAccelerometerDefault != accelerometerDefault) {
                 mAccelerometerDefault = accelerometerDefault;
@@ -2823,7 +2845,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             }
         }
     }
-
+    
     /** {@inheritDoc} */
     @Override
     public int interceptKeyBeforeQueueing(KeyEvent event, int policyFlags, boolean isScreenOn) {

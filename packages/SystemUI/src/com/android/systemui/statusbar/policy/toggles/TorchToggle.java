@@ -62,17 +62,18 @@ public class TorchToggle extends Toggle implements OnSharedPreferenceChangeListe
 
     @Override
     protected void onCheckChanged(boolean isChecked) {
+    	mToggle.setEnabled(false); // we've changed torch - let's disable until torch catches up;
         if (isChecked) {
             Intent i = new Intent(INTENT_TORCH_ON);
             i.setAction(INTENT_TORCH_ON);
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            mContext.startService(i);
+            mContext.startActivity(i);
         }
         else {
         	Intent i = new Intent(INTENT_TORCH_OFF);
         	i.setAction(INTENT_TORCH_OFF);
         	i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        	mContext.startService(i);
+        	mContext.startActivity(i);
         }
     }
 
@@ -85,5 +86,8 @@ public class TorchToggle extends Toggle implements OnSharedPreferenceChangeListe
     {
       mIsTorchOn = sharedPreferences.getBoolean(KEY_TORCH_ON,false);
       updateState();
+      if (mToggle.isChecked() == mIsTorchOn) {
+    	  mToggle.setEnabled(true); // torch status has caught up with toggle - re-enable toggle.
+      }
     }
 }

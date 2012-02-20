@@ -366,6 +366,15 @@
 
     <!-- status message in phone options dialog for when torch is off -->
     <string name="global_actions_torch_off_status">Torch is OFF</string>
+    
+    <!-- label for item that toggles NavBar Hide -->
+    <string name="global_actions_toggle_navbar_hide">Hide Navigation Bar</string>
+
+    <!-- status message in phone options dialog for when navbar hide is on -->
+    <string name="global_actions_navbar_hide_on">Navigation Buttons are hidden</string>
+
+    <!-- status message in phone options dialog for when navbar hide is off -->
+    <string name="global_actions_navbar_hide_off">Navigation Buttons are shown</string>
 
     <!-- Text to use when the number in a notification info is too large
          (greater than status_bar_notification_info_maxnum, defined in

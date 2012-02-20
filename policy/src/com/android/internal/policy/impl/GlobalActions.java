@@ -76,6 +76,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
     private ToggleAction mAirplaneModeOn;
     private ToggleAction mPowerSaverOn;
     private ToggleAction mTorchToggle;
+    private ToggleAction mNavBarHideToggle;
 
     private MyAdapter mAdapter;
 
@@ -88,7 +89,8 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
     private boolean mEnableTorchToggle = true;
     private boolean mEnableAirplaneToggle = true;
     private boolean mReceiverRegistered = false;    
-    
+    private boolean mEnableNavBarHideToggle = true;
+
     public static final String INTENT_TORCH_ON = "com.android.systemui.INTENT_TORCH_ON";
     public static final String INTENT_TORCH_OFF = "com.android.systemui.INTENT_TORCH_OFF";
 
@@ -150,6 +152,8 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         
         mEnableAirplaneToggle = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.POWER_DIALOG_SHOW_AIRPLANE_TOGGLE, 1) == 1;
+        mEnableNavBarHideToggle= Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.POWER_DIALOG_SHOW_NAVBAR_HIDE, 0) == 1;
         
         mSilentModeAction = new SilentModeAction(mAudioManager, mHandler);
 
@@ -216,6 +220,27 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             }
         };
         
+        mNavBarHideToggle = new ToggleAction(
+                R.drawable.ic_lock_navbar_hide,
+                R.drawable.ic_lock_navbar_hide,
+                R.string.global_actions_toggle_navbar_hide,
+                R.string.global_actions_navbar_hide_on,
+                R.string.global_actions_navbar_hide_off) {
+
+            void onToggle(boolean on) {
+                Settings.System.putInt(mContext.getContentResolver(),
+                        Settings.System.NAVIGATION_BAR_BUTTONS_HIDE,
+                         on ? 1 : 0);
+            }
+
+            public boolean showDuringKeyguard() {
+                return true;
+            }
+
+            public boolean showBeforeProvisioning() {
+                return false;
+            }
+        };
         mTorchToggle = new ToggleAction(
                 R.drawable.ic_lock_torch,
                 R.drawable.ic_lock_torch,
@@ -329,6 +354,14 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             });
         } else {
             Slog.e(TAG, "Not adding screenshot");
+        }
+        
+        // Next NavBar Hide
+        if(mEnableNavBarHideToggle) {
+            Slog.e(TAG, "Adding NavBarhHideToggle");
+            mItems.add(mNavBarHideToggle); 
+        } else {
+            Slog.e(TAG, "not adding NavBarHideToggle");
         }
 
         // Next Torch
@@ -461,6 +494,10 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         final boolean powerSaverOn = Settings.Secure.getInt(mContext.getContentResolver(),
                 Settings.Secure.POWER_SAVER_MODE, PowerSaverService.POWER_SAVER_MODE_OFF) == PowerSaverService.POWER_SAVER_MODE_ON;
         mPowerSaverOn.updateState(powerSaverOn ? ToggleAction.State.On : ToggleAction.State.Off);
+        
+        final boolean navbarHideOn = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.NAVIGATION_BAR_BUTTONS_HIDE, 0) == 1;
+        mNavBarHideToggle.updateState(navbarHideOn ? ToggleAction.State.On : ToggleAction.State.Off);
 
     }
 

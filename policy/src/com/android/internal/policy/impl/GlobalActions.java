@@ -83,7 +83,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
     private boolean mEnablePowerSaverToggle = false;
     private boolean mEnableScreenshotToggle = false;
     private boolean mEnableEasterEggToggle = false;
-    private boolean mFullScreenMode = false;
+    private boolean mShowFullscreenMode = false;
 
     /**
      * @param context everything needs a context :(
@@ -138,14 +138,14 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         mEnableEasterEggToggle = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.POWER_DIALOG_SHOW_EASTER_EGG, 0) == 1;
 
-        mFullScreenMode = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.POWER_DIALOG_FULLSCREEN, 0) == 1;
+        mShowFullscreenMode = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.POWER_DIALOG_SHOW_FULLSCREEN, 1) == 1;
 
         //debugging
         if (mEnablePowerSaverToggle) {Log.d(TAG, "PowerSaver enabled");}else{Log.d(TAG, "PowerSaver disabled");}
         if (mEnableScreenshotToggle) {Log.d(TAG, "Screenshot enabled");}else{Log.d(TAG, "Screenshot disabled");}
         if (mEnableEasterEggToggle) {Log.d(TAG, "EasterEgg enabled");}else{Log.d(TAG, "EasterEgg disabled");}
-        if (mFullScreenMode){Log.d(TAG, "Fullscreen mode is on");}else{Log.d(TAG, "Fullscreen mode is off");}
+        if (mShowFullscreenMode){Log.d(TAG, "Fullscreen enabled");}else{Log.d(TAG, "Fullscreen disabled");}
 
         mSilentModeAction = new SilentModeAction(mAudioManager, mHandler);
 
@@ -257,8 +257,6 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         // next: full screen
         final int onOff = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.POWER_DIALOG_FULLSCREEN, 0);
-        boolean showFull = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.POWER_DIALOG_SHOW_FULLSCREEN, 1) == 1;
         int name = 0;
         int icon = 0;
 
@@ -273,7 +271,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 icon = com.android.internal.R.drawable.ic_lock_nyandroid;
             break;
         }
-        if (showFull) {
+        if (mShowFullscreenMode) {
             mItems.add(
                     new SinglePressAction(icon, name) {
                         public void onPress() {

@@ -68,6 +68,7 @@ class KeyguardStatusViewManager implements OnClickListener {
     // NOTE: These may be null in some LockScreen screens and should protect from NPE
     private TextView mCarrierView;
     private TextView mDateView;
+    private TextView mWeatherView;
     private TextView mStatus1View;
     private TextView mOwnerInfoView;
     private TextView mAlarmStatusView;
@@ -78,6 +79,9 @@ class KeyguardStatusViewManager implements OnClickListener {
 
     // are we showing battery information?
     private boolean mShowingBatteryInfo = false;
+    
+    private boolean mShowWeatherInfo = false;
+    private String mWeatherText = "w";
     
     private boolean mLockAlwaysBattery;
 
@@ -177,6 +181,7 @@ class KeyguardStatusViewManager implements OnClickListener {
 
         mCarrierView = (TextView) findViewById(R.id.carrier);
         mDateView = (TextView) findViewById(R.id.date);
+        mWeatherView = (TextView) findViewById(R.id.weather);
         mStatus1View = (TextView) findViewById(R.id.status1);
         mAlarmStatusView = (TextView) findViewById(R.id.alarm_status);
         mOwnerInfoView = (TextView) findViewById(R.id.propertyOf);
@@ -203,6 +208,7 @@ class KeyguardStatusViewManager implements OnClickListener {
         resetStatusInfo();
         refreshDate();
         updateOwnerInfo();
+        updateWeatherInfo();
 
         // Required to get Marquee to work.
         final View scrollableViews[] = { mCarrierView, mDateView, mStatus1View, mOwnerInfoView,
@@ -302,6 +308,7 @@ class KeyguardStatusViewManager implements OnClickListener {
         mShowingBatteryInfo = mUpdateMonitor.shouldShowBatteryInfo();
         mPluggedIn = mUpdateMonitor.isDevicePluggedIn();
         mBatteryLevel = mUpdateMonitor.getBatteryLevel();
+        mWeatherText = mUpdateMonitor.getWeather();
         updateStatusLines(true);
     }
 
@@ -316,6 +323,7 @@ class KeyguardStatusViewManager implements OnClickListener {
         if (DEBUG) Log.v(TAG, "updateStatusLines(" + showStatusLines + ")");
         mShowingStatus = showStatusLines;
         updateAlarmInfo();
+        updateWeatherInfo();
         updateOwnerInfo();
         updateStatus1();
         updateCarrierText();
@@ -340,6 +348,27 @@ class KeyguardStatusViewManager implements OnClickListener {
         if (mOwnerInfoView != null) {
             mOwnerInfoView.setText(mOwnerInfoText);
             mOwnerInfoView.setVisibility(TextUtils.isEmpty(mOwnerInfoText) ? View.GONE:View.VISIBLE);
+        }
+    }
+    
+    private void updateWeatherInfo() {
+        final ContentResolver res = getContext().getContentResolver();
+        final boolean weatherInfoEnabled = Settings.System.getInt(res, Settings.System.LOCKSCREEN_WEATHER, 0) == 1;
+        final boolean weatherLocationEnabled = Settings.System.getInt(res, Settings.System.WEATHER_SHOW_LOCATION, 0) == 1;
+        /*final String[] splittedWeather = mWeatherText.split(",");
+        if (weatherLocationEnabled && splittedWeather.length == 4) {
+            mWeatherView.setText(splittedWeather[2] + splittedWeather[3]);
+        }
+        else {
+            mWeatherView.setText(splittedWeather[0] + splittedWeather[1] + splittedWeather[2] + splittedWeather[3]);
+        }*/
+        if (mWeatherView != null) {
+            Log.d(TAG, "mWeatherView is not null");
+        if (mWeatherText != null) {
+            Log.d(TAG, "mWeatherText is not null");
+            mWeatherView.setText(mWeatherText);
+            mWeatherView.setVisibility((weatherInfoEnabled && !mWeatherText.isEmpty()) ? View.VISIBLE : View.GONE);
+        }
         }
     }
 
@@ -637,6 +666,11 @@ class KeyguardStatusViewManager implements OnClickListener {
             mBatteryLevel = batteryLevel;
             final MutableInt tmpIcon = new MutableInt(0);
             update(BATTERY_INFO, getAltTextMessage(tmpIcon));
+        }
+        
+        public void onRefreshWeatherInfo(String weatherInfo) {
+            mWeatherText = weatherInfo;
+            updateWeatherInfo();
         }
 
         public void onTimeChanged() {

@@ -94,6 +94,19 @@
         android:layout_marginTop="4dip"
         android:layout_gravity="right"
         />
+        
+    <TextView
+        android:id="@+id/weather"
+        android:layout_width="0dip"
+        android:layout_gravity="fill_horizontal"
+        android:gravity="right"
+        android:layout_marginTop="4dip"
+        android:singleLine="true"
+        android:ellipsize="marquee"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textSize="@dimen/keyguard_lockscreen_status_line_font_size"
+        android:drawablePadding="4dip"
+        />
 
     <TextView
         android:id="@+id/status1"

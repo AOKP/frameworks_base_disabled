@@ -233,14 +233,12 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             void onToggle(boolean on) {
             	if (on) {
                     Intent i = new Intent(INTENT_TORCH_ON);
-                    i.setAction(INTENT_TORCH_ON);
                     i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    mContext.startService(i);
+                    mContext.startActivity(i);
                 } else {
                 	Intent i = new Intent(INTENT_TORCH_OFF);
-                	i.setAction(INTENT_TORCH_OFF);
                 	i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                	mContext.startService(i);
+                	mContext.startActivity(i);
                 }
             }
 

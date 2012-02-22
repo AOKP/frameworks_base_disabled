@@ -149,7 +149,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         mEnableFlashlight = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.POWER_DIALOG_SHOW_FLASHLIGHT, 0) == 1;
 
-        mShowFullscreen = Settings.System.getInt(mContext.getContentResolver(),
+        mEnableFullscreen = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.POWER_DIALOG_SHOW_FULLSCREEN, 0) == 1;
 
         mEnablePowersaver = Settings.System.getInt(mContext.getContentResolver(),
@@ -278,10 +278,10 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
         // first: airplane
         if(mEnableAirplane) {
-            Slog.e(TAG, "Adding Airplane Menu");
+            Log.d(TAG, "Adding Airplane Menu");
             mItems.add(mAirplaneOn);
         } else {
-            Slog.e(TAG, "Not Adding Airplane");
+            Log.d(TAG, "Not Adding Airplane");
         }
 
         // next: easteregg
@@ -314,18 +314,18 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
         // next: flashlight
         if(mEnableFlashlight) {
-            Slog.e(TAG, "Adding Flashlight Menu");
+            Log.d(TAG, "Adding Flashlight Menu");
             mItems.add(mFlashlightOn); 
         } else {
-            Slog.e(TAG, "Not Adding Flashlight");
+            Log.d(TAG, "Not Adding Flashlight");
         }
 
         // next: fullscreen
         if(mEnableFullscreen) {
-            Slog.e(TAG, "Adding Fullscreen Menu");
+            Log.d(TAG, "Adding Fullscreen Menu");
             mItems.add(mFullscreenOn);
         } else {
-            Slog.e(TAG, "Not Adding Fullscreen");
+            Log.d(TAG, "Not Adding Fullscreen");
         }
 
         // next: powersaver
@@ -884,7 +884,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         public void onServiceStateChanged(ServiceState serviceState) {
             final boolean inAirplaneMode = serviceState.getState() == ServiceState.STATE_POWER_OFF;
             mAirplaneState = inAirplaneMode ? ToggleAction.State.On : ToggleAction.State.Off;
-            mAirplaneModeOn.updateState(mAirplaneState);
+            mAirplaneOn.updateState(mAirplaneState);
             mAdapter.notifyDataSetChanged();
         }
     };

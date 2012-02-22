@@ -1586,43 +1586,30 @@ public class PhoneStatusBar extends StatusBar {
                     trackMovement(event);
                 }
             }
-        } else if (mTracking) {
+       } else if (mTracking) {
             trackMovement(event);
             final int minY = statusBarSize + mCloseView.getHeight();
             if (action == MotionEvent.ACTION_MOVE) {
                 if (mAnimatingReveal && y < minY) {
-                    boolean brightnessControl = Settings.System.getInt(mStatusBarView.getContext()
-                            .getContentResolver(),
-                            Settings.System.STATUS_BAR_BRIGHTNESS_TOGGLE, 0) == 1;
-                    if (brightnessControl) {
+                    if (mBrightnessControl && !mAutoBrightness) {
                         mVelocityTracker.computeCurrentVelocity(1000);
                         float yVel = mVelocityTracker.getYVelocity();
                         yVel = Math.abs(yVel);
                         if (yVel < 50.0f) {
                             if (mLinger > 20) {
-                                Context context = mStatusBarView.getContext();
-                                boolean autoBrightness = Settings.System.getInt(
-                                        context.getContentResolver(),
-                                        Settings.System.SCREEN_BRIGHTNESS_MODE, 0) == Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC;
-                                if (!autoBrightness) {
-                                    float x = (float) event.getRawX();
-                                    int newBrightness = (int) Math
-                                            .round(((x / mScreenWidth) * android.os.Power.BRIGHTNESS_ON));
-                                    newBrightness = Math.min(newBrightness,
-                                            android.os.Power.BRIGHTNESS_ON);
-                                    newBrightness = Math.max(newBrightness, mMinBrightness);
-                                    try {
-                                        IPowerManager power = IPowerManager.Stub
-                                                .asInterface(ServiceManager.getService("power"));
-                                        if (power != null) {
-                                            power.setBacklightBrightness(newBrightness);
-                                            Settings.System.putInt(context.getContentResolver(),
-                                                    Settings.System.SCREEN_BRIGHTNESS,
-                                                    newBrightness);
-                                        }
-                                    } catch (RemoteException e) {
-                                        Slog.w(TAG, "Setting Brightness failed: " + e);
+                                float x = (float) event.getRawX();
+                                int newBrightness = (int) Math.round(((x / mScreenWidth) * android.os.Power.BRIGHTNESS_ON));
+                                newBrightness = Math.min(newBrightness, android.os.Power.BRIGHTNESS_ON);
+                                newBrightness = Math.max(newBrightness, mMinBrightness);
+                                try {
+                                    IPowerManager power = IPowerManager.Stub.asInterface(ServiceManager.getService("power"));
+                                    if (power != null) {
+                                        power.setBacklightBrightness(newBrightness);
+                                        Settings.System.putInt(mContext.getContentResolver(), Settings.System.SCREEN_BRIGHTNESS,
+                                                newBrightness);
                                     }
+                                } catch (RemoteException e) {
+                                    Slog.w(TAG, "Setting Brightness failed: " + e);
                                 }
                             } else {
                                 mLinger++;

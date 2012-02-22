@@ -357,26 +357,17 @@ class KeyguardStatusViewManager implements OnClickListener {
         final boolean weatherLocationEnabled = Settings.System.getInt(res, Settings.System.WEATHER_SHOW_LOCATION, 0) == 1;
         
         if (mWeatherView != null) {
-            if (mWeatherText != null) {
+            if (mWeatherText != null && mWeatherText.indexOf("null") == -1) {
                 // this is disgusting but im tired
-                if (mWeatherText.length()>4) {
-                    String[] splittedWeather = mWeatherText.split(",");
-                    for (int i=0;i<splittedWeather.length;i++) {
-                        Log.d(TAG, String.valueOf(i) + " : " + splittedWeather[i]);
-                        splittedWeather[i] = splittedWeather[i].trim();
-                    }
-                    if (!weatherLocationEnabled) {
-                        mWeatherView.setText(splittedWeather[2] + ", " + splittedWeather[3]);
-                    }
-                    else {
-                        // don't show twice the same thing (hungary rulz)
-                        if (splittedWeather[0].equals(splittedWeather[1]))
-                            mWeatherView.setText(splittedWeather[1] + ", " + splittedWeather[2] + ", " + splittedWeather[3]);
-                        else
-                            mWeatherView.setText(splittedWeather[0] + ", " + splittedWeather[1] + ", " + splittedWeather[2] + ", " + splittedWeather[3]);
-                    }
-                    mWeatherView.setVisibility((weatherInfoEnabled && !mWeatherText.isEmpty()) ? View.VISIBLE : View.GONE);
+                String[] splittedWeather = mWeatherText.split(",");
+                if (splittedWeather.length < 3) return;
+                if (!weatherLocationEnabled) {
+                    mWeatherView.setText(splittedWeather[1] + "," + splittedWeather[2]);
                 }
+                else {
+                    mWeatherView.setText(splittedWeather[0] + "," + splittedWeather[1] + "," + splittedWeather[2]);
+                }
+                mWeatherView.setVisibility((weatherInfoEnabled && !mWeatherText.isEmpty()) ? View.VISIBLE : View.GONE);
             }
         }
     }

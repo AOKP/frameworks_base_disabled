@@ -2535,39 +2535,34 @@ public final class Settings {
         /**
          * @hide
          */
-        public static final String POWER_DIALOG_SHOW_POWER_SAVER = "power_dialog_show_power_saver";
+        public static final String POWER_DIALOG_SHOW_AIRPLANE = "power_dialog_show_airplane";
 
         /**
          * @hide
          */
-        public static final String POWER_DIALOG_SHOW_TORCH_TOGGLE = "power_dialog_show_torch_toggle";
+        public static final String POWER_DIALOG_SHOW_EASTEREGG = "power_dialog_show_easteregg";
 
         /**
          * @hide
          */
-        public static final String POWER_DIALOG_SHOW_SCREENSHOT = "power_dialog_show_screenshot";
-        
-        /**
-         * @hide
-         */
-        public static final String POWER_DIALOG_SHOW_AIRPLANE_TOGGLE = "power_dialog_show_airplane_toggle";
+        public static final String POWER_DIALOG_SHOW_FLASHLIGHT = "power_dialog_show_flashlight";
 
         /**
-         * @hide
-         */
-        public static final String POWER_DIALOG_SHOW_EASTER_EGG = "power_dialog_show_easter_egg";
-
-        /**
-         * decide if we and to show fullscreen mode option, boolean value
-         *
          * @hide
          */
         public static final String POWER_DIALOG_SHOW_FULLSCREEN = "power_dialog_show_fullscreen";
 
         /**
-         * PowerMenu
-         * decide if we want the navigation bar or not, boolean value
-         *
+         * @hide
+         */
+        public static final String POWER_DIALOG_SHOW_POWERSAVER = "power_dialog_show_powersaver";
+
+        /**
+         * @hide
+         */
+        public static final String POWER_DIALOG_SHOW_SCREENSHOT = "power_dialog_show_screenshot";
+
+        /**
          * @hide
          */
         public static final String POWER_DIALOG_FULLSCREEN = "power_dialog_fullscreen";

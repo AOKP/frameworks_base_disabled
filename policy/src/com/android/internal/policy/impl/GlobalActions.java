@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 The Android Open Source Project
+ * Copyright (C) 2012 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 
 package com.android.internal.policy.impl;
+
+import java.util.ArrayList;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -53,9 +55,6 @@ import com.android.internal.app.ShutdownThread;
 import com.android.internal.telephony.TelephonyIntents;
 import com.android.internal.telephony.TelephonyProperties;
 
-import java.io.IOException;
-import java.util.ArrayList;
-
 /**
  * Helper to show the global actions dialog.  Each item is an {@link Action} that
  * may show depending on whether the keyguard is showing, and whether the device
@@ -63,33 +62,33 @@ import java.util.ArrayList;
  */
 class GlobalActions implements DialogInterface.OnDismissListener, DialogInterface.OnClickListener  {
 
-    private static final String TAG = "SYSTEM :GlobalActions";
+    private static final String TAG = "POLICY: GlobalActions";
     private static final boolean SHOW_SILENT_TOGGLE = true;
 
+    private MyAdapter mAdapter;
     private final Context mContext;
     private final AudioManager mAudioManager;
     private ArrayList<Action> mItems;
     private AlertDialog mDialog;
 
+    private ToggleAction mAirplaneOn;
+    private ToggleAction mFullscreenOn;
+    private ToggleAction mPowersaverOn;
+    private ToggleAction mFlashlightOn;
     private SilentModeAction mSilentModeAction;
-    private ToggleAction mAirplaneModeOn;
-    private ToggleAction mPowerSaverOn;
-    private ToggleAction mTorchToggle;
-
-    private MyAdapter mAdapter;
 
     private boolean mKeyguardShowing = false;
     private boolean mDeviceProvisioned = false;
-    private ToggleAction.State mAirplaneState = ToggleAction.State.Off;
     private boolean mIsWaitingForEcmExit = false;
-    private boolean mEnablePowerSaverToggle = false;
-    private boolean mEnableScreenshotToggle = false;
-    private boolean mEnableEasterEggToggle = false;
-    private boolean mShowFullscreenMode = false;
-    private boolean mEnableTorchToggle = true;
+    private ToggleAction.State mAirplaneState = ToggleAction.State.Off;
+
+    private boolean mEnableAirplane = true;
+    private boolean mEnableEasteregg = false;
+    private boolean mEnableFlashlight = false;
+    private boolean mEnableFullscreen = false;
+    private boolean mEnablePowersaver = false;
+    private boolean mEnableScreenshot = true;
     private boolean mReceiverRegistered = false;
-    private boolean mEnableTorchToggle = true;
-    private boolean mEnableAirplaneToggle = true;
     
     public static final String INTENT_TORCH_ON = "com.android.systemui.INTENT_TORCH_ON";
     public static final String INTENT_TORCH_OFF = "com.android.systemui.INTENT_TORCH_OFF";
@@ -126,9 +125,9 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             mReceiverRegistered = false;
             mDialog.cancel();
         }
+
         //always update the PowerMenu dialog
         mDialog = createDialog();
-
         prepareDialog();
 
         mDialog.show();
@@ -140,27 +139,28 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
      * @return A new dialog.
      */
     private AlertDialog createDialog() {
-        mEnablePowerSaverToggle = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.POWER_DIALOG_SHOW_POWER_SAVER, 0) == 1;
-        
-        mEnableScreenshotToggle = Settings.System.getInt(mContext.getContentResolver(),
+
+        mEnableAirplane = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.POWER_DIALOG_SHOW_AIRPLANE, 1) == 1;
+
+        mEnableEasteregg = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.POWER_DIALOG_SHOW_EASTEREGG, 0) == 1;
+
+        mEnableFlashlight = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.POWER_DIALOG_SHOW_FLASHLIGHT, 0) == 1;
+
+        mShowFullscreen = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.POWER_DIALOG_SHOW_FULLSCREEN, 0) == 1;
+
+        mEnablePowersaver = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.POWER_DIALOG_SHOW_POWERSAVER, 0) == 1;
+
+        mEnableScreenshot = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.POWER_DIALOG_SHOW_SCREENSHOT, 1) == 1;
 
-        mEnableEasterEggToggle = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.POWER_DIALOG_SHOW_EASTER_EGG, 0) == 1;
-
-        mShowFullscreenMode = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.POWER_DIALOG_SHOW_FULLSCREEN, 0) == 1;
- 
-        mEnableTorchToggle = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.POWER_DIALOG_SHOW_TORCH_TOGGLE, 0) == 1;
-        
-        mEnableAirplaneToggle = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.POWER_DIALOG_SHOW_AIRPLANE_TOGGLE, 1) == 1;
-        
         mSilentModeAction = new SilentModeAction(mAudioManager, mHandler);
 
-        mAirplaneModeOn = new ToggleAction(
+        mAirplaneOn = new ToggleAction(
                 R.drawable.ic_lock_airplane_mode,
                 R.drawable.ic_lock_airplane_mode_off,
                 R.string.global_actions_toggle_airplane_mode,
@@ -200,7 +200,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             }
         };
         
-        mPowerSaverOn = new ToggleAction(
+        mPowersaverOn = new ToggleAction(
                 R.drawable.ic_lock_power_saver,
                 R.drawable.ic_lock_power_saver,
                 R.string.global_actions_toggle_power_saver,
@@ -222,8 +222,8 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 return false;
             }
         };
-        
-        mTorchToggle = new ToggleAction(
+
+        mFlashlightOn = new ToggleAction(
                 R.drawable.ic_lock_torch,
                 R.drawable.ic_lock_torch,
                 R.string.global_actions_toggle_torch,
@@ -236,8 +236,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                     i.setAction(INTENT_TORCH_ON);
                     i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     mContext.startService(i);
-                }
-                else {
+                } else {
                 	Intent i = new Intent(INTENT_TORCH_OFF);
                 	i.setAction(INTENT_TORCH_OFF);
                 	i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -253,15 +252,100 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 return false;
             }
         };
+
+        mFullscreenOn = new ToggleAction(
+                R.drawable.ic_lock_full_screen,
+                R.drawable.ic_lock_full_screen,
+                R.string.global_actions_toggle_fullscreen,
+                R.string.global_actions_fullscreen_title_on,
+                R.string.global_actions_fullscreen_title_off) {
+
+            void onToggle(boolean on) {
+                Settings.System.putInt(mContext.getContentResolver(),
+                        Settings.System.POWER_DIALOG_FULLSCREEN, on ? 1 : 0);
+            }
+
+            public boolean showDuringKeyguard() {
+                return true;
+            }
+
+            public boolean showBeforeProvisioning() {
+                return false;
+            }
+        };
         
         mItems = new ArrayList<Action>();
 
-        // first: power off
+        // first: airplane
+        if(mEnableAirplane) {
+            Slog.e(TAG, "Adding Airplane Menu");
+            mItems.add(mAirplaneOn);
+        } else {
+            Slog.e(TAG, "Not Adding Airplane");
+        }
+
+        // next: easteregg
+        if (mEnableEasteregg) {
+            Log.d(TAG, "Adding Easteregg Menu");
+            mItems.add(new SinglePressAction(com.android.internal.R.drawable.ic_lock_nyandroid,
+                    R.string.global_action_easter_egg) {
+                public void onPress() {
+                    try {
+                        mContext.startActivity(new Intent(Intent.ACTION_MAIN)
+                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                            | Intent.FLAG_ACTIVITY_CLEAR_TASK
+                            | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)
+                        .setClassName("com.android.systemui","com.android.systemui.Nyandroid"));
+                    } catch (ActivityNotFoundException ex) {
+                    }
+                }
+
+                public boolean showDuringKeyguard() {
+                    return true;
+                }
+
+                public boolean showBeforeProvisioning() {
+                    return true;
+                }
+            });
+        } else {
+            Log.d(TAG, "Not Adding Easteregg");
+        }
+
+        // next: flashlight
+        if(mEnableFlashlight) {
+            Slog.e(TAG, "Adding Flashlight Menu");
+            mItems.add(mFlashlightOn); 
+        } else {
+            Slog.e(TAG, "Not Adding Flashlight");
+        }
+
+        // next: fullscreen
+        if(mEnableFullscreen) {
+            Slog.e(TAG, "Adding Fullscreen Menu");
+            mItems.add(mFullscreenOn);
+        } else {
+            Slog.e(TAG, "Not Adding Fullscreen");
+        }
+
+        // next: powersaver
+        try {
+            Settings.Secure.getInt(mContext.getContentResolver(),
+                    Settings.Secure.POWER_SAVER_MODE);
+            if(mEnablePowersaver) {
+                Log.d(TAG, "Adding Powersaver Menu");
+                mItems.add(mPowersaverOn); 
+            } else {
+                Log.d(TAG, "Not Adding Powersaver");
+            }
+        } catch (SettingNotFoundException e) {
+        }
+
+        // next: power off
         mItems.add(
             new SinglePressAction(
                     com.android.internal.R.drawable.ic_lock_power_off,
                     R.string.global_action_power_off) {
-
                 public void onPress() {
                     // shutdown by making sure radio and power are handled accordingly.
                     ShutdownThread.shutdown(mContext, true);
@@ -275,96 +359,32 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                     return true;
                 }
             });
-        
+
         // next: reboot
         mItems.add(
-                new SinglePressAction(com.android.internal.R.drawable.ic_lock_reboot,
-                        R.string.global_action_reboot) {
-                    public void onPress() {
-                        ShutdownThread.reboot(mContext, "null", true);
-                    }
+            new SinglePressAction(
+                    com.android.internal.R.drawable.ic_lock_reboot,
+                    R.string.global_action_reboot) {
+                public void onPress() {
+                    ShutdownThread.reboot(mContext, "null", true);
+                }
 
-                    public boolean showDuringKeyguard() {
-                        return true;
-                    }
+                public boolean showDuringKeyguard() {
+                    return true;
+                }
 
-                    public boolean showBeforeProvisioning() {
-                        return true;
-                    }
-                });
+                public boolean showBeforeProvisioning() {
+                    return true;
+                }
+            });
 
-        // next: airplane mode
-        mItems.add(mAirplaneModeOn);
-
-        // next: full screen
-        final int onOff = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.POWER_DIALOG_FULLSCREEN, 0);
-        int name = 0;
-        int icon = 0;
-
-        switch (onOff) {
-            case 0:
-                name = R.string.global_actions_fullscreen_title_off;
-                icon = com.android.internal.R.drawable.ic_lock_full_screen;
-            break;
-            case 1:
-                name = R.string.global_actions_fullscreen_title_on;
-                icon = com.android.internal.R.drawable.ic_lock_full_screen;
-            break;
-        }
-        if (mShowFullscreenMode) {
+        // last: screenshot
+        if (mEnableScreenshot) {
+            Log.d(TAG, "Adding Screenshot Menu");
             mItems.add(
-                    new SinglePressAction(icon, name) {
-                        public void onPress() {
-                            // just set the int and allow PhoneWindowManager to do the work
-                            if (onOff == 1) {
-                                Settings.System.putInt(mContext.getContentResolver(),
-                                        Settings.System.POWER_DIALOG_FULLSCREEN, 0);
-                            } else {
-                                Settings.System.putInt(mContext.getContentResolver(),
-                                        Settings.System.POWER_DIALOG_FULLSCREEN, 1);
-                            }
-                        }
-
-                        public boolean showDuringKeyguard() {
-                            return true;
-                        }
-
-                        public boolean showBeforeProvisioning() {
-                            return true;
-                        }
-                    });
-        } else {
-            Log.d(TAG, "POWERMENU: not adding fullscreen");
-        }
-
-        if(mEnableAirplaneToggle) {
-            Slog.e(TAG, "Adding AirplaneToggle");
-            mItems.add(mAirplaneModeOn); 
-        } else {
-            Slog.e(TAG, "not adding AirplaneToggle");
-        }
-
-        // next: power saver
-        try {
-            Settings.Secure.getInt(mContext.getContentResolver(),
-                    Settings.Secure.POWER_SAVER_MODE);
-            if(mEnablePowerSaverToggle) {
-                Log.d(TAG, "Adding powersaver");
-                mItems.add(mPowerSaverOn); 
-            } else {
-                Log.d(TAG, "not adding power saver");
-            }
-        } catch (SettingNotFoundException e) {
-            //Power Saver hasn't yet been initialized so we don't want to make it easy for the user without
-            //  them reading any warnings that could be presented by enabling the power saver through ROM Control
-        }
-
-        // next: screenshot
-        if (mEnableScreenshotToggle) {
-            Log.d(TAG, "Adding screenshot");
-            mItems.add(new SinglePressAction(com.android.internal.R.drawable.ic_lock_screenshot,
-                    R.string.global_action_screenshot) {
+                new SinglePressAction(
+                        com.android.internal.R.drawable.ic_lock_screenshot,
+                        R.string.global_action_screenshot) {
                 public void onPress() {
                     takeScreenshot();
                 }
@@ -378,47 +398,10 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 }
             });
         } else {
-            Log.d(TAG, "Not adding screenshot");
+            Log.d(TAG, "Not Adding Screenshot");
         }
 
-        // next: easter egg shortcut
-        if (mEnableEasterEggToggle) {
-            Log.d(TAG, "Adding easter egg");
-            mItems.add(new SinglePressAction(com.android.internal.R.drawable.ic_lock_nyandroid,
-                    R.string.global_action_easter_egg) {
-                public void onPress() {
-                    Log.d(TAG, "easter egg pressed");
-                    try {
-                        mContext.startActivity(new Intent(Intent.ACTION_MAIN).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                            | Intent.FLAG_ACTIVITY_CLEAR_TASK
-                            | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)
-                        .setClassName("com.android.systemui","com.android.systemui.Nyandroid"));
-                    } catch (ActivityNotFoundException ex) {
-                        Log.e(TAG, "Unable to start easter egg");
-                    }
-                }
-
-                public boolean showDuringKeyguard() {
-                    return true;
-                }
-
-                public boolean showBeforeProvisioning() {
-                    return true;
-                }
-            });
-        } else {
-            Log.d(TAG, "Not adding easter egg");
-        }
-
-        // Next Torch
-        if(mEnableTorchToggle) {
-            Slog.e(TAG, "Adding TorchToggle");
-            mItems.add(mTorchToggle); 
-        } else {
-            Slog.e(TAG, "not adding TorchToggle");
-        }
-        
-        // last: silent mode
+        // last: silent
         if (SHOW_SILENT_TOGGLE) {
             mItems.add(mSilentModeAction);
         }
@@ -513,22 +496,28 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
    private void prepareDialog() {
         final boolean silentModeOn =
                 mAudioManager.getRingerMode() != AudioManager.RINGER_MODE_NORMAL;
-        mAirplaneModeOn.updateState(mAirplaneState);
-
+        mAirplaneOn.updateState(mAirplaneState);
         mAdapter.notifyDataSetChanged();
+
         if (mKeyguardShowing) {
             mDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG);
         } else {
             mDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG);
         }
+
         if (SHOW_SILENT_TOGGLE) {
             IntentFilter filter = new IntentFilter(AudioManager.RINGER_MODE_CHANGED_ACTION);
             mContext.registerReceiver(mRingerModeReceiver, filter);
             mReceiverRegistered = true;
         }
+
+        final boolean fullScreenOn = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.POWER_DIALOG_FULLSCREEN, 0) == 1;
+        mFullscreenOn.updateState(fullScreenOn ? ToggleAction.State.On : ToggleAction.State.Off);
+
         final boolean powerSaverOn = Settings.Secure.getInt(mContext.getContentResolver(),
                 Settings.Secure.POWER_SAVER_MODE, PowerSaverService.POWER_SAVER_MODE_OFF) == PowerSaverService.POWER_SAVER_MODE_ON;
-        mPowerSaverOn.updateState(powerSaverOn ? ToggleAction.State.On : ToggleAction.State.Off);
+        mPowersaverOn.updateState(powerSaverOn ? ToggleAction.State.On : ToggleAction.State.Off);
     }
 
     /** {@inheritDoc} */

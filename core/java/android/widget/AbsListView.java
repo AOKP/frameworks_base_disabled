@@ -415,7 +415,7 @@ public abstract class AbsListView extends AdapterView<ListAdapter> implements Te
      * 2 = default is to disable scrollingCacheEnabled unless app specifies
      * 3 = force to disable scrollingCacheEnabled regardless of app setting
      */
-    int mScrollingCacheProperty = SystemProperties.getInt("persist.sys.scrollingcache",1);
+    int mScrollingCacheProperty = SystemProperties.getInt("persist.sys.scrollingcache",0);
 
     /**
      * When set to true, the list automatically discards the children's

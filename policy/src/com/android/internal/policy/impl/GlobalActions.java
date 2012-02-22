@@ -84,7 +84,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
     private boolean mEnableAirplane = true;
     private boolean mEnableEasteregg = false;
-    private boolean mEnableFlashlight = false;
+    private boolean mEnableFlashlight = true;
     private boolean mEnableFullscreen = false;
     private boolean mEnablePowersaver = false;
     private boolean mEnableScreenshot = true;

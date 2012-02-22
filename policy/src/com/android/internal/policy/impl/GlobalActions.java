@@ -302,15 +302,14 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         int name = 0;
         int icon = 0;
 
-        // TODO UPDATE ICONS!!!
         switch (onOff) {
             case 0:
                 name = R.string.global_actions_fullscreen_title_off;
-                icon = com.android.internal.R.drawable.ic_lock_nyandroid;
+                icon = com.android.internal.R.drawable.ic_lock_full_screen;
             break;
             case 1:
                 name = R.string.global_actions_fullscreen_title_on;
-                icon = com.android.internal.R.drawable.ic_lock_nyandroid;
+                icon = com.android.internal.R.drawable.ic_lock_full_screen;
             break;
         }
         if (mShowFullscreenMode) {

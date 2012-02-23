@@ -83,6 +83,7 @@ status_t ExtendedWriter::addSource(const sp<MediaSource> &source) {
     const char *mime;
     CHECK(meta->findCString(kKeyMIMEType, &mime));
 
+#ifdef QCOM_AUDIO_EXT
     if ( !strcasecmp(mime, MEDIA_MIMETYPE_AUDIO_QCELP)) {
         mFormat = AUDIO_FORMAT_QCELP;
     } else if ( !strcasecmp(mime, MEDIA_MIMETYPE_AUDIO_EVRC)) {
@@ -91,6 +92,7 @@ status_t ExtendedWriter::addSource(const sp<MediaSource> &source) {
     else {
         return UNKNOWN_ERROR;
     }
+#endif
 
     int32_t channelCount;
     int32_t sampleRate;
@@ -283,12 +285,14 @@ status_t ExtendedWriter::threadFunc() {
         notify(MEDIA_RECORDER_EVENT_INFO, MEDIA_RECORDER_TRACK_INFO_COMPLETION_STATUS, UNKNOWN_ERROR);
     }
 
+#ifdef QCOM_AUDIO_EXT
     if ( mFormat == AUDIO_FORMAT_QCELP ) {
         writeQCPHeader( );
     }
     else if ( mFormat == AUDIO_FORMAT_EVRC ) {
         writeEVRCHeader( );
     }
+#endif
 
     fflush(mFile);
     fclose(mFile);

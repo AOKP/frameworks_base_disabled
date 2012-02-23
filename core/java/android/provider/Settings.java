@@ -2516,7 +2516,15 @@ public final class Settings {
          */
         public static final String STATUSBAR_EXPANDED_BOTTOM_ALPHA = "statusbar_expanded_bottom_alpha";
 
+        /**
+         * background color of expanded statusbar window shade
+         * @hide
+         */
+        public static final String STATUSBAR_EXPANDED_BACKGROUND_COLOR = "statusbar_expanded_background_color";
 
+        /**
+         * @hide
+         */
         public static final String NOTIFICATION_LIGHT_COLOR = "notification_light_color";
 
         /**

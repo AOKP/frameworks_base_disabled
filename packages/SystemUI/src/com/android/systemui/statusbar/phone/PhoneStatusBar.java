@@ -99,8 +99,8 @@ import com.android.systemui.statusbar.policy.toggles.TogglesView;
 
 public class PhoneStatusBar extends StatusBar {
     static final String TAG = "PhoneStatusBar";
-    public static final boolean DEBUG = false;
-    public static final boolean SPEW = false;
+    public static final boolean DEBUG = true;
+    public static final boolean SPEW = true;
     public static final boolean DUMPTRUCK = true; // extra dumpsys info
 
     // additional instrumentation for testing purposes; intended to be left on during development
@@ -251,6 +251,10 @@ public class PhoneStatusBar extends StatusBar {
     private View mStatusBarBottom;
     private float newAlpha;
 
+    // custom statusbar window shade background color
+    private ExpandedView expanded;
+    private int newWindowShadeColor;
+
     private class ExpandedDialog extends Dialog {
         ExpandedDialog(Context context) {
             super(context, com.android.internal.R.style.Theme_Translucent_NoTitleBar);
@@ -306,12 +310,15 @@ public class PhoneStatusBar extends StatusBar {
         mScreenWidth = (float) context.getResources().getDisplayMetrics().widthPixels;
         mMinBrightness = context.getResources().getInteger(
                 com.android.internal.R.integer.config_screenBrightnessDim);
-        ExpandedView expanded = (ExpandedView) View.inflate(context,
+        expanded = (ExpandedView) View.inflate(context,
                 R.layout.status_bar_expanded, null);
-        //if (DEBUG) {
-            //lets have some fun testing
+
+        /* disable debug coloring
+        if (DEBUG) {
             expanded.setBackgroundColor(0x6000FF80);
-        //}
+        }
+        /*
+
         expanded.mService = this;
 
         mIntruderAlertView = View.inflate(context, R.layout.intruder_alert, null);
@@ -2540,12 +2547,6 @@ public class PhoneStatusBar extends StatusBar {
             mSettingsButton.setVisibility(View.GONE);
         } else {
             mSettingsButton.setVisibility(View.VISIBLE);
-        }
-
-        if (mControlAospSettingsIcon) {
-            mSettingsButton.setVisibility(View.GONE);
-        } else {
-            mSettingsButton.setVisibility(View.VISIBLE);
             // additional padding needed if date goes away
             if (mShowDate) mSettingsButton.setPadding(8,0,0,0);
         }
@@ -2568,6 +2569,20 @@ public class PhoneStatusBar extends StatusBar {
         }
         if (customBottomBarAlpha) {
             mStatusBarBottom.setAlpha(newAlpha);
+        }
+
+        // check if user wants custom custom background
+        boolean customWindowShadeColor = false;
+        try {
+            newWindowShadeColor = Settings.System.getInt(cr, Settings.System.STATUSBAR_EXPANDED_BACKGROUND_COLOR);
+            customWindowShadeColor = true;
+            Log.d(TAG, String.format("Custom color preference detected %f", newWindowShadeColor));
+        } catch (SettingNotFoundException snfe) {
+            customWindowShadeColor = false;
+            Log.d(TAG, "Custom color preference not detected");
+        }
+        if (customWindowShadeColor) {
+            expanded.setBackgroundColor(newWindowShadeColor);
         }
     }
 

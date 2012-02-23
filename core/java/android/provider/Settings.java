@@ -2509,10 +2509,12 @@ public final class Settings {
          * @hide
          */
         public static final String STATUSBAR_6BAR_SIGNAL = "statusbar_6bar_signal";
-        
+
         /**
+         * the bottom of the expanded statusbar visibility in alpha float value
          * @hide
          */
+        public static final String STATUSBAR_EXPANDED_BOTTOM_ALPHA = "statusbar_expanded_bottom_alpha";
 
 
         public static final String NOTIFICATION_LIGHT_COLOR = "notification_light_color";

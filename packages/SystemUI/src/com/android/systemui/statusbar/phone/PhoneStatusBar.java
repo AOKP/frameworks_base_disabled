@@ -51,6 +51,7 @@ import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.os.SystemClock;
 import android.provider.Settings;
+import android.provider.Settings.SettingNotFoundException;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -246,6 +247,10 @@ public class PhoneStatusBar extends StatusBar {
 
     DisplayMetrics mDisplayMetrics = new DisplayMetrics();
 
+    // for tracking status bar bottom image
+    private View mStatusBarBottom;
+    private float newAlpha;
+
     private class ExpandedDialog extends Dialog {
         ExpandedDialog(Context context) {
             super(context, com.android.internal.R.style.Theme_Translucent_NoTitleBar);
@@ -282,6 +287,7 @@ public class PhoneStatusBar extends StatusBar {
         // Lastly, call to the icon policy to install/update all the icons.
         mIconPolicy = new PhoneStatusBarPolicy(mContext);
 
+        Context context = mContext;
         Settings.System.putInt(mContext.getContentResolver(), Settings.System.IS_TABLET, 0);
     }
 
@@ -302,9 +308,10 @@ public class PhoneStatusBar extends StatusBar {
                 com.android.internal.R.integer.config_screenBrightnessDim);
         ExpandedView expanded = (ExpandedView) View.inflate(context,
                 R.layout.status_bar_expanded, null);
-        if (DEBUG) {
+        //if (DEBUG) {
+            //lets have some fun testing
             expanded.setBackgroundColor(0x6000FF80);
-        }
+        //}
         expanded.mService = this;
 
         mIntruderAlertView = View.inflate(context, R.layout.intruder_alert, null);
@@ -364,6 +371,9 @@ public class PhoneStatusBar extends StatusBar {
 
         //lanuch clock or calender app when we click on the date
         mDateView.setOnClickListener(mDateListener);
+
+        // statusbar alpha
+        mStatusBarBottom = expanded.findViewById(R.id.titlebar_expanded);
 
         mQuickToggles = (TogglesView) expanded.findViewById(R.id.quick_toggles);
         mTicker = new MyTicker(context, sb);
@@ -2480,6 +2490,8 @@ public class PhoneStatusBar extends StatusBar {
                     Settings.System.STATUSBAR_SHOW_DATE), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUSBAR_DATE_FORMAT), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.STATUSBAR_EXPANDED_BOTTOM_ALPHA), false, this);
         }
 
         @Override
@@ -2507,35 +2519,55 @@ public class PhoneStatusBar extends StatusBar {
         mDropdownDateBehavior = Settings.System.getInt(cr,
                 Settings.System.STATUSBAR_DATE_BEHAVIOR, 0) == 1;
 
+        // To format the layout correctly we must first know if user has a preference.
+        // If we drop the date we must add padding on the left of aosp settings.
+        // Adding from now on musy be done in the same format first find then pad as needed
         mControlLiquidIcon = Settings.System.getInt(cr,
                 Settings.System.STATUSBAR_REMOVE_LIQUIDCONTROL_LINK, 0) == 1;
+        mShowDate = Settings.System.getInt(cr, Settings.System.STATUSBAR_SHOW_DATE, 0) == 1;
+        mControlAospSettingsIcon = Settings.System.getInt(cr,
+                Settings.System.STATUSBAR_REMOVE_AOSP_SETTINGS_LINK, 0) == 1;
+        mControlAospSettingsIcon = Settings.System.getInt(cr,
+                Settings.System.STATUSBAR_REMOVE_AOSP_SETTINGS_LINK, 0) == 1;
+
         if (mControlLiquidIcon) {
             mLiquidButton.setVisibility(View.GONE);
         } else {
             mLiquidButton.setVisibility(View.VISIBLE);
         }
 
-        mControlAospSettingsIcon = Settings.System.getInt(cr,
-                Settings.System.STATUSBAR_REMOVE_AOSP_SETTINGS_LINK, 0) == 1;
         if (mControlAospSettingsIcon) {
             mSettingsButton.setVisibility(View.GONE);
         } else {
             mSettingsButton.setVisibility(View.VISIBLE);
         }
 
-        mControlAospSettingsIcon = Settings.System.getInt(cr,
-                Settings.System.STATUSBAR_REMOVE_AOSP_SETTINGS_LINK, 0) == 1;
         if (mControlAospSettingsIcon) {
             mSettingsButton.setVisibility(View.GONE);
         } else {
             mSettingsButton.setVisibility(View.VISIBLE);
+            // additional padding needed if date goes away
+            if (mShowDate) mSettingsButton.setPadding(8,0,0,0);
         }
 
-        mShowDate = Settings.System.getInt(cr, Settings.System.STATUSBAR_SHOW_DATE, 0) == 1;
         if (mShowDate) {
             mDateView.setVisibility(View.GONE);
         } else {
             mDateView.setVisibility(View.VISIBLE);
+        }
+
+        // check if user wants an alpha status bar bottom
+        boolean customBottomBarAlpha = false;
+        try {
+            newAlpha = Settings.System.getInt(cr, Settings.System.STATUSBAR_EXPANDED_BOTTOM_ALPHA);
+            customBottomBarAlpha = true;
+            Log.d(TAG, String.format("Custom alpha preference detected %f", newAlpha));
+        } catch (SettingNotFoundException snfe) {
+            customBottomBarAlpha = false;
+            Log.d(TAG, "Custom alpha preference not detected");
+        }
+        if (customBottomBarAlpha) {
+            mStatusBarBottom.setAlpha(newAlpha);
         }
     }
 

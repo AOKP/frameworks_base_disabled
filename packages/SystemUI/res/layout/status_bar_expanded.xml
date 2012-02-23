@@ -120,7 +120,7 @@
             </LinearLayout>
         </ScrollView>
 
-        <ImageView
+        <ImageView android:id="@+id/titlebar_expanded"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:src="@drawable/title_bar_shadow"

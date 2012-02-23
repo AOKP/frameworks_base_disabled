@@ -605,6 +605,12 @@ void LPAPlayer::resume() {
                 mQueue.cancelEvent(mPauseEvent->eventID());
                 release_wake_lock("LPA_LOCK");
             }
+            if (mAudioSinkOpen) {
+                mAudioSink->close();
+                mAudioSinkOpen = false;
+                LOGV("Singal to A2DP thread for clean up after closing Audio sink");
+                pthread_cond_signal(&a2dp_cv);
+            }
 
             if (!mIsAudioRouted) {
                 LOGV("Opening a session for LPA playback");
@@ -1102,7 +1108,7 @@ void LPAPlayer::A2DPThreadEntry() {
                 bytesWritten = mAudioSink->write(data, writeLen);
                 if ( bytesWritten != writeLen ) {
                     //Paused - Wait till resume
-                    if (isPaused) {
+                    if (isPaused && bIsA2DPEnabled) {
                         LOGV("Pausing A2DP playback");
                         pthread_mutex_lock(&a2dp_mutex);
                         pthread_cond_wait(&a2dp_cv, &a2dp_mutex);
@@ -1283,19 +1289,10 @@ void LPAPlayer::A2DPNotificationThreadEntry() {
             pthread_cond_signal(&decoder_cv);
         }
         else {
-            mAudioSink->stop();
-            mAudioSink->close();
-            mAudioSinkOpen = false;
-            LOGV("resume:: opening audio session with mSampleRate %d numChannels %d sessionId %d",
-                 mSampleRate, numChannels, sessionId);
-            status_t err = mAudioSink->openSession(AUDIO_FORMAT_PCM_16_BIT, sessionId,  mSampleRate, numChannels);
-            if (mAudioSink.get() != NULL) {
-                mAudioSink->pauseSession();
-            }
             mInternalSeeking = true;
             mReachedEOS = false;
-            mSeekTimeUs = timePlayed;
-            mIsAudioRouted = true;
+            mSeekTimeUs += getTimeStamp(A2DP_DISCONNECT);
+            mNumA2DPBytesPlayed = 0;
             pthread_cond_signal(&a2dp_cv);
         }
     }

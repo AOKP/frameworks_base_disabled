@@ -100,7 +100,7 @@ import com.android.systemui.statusbar.policy.toggles.TogglesView;
 public class PhoneStatusBar extends StatusBar {
     static final String TAG = "PhoneStatusBar";
     public static final boolean DEBUG = true;
-    public static final boolean SPEW = true;
+    public static final boolean SPEW = false;
     public static final boolean DUMPTRUCK = true; // extra dumpsys info
 
     // additional instrumentation for testing purposes; intended to be left on during development
@@ -317,7 +317,7 @@ public class PhoneStatusBar extends StatusBar {
         if (DEBUG) {
             expanded.setBackgroundColor(0x6000FF80);
         }
-        /*
+        */
 
         expanded.mService = this;
 
@@ -2499,6 +2499,9 @@ public class PhoneStatusBar extends StatusBar {
                     Settings.System.STATUSBAR_DATE_FORMAT), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUSBAR_EXPANDED_BOTTOM_ALPHA), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.STATUSBAR_EXPANDED_BACKGROUND_COLOR), false, this);
+
         }
 
         @Override
@@ -2560,7 +2563,7 @@ public class PhoneStatusBar extends StatusBar {
         // check if user wants an alpha status bar bottom
         boolean customBottomBarAlpha = false;
         try {
-            newAlpha = Settings.System.getInt(cr, Settings.System.STATUSBAR_EXPANDED_BOTTOM_ALPHA);
+            newAlpha = Settings.System.getFloat(cr, Settings.System.STATUSBAR_EXPANDED_BOTTOM_ALPHA);
             customBottomBarAlpha = true;
             Log.d(TAG, String.format("Custom alpha preference detected %f", newAlpha));
         } catch (SettingNotFoundException snfe) {

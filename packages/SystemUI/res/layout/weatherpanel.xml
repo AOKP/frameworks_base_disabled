@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--this doesn't actually get used anywhere.Just sets up all ids -->
+<com.android.systemui.statusbar.policy.WeatherPanel>
+	<LinearLayout>
+		<TextView
+			android:id="@+id/high_temp" 
+		/>
+		<TextView
+			android:id="@+id/low_temp"
+		/>
+		<TextView
+			android:id="@+id/current_temp"
+		/>
+		<TextView
+			android:id="@+id/city"
+		/>
+		<TextView
+			android:id="@+id/zipcode"
+		/>
+		<TextView
+			android:id="@+id/humidity"
+		/>
+		<TextView
+			android:id="@+id/winds"
+		/>
+		<ImageView
+			android:id="@+id/condition_image"
+		/>
+	</LinearLayout>	
+</com.android.systemui.statusbar.policy.WeatherPanel>
+

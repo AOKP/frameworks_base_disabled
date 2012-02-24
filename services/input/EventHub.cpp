@@ -16,7 +16,7 @@
 
 #define LOG_TAG "EventHub"
 
-// #define LOG_NDEBUG 0
+//#define LOG_NDEBUG 0
 
 #include "EventHub.h"
 

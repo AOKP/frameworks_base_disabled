@@ -19,22 +19,22 @@
 //#define LOG_NDEBUG 0
 
 // Log debug messages for each raw event received from the EventHub.
-#define DEBUG_RAW_EVENTS 0
+//#define DEBUG_RAW_EVENTS 0
 
 // Log debug messages about touch screen filtering hacks.
-#define DEBUG_HACKS 0
+//#define DEBUG_HACKS 0
 
 // Log debug messages about virtual key processing.
-#define DEBUG_VIRTUAL_KEYS 0
+//#define DEBUG_VIRTUAL_KEYS 0
 
 // Log debug messages about pointers.
-#define DEBUG_POINTERS 0
+//#define DEBUG_POINTERS 0
 
 // Log debug messages about pointer assignment calculations.
-#define DEBUG_POINTER_ASSIGNMENT 0
+//#define DEBUG_POINTER_ASSIGNMENT 0
 
 // Log debug messages about gesture detection.
-#define DEBUG_GESTURES 0
+//#define DEBUG_GESTURES 0
 
 #include "InputReader.h"
 
@@ -1919,6 +1919,7 @@ void KeyboardInputMapper::reset(nsecs_t when) {
 }
 
 void KeyboardInputMapper::process(const RawEvent* rawEvent) {
+    // LOGE("process(), type=%d, keyCode=%d, scanCode=%d, flags=0x%08x", rawEvent->type, rawEvent->keyCode, rawEvent->scanCode, rawEvent->flags);
     switch (rawEvent->type) {
     case EV_KEY: {
         int32_t scanCode = rawEvent->scanCode;

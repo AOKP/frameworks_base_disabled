@@ -387,16 +387,19 @@ class KeyguardStatusViewManager implements OnClickListener {
         final boolean weatherLocationEnabled = Settings.System.getInt(res,
                 Settings.System.WEATHER_SHOW_LOCATION, 0) == 1;
 
-        if (mWeatherView != null && mWeatherInfo != null) {
-            if (mWeatherInfo.getCharSequenceExtra(EXTRA_CITY) != null) {
-                String wText = (weatherLocationEnabled) ? (mWeatherInfo
+        if (mWeatherView != null) {
+            if (mWeatherInfo != null) {
+                String wText = null;
+                if (mWeatherInfo.getCharSequenceExtra(EXTRA_CITY) != null) {
+                    wText = (weatherLocationEnabled) ? (mWeatherInfo
                         .getCharSequenceExtra(EXTRA_CITY)
                         + ", "
                         + mWeatherInfo.getCharSequenceExtra(EXTRA_TEMP) + ", "
                         + mWeatherInfo.getCharSequenceExtra(EXTRA_CONDITION)) : (mWeatherInfo
                         .getCharSequenceExtra(EXTRA_TEMP) + ", "
                         + mWeatherInfo.getCharSequenceExtra(EXTRA_CONDITION));
-                mWeatherView.setText(wText);
+                    mWeatherView.setText(wText);
+                }
                 mWeatherView.setVisibility((weatherInfoEnabled && !wText.isEmpty()) ? View.VISIBLE
                         : View.GONE);
             }

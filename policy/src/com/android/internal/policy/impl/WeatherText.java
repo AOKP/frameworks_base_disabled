@@ -1,5 +1,5 @@
 
-package com.android.systemui.statusbar.policy;
+package com.android.internal.policy.impl;
 
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
@@ -19,28 +19,30 @@ public class WeatherText extends TextView {
     private boolean mAttached;
 
     public static final String EXTRA_CITY = "city";
-    public static final String EXTRA_ZIP = "zip";
     public static final String EXTRA_CONDITION = "condition";
-    public static final String EXTRA_FORECAST_DATE = "forecase_date";
-    public static final String EXTRA_TEMP_F = "temp_f";
-    public static final String EXTRA_TEMP_C = "temp_c";
+    public static final String EXTRA_FORECAST_DATE = "forecast_date";
+    public static final String EXTRA_TEMP = "temp";
     public static final String EXTRA_HUMIDITY = "humidity";
     public static final String EXTRA_WIND = "wind";
     public static final String EXTRA_LOW = "todays_low";
     public static final String EXTRA_HIGH = "todays_high";
+    
+    private static boolean showLocation = false;
+    
 
     BroadcastReceiver weatherReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            setText(intent.getCharSequenceExtra("temp") + ", "
-                    + intent.getCharSequenceExtra(EXTRA_CONDITION));
+            String wText = (showLocation) ? (intent.getCharSequenceExtra(EXTRA_CITY) + ", " + intent.getCharSequenceExtra(EXTRA_TEMP) + ", "
+                    + intent.getCharSequenceExtra(EXTRA_CONDITION)) : (intent.getCharSequenceExtra(EXTRA_TEMP) + ", "
+                            + intent.getCharSequenceExtra(EXTRA_CONDITION));
+            setText(wText);
         }
     };
 
     public WeatherText(Context context, AttributeSet attrs) {
         super(context, attrs);
         setText("");
-
     }
 
     @Override
@@ -75,6 +77,9 @@ public class WeatherText extends TextView {
             resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.USE_WEATHER), false,
                     this);
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.WEATHER_SHOW_LOCATION), false,
+                    this);
             updateSettings();
         }
 
@@ -86,8 +91,9 @@ public class WeatherText extends TextView {
 
     protected void updateSettings() {
         ContentResolver resolver = mContext.getContentResolver();
-
+        
         boolean useWeather = Settings.System.getInt(resolver, Settings.System.USE_WEATHER, 0) == 1;
+        showLocation = Settings.System.getInt(resolver, Settings.System.WEATHER_SHOW_LOCATION, 0) == 1;
         setVisibility(useWeather ? View.VISIBLE : View.GONE);
     }
 

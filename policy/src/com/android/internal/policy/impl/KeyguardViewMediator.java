@@ -1361,6 +1361,11 @@ public class KeyguardViewMediator implements KeyguardViewCallback,
     public void onRefreshBatteryInfo(boolean showBatteryInfo, boolean pluggedIn, int batteryLevel) {
         // ignored
     }
+    
+    /** {@inheritDoc} */
+    public void onRefreshWeatherInfo(Intent weatherIntent) {
+        // ignored
+    }
 
     /** {@inheritDoc} */
     public void onRefreshCarrierInfo(CharSequence plmn, CharSequence spn) {

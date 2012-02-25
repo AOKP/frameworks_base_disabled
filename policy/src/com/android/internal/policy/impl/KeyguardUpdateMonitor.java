@@ -76,6 +76,8 @@ public class KeyguardUpdateMonitor {
     private boolean mDeviceProvisioned;
 
     private BatteryStatus mBatteryStatus;
+    
+    private Intent mWeather = null;
 
     private CharSequence mTelephonyPlmn;
     private CharSequence mTelephonySpn;
@@ -101,6 +103,7 @@ public class KeyguardUpdateMonitor {
     private static final int MSG_PHONE_STATE_CHANGED = 306;
     private static final int MSG_CLOCK_VISIBILITY_CHANGED = 307;
     private static final int MSG_DEVICE_PROVISIONED = 308;
+    private static final int MSG_WEATHER_CHANGED = 309;
 
     /**
      * When we receive a
@@ -202,6 +205,9 @@ public class KeyguardUpdateMonitor {
                     case MSG_DEVICE_PROVISIONED:
                         handleDeviceProvisioned();
                         break;
+                    case MSG_WEATHER_CHANGED:
+                        handleWeatherChanged((Intent)msg.obj);
+                        break;
                 }
             }
         };
@@ -247,6 +253,7 @@ public class KeyguardUpdateMonitor {
         // take a guess to start
         mSimState = IccCard.State.READY;
         mBatteryStatus = new BatteryStatus(BATTERY_STATUS_UNKNOWN, 100, 0, 0);
+        mWeather = new Intent();
 
         mTelephonyPlmn = getDefaultPlmn();
 
@@ -260,6 +267,7 @@ public class KeyguardUpdateMonitor {
         filter.addAction(TelephonyManager.ACTION_PHONE_STATE_CHANGED);
         filter.addAction(SPN_STRINGS_UPDATED_ACTION);
         filter.addAction(AudioManager.RINGER_MODE_CHANGED_ACTION);
+        filter.addAction("com.aokp.romcontrol.INTENT_WEATHER_UPDATE");
         context.registerReceiver(new BroadcastReceiver() {
 
             public void onReceive(Context context, Intent intent) {
@@ -291,6 +299,8 @@ public class KeyguardUpdateMonitor {
                 } else if (TelephonyManager.ACTION_PHONE_STATE_CHANGED.equals(action)) {
                     String state = intent.getStringExtra(TelephonyManager.EXTRA_STATE);
                     mHandler.sendMessage(mHandler.obtainMessage(MSG_PHONE_STATE_CHANGED, state));
+                } else if ("com.aokp.romcontrol.INTENT_WEATHER_UPDATE".equals(action)) {
+                    mHandler.sendMessage(mHandler.obtainMessage(MSG_WEATHER_CHANGED, intent));
                 }
             }
         }, filter);
@@ -353,6 +363,17 @@ public class KeyguardUpdateMonitor {
                 mInfoCallbacks.get(i).onRefreshBatteryInfo(
                     shouldShowBatteryInfo(),isPluggedIn(batteryStatus), batteryStatus.level);
             }
+        }
+    }
+    
+    /**
+     * Handle {@link #MSG_WEATHER_CHANGED}
+     */
+    private void handleWeatherChanged(Intent weatherIntent) {
+        if (DEBUG) Log.d(TAG, "handleWeatherChanged");
+        mWeather = weatherIntent;
+        for (int i = 0; i < mInfoCallbacks.size(); i++) {
+            mInfoCallbacks.get(i).onRefreshWeatherInfo(weatherIntent);
         }
     }
 
@@ -486,6 +507,7 @@ public class KeyguardUpdateMonitor {
      */
     interface InfoCallback {
         void onRefreshBatteryInfo(boolean showBatteryInfo, boolean pluggedIn, int batteryLevel);
+        void onRefreshWeatherInfo(Intent weatherIntent);
         void onTimeChanged();
 
         /**
@@ -540,6 +562,7 @@ public class KeyguardUpdateMonitor {
             // Notify listener of the current state
             callback.onRefreshBatteryInfo(shouldShowBatteryInfo(),isPluggedIn(mBatteryStatus),
                     mBatteryStatus.level);
+            callback.onRefreshWeatherInfo(mWeather);
             callback.onTimeChanged();
             callback.onRingerModeChanged(mRingMode);
             callback.onPhoneStateChanged(mPhoneState);
@@ -603,6 +626,10 @@ public class KeyguardUpdateMonitor {
 
     public int getBatteryLevel() {
         return mBatteryStatus.level;
+    }
+    
+    public Intent getWeather() {
+        return mWeather;
     }
 
     public boolean shouldShowBatteryInfo() {

@@ -2627,11 +2627,21 @@ public final class Settings {
          * @hide
          */
         public static final String LOCKSCREEN_QUICK_UNLOCK_CONTROL = "lockscreen_quick_unlock_control";
+        
+        /**
+         * @hide
+         */
+        public static final String LOCKSCREEN_WEATHER = "lockscreen_weather";
 
         /**
          * @hide
          */
         public static final String USE_WEATHER = "use_weather";
+        
+        /**
+         * @hide
+         */
+        public static final String WEATHER_SHOW_LOCATION = "weather_show_location";
 
         /**
          * Whether to enable torch by long pressing power from a screen-off state

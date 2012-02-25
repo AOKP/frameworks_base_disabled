@@ -389,7 +389,7 @@ class KeyguardStatusViewManager implements OnClickListener {
 
         if (mWeatherView != null) {
             if (mWeatherInfo != null) {
-                String wText = null;
+                String wText = "";
                 if (mWeatherInfo.getCharSequenceExtra(EXTRA_CITY) != null) {
                     wText = (weatherLocationEnabled) ? (mWeatherInfo
                         .getCharSequenceExtra(EXTRA_CITY)

@@ -248,7 +248,7 @@ public class PhoneStatusBar extends StatusBar {
     DisplayMetrics mDisplayMetrics = new DisplayMetrics();
 
     // for tracking status bar bottom image
-    private View mStatusBarBottom;
+    private View mFrameLayout;
     private float newAlpha;
 
     // custom statusbar window shade background color
@@ -343,8 +343,6 @@ public class PhoneStatusBar extends StatusBar {
             // no window manager? good luck with that
         }
         
-
-
         // figure out which pixel-format to use for the status bar.
         mPixelFormat = PixelFormat.OPAQUE;
         mStatusIcons = (LinearLayout) sb.findViewById(R.id.statusIcons);
@@ -379,9 +377,6 @@ public class PhoneStatusBar extends StatusBar {
         //lanuch clock or calender app when we click on the date
         mDateView.setOnClickListener(mDateListener);
 
-        // statusbar alpha
-        mStatusBarBottom = expanded.findViewById(R.id.titlebar_expanded);
-
         mQuickToggles = (TogglesView) expanded.findViewById(R.id.quick_toggles);
         mTicker = new MyTicker(context, sb);
 
@@ -392,6 +387,9 @@ public class PhoneStatusBar extends StatusBar {
         mTrackingView.mService = this;
         mCloseView = (CloseDragHandle) mTrackingView.findViewById(R.id.close);
         mCloseView.mService = this;
+
+        // statusbar color
+        mFrameLayout = mTrackingView.findViewById(R.id.notification_frame_layout);
 
         mEdgeBorder = res.getDimensionPixelSize(R.dimen.status_bar_edge_ignore);
 
@@ -1422,8 +1420,8 @@ public class PhoneStatusBar extends StatusBar {
         mAnimY = y + (v * t) + (0.5f * a * t * t); // px
         mAnimVel = v + (a * t); // px/s
         mAnimLastTime = now; // ms
-        // Slog.d(TAG, "y=" + y + " v=" + v + " a=" + a + " t=" + t + " mAnimY=" + mAnimY
-        // + " mAnimAccel=" + mAnimAccel);
+        if (DEBUG) Log.d(TAG, "y=" + y + " v=" + v + " a=" + a + " t=" + t + " mAnimY=" + mAnimY
+                + " mAnimAccel=" + mAnimAccel);
     }
 
     void doRevealAnimation() {
@@ -2378,7 +2376,7 @@ public class PhoneStatusBar extends StatusBar {
                     .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                 animateCollapse();
             } catch (ActivityNotFoundException anfe) {
-                Log.d(TAG, "...could not find Liquid Control");
+                Log.wtf(TAG, "...could not find Liquid Control");
             }
         }
     };
@@ -2501,7 +2499,6 @@ public class PhoneStatusBar extends StatusBar {
                     Settings.System.STATUSBAR_EXPANDED_BOTTOM_ALPHA), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUSBAR_EXPANDED_BACKGROUND_COLOR), false, this);
-
         }
 
         @Override
@@ -2537,8 +2534,6 @@ public class PhoneStatusBar extends StatusBar {
         mShowDate = Settings.System.getInt(cr, Settings.System.STATUSBAR_SHOW_DATE, 0) == 1;
         mControlAospSettingsIcon = Settings.System.getInt(cr,
                 Settings.System.STATUSBAR_REMOVE_AOSP_SETTINGS_LINK, 0) == 1;
-        mControlAospSettingsIcon = Settings.System.getInt(cr,
-                Settings.System.STATUSBAR_REMOVE_AOSP_SETTINGS_LINK, 0) == 1;
 
         if (mControlLiquidIcon) {
             mLiquidButton.setVisibility(View.GONE);
@@ -2565,13 +2560,13 @@ public class PhoneStatusBar extends StatusBar {
         try {
             newAlpha = Settings.System.getFloat(cr, Settings.System.STATUSBAR_EXPANDED_BOTTOM_ALPHA);
             customBottomBarAlpha = true;
-            Log.d(TAG, String.format("Custom alpha preference detected %f", newAlpha));
+            if (DEBUG) Log.d(TAG, String.format("Custom alpha preference detected %f", newAlpha));
         } catch (SettingNotFoundException snfe) {
             customBottomBarAlpha = false;
-            Log.d(TAG, "Custom alpha preference not detected");
+            if (DEBUG) Log.d(TAG, "Custom alpha preference not detected");
         }
         if (customBottomBarAlpha) {
-            mStatusBarBottom.setAlpha(newAlpha);
+            expanded.setAlpha(newAlpha);
         }
 
         // check if user wants custom custom background
@@ -2579,13 +2574,14 @@ public class PhoneStatusBar extends StatusBar {
         try {
             newWindowShadeColor = Settings.System.getInt(cr, Settings.System.STATUSBAR_EXPANDED_BACKGROUND_COLOR);
             customWindowShadeColor = true;
-            Log.d(TAG, String.format("Custom color preference detected %f", newWindowShadeColor));
+            if (DEBUG) Log.d(TAG, String.format("Custom color preference detected %d", newWindowShadeColor));
         } catch (SettingNotFoundException snfe) {
             customWindowShadeColor = false;
-            Log.d(TAG, "Custom color preference not detected");
+            if (DEBUG) Log.d(TAG, "Custom color preference not detected");
         }
+        if (DEBUG) Log.d(TAG, String.format("Custom color int: %d", newWindowShadeColor));
         if (customWindowShadeColor) {
-            expanded.setBackgroundColor(newWindowShadeColor);
+            mFrameLayout.setBackgroundColor(newWindowShadeColor);
         }
     }
 

@@ -125,6 +125,9 @@ public class PhoneStatusBar extends StatusBar {
 
     private static final boolean CLOSE_PANEL_WHEN_EMPTIED = true;
 
+    private boolean mBrightnessControl;
+    private boolean mAutoBrightness;
+
     // fling gesture tuning parameters, scaled to display density
     private float mSelfExpandVelocityPx; // classic value: 2000px/s
     private float mSelfCollapseVelocityPx; // classic value: 2000px/s (will be negated to collapse
@@ -1581,8 +1584,7 @@ public class PhoneStatusBar extends StatusBar {
                 int x = (int) event.getRawX();
                 final int edgeBorder = mEdgeBorder;
                 if (x >= edgeBorder && x < mDisplayMetrics.widthPixels - edgeBorder) {
-                    prepareTracking(y, !mExpanded);// opening if we're not
-                                                   // already fully visible
+                    prepareTracking(y, !mExpanded);// opening if we're not already fully visible
                     trackMovement(event);
                 }
             }
@@ -2486,6 +2488,10 @@ public class PhoneStatusBar extends StatusBar {
                     Settings.System.STATUSBAR_EXPANDED_BOTTOM_ALPHA), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUSBAR_EXPANDED_BACKGROUND_COLOR), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.STATUS_BAR_BRIGHTNESS_TOGGLE), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.SCREEN_BRIGHTNESS_MODE), false, this);
         }
 
         @Override
@@ -2569,6 +2575,16 @@ public class PhoneStatusBar extends StatusBar {
         if (DEBUG) Log.d(TAG, String.format("Custom color int: %d", newWindowShadeColor));
         if (customWindowShadeColor) {
             mFrameLayout.setBackgroundColor(newWindowShadeColor);
+        }
+        boolean brightnessControl = Settings.System.getInt(cr,
+                Settings.System.STATUS_BAR_BRIGHTNESS_TOGGLE, 0) != 0;
+        boolean autoBrightness = Settings.System.getInt(cr,
+                Settings.System.SCREEN_BRIGHTNESS_MODE, 0) == Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC;
+        if (mBrightnessControl != brightnessControl) {
+            mBrightnessControl = brightnessControl;
+        }
+        if (mAutoBrightness != autoBrightness) {
+            mAutoBrightness = autoBrightness;
         }
     }
 

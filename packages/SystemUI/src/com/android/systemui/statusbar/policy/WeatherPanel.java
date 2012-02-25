@@ -13,9 +13,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.ImageView;
+import android.widget.FrameLayout;
 import com.android.systemui.R;
 
-public class WeatherPanel extends View {
+public class WeatherPanel extends FrameLayout {
 
     private boolean mAttached;
 
@@ -38,6 +39,7 @@ public class WeatherPanel extends View {
     private TextView mHumidity;
     private TextView mWinds;
     private ImageView mConditionImage;
+    private Context mContext;  
 
     BroadcastReceiver weatherReceiver = new BroadcastReceiver() {
         @Override
@@ -56,27 +58,39 @@ public class WeatherPanel extends View {
         		mHumidity.setText(intent.getCharSequenceExtra(EXTRA_HUMIDITY));
         	if (mWinds !=null)
         		mWinds.setText(intent.getCharSequenceExtra(EXTRA_WIND));
-        	if (mConditionImage != null)
-        		mConditionImage.setImageDrawable(R.drawable.weather_sunny);
-        	    // I need to change this to a look up - setting to sunny for testing      	
+        	if (mConditionImage != null){ 
+        		String condition = (String) intent.getCharSequenceExtra(EXTRA_CONDITION);
+        		condition = "weather_" + condition.replace(' ','_');
+        		condition = condition.replace('(', '_');
+        		condition = condition.replace(')', '_');
+        		condition = condition.toLowerCase();
+        		int resID = getResources().getIdentifier(condition, "drawable", mContext.getPackageName());
+        		Log.d("Weather","Condition:" + condition + " ID:" + resID);
+        		if (resID != 0) {
+        			mConditionImage.setImageDrawable(getResources().getDrawable(resID));
+        		} else {
+        			mConditionImage.setImageDrawable(getResources().getDrawable(R.drawable.weather_na));
+        		}
+        	}
         }
     };
 
     public WeatherPanel(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mHighTemp = clearTextViewData(this.findViewById(R.id.high_temp));
-        mLowTemp = clearTextViewData(this.findViewById(R.id.low_temp));
-        mCurrentTemp = clearTextViewData(this.findViewById(R.id.current_temp));
-        mCity = clearTextViewData(this.findViewById(R.id.city));
-        mZipCode = clearTextViewData(this.findViewById(R.id.zipcode));
-        mHumidity = clearTextViewData(this.findViewById(R.id.humidity));
-        mWinds = clearTextViewData(this.findViewById(R.id.winds));
-        mConditionImage = this.findViewById(R.id.condition_image);
+        mContext = context;
     }
 
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
+        mHighTemp = (TextView) this.findViewById(R.id.high_temp);
+        mLowTemp = (TextView) this.findViewById(R.id.low_temp);
+        mCurrentTemp = (TextView) this.findViewById(R.id.current_temp);
+        mCity = (TextView) this.findViewById(R.id.city);
+        mZipCode = (TextView) this.findViewById(R.id.zipcode);
+        mHumidity = (TextView) this.findViewById(R.id.humidity);
+        mWinds = (TextView) this.findViewById(R.id.winds);
+        mConditionImage = (ImageView) this.findViewById(R.id.condition_image);
         if (!mAttached) {
             mAttached = true;
             IntentFilter filter = new IntentFilter("com.aokp.romcontrol.INTENT_WEATHER_UPDATE");
@@ -119,30 +133,6 @@ public class WeatherPanel extends View {
         ContentResolver resolver = mContext.getContentResolver();
 
         boolean useWeather = Settings.System.getInt(resolver, Settings.System.USE_WEATHER, 0) == 1;
-        if (mCurrentTemp !=null)
-    		mCurrentTemp.setVisibility(useWeather ? View.VISIBLE : View.GONE);
-    	if (mHighTemp !=null)
-    		mHighTemp.setVisibility(useWeather ? View.VISIBLE : View.GONE);
-    	if (mLowTemp !=null)
-    		mLowTemp.setVisibility(useWeather ? View.VISIBLE : View.GONE);
-    	if (mCity !=null)
-    		mCity.setVisibility(useWeather ? View.VISIBLE : View.GONE);
-    	if (mZipCode !=null)
-    		mZipCode.setVisibility(useWeather ? View.VISIBLE : View.GONE);
-    	if (mHumidity !=null)
-    		mHumidity.setVisibility(useWeather ? View.VISIBLE : View.GONE);
-    	if (mWinds !=null)
-    		mWinds.setVisibility(useWeather ? View.VISIBLE : View.GONE);
-    	if (mConditionImage != null)
-    		mConditionImage.setVisibility(useWeather ? View.VISIBLE : View.GONE);
-    }
-
-    protected TextView clearTextViewData(TextView tv){
-      if (tv==null){
-    	  return null;
-      } else {		  
-    	  tv.setText("");
-    	  return tv;
+        this.setVisibility(useWeather ? View.VISIBLE : View.GONE);
       }
-    }
 }

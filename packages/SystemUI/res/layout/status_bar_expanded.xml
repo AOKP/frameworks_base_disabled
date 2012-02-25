@@ -87,7 +87,87 @@
     <include layout="@layout/quick_toggles" 
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
+                
+   <com.android.systemui.statusbar.policy.WeatherPanel
+          android:layout_width="match_parent"
+          android:layout_height="64.0dp"
+          android:background="@*android:drawable/notify_panel_notification_icon_bg_tile"
+          android:visibility="gone" >
 
+     <RelativeLayout
+       	android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+          
+        <LinearLayout
+        	android:orientation="vertical"
+        	android:layout_width="wrap_content"
+        	android:layout_height="match_parent"
+        	android:paddingLeft="5dp"
+        	android:paddingRight="5dp"
+        	android:layout_alignParentLeft = "true" >
+
+			<TextView
+        		android:id="@+id/city"
+        		android:textAppearance="@style/TextAppearance.StatusBar.Clock"
+        		android:layout_width="wrap_content"
+        		android:layout_height="wrap_content" />
+    		<TextView
+       			android:id="@+id/winds"
+       			android:textAppearance="@style/TextAppearance.StatusBar.Clock"
+        		android:layout_width="wrap_content"
+        		android:layout_height="wrap_content" />
+
+    		<TextView
+        		android:id="@+id/humidity"
+        		android:textAppearance="@style/TextAppearance.StatusBar.Clock"
+        		android:layout_width="wrap_content"
+        		android:layout_height="wrap_content"
+        		android:gravity="center"
+        		android:paddingLeft="5dp"
+        		android:paddingRight="5dp" />
+        </LinearLayout>
+        
+        <ImageView
+        	android:id="@+id/condition_image"
+        	android:layout_width="match_parent"
+        	android:layout_height="wrap_content"
+        	android:layout_centerHorizontal="true" />
+        	
+        <LinearLayout
+        	android:orientation="vertical"
+        	android:textAppearance="@style/TextAppearance.StatusBar.Clock"
+        	android:layout_width="wrap_content"
+        	android:layout_height="match_parent" 
+        	android:paddingRight="5dp"
+        	android:paddingLeft="5dp"
+        	android:layout_alignParentRight="true">
+
+    		<TextView
+        		android:id="@+id/current_temp"
+        		android:textAppearance="@style/TextAppearance.StatusBar.Clock"
+        		android:layout_width="wrap_content" 
+            	android:layout_height="wrap_content"
+            	android:gravity="right" />
+        		
+    		<TextView
+       			android:id="@+id/high_temp"
+       			android:textAppearance="@style/TextAppearance.StatusBar.Clock"
+        		android:layout_width="wrap_content" 
+            	android:layout_height="wrap_content"
+            	android:gravity="right"/>
+        	
+        	<TextView
+       			android:id="@+id/low_temp"
+        		android:textAppearance="@style/TextAppearance.StatusBar.Clock"
+        		android:layout_width="wrap_content" 
+            	android:layout_height="wrap_content"
+            	android:gravity="right" />
+         </LinearLayout>
+      
+      </RelativeLayout>
+            	
+    </com.android.systemui.statusbar.policy.WeatherPanel>
+    
     <FrameLayout
         android:layout_width="match_parent" 
         android:layout_height="wrap_content"

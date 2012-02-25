@@ -1,31 +1,52 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--this doesn't actually get used anywhere.Just sets up all ids -->
-<com.android.systemui.statusbar.policy.WeatherPanel>
-	<LinearLayout>
-		<TextView
-			android:id="@+id/high_temp" 
-		/>
-		<TextView
-			android:id="@+id/low_temp"
-		/>
-		<TextView
-			android:id="@+id/current_temp"
-		/>
-		<TextView
-			android:id="@+id/city"
-		/>
-		<TextView
-			android:id="@+id/zipcode"
-		/>
-		<TextView
-			android:id="@+id/humidity"
-		/>
-		<TextView
-			android:id="@+id/winds"
-		/>
-		<ImageView
-			android:id="@+id/condition_image"
-		/>
-	</LinearLayout>	
-</com.android.systemui.statusbar.policy.WeatherPanel>
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+    <com.android.systemui.statusbar.policy.WeatherPanel
+    	android:layout_width="match_parent"
+    	android:layout_height="match_parent">
 
+    <TextView
+        android:id="@+id/high_temp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/low_temp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/current_temp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/city"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/zipcode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/humidity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/winds"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <ImageView
+        android:id="@+id/condition_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@android:drawable/alert_dark_frame" />
+    </com.android.systemui.statusbar.policy.WeatherPanel>
+
+</LinearLayout>

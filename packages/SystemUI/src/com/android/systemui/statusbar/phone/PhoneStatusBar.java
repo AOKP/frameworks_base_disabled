@@ -2566,7 +2566,7 @@ public class PhoneStatusBar extends StatusBar {
             if (DEBUG) Log.d(TAG, "Custom alpha preference not detected");
         }
         if (customBottomBarAlpha) {
-            expanded.setAlpha(newAlpha);
+            mFrameLayout.setAlpha(newAlpha);
         }
 
         // check if user wants custom custom background

@@ -77,7 +77,7 @@ public class KeyguardUpdateMonitor {
 
     private BatteryStatus mBatteryStatus;
     
-    private String mWeather = "";
+    private Intent mWeather = null;
 
     private CharSequence mTelephonyPlmn;
     private CharSequence mTelephonySpn;
@@ -206,7 +206,7 @@ public class KeyguardUpdateMonitor {
                         handleDeviceProvisioned();
                         break;
                     case MSG_WEATHER_CHANGED:
-                        handleWeatherChanged((String)msg.obj);
+                        handleWeatherChanged((Intent)msg.obj);
                         break;
                 }
             }
@@ -253,7 +253,7 @@ public class KeyguardUpdateMonitor {
         // take a guess to start
         mSimState = IccCard.State.READY;
         mBatteryStatus = new BatteryStatus(BATTERY_STATUS_UNKNOWN, 100, 0, 0);
-        mWeather = "";
+        mWeather = new Intent();
 
         mTelephonyPlmn = getDefaultPlmn();
 
@@ -300,8 +300,7 @@ public class KeyguardUpdateMonitor {
                     String state = intent.getStringExtra(TelephonyManager.EXTRA_STATE);
                     mHandler.sendMessage(mHandler.obtainMessage(MSG_PHONE_STATE_CHANGED, state));
                 } else if ("com.aokp.romcontrol.INTENT_WEATHER_UPDATE".equals(action)) {
-                    mHandler.sendMessage(mHandler.obtainMessage(MSG_WEATHER_CHANGED, intent.getCharSequenceExtra("city") + ", " + intent.getCharSequenceExtra("temp") + ", "
-                            + intent.getCharSequenceExtra("condition")));
+                    mHandler.sendMessage(mHandler.obtainMessage(MSG_WEATHER_CHANGED, intent));
                 }
             }
         }, filter);
@@ -370,11 +369,11 @@ public class KeyguardUpdateMonitor {
     /**
      * Handle {@link #MSG_WEATHER_CHANGED}
      */
-    private void handleWeatherChanged(String weatherInfo) {
+    private void handleWeatherChanged(Intent weatherIntent) {
         if (DEBUG) Log.d(TAG, "handleWeatherChanged");
-        mWeather = weatherInfo;
+        mWeather = weatherIntent;
         for (int i = 0; i < mInfoCallbacks.size(); i++) {
-            mInfoCallbacks.get(i).onRefreshWeatherInfo(weatherInfo);
+            mInfoCallbacks.get(i).onRefreshWeatherInfo(weatherIntent);
         }
     }
 
@@ -508,7 +507,7 @@ public class KeyguardUpdateMonitor {
      */
     interface InfoCallback {
         void onRefreshBatteryInfo(boolean showBatteryInfo, boolean pluggedIn, int batteryLevel);
-        void onRefreshWeatherInfo(String weatherInfo);
+        void onRefreshWeatherInfo(Intent weatherIntent);
         void onTimeChanged();
 
         /**
@@ -629,7 +628,7 @@ public class KeyguardUpdateMonitor {
         return mBatteryStatus.level;
     }
     
-    public String getWeather() {
+    public Intent getWeather() {
         return mWeather;
     }
 

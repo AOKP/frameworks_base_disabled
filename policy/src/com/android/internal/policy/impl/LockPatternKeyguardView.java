@@ -723,7 +723,7 @@ public class LockPatternKeyguardView extends KeyguardViewBase implements Handler
     public void onRefreshBatteryInfo(boolean showBatteryInfo, boolean pluggedIn, int batteryLevel)
     {}
     @Override
-    public void onRefreshWeatherInfo(String weatherInfo)
+    public void onRefreshWeatherInfo(Intent weatherIntent)
     {}
     @Override
     public void onTimeChanged() {}

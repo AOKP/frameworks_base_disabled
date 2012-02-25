@@ -1363,7 +1363,7 @@ public class KeyguardViewMediator implements KeyguardViewCallback,
     }
     
     /** {@inheritDoc} */
-    public void onRefreshWeatherInfo(String weatherInfo) {
+    public void onRefreshWeatherInfo(Intent weatherIntent) {
         // ignored
     }
 

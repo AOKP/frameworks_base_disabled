@@ -183,7 +183,7 @@
         android:textColor="#ffffff"
         />
 
-	<com.android.systemui.statusbar.policy.WeatherText
+	<com.android.internal.policy.impl.WeatherText
 		android:id="@+id/weather"
 		style="@style/StatusBarNotificationText"
 		android:layout_height="wrap_content"

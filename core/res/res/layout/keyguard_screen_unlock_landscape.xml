@@ -83,7 +83,7 @@
         android:drawablePadding="4dip"
         />
         
-    <TextView
+    <com.android.internal.policy.impl.WeatherText
         android:id="@+id/weather"
         android:layout_width="0dip"
         android:layout_gravity="fill_horizontal"

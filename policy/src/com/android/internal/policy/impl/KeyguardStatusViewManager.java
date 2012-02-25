@@ -95,7 +95,6 @@ class KeyguardStatusViewManager implements OnClickListener {
     // are we showing battery information?
     private boolean mShowingBatteryInfo = false;
 
-    private boolean mShowWeatherInfo = false;
     private Intent mWeatherInfo = null; // being tricky
 
     private boolean mLockAlwaysBattery;
@@ -383,13 +382,13 @@ class KeyguardStatusViewManager implements OnClickListener {
     private void updateWeatherInfo() {
         final ContentResolver res = getContext().getContentResolver();
         final boolean weatherInfoEnabled = Settings.System.getInt(res,
-                Settings.System.LOCKSCREEN_WEATHER, 0) == 1;
+                Settings.System.LOCKSCREEN_WEATHER, 0) == 1  && Settings.System.getInt(res, Settings.System.USE_WEATHER, 0) == 1;;
         final boolean weatherLocationEnabled = Settings.System.getInt(res,
                 Settings.System.WEATHER_SHOW_LOCATION, 0) == 1;
 
         if (mWeatherView != null) {
+            String wText = "";
             if (mWeatherInfo != null) {
-                String wText = "";
                 if (mWeatherInfo.getCharSequenceExtra(EXTRA_CITY) != null) {
                     wText = (weatherLocationEnabled) ? (mWeatherInfo
                         .getCharSequenceExtra(EXTRA_CITY)
@@ -400,9 +399,9 @@ class KeyguardStatusViewManager implements OnClickListener {
                         + mWeatherInfo.getCharSequenceExtra(EXTRA_CONDITION));
                     mWeatherView.setText(wText);
                 }
-                mWeatherView.setVisibility((weatherInfoEnabled && !wText.isEmpty()) ? View.VISIBLE
-                        : View.GONE);
             }
+            mWeatherView.setVisibility((weatherInfoEnabled && !wText.isEmpty()) ? View.VISIBLE
+                    : View.GONE);
         }
     }
 

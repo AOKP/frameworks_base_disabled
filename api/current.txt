@@ -73,6 +73,7 @@ package android {
     field public static final java.lang.String MOUNT_UNMOUNT_FILESYSTEMS = "android.permission.MOUNT_UNMOUNT_FILESYSTEMS";
     field public static final java.lang.String NFC = "android.permission.NFC";
     field public static final deprecated java.lang.String PERSISTENT_ACTIVITY = "android.permission.PERSISTENT_ACTIVITY";
+    field public static final java.lang.String PREVENT_POWER_KEY = "android.permission.PREVENT_POWER_KEY";
     field public static final java.lang.String PROCESS_OUTGOING_CALLS = "android.permission.PROCESS_OUTGOING_CALLS";
     field public static final java.lang.String READ_CALENDAR = "android.permission.READ_CALENDAR";
     field public static final java.lang.String READ_CONTACTS = "android.permission.READ_CONTACTS";
@@ -1485,6 +1486,7 @@ package android {
     field public static final int emptyPhoneNumber = 17039366; // 0x1040006
     field public static final int httpErrorBadUrl = 17039367; // 0x1040007
     field public static final int httpErrorUnsupportedScheme = 17039368; // 0x1040008
+    field public static final int lockscreen_emergency_call = 17040095; // 0x10402df
     field public static final int no = 17039369; // 0x1040009
     field public static final int ok = 17039370; // 0x104000a
     field public static final int paste = 17039371; // 0x104000b
@@ -24042,6 +24044,7 @@ package android.view {
     field public static final deprecated int MEMORY_TYPE_HARDWARE = 1; // 0x1
     field public static final deprecated int MEMORY_TYPE_NORMAL = 0; // 0x0
     field public static final deprecated int MEMORY_TYPE_PUSH_BUFFERS = 3; // 0x3
+    field public static final int PREVENT_POWER_KEY = -2147483648; // 0x80000000
     field public static final int SCREEN_BRIGHTNESS_CHANGED = 2048; // 0x800
     field public static final int SCREEN_ORIENTATION_CHANGED = 1024; // 0x400
     field public static final int SOFT_INPUT_ADJUST_NOTHING = 48; // 0x30

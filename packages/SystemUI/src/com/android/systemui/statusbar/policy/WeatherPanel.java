@@ -23,6 +23,7 @@ public class WeatherPanel extends FrameLayout {
     public static final String EXTRA_CITY = "city";
     public static final String EXTRA_ZIP = "zip";
     public static final String EXTRA_CONDITION = "condition";
+    public static final String EXTRA_CONDITION_CODE = "condition_code";
     public static final String EXTRA_FORECAST_DATE = "forecase_date";
     public static final String EXTRA_TEMP_F = "temp_f";
     public static final String EXTRA_TEMP_C = "temp_c";
@@ -40,10 +41,12 @@ public class WeatherPanel extends FrameLayout {
     private TextView mWinds;
     private ImageView mConditionImage;
     private Context mContext;  
+    private String mCondition_code = "";
 
     BroadcastReceiver weatherReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+        	mCondition_code = (String) intent.getCharSequenceExtra(EXTRA_CONDITION_CODE);
         	if (mCurrentTemp !=null)
         		mCurrentTemp.setText("Current:" + intent.getCharSequenceExtra("temp"));
         	if (mHighTemp !=null)
@@ -59,13 +62,9 @@ public class WeatherPanel extends FrameLayout {
         	if (mWinds !=null)
         		mWinds.setText(intent.getCharSequenceExtra(EXTRA_WIND));
         	if (mConditionImage != null){ 
-        		String condition = (String) intent.getCharSequenceExtra(EXTRA_CONDITION);
-        		condition = "weather_" + condition.replace(' ','_');
-        		condition = condition.replace('(', '_');
-        		condition = condition.replace(')', '_');
-        		condition = condition.toLowerCase();
-        		int resID = getResources().getIdentifier(condition, "drawable", mContext.getPackageName());
-        		Log.d("Weather","Condition:" + condition + " ID:" + resID);
+        		String condition_filename = "weather_" + mCondition_code;
+        		int resID = getResources().getIdentifier(condition_filename, "drawable", mContext.getPackageName());
+        		Log.d("Weather","Condition:" + mCondition_code + " ID:" + resID);
         		if (resID != 0) {
         			mConditionImage.setImageDrawable(getResources().getDrawable(resID));
         		} else {

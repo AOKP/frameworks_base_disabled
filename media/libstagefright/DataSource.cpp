@@ -125,7 +125,13 @@ void DataSource::RegisterDefaultSniffers() {
     RegisterSniffer(SniffMPEG2TS);
     RegisterSniffer(SniffMP3);
     RegisterSniffer(SniffAAC);
+#ifdef QCOM_HARDWARE
+    RegisterSniffer(SniffAVI);
+#endif
     RegisterSniffer(SniffMPEG2PS);
+#ifdef QCOM_HARDWARE
+    ExtendedExtractor::RegisterSniffers();
+#endif
 
     char value[PROPERTY_VALUE_MAX];
     if (property_get("drm.service.enabled", value, NULL)

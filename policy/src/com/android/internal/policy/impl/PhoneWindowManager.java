@@ -2919,6 +2919,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 
             // music is playing, don't wake the screen in case we need to skip track
             if (isMusicActive()  
+            		&& mVolBtnMusicControls
                     && mVolumeWakeScreen
                     && isWakeKey
                     && ((keyCode == KeyEvent.KEYCODE_VOLUME_UP) || (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN)))

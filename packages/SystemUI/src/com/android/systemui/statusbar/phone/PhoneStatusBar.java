@@ -2595,20 +2595,21 @@ public class PhoneStatusBar extends StatusBar {
         if (mAutoBrightness != autoBrightness) {
             mAutoBrightness = autoBrightness;
 
-        // a better way of handling a custom carrier label
-        String userWantsNewLabel = null;
-        userWantsNewLabel = Settings.System.getString(mContext.getContentResolver(),
-                Settings.System.CUSTOM_CARRIER_LABEL);
-        if (userWantsNewLabel != null) {
-	    mPhoneCarrierLabel.setVisibility(View.GONE);
-            mCarrierLabel.setVisibility(View.VISIBLE);
-            mCarrierLabel.setText(userWantsNewLabel);
-        } else if (userWantsNewLabel.equals("default")) {
-            mPhoneCarrierLabel.setVisibility(View.VISIBLE);
-            mCarrierLabel.setVisibility(View.GONE);
-        } else {
-            mPhoneCarrierLabel.setVisibility(View.VISIBLE);
-            mCarrierLabel.setVisibility(View.GONE);
+            // a better way of handling a custom carrier label
+            String userWantsNewLabel = null;
+            userWantsNewLabel = Settings.System.getString(mContext.getContentResolver(),
+                    Settings.System.CUSTOM_CARRIER_LABEL);
+            if (userWantsNewLabel != null) {
+	            mPhoneCarrierLabel.setVisibility(View.GONE);
+                mCarrierLabel.setVisibility(View.VISIBLE);
+                mCarrierLabel.setText(userWantsNewLabel);
+            } else if (userWantsNewLabel.equals("default")) {
+                mPhoneCarrierLabel.setVisibility(View.VISIBLE);
+                mCarrierLabel.setVisibility(View.GONE);
+            } else {
+                mPhoneCarrierLabel.setVisibility(View.VISIBLE);
+                mCarrierLabel.setVisibility(View.GONE);
+            }
         }
     }
 

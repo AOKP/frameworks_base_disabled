@@ -20,7 +20,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.provider.Settings;
 import android.provider.Telephony;
 import android.util.AttributeSet;
 import android.util.Slog;
@@ -91,34 +90,23 @@ public class CarrierLabel extends TextView {
             Slog.d("CarrierLabel", "updateNetworkName showSpn=" + showSpn + " spn=" + spn
                     + " showPlmn=" + showPlmn + " plmn=" + plmn);
         }
-
-        String customLabel = null;
-        customLabel = Settings.System.getString(mContext.getContentResolver(),
-                Settings.System.CUSTOM_CARRIER_LABEL);
-
-        if (customLabel == null) {
-
-            StringBuilder str = new StringBuilder();
-            boolean something = false;
-            if (showPlmn && plmn != null) {
-                str.append(plmn);
-                something = true;
-            }
-            if (showSpn && spn != null) {
-                if (something) {
-                    str.append('\n');
-                }
-                str.append(spn);
-                something = true;
-            }
+        StringBuilder str = new StringBuilder();
+        boolean something = false;
+        if (showPlmn && plmn != null) {
+            str.append(plmn);
+            something = true;
+        }
+        if (showSpn && spn != null) {
             if (something) {
-                setText(str.toString());
-            } else {
-                setText(com.android.internal.R.string.lockscreen_carrier_default);
+                str.append('\n');
             }
+            str.append(spn);
+            something = true;
+        }
+        if (something) {
+            setText(str.toString());
         } else {
-            setText(customLabel);
+            setText(com.android.internal.R.string.lockscreen_carrier_default);
         }
     }
-
 }

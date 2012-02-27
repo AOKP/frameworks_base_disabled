@@ -25,6 +25,9 @@
 #include "AudioResampler.h"
 #include "AudioResamplerSinc.h"
 #include "AudioResamplerCubic.h"
+#ifdef OMAP_ENHANCEMENT
+#include "AudioResamplerSpeex.h"
+#endif
 
 #ifdef __arm__
 #include <machine/cpu-features.h>
@@ -107,6 +110,12 @@ AudioResampler* AudioResampler::create(int bitDepth, int inChannelCount,
         ALOGV("Create sinc Resampler");
         resampler = new AudioResamplerSinc(bitDepth, inChannelCount, sampleRate);
         break;
+#ifdef OMAP_ENHANCEMENT
+    case SPEEX_QUALITY:
+        LOGV("Create Speex Resampler");
+        resampler = new AudioResamplerSpeex(bitDepth, inChannelCount, sampleRate);
+        break;
+#endif
     }
 
     // initialize resampler

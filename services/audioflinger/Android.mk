@@ -28,6 +28,12 @@ LOCAL_STATIC_LIBRARIES := \
     libcpustats \
     libmedia_helper
 
+ifeq ($(OMAP_ENHANCEMENT), true)
+    LOCAL_SRC_FILES += AudioResamplerSpeex.cpp.arm
+    LOCAL_C_INCLUDES += external/speex/include
+    LOCAL_SHARED_LIBRARIES += libspeexresampler
+endif
+
 LOCAL_MODULE:= libaudioflinger
 
 ifeq ($(BOARD_USE_MOTO_DOCK_HACK),true)

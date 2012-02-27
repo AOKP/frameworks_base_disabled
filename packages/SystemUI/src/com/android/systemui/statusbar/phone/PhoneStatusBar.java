@@ -387,8 +387,8 @@ public class PhoneStatusBar extends StatusBar {
         // statusbar color
         mFrameLayout = mTrackingView.findViewById(R.id.notification_frame_layout);
         // custom carrier label
-        mCarrierLabel = (TextView) expanded.findViewById(R.id.custom_carrier_label);
-        mPhoneCarrierLabel = expanded.findViewById(R.id.phone_carrier_label);
+        mCarrierLabel = (TextView) mTrackingView.findViewById(R.id.custom_carrier_label);
+        mPhoneCarrierLabel = mTrackingView.findViewById(R.id.phone_carrier_label);
 
         mQuickToggles = (TogglesView) expanded.findViewById(R.id.quick_toggles);
         mTicker = new MyTicker(context, sb);
@@ -2602,6 +2602,10 @@ public class PhoneStatusBar extends StatusBar {
         if (userWantsNewLabel != null) {
 	    mPhoneCarrierLabel.setVisibility(View.GONE);
             mCarrierLabel.setVisibility(View.VISIBLE);
+            mCarrierLabel.setText(userWantsNewLabel);
+        } else if (userWantsNewLabel.equals("default")) {
+            mPhoneCarrierLabel.setVisibility(View.VISIBLE);
+            mCarrierLabel.setVisibility(View.GONE);
         } else {
             mPhoneCarrierLabel.setVisibility(View.VISIBLE);
             mCarrierLabel.setVisibility(View.GONE);

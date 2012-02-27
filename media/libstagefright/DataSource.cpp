@@ -1,6 +1,5 @@
 /*
  * Copyright (C) 2009 The Android Open Source Project
- * Copyright (C) 2010-2011 Code Aurora Forum
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,9 +26,6 @@
 #include "include/DRMExtractor.h"
 #include "include/FLACExtractor.h"
 #include "include/AACExtractor.h"
-#ifdef QCOM_HARDWARE
-#include "include/ExtendedExtractor.h"
-#endif
 
 #include "matroska/MatroskaExtractor.h"
 
@@ -84,12 +80,6 @@ bool DataSource::sniff(
                 *mimeType = newMimeType;
                 *confidence = newConfidence;
                 *meta = newMeta;
-#ifdef QCOM_HARDWARE
-                if(*confidence >= 0.6f) {
-                    LOGV("Ignore other Sniffers - confidence = %f , mimeType = %s",*confidence,mimeType->string());
-                    break;
-                }
-#endif
             }
         }
     }

@@ -1,6 +1,5 @@
 /*
  * Copyright (C) 2009 The Android Open Source Project
- * Copyright (C) 2011 Code Aurora Forum
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -248,15 +247,9 @@ static VideoFrame *extractVideoFrameWithCodecFlags(
 
     ColorConverter converter(
             (OMX_COLOR_FORMATTYPE)srcFormat, OMX_COLOR_Format16bitRGB565);
-
-#ifdef QCOM_HARDWARE
-    if (converter.isValid()) {
-        err = converter.convert(
-#else
     CHECK(converter.isValid());
 
     err = converter.convert(
-#endif
             (const uint8_t *)buffer->data() + buffer->range_offset(),
             width, height,
             crop_left, crop_top, crop_right, crop_bottom,
@@ -264,12 +257,6 @@ static VideoFrame *extractVideoFrameWithCodecFlags(
             frame->mWidth,
             frame->mHeight,
             0, 0, frame->mWidth - 1, frame->mHeight - 1);
-#ifdef QCOM_HARDWARE
-    }
-    else {
-        err = ERROR_UNSUPPORTED;
-    }
-#endif
 
     buffer->release();
     buffer = NULL;
@@ -348,39 +335,19 @@ VideoFrame *StagefrightMetadataRetriever::getFrameAtTime(
         memcpy(mAlbumArt->mData, data, dataSize);
     }
 
-#ifdef QCOM_HARDWARE
-    const char *mime;
-    bool success = trackMeta->findCString(kKeyMIMEType, &mime);
-    CHECK(success);
-    VideoFrame *frame = NULL;
-
-    if ((!strcmp(mime, MEDIA_MIMETYPE_VIDEO_DIVX))||
-            (!strcmp(mime, MEDIA_MIMETYPE_VIDEO_DIVX311))||
-            (!strcmp(mime, MEDIA_MIMETYPE_VIDEO_DIVX4))||
-            (!strcmp(mime, MEDIA_MIMETYPE_VIDEO_WMV)))
-    {
-        LOGV("Software codec is not being used for %s clips for thumbnail ",
-            mime);
-    } else {
-        frame = extractVideoFrameWithCodecFlags(
-#else
     VideoFrame *frame =
         extractVideoFrameWithCodecFlags(
-#endif
                 &mClient, trackMeta, source, OMXCodec::kPreferSoftwareCodecs,
                 timeUs, option);
-#ifdef QCOM_HARDWARE
-    }
-#endif
 
-#ifdef TARGET8x60
     if (frame == NULL) {
         LOGV("Software decoder failed to extract thumbnail, "
              "trying hardware decoder.");
-            frame = extractVideoFrameWithCodecFlags(&mClient, trackMeta, source, 0,
+
+        frame = extractVideoFrameWithCodecFlags(&mClient, trackMeta, source, 0,
                         timeUs, option);
     }
-#endif
+
     return frame;
 }
 
@@ -561,13 +528,7 @@ void StagefrightMetadataRetriever::parseMetaData() {
 
     if (numTracks == 1) {
         const char *fileMIME;
-#ifdef QCOM_HARDWARE
-        sp<MetaData> trackmeta = mExtractor->getTrackMetaData(0);
-        CHECK(trackmeta->findCString(kKeyMIMEType, &fileMIME));
-#else
         CHECK(meta->findCString(kKeyMIMEType, &fileMIME));
-#endif
-
 
         if (!strcasecmp(fileMIME, "video/x-matroska")) {
             sp<MetaData> trackMeta = mExtractor->getTrackMetaData(0);

@@ -41,11 +41,7 @@ LOCAL_C_INCLUDES :=                                                 \
 	$(TOP)/frameworks/base/include/media/stagefright/openmax \
 	$(TOP)/frameworks/base/media/libstagefright/include             \
 	$(TOP)/frameworks/base/media/libstagefright/rtsp                \
-	$(TOP)/external/tremolo/Tremolo \
-
-ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
-	LOCAL_CFLAGS += -DQCOM_HARDWARE
-endif
+        $(TOP)/external/tremolo/Tremolo \
 
 LOCAL_MODULE:= libmediaplayerservice
 

@@ -120,9 +120,6 @@ private:
     // will be sent to the client side using which the
     // frame buffers will be queued and dequeued
     sp<SurfaceMediaSource> mSurfaceMediaSource;
-#ifdef QCOM_HARDWARE
-    bool mDisableAudio;
-#endif
 
     status_t setupMPEG4Recording(
         int outputFd,

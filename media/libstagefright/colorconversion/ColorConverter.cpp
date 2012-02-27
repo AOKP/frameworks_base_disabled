@@ -22,11 +22,6 @@
 #include <media/stagefright/MediaDebug.h>
 #include <media/stagefright/MediaErrors.h>
 
-#ifdef QCOM_HARDWARE
-#include <OMX_QCOMExtns.h>
-#include <QOMX_AudioExtensions.h>
-#endif
-
 namespace android {
 
 ColorConverter::ColorConverter(

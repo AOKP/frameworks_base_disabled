@@ -2946,6 +2946,13 @@ public final class Settings {
          */
         public static final String ADB_ICON = "adb_icon";
 
+				/**
+				 * Whether to blink the LED when screen is on
+				 *
+				 * @hide
+				 */
+				public static final String LED_SCREEN_ON = "led_screen_on";
+
         /**
          * Setting to allow mock locations and location provider status to be injected into the
          * LocationManager service for testing purposes during application development.  These

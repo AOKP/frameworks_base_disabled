@@ -260,7 +260,7 @@ public class PhoneStatusBar extends StatusBar {
 
     // custom carrier label
     private View mCarrierLabel;
-    private View mPhoneCarrierLabel;
+    private TextView mPhoneCarrierLabel;
 
     private class ExpandedDialog extends Dialog {
         ExpandedDialog(Context context) {
@@ -2592,13 +2592,15 @@ public class PhoneStatusBar extends StatusBar {
         if (mBrightnessControl != brightnessControl) {
             mBrightnessControl = brightnessControl;
         }
+
+        // a better way of handling a custom carrier label
+        String userWantsNewLabel = null;
+        userWantsNewLabel = Settings.System.getString(mContext.getContentResolver(),
+                Settings.System.CUSTOM_CARRIER_LABEL);
+
         if (mAutoBrightness != autoBrightness) {
             mAutoBrightness = autoBrightness;
 
-            // a better way of handling a custom carrier label
-            String userWantsNewLabel = null;
-            userWantsNewLabel = Settings.System.getString(mContext.getContentResolver(),
-                    Settings.System.CUSTOM_CARRIER_LABEL);
             if (userWantsNewLabel != null) {
 	            mPhoneCarrierLabel.setVisibility(View.GONE);
                 mCarrierLabel.setVisibility(View.VISIBLE);

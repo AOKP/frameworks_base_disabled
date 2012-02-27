@@ -2523,6 +2523,18 @@ public final class Settings {
         public static final String STATUSBAR_EXPANDED_BACKGROUND_COLOR = "statusbar_expanded_background_color";
 
         /**
+         * unexpanded statusbar visibility in alpha float value
+         * @hide
+         */
+        public static final String STATUSBAR_UNEXPANDED_ALPHA = "statusbar_unexpanded_alpha";
+
+        /**
+         * background color of unexpanded statusbar (title bar)
+         * @hide
+         */
+        public static final String STATUSBAR_UNEXPANDED_COLOR = "statusbar_unexpanded_color";
+
+        /**
          * @hide
          */
         public static final String NOTIFICATION_LIGHT_COLOR = "notification_light_color";

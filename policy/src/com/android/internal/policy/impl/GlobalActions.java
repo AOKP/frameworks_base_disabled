@@ -1,6 +1,5 @@
 /*
  * Copyright (C) 2012 The Android Open Source Project
- * Copyright (C) 2010-2012 CyanogenMod Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,6 +49,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.KeyEvent;
 import android.view.WindowManager;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
@@ -92,24 +92,27 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
     private ToggleAction mFullscreenOn;
     private ToggleAction mPowersaverOn;
     private ToggleAction mFlashlightOn;
+    private NavBarAction mHidenavbarOn;
     private SilentModeAction mSilentModeAction;
+    private MyAdapter mAdapter;
 
     private boolean mKeyguardShowing = false;
     private boolean mDeviceProvisioned = false;
     private boolean mIsWaitingForEcmExit = false;
     private ToggleAction.State mAirplaneState = ToggleAction.State.Off;
-
+    
     private boolean mEnableAirplane = true;
     private boolean mEnableEasteregg = false;
     private boolean mEnableFlashlight = true;
     private boolean mEnableFullscreen = false;
     private boolean mEnablePowersaver = false;
+    private boolean mEnableProfiles = true;
     private boolean mEnableScreenshot = true;
+    private boolean mEnableHidenavbar = false;
     private boolean mReceiverRegistered = false;
-    
+
     public static final String INTENT_TORCH_ON = "com.android.systemui.INTENT_TORCH_ON";
     public static final String INTENT_TORCH_OFF = "com.android.systemui.INTENT_TORCH_OFF";
-
     private Profile mChosenProfile;
 
     /**
@@ -171,8 +174,14 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         mEnableFullscreen = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.POWER_DIALOG_SHOW_FULLSCREEN, 0) == 1;
 
+        mEnableHidenavbar = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.POWER_DIALOG_SHOW_HIDENAVBAR, 0) == 1;
+
         mEnablePowersaver = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.POWER_DIALOG_SHOW_POWERSAVER, 0) == 1;
+
+        mEnableProfiles = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.POWER_DIALOG_SHOW_PROFILES, 1) == 1;
 
         mEnableScreenshot = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.POWER_DIALOG_SHOW_SCREENSHOT, 1) == 1;
@@ -240,8 +249,8 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             public boolean showBeforeProvisioning() {
                 return false;
             }
-        };
-
+        }; 
+        
         mFlashlightOn = new ToggleAction(
                 R.drawable.ic_lock_torch,
                 R.drawable.ic_lock_torch,
@@ -291,6 +300,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             }
         };
         
+        mHidenavbarOn = new NavBarAction(mHandler);
         mItems = new ArrayList<Action>();
 
         // first: airplane
@@ -345,6 +355,14 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             Log.d(TAG, "Not Adding Fullscreen");
         }
 
+        // next: hidenavbar
+        if(mEnableHidenavbar) {
+            Log.d(TAG, "Adding Hidenavbar Menu");
+            mItems.add(mHidenavbarOn); 
+        } else {
+            Log.d(TAG, "Not Adding Hidenavbar");
+        }
+
         // next: powersaver
         try {
             Settings.Secure.getInt(mContext.getContentResolver(),
@@ -395,17 +413,10 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 }
             });
 
-        // last: screenshot
-        if (mEnableScreenshot) {
-            Log.d(TAG, "Adding Screenshot Menu");
-            mItems.add(
-                new SinglePressAction(
-                        com.android.internal.R.drawable.ic_lock_screenshot,
-                        R.string.global_action_screenshot) {
-
-        // next: profile
-        mItems.add(
-            new ProfileChooseAction() {
+        // next: profiles
+        if (mEnableProfiles) {
+            Log.d(TAG, "Adding Profiles Menu");
+            mItems.add(new ProfileChooseAction()) {
                 public void onPress() {
                     createProfileDialog();
                 }
@@ -418,8 +429,22 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                     return false;
                 }
             });
+        } else {
+            Log.d(TAG, "Not Adding Profiles");
+        }
 
-        // last: silent
+        // next: screenshot
+        if (mEnableScreenshot) {
+            Log.d(TAG, "Adding Screenshot Menu");
+            mItems.add(
+                new SinglePressAction(
+                        com.android.internal.R.drawable.ic_lock_screenshot,
+                        R.string.global_action_screenshot) {
+        } else {
+            Log.d(TAG, "Not Adding Screenshot");
+        }
+
+        // last: silent mode
         if (SHOW_SILENT_TOGGLE) {
             mItems.add(mSilentModeAction);
         }
@@ -427,18 +452,15 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         mAdapter = new MyAdapter();
         final AlertDialog.Builder ab = new AlertDialog.Builder(mContext);
         ab.setAdapter(mAdapter, this).setInverseBackgroundForced(true);
-
         final AlertDialog dialog = ab.create();
         dialog.getListView().setItemsCanFocus(true);
         dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG);
-
         dialog.setOnDismissListener(this);
         return dialog;
     }
 
     private void createProfileDialog(){
         final ProfileManager profileManager = (ProfileManager)mContext.getSystemService(Context.PROFILE_SERVICE);
-
         final Profile[] profiles = profileManager.getProfiles();
         UUID activeProfile = profileManager.getActiveProfile().getUuid();
         final CharSequence[] names = new CharSequence[profiles.length];
@@ -534,14 +556,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                             }
                         };
                         msg.replyTo = new Messenger(h);
-                        msg.arg1 = msg.arg2 = 0;
-
-                        /*  remove for the time being
-                        if (mStatusBar != null && mStatusBar.isVisibleLw())
-                            msg.arg1 = 1;
-                        if (mNavigationBar != null && mNavigationBar.isVisibleLw())
-                            msg.arg2 = 1;
-                         */                        
+                        msg.arg1 = msg.arg2 = 0;                   
 
                         /* wait for the dialog box to close */
                         try {
@@ -583,7 +598,6 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             mContext.registerReceiver(mRingerModeReceiver, filter);
             mReceiverRegistered = true;
         }
-
         final boolean fullScreenOn = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.POWER_DIALOG_FULLSCREEN, 0) == 1;
         mFullscreenOn.updateState(fullScreenOn ? ToggleAction.State.On : ToggleAction.State.Off);
@@ -731,15 +745,11 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         public View create(
                 Context context, View convertView, ViewGroup parent, LayoutInflater inflater) {
             View v = inflater.inflate(R.layout.global_actions_item, parent, false);
-
             ImageView icon = (ImageView) v.findViewById(R.id.icon);
             TextView messageView = (TextView) v.findViewById(R.id.message);
-
             v.findViewById(R.id.status).setVisibility(View.GONE);
-
             icon.setImageDrawable(context.getResources().getDrawable(mIconResId));
             messageView.setText(mMessageResId);
-
             return v;
         }
     }
@@ -772,10 +782,8 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             TextView statusView = (TextView) v.findViewById(R.id.status);
             statusView.setVisibility(View.VISIBLE);
             statusView.setText(mProfileManager.getActiveProfile().getName());
-
             icon.setImageDrawable(context.getResources().getDrawable(com.android.internal.R.drawable.ic_lock_profile));
             messageView.setText(R.string.global_action_choose_profile);
-
             return v;
         }
     }
@@ -844,7 +852,6 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
             View v = inflater.inflate(R
                             .layout.global_actions_item, parent, false);
-
             ImageView icon = (ImageView) v.findViewById(R.id.icon);
             TextView messageView = (TextView) v.findViewById(R.id.message);
             TextView statusView = (TextView) v.findViewById(R.id.status);
@@ -868,7 +875,6 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 statusView.setEnabled(enabled);
             }
             v.setEnabled(enabled);
-
             return v;
         }
 
@@ -967,6 +973,83 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         }
     }
 
+    private static class NavBarAction implements Action, View.OnClickListener {
+
+        private final int[] ITEM_IDS = { R.id.navbartoggle, R.id.navbarhome, R.id.navbarback };
+        public Context mContext;
+        public boolean mHidenavbarOn;
+        private final Handler mHandler;
+
+        NavBarAction(Handler handler) {
+        	mHandler = handler;
+        }
+
+        public View create(Context context, View convertView, ViewGroup parent,
+                LayoutInflater inflater) {
+        	mContext = context;
+        	mHidenavbarOn = Settings.System.getInt(mContext.getContentResolver(),
+                    Settings.System.NAVIGATION_BAR_BUTTONS_HIDE, 0) == 1;
+                 	
+            View v = inflater.inflate(R.layout.global_actions_navbar_mode, parent, false);
+
+            for (int i = 0; i < 3; i++) {
+                View itemView = v.findViewById(ITEM_IDS[i]);
+                itemView.setSelected((i==0)&&(!mNavBarHideOn));  // set selected on item 0 if NavBarHideOn is off
+                // Set up click handler
+                itemView.setTag(i);
+                itemView.setOnClickListener(this);
+            }
+            return v;
+        }
+
+        public void onPress() {
+        }
+
+        public boolean showDuringKeyguard() {
+            return true;
+        }
+
+        public boolean showBeforeProvisioning() {
+            return false;
+        }
+
+        public boolean isEnabled() {
+            return true;
+        }
+
+        void willCreate() {
+        }
+
+        public void onClick(View v) {
+            if (!(v.getTag() instanceof Integer)) return;
+            int index = (Integer) v.getTag();
+            
+            switch (index) {
+            
+            case 0 :
+            	mHidenavbarOn = !mNavBarHideOn;
+                Settings.System.putInt(mContext.getContentResolver(),
+                        Settings.System.NAVIGATION_BAR_BUTTONS_HIDE,
+                         mNavBarHideOn ? 1 : 0);
+                v.setSelected(!mHidenavbarOn);
+                mHandler.sendEmptyMessageDelayed(MESSAGE_DISMISS, DIALOG_DISMISS_DELAY);
+                break;
+            case 1:
+            	 Intent i = new Intent(); 
+                 i.setAction(Intent.ACTION_MAIN); 
+                 i.addCategory(Intent.CATEGORY_HOME);
+                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                 mContext.startActivity(i); 
+            	 mHandler.sendEmptyMessageDelayed(MESSAGE_DISMISS, DIALOG_DISMISS_DELAY);
+            	break;
+            case 2:    	
+            	v.dispatchKeyEvent(new KeyEvent (KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_BACK));
+            	v.dispatchKeyEvent(new KeyEvent (KeyEvent.ACTION_UP, KeyEvent.KEYCODE_BACK));
+            	break;	        
+            }  
+        }
+    }
+
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
@@ -977,8 +1060,6 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                     mHandler.sendEmptyMessage(MESSAGE_DISMISS);
                 }
             } else if (TelephonyIntents.ACTION_EMERGENCY_CALLBACK_MODE_CHANGED.equals(action)) {
-                // Airplane mode can be changed after ECM exits if airplane toggle button
-                // is pressed during ECM mode
                 if (!(intent.getBooleanExtra("PHONE_IN_ECM_STATE", false)) &&
                         mIsWaitingForEcmExit) {
                     mIsWaitingForEcmExit = false;

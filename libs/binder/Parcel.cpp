@@ -447,6 +447,14 @@ status_t Parcel::appendFrom(const Parcel *parcel, size_t offset, size_t len)
     return err;
 }
 
+#ifdef KEEP_PARCEL_GB_COMPATIBLE
+// Blobs from GB roms expect first argument to be non-const
+status_t Parcel::appendFrom(Parcel *parcel, size_t offset, size_t len)
+{
+    return this->appendFrom(const_cast<const Parcel *>(parcel), offset, len);
+}
+#endif
+
 bool Parcel::pushAllowFds(bool allowFds)
 {
     const bool origValue = mAllowFds;

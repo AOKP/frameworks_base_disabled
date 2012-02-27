@@ -58,6 +58,10 @@ public:
 
     status_t            appendFrom(const Parcel *parcel,
                                    size_t start, size_t len);
+#ifdef KEEP_PARCEL_GB_COMPATIBLE
+    status_t            appendFrom(Parcel *parcel,
+                                   size_t start, size_t len);
+#endif
 
     bool                pushAllowFds(bool allowFds);
     void                restoreAllowFds(bool lastValue);

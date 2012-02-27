@@ -1898,6 +1898,7 @@ OMXCodec::OMXCodec(
       mThumbnailMode(false) {
 #else
       mNativeWindow(!strncmp(componentName, "OMX.google.", 11)
+                        ? NULL : nativeWindow),
                         ? NULL : nativeWindow) {
 #endif
     mPortStatus[kPortIndexInput] = ENABLED;

@@ -216,6 +216,7 @@ static sp<MediaSource> InstantiateSoftwareDecoder(
 #undef FACTORY_REF
 #undef FACTORY_CREATE
 
+#ifdef TARGET_OMAP4
 static const CodecInfo kDecoderInfo[] = {
 #ifdef SAMSUNG_OMX
     { MEDIA_MIMETYPE_AUDIO_MPEG, "OMX.SEC.mp3.dec" },
@@ -343,6 +344,51 @@ static const CodecInfo kEncoderInfo[] = {
     { MEDIA_MIMETYPE_VIDEO_AVC, "OMX.SEC.AVC.Encoder" },
     { MEDIA_MIMETYPE_VIDEO_AVC, "AVCEncoder" },
 };
+#else
+static const CodecInfo kDecoderInfo[] = {
+    { MEDIA_MIMETYPE_IMAGE_JPEG, "OMX.TI.JPEG.decode" },
+    { MEDIA_MIMETYPE_AUDIO_MPEG, "OMX.TI.MP3.decode" },
+    { MEDIA_MIMETYPE_AUDIO_MPEG, "OMX.google.mp3.decoder" },
+    { MEDIA_MIMETYPE_AUDIO_AMR_NB, "OMX.TI.AMR.decode" },
+    { MEDIA_MIMETYPE_AUDIO_AMR_NB, "OMX.google.amrnb.decoder" },
+    { MEDIA_MIMETYPE_AUDIO_AMR_WB, "OMX.TI.WBAMR.decode" },
+    { MEDIA_MIMETYPE_AUDIO_AMR_WB, "OMX.google.amrwb.decoder" },
+    { MEDIA_MIMETYPE_AUDIO_AAC, "OMX.TI.AAC.decode" },
+    { MEDIA_MIMETYPE_AUDIO_AAC, "OMX.ITTIAM.AAC.decode" },
+    { MEDIA_MIMETYPE_AUDIO_AAC, "OMX.google.aac.decoder" },
+    { MEDIA_MIMETYPE_AUDIO_G711_ALAW, "OMX.google.g711.alaw.decoder" },
+    { MEDIA_MIMETYPE_AUDIO_G711_MLAW, "OMX.google.g711.mlaw.decoder" },
+    { MEDIA_MIMETYPE_VIDEO_MPEG4, "OMX.TI.Video.Decoder" },
+    //{ MEDIA_MIMETYPE_VIDEO_MPEG4, "OMX.TI.720P.Decoder" },
+    { MEDIA_MIMETYPE_VIDEO_H263, "OMX.TI.Video.Decoder" },
+    /* 720p Video Decoder must be placed before the TI Video Decoder.
+       DO NOT CHANGE THIS SEQUENCE. IT WILL BREAK FLASH. */
+    //{ MEDIA_MIMETYPE_VIDEO_AVC, "OMX.TI.720P.Decoder" },
+    { MEDIA_MIMETYPE_VIDEO_AVC, "OMX.TI.Video.Decoder" },
+    { MEDIA_MIMETYPE_VIDEO_WMV, "OMX.TI.Video.Decoder" },
+    //{ MEDIA_MIMETYPE_VIDEO_WMV, "OMX.TI.720P.Decoder" },
+    { MEDIA_MIMETYPE_AUDIO_WMA, "OMX.TI.WMA.decode"},
+    { MEDIA_MIMETYPE_AUDIO_WMA, "OMX.ITTIAM.WMA.decode"},
+    { MEDIA_MIMETYPE_VIDEO_H263, "OMX.google.h263.decoder" },
+    { MEDIA_MIMETYPE_AUDIO_VORBIS, "OMX.google.vorbis.decoder" },
+    { MEDIA_MIMETYPE_VIDEO_VPX, "OMX.google.vpx.decoder" },
+    { MEDIA_MIMETYPE_VIDEO_AVC, "OMX.google.h264.decoder" },
+    { MEDIA_MIMETYPE_VIDEO_AVC, "OMX.google.avc.decoder" },
+    { MEDIA_MIMETYPE_VIDEO_VPX, "VPXDecoder" },
+};
+
+static const CodecInfo kEncoderInfo[] = {
+    { MEDIA_MIMETYPE_AUDIO_AMR_NB, "OMX.TI.AMR.encode" },
+    { MEDIA_MIMETYPE_AUDIO_AMR_WB, "OMX.TI.WBAMR.encode" },
+    { MEDIA_MIMETYPE_AUDIO_AAC, "OMX.TI.AAC.encode" },
+    { MEDIA_MIMETYPE_AUDIO_AAC, "OMX.ITTIAM.AAC.encode" },
+    { MEDIA_MIMETYPE_VIDEO_MPEG4, "OMX.TI.Video.encoder" },
+    { MEDIA_MIMETYPE_VIDEO_MPEG4, "OMX.TI.720P.Encoder" },
+    { MEDIA_MIMETYPE_VIDEO_H263, "OMX.TI.Video.encoder" },
+    { MEDIA_MIMETYPE_VIDEO_AVC, "OMX.TI.Video.encoder" },
+    { MEDIA_MIMETYPE_VIDEO_AVC, "OMX.TI.720P.Encoder" },
+};
+#endif
 
 #undef OPTIONAL
 

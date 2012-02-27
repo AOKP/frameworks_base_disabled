@@ -38,6 +38,7 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.os.ServiceManager;
 import android.os.SystemProperties;
 import android.provider.Settings;
 import android.provider.Settings.SettingNotFoundException;
@@ -51,6 +52,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.KeyEvent;
 import android.view.WindowManager;
+import android.view.IWindowManager;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -975,10 +977,13 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
     private static class NavBarAction implements Action, View.OnClickListener {
 
-        private final int[] ITEM_IDS = { R.id.navbartoggle, R.id.navbarhome, R.id.navbarback };
+        private final int[] ITEM_IDS = { R.id.navbartoggle, R.id.navbarhome, R.id.navbarback,R.id.navbarmenu };
+        
         public Context mContext;
         public boolean mHidenavbarOn;
         private final Handler mHandler;
+        private IWindowManager mWindowManager;
+        private int mInjectKeycode;
 
         NavBarAction(Handler handler) {
         	mHandler = handler;
@@ -989,10 +994,10 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         	mContext = context;
         	mHidenavbarOn = Settings.System.getInt(mContext.getContentResolver(),
                     Settings.System.NAVIGATION_BAR_BUTTONS_HIDE, 0) == 1;
-                 	
+        	mWindowManager = IWindowManager.Stub.asInterface(ServiceManager.getService("window"));
             View v = inflater.inflate(R.layout.global_actions_navbar_mode, parent, false);
 
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < 4; i++) {
                 View itemView = v.findViewById(ITEM_IDS[i]);
                 itemView.setSelected((i==0)&&(!mNavBarHideOn));  // set selected on item 0 if NavBarHideOn is off
                 // Set up click handler
@@ -1031,23 +1036,40 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 Settings.System.putInt(mContext.getContentResolver(),
                         Settings.System.NAVIGATION_BAR_BUTTONS_HIDE,
                          mNavBarHideOn ? 1 : 0);
-                v.setSelected(!mHidenavbarOn);
-                mHandler.sendEmptyMessageDelayed(MESSAGE_DISMISS, DIALOG_DISMISS_DELAY);
+                v.setSelected(!mNavBarHideOn);
+                mHandler.sendEmptyMessage(MESSAGE_DISMISS);
                 break;
             case 1:
-            	 Intent i = new Intent(); 
-                 i.setAction(Intent.ACTION_MAIN); 
-                 i.addCategory(Intent.CATEGORY_HOME);
-                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                 mContext.startActivity(i); 
-            	 mHandler.sendEmptyMessageDelayed(MESSAGE_DISMISS, DIALOG_DISMISS_DELAY);
+            	 injectKeyDelayed(KeyEvent.KEYCODE_HOME);
+            	 mHandler.sendEmptyMessage(MESSAGE_DISMISS);
             	break;
             case 2:    	
-            	v.dispatchKeyEvent(new KeyEvent (KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_BACK));
-            	v.dispatchKeyEvent(new KeyEvent (KeyEvent.ACTION_UP, KeyEvent.KEYCODE_BACK));
-            	break;	        
+            	injectKeyDelayed(KeyEvent.KEYCODE_BACK);
+            	mHandler.sendEmptyMessage(MESSAGE_DISMISS);
+            	break;
+            case 3:    	
+            	injectKeyDelayed(KeyEvent.KEYCODE_MENU);
+            	mHandler.sendEmptyMessage(MESSAGE_DISMISS);
+            	break;	    
             }  
         }
+     
+        public void injectKeyDelayed(int keycode){
+        	mInjectKeycode = keycode;
+        	mHandler.removeCallbacks(onInjectKeyDelayed);
+        	mHandler.postDelayed(onInjectKeyDelayed, 50);
+        }
+
+        final Runnable onInjectKeyDelayed = new Runnable() {
+        	public void run() {
+        		try {
+        			mWindowManager.injectKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, mInjectKeycode), true);
+        			mWindowManager.injectKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, mInjectKeycode), true);
+        		} catch (RemoteException e) {
+        			e.printStackTrace();
+        		}
+        	}
+        };
     }
 
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {

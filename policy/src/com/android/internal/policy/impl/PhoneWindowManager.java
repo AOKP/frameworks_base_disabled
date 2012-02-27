@@ -1001,10 +1001,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         	// this is our first time here.  Let's obey the framework setup
         	mHasNavigationBar = mContext.getResources().getBoolean(
                 com.android.internal.R.bool.config_showNavigationBar);
-        	// I also want to clear out any stale Navigation Hide settings
-        	Settings.System.putInt(mContext.getContentResolver(), 
-            		Settings.System.POWER_DIALOG_FULLSCREEN, 
-            		mHasNavigationBar ? 0 : 1);
         	mNavBarFirstBootFlag = false;
         } else {
         	mHasNavigationBar = Settings.System.getInt(mContext.getContentResolver(), 

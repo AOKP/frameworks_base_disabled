@@ -259,8 +259,8 @@ public class PhoneStatusBar extends StatusBar {
     private int newWindowShadeColor;
 
     // custom carrier label
-    private View mCarrierLabel;
-    private TextView mPhoneCarrierLabel;
+    private TextView mCarrierLabel;
+    private View mPhoneCarrierLabel;
 
     private class ExpandedDialog extends Dialog {
         ExpandedDialog(Context context) {
@@ -2592,26 +2592,25 @@ public class PhoneStatusBar extends StatusBar {
         if (mBrightnessControl != brightnessControl) {
             mBrightnessControl = brightnessControl;
         }
+        if (mAutoBrightness != autoBrightness) {
+            mAutoBrightness = autoBrightness;
+        }
 
         // a better way of handling a custom carrier label
         String userWantsNewLabel = null;
         userWantsNewLabel = Settings.System.getString(mContext.getContentResolver(),
                 Settings.System.CUSTOM_CARRIER_LABEL);
 
-        if (mAutoBrightness != autoBrightness) {
-            mAutoBrightness = autoBrightness;
-
-            if (userWantsNewLabel != null) {
-	            mPhoneCarrierLabel.setVisibility(View.GONE);
-                mCarrierLabel.setVisibility(View.VISIBLE);
-                mCarrierLabel.setText(userWantsNewLabel);
-            } else if (userWantsNewLabel.equals("default")) {
-                mPhoneCarrierLabel.setVisibility(View.VISIBLE);
-                mCarrierLabel.setVisibility(View.GONE);
-            } else {
-                mPhoneCarrierLabel.setVisibility(View.VISIBLE);
-                mCarrierLabel.setVisibility(View.GONE);
-            }
+        if (userWantsNewLabel != null) {
+            mPhoneCarrierLabel.setVisibility(View.GONE);
+            mCarrierLabel.setVisibility(View.VISIBLE);
+            mCarrierLabel.setText(userWantsNewLabel);
+        } else if (userWantsNewLabel.equals("default")) {
+            mPhoneCarrierLabel.setVisibility(View.VISIBLE);
+            mCarrierLabel.setVisibility(View.GONE);
+        } else {
+            mPhoneCarrierLabel.setVisibility(View.VISIBLE);
+            mCarrierLabel.setVisibility(View.GONE);
         }
     }
 

@@ -219,7 +219,16 @@ LOCAL_SHARED_LIBRARIES := \
 	libz \
 
 ifeq ($(USE_OPENGL_RENDERER),true)
+  ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
+	LOCAL_SHARED_LIBRARIES += libhwui libtilerenderer
+  else
 	LOCAL_SHARED_LIBRARIES += libhwui
+  endif
+endif
+
+ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
+	LOCAL_C_INCLUDES += hardware/qcom/display/libtilerenderer
+	LOCAL_CFLAGS += -DQCOM_HARDWARE
 endif
 
 ifeq ($(BOARD_USES_QCOM_HARDWARE),true)

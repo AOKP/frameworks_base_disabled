@@ -95,7 +95,11 @@ AudioResampler* AudioResampler::create(int bitDepth, int inChannelCount,
     }
 
     if (quality == DEFAULT)
+#ifdef OMAP_ENHANCEMENT
+        quality = SPEEX_QUALITY;
+#else
         quality = LOW_QUALITY;
+#endif
 
     switch (quality) {
     default:

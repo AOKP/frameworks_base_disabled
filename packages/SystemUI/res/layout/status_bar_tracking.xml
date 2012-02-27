@@ -34,6 +34,7 @@
         android:background="@drawable/notification_tracking_bg"
         >
         <com.android.systemui.statusbar.phone.CarrierLabel
+            android:id="@+id/phone_carrier_label"
             android:textAppearance="@style/TextAppearance.StatusBar.Clock"
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
@@ -41,6 +42,16 @@
             android:gravity="center"
             android:paddingBottom="20dp"
             />
+        <TextView
+            android:id="@+id/custom_carrier_label"
+            android:textAppearance="@style/TextAppearance.StatusBar.Clock"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_gravity="bottom"
+            android:gravity="center"
+            android:paddingBottom="20dp"
+            android:visibility="gone" />
+
     </FrameLayout>
 
     <com.android.systemui.statusbar.phone.CloseDragHandle android:id="@+id/close"

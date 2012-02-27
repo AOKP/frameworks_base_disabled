@@ -255,6 +255,10 @@ public class PhoneStatusBar extends StatusBar {
     private ExpandedView expanded;
     private int newWindowShadeColor;
 
+    // custom carrier label
+    private View mCarrierLabel;
+    private View mPhoneCarrierLabel;
+
     private class ExpandedDialog extends Dialog {
         ExpandedDialog(Context context) {
             super(context, com.android.internal.R.style.Theme_Translucent_NoTitleBar);
@@ -377,6 +381,12 @@ public class PhoneStatusBar extends StatusBar {
         //lanuch clock or calender app when we click on the date
         mDateView.setOnClickListener(mDateListener);
 
+        // statusbar color
+        mFrameLayout = mTrackingView.findViewById(R.id.notification_frame_layout);
+        // custom carrier label
+        mCarrierLabel = (TextView) expanded.findViewById(R.id.custom_carrier_label);
+        mPhoneCarrierLabel = expanded.findViewById(R.id.phone_carrier_label);
+
         mQuickToggles = (TogglesView) expanded.findViewById(R.id.quick_toggles);
         mTicker = new MyTicker(context, sb);
 
@@ -387,9 +397,6 @@ public class PhoneStatusBar extends StatusBar {
         mTrackingView.mService = this;
         mCloseView = (CloseDragHandle) mTrackingView.findViewById(R.id.close);
         mCloseView.mService = this;
-
-        // statusbar color
-        mFrameLayout = mTrackingView.findViewById(R.id.notification_frame_layout);
 
         mEdgeBorder = res.getDimensionPixelSize(R.dimen.status_bar_edge_ignore);
 
@@ -540,8 +547,7 @@ public class PhoneStatusBar extends StatusBar {
     private WindowManager.LayoutParams getNavigationBarLayoutParams() {
         WindowManager.LayoutParams lp = new WindowManager.LayoutParams(
                 LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.TYPE_NAVIGATION_BAR,
-                0
+                WindowManager.LayoutParams.TYPE_NAVIGATION_BAR, 0
                         | WindowManager.LayoutParams.FLAG_TOUCHABLE_WHEN_WAKING
                         | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
                         | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
@@ -2499,6 +2505,8 @@ public class PhoneStatusBar extends StatusBar {
                     Settings.System.STATUSBAR_EXPANDED_BOTTOM_ALPHA), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUSBAR_EXPANDED_BACKGROUND_COLOR), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.CUSTOM_CARRIER_LABEL), false, this);
         }
 
         @Override
@@ -2582,6 +2590,18 @@ public class PhoneStatusBar extends StatusBar {
         if (DEBUG) Log.d(TAG, String.format("Custom color int: %d", newWindowShadeColor));
         if (customWindowShadeColor) {
             mFrameLayout.setBackgroundColor(newWindowShadeColor);
+        }
+
+        // a better way of handling a custom carrier label
+        String userWantsNewLabel = null;
+        userWantsNewLabel = Settings.System.getString(mContext.getContentResolver(),
+                Settings.System.CUSTOM_CARRIER_LABEL);
+        if (userWantsNewLabel != null) {
+	    mPhoneCarrierLabel.setVisibility(View.GONE);
+            mCarrierLabel.setVisibility(View.VISIBLE);
+        } else {
+            mPhoneCarrierLabel.setVisibility(View.VISIBLE);
+            mCarrierLabel.setVisibility(View.GONE);
         }
     }
 

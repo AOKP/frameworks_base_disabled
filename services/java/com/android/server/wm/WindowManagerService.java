@@ -6051,8 +6051,10 @@ public class WindowManagerService extends IWindowManager.Stub
         int orientation = Configuration.ORIENTATION_SQUARE;
         if (dw < dh) {
             orientation = Configuration.ORIENTATION_PORTRAIT;
+            SystemProperties.set("sys.orientation.landscape", "0");
         } else if (dw > dh) {
             orientation = Configuration.ORIENTATION_LANDSCAPE;
+            SystemProperties.set("sys.orientation.landscape", "1");
         }
         config.orientation = orientation;
 

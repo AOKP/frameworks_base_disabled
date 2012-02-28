@@ -43,7 +43,10 @@ public class TwoGToggle extends Toggle {
         SettingsObserver obs = new SettingsObserver(new Handler());
         obs.observe();
         setLabel(R.string.toggle_2g);
-        setIcon(R.drawable.toggle_2g_1);
+        if (mToggle.isChecked())
+        	setIcon(R.drawable.toggle_2g_1);
+        else
+        	setIcon(R.drawable.toggle_2g_1_off);
     }
 
     @Override
@@ -51,6 +54,10 @@ public class TwoGToggle extends Toggle {
         TelephonyManager tm = (TelephonyManager) mView.getContext()
                 .getSystemService(Context.TELEPHONY_SERVICE);
         tm.toggle2G(isChecked);
+        if (mToggle.isChecked())
+        	setIcon(R.drawable.toggle_2g_1);
+        else
+        	setIcon(R.drawable.toggle_2g_1_off);
 
     }
 
@@ -126,6 +133,10 @@ public class TwoGToggle extends Toggle {
         mNetworkMode = getCurrentPreferredNetworkMode(mContext);
         if (mToggle != null)
             mToggle.setChecked(mNetworkMode == Phone.NT_MODE_GSM_ONLY);
+        if (mToggle.isChecked())
+        	setIcon(R.drawable.toggle_2g_1);
+        else
+        	setIcon(R.drawable.toggle_2g_1_off);
     }
 
     @Override

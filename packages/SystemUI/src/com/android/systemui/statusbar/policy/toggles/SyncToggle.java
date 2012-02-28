@@ -37,17 +37,28 @@ public class SyncToggle extends Toggle {
         ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_SETTINGS,
                 mSyncObserver);
         setLabel(R.string.toggle_sync);
-        setIcon(R.drawable.toggle_sync);
+        if (mToggle.isChecked())
+        	setIcon(R.drawable.toggle_sync);
+        else
+        	setIcon(R.drawable.toggle_sync_off);
     }
 
     @Override
     protected void onCheckChanged(boolean isChecked) {
         ContentResolver.setMasterSyncAutomatically(isChecked);
+        if (mToggle.isChecked())
+        	setIcon(R.drawable.toggle_sync);
+        else
+        	setIcon(R.drawable.toggle_sync_off);
     }
 
     @Override
     protected void updateInternalToggleState() {
         mToggle.setChecked(ContentResolver.getMasterSyncAutomatically());
+        if (mToggle.isChecked())
+        	setIcon(R.drawable.toggle_sync);
+        else
+        	setIcon(R.drawable.toggle_sync_off);
     }
 
     @Override

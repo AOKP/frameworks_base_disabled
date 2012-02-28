@@ -42,7 +42,10 @@ public class WifiToggle extends Toggle {
         mContext.registerReceiver(mBroadcastReceiver, wifiFilter);
 
         setLabel(R.string.toggle_wifi);
-        setIcon(R.drawable.toggle_wifi);
+        if (mToggle.isChecked())
+        	setIcon(R.drawable.toggle_wifi);
+        else
+        	setIcon(R.drawable.toggle_wifi_off);
     }
 
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
@@ -131,6 +134,10 @@ public class WifiToggle extends Toggle {
                 mToggle.setEnabled(false);
                 break;
         }
+        if (mToggle.isChecked())
+        	setIcon(R.drawable.toggle_wifi);
+        else
+        	setIcon(R.drawable.toggle_wifi_off);
     }
 
     @Override
@@ -138,6 +145,10 @@ public class WifiToggle extends Toggle {
         if (isChecked != mIsWifiOn) {
             changeWifiState(isChecked);
         }
+        if (mToggle.isChecked())
+        	setIcon(R.drawable.toggle_wifi);
+        else
+        	setIcon(R.drawable.toggle_wifi_off);
     }
 
     @Override

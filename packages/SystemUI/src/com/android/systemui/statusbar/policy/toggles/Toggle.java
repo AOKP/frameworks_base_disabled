@@ -97,7 +97,12 @@ public abstract class Toggle implements OnCheckedChangeListener {
      * this method is called when the user longpresses the toggle
      */
     protected abstract boolean onLongPress();
-
+    
+    protected abstract boolean onIconPress();
+    /**
+     * this method is called when the user presses the icon
+     */
+     
     public void updateState() {
         mSystemChange = true;
         updateInternalToggleState();

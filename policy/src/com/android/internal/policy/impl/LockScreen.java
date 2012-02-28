@@ -73,7 +73,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
     public static final int LAYOUT_QUAD = 6;
     public static final int LAYOUT_OCTO = 8;
 
-    private static final int COLOR_WHITE = 16777215;
+    private static final int COLOR_WHITE = 0xFFFFFFFF;
 
     private int mLockscreenTargets = LAYOUT_STOCK;
 

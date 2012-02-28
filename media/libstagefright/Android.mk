@@ -106,7 +106,7 @@ LOCAL_C_INCLUDES += \
 	$(TOP)/external/alsa-lib/include/sound \
         $(TOP)/hardware/qcom/display/libgralloc \
         $(TOP)/hardware/qcom/display/libqcomui \
-        $(TOP)/vendor/qcom-opensource/omx/mm-core/omxcore/inc \
+        $(TOP)/vendor/qcom/opensource/omx/mm-core/omxcore/inc \
         $(TOP)/system/core/include \
         $(TOP)/hardware/libhardware_legacy/include
 

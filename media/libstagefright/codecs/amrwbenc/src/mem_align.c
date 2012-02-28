@@ -24,15 +24,15 @@
 
 #include	"mem_align.h"
 #ifdef _MSC_VER
-#include  <stddef.h>
+#include	<stddef.h>
 #else
-#include  <stdint.h>
+#include	<stdint.h>
 #endif
 
 /*****************************************************************************
 *
 * function name: mem_malloc
-* description:  malloc the alignments memory 
+* description:  malloc the alignments memory
 * returns:      the point of the memory
 *
 **********************************************************************************/

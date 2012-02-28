@@ -574,8 +574,6 @@ public class VideoView extends SurfaceView implements MediaPlayerControl {
     }
 
     public void suspend() {
-        mSeekWhenPrepared = getCurrentPosition( );
-        Log.v(TAG, "suspend( ) - will resume at " + mSeekWhenPrepared);
         release(false);
     }
 

@@ -1907,7 +1907,14 @@ public final class Settings {
          * @hide
          */
         public static final String NAVIGATION_BAR_VISIBLE = "navigation_bar_visible";
-        
+
+        /**
+         * Whether the battery LED should repeatedly flash when the battery is low
+         * on charge. The value is boolean (1 or 0).
+         * @hide
+         */
+        public static final String BATTERY_LIGHT_PULSE = "battery_light_pulse";
+
         /**
          * Show pointer location on screen?
          * 0 = no
@@ -3169,6 +3176,13 @@ public final class Settings {
          * @hide
          */
         public static final String ADB_ICON = "adb_icon";
+
+				/**
+				 * Whether to blink the LED when screen is on
+				 *
+				 * @hide
+				 */
+				public static final String LED_SCREEN_ON = "led_screen_on";
 
         /**
          * The TCP/IP port to run ADB on, or -1 for USB

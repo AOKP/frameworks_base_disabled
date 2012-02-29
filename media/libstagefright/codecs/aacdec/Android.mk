@@ -152,7 +152,7 @@ LOCAL_C_INCLUDES := \
 
 LOCAL_ARM_MODE := arm
 
-ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
+ifeq ($(TARGET_PRODUCT),tenderloin)
 LOCAL_MODULE := libstagefright_aacdec_omx
 else
 LOCAL_MODULE := libstagefright_aacdec
@@ -173,8 +173,10 @@ LOCAL_C_INCLUDES := \
 
 LOCAL_CFLAGS := -DOSCL_IMPORT_REF=
 
+ifeq ($(TARGET_PRODUCT),tenderloin)
 LOCAL_STATIC_LIBRARIES := \
         libstagefright_aacdec_omx
+endif
 
 LOCAL_SHARED_LIBRARIES := \
         libstagefright_omx libstagefright_foundation libutils

@@ -56,11 +56,10 @@ LiveSession::LiveSession(uint32_t flags, bool uidValid, uid_t uid)
       mSeekTimeUs(-1),
       mNumRetries(0),
       mDurationUs(-1),
-      mSeeking(false),
+      mSeekDone(false),
       mDisconnectPending(false),
       mMonitorQueueGeneration(0),
-      mRefreshState(INITIAL_MINIMUM_RELOAD_DELAY),
-      mFirstSeqNumber(-1) {
+      mRefreshState(INITIAL_MINIMUM_RELOAD_DELAY) {
     if (mUIDValid) {
         mHTTPDataSource->setUID(mUID);
     }
@@ -96,23 +95,17 @@ void LiveSession::disconnect() {
     (new AMessage(kWhatDisconnect, id()))->post();
 }
 
-void LiveSession::seekTo(int64_t timeUs, int64_t* newSeekTime ) {
+void LiveSession::seekTo(int64_t timeUs) {
     Mutex::Autolock autoLock(mLock);
-    mSeeking = true;
-    mHTTPDataSource->disconnect();
+    mSeekDone = false;
 
     sp<AMessage> msg = new AMessage(kWhatSeek, id());
     msg->setInt64("timeUs", timeUs);
     msg->post();
 
-    while (mSeeking) {
+    while (!mSeekDone) {
         mCondition.wait(mLock);
-        if( newSeekTime != NULL ) {
-           *newSeekTime = mSeekTimeUs;
-           LOGV("new Seek Time %lld", mSeekTimeUs);
-        }
     }
-    mSeekTimeUs = -1;
 }
 
 void LiveSession::onMessageReceived(const sp<AMessage> &msg) {
@@ -510,16 +503,13 @@ rinse_repeat:
         bool unchanged;
         sp<M3UParser> playlist = fetchPlaylist(url.c_str(), &unchanged);
         if (playlist == NULL) {
-            Mutex::Autolock autoLock(mLock);
             if (unchanged) {
                 // We succeeded in fetching the playlist, but it was
                 // unchanged from the last time we tried.
-            } else if (!mSeeking) {
+            } else {
                 LOGE("failed to load playlist at url '%s'", url.c_str());
                 mDataSource->queueEOS(ERROR_IO);
                 return;
-            } else {
-                LOGV("fetchPlaylist stopped due to seek, let seek complete");
             }
         } else {
             mPlaylist = playlist;
@@ -548,23 +538,73 @@ rinse_repeat:
         mLastPlaylistFetchTimeUs = ALooper::GetNowUs();
     }
 
+    int32_t firstSeqNumberInPlaylist;
     if (mPlaylist->meta() == NULL || !mPlaylist->meta()->findInt32(
-                "media-sequence", &mFirstSeqNumber)) {
-        mFirstSeqNumber = 0;
+                "media-sequence", &firstSeqNumberInPlaylist)) {
+        firstSeqNumberInPlaylist = 0;
     }
 
+    bool seekDiscontinuity = false;
     bool explicitDiscontinuity = false;
     bool bandwidthChanged = false;
 
+    if (mSeekTimeUs >= 0) {
+        if (mPlaylist->isComplete()) {
+            size_t index = 0;
+            int64_t segmentStartUs = 0;
+            while (index < mPlaylist->size()) {
+                sp<AMessage> itemMeta;
+                CHECK(mPlaylist->itemAt(
+                            index, NULL /* uri */, &itemMeta));
+
+                int64_t itemDurationUs;
+                CHECK(itemMeta->findInt64("durationUs", &itemDurationUs));
+
+                if (mSeekTimeUs < segmentStartUs + itemDurationUs) {
+                    break;
+                }
+
+                segmentStartUs += itemDurationUs;
+                ++index;
+            }
+
+            if (index < mPlaylist->size()) {
+                int32_t newSeqNumber = firstSeqNumberInPlaylist + index;
+
+                if (newSeqNumber != mSeqNumber) {
+                    LOGI("seeking to seq no %d", newSeqNumber);
+
+                    mSeqNumber = newSeqNumber;
+
+                    mDataSource->reset();
+
+                    // reseting the data source will have had the
+                    // side effect of discarding any previously queued
+                    // bandwidth change discontinuity.
+                    // Therefore we'll need to treat these seek
+                    // discontinuities as involving a bandwidth change
+                    // even if they aren't directly.
+                    seekDiscontinuity = true;
+                    bandwidthChanged = true;
+                }
+            }
+        }
+
+        mSeekTimeUs = -1;
+
+        Mutex::Autolock autoLock(mLock);
+        mSeekDone = true;
+        mCondition.broadcast();
+    }
 
     if (mSeqNumber < 0) {
-        mSeqNumber = mFirstSeqNumber;
+        mSeqNumber = firstSeqNumberInPlaylist;
     }
 
     int32_t lastSeqNumberInPlaylist =
-        mFirstSeqNumber + (int32_t)mPlaylist->size() - 1;
+        firstSeqNumberInPlaylist + (int32_t)mPlaylist->size() - 1;
 
-    if (mSeqNumber < mFirstSeqNumber
+    if (mSeqNumber < firstSeqNumberInPlaylist
             || mSeqNumber > lastSeqNumberInPlaylist) {
         if (mPrevBandwidthIndex != (ssize_t)bandwidthIndex) {
             // Go back to the previous bandwidth.
@@ -597,8 +637,8 @@ rinse_repeat:
         } else {
             LOGE("Cannot find sequence number %d in playlist "
                  "(contains %d - %d)",
-                 mSeqNumber, mFirstSeqNumber,
-                 mFirstSeqNumber + mPlaylist->size() - 1);
+                 mSeqNumber, firstSeqNumberInPlaylist,
+                 firstSeqNumberInPlaylist + mPlaylist->size() - 1);
 
             mDataSource->queueEOS(ERROR_END_OF_STREAM);
             return;
@@ -610,7 +650,7 @@ rinse_repeat:
     AString uri;
     sp<AMessage> itemMeta;
     CHECK(mPlaylist->itemAt(
-                mSeqNumber - mFirstSeqNumber,
+                mSeqNumber - firstSeqNumberInPlaylist,
                 &uri,
                 &itemMeta));
 
@@ -622,19 +662,14 @@ rinse_repeat:
     sp<ABuffer> buffer;
     status_t err = fetchFile(uri.c_str(), &buffer);
     if (err != OK) {
-        Mutex::Autolock autoLock(mLock);
-        if( !mSeeking ) {
-           mDataSource->queueEOS(err);
-           LOGE("failed to fetch .ts segment at url '%s'", uri.c_str());
-        } else {
-           LOGV("fetchFile stopped due to seek, ignore this");
-        }
+        LOGE("failed to fetch .ts segment at url '%s'", uri.c_str());
+        mDataSource->queueEOS(err);
         return;
     }
 
     CHECK(buffer != NULL);
 
-    err = decryptBuffer(mSeqNumber - mFirstSeqNumber, buffer);
+    err = decryptBuffer(mSeqNumber - firstSeqNumberInPlaylist, buffer);
 
     if (err != OK) {
         LOGE("decryptBuffer failed w/ error %d", err);
@@ -666,17 +701,7 @@ rinse_repeat:
     }
 
     if ((size_t)mPrevBandwidthIndex != bandwidthIndex) {
-        char value[PROPERTY_VALUE_MAX];
-        if(property_get("httplive.enable.discontinuity", value, NULL) &&
-           (!strcasecmp(value, "true") || !strcmp(value, "1")) ) {
-           bandwidthChanged = true;
-           LOGV("discontinuity property set, queue discontinuity");
-        }
-        else {
-           LOGV("BW changed, but do not queue discontinuity");
-           bandwidthChanged = false;
-        }
-
+        bandwidthChanged = true;
     }
 
     if (mPrevBandwidthIndex < 0) {
@@ -685,11 +710,11 @@ rinse_repeat:
         bandwidthChanged = false;
     }
 
-    if (explicitDiscontinuity || bandwidthChanged) {
+    if (seekDiscontinuity || explicitDiscontinuity || bandwidthChanged) {
         // Signal discontinuity.
 
-        LOGI("queueing discontinuity (explicit=%d, bandwidthChanged=%d)",
-              explicitDiscontinuity, bandwidthChanged);
+        LOGI("queueing discontinuity (seek=%d, explicit=%d, bandwidthChanged=%d)",
+             seekDiscontinuity, explicitDiscontinuity, bandwidthChanged);
 
         sp<ABuffer> tmp = new ABuffer(188);
         memset(tmp->data(), 0, tmp->size());
@@ -709,7 +734,8 @@ rinse_repeat:
 }
 
 void LiveSession::onMonitorQueue() {
-    if( mDataSource->countQueuedBuffers() < kMaxNumQueuedFragments) {
+    if (mSeekTimeUs >= 0
+            || mDataSource->countQueuedBuffers() < kMaxNumQueuedFragments) {
         onDownloadNext();
     } else {
         postMonitorQueue(1000000ll);
@@ -865,56 +891,8 @@ void LiveSession::postMonitorQueue(int64_t delayUs) {
 void LiveSession::onSeek(const sp<AMessage> &msg) {
     int64_t timeUs;
     CHECK(msg->findInt64("timeUs", &timeUs));
-    LOGV("onSeek %lld ", timeUs);
 
-    Mutex::Autolock autoLock(mLock);
     mSeekTimeUs = timeUs;
-
-    if (mPlaylist != NULL && mPlaylist->isComplete() ) {
-        size_t index = 0;
-        int64_t segmentStartUs = 0;
-        while (index < mPlaylist->size()) {
-            sp<AMessage> itemMeta;
-            CHECK(mPlaylist->itemAt(
-                       index, NULL /* uri */, &itemMeta));
-
-            int64_t itemDurationUs;
-            CHECK(itemMeta->findInt64("durationUs", &itemDurationUs));
-
-            if (mSeekTimeUs < segmentStartUs + itemDurationUs) {
-                break;
-            }
-
-            segmentStartUs += itemDurationUs;
-            ++index;
-        }
-
-        if (index < mPlaylist->size()) {
-             int32_t newSeqNumber = mFirstSeqNumber + index;
-
-             if (newSeqNumber == mSeqNumber) {
-                 LOGV("Seek not required current seq %d", mSeqNumber);
-                 mSeekTimeUs = -1;
-
-             } else {
-                 mSeqNumber = newSeqNumber;
-                 mDataSource->reset();
-                 mSeekTimeUs = segmentStartUs;
-                 LOGV("Seeking to seq %d new seek time %0.2f secs", newSeqNumber, mSeekTimeUs/1E6);
-             }
-        }
-    } else {
-        mSeekTimeUs = -1;
-        if( mPlaylist != NULL ) {
-           LOGI("Seeking Live Streams is not supported, ignore seek");
-        } else {
-           LOGE("onSeek error - Playlist is NULL");
-        }
-    }
-
-    mSeeking = false;
-    mCondition.broadcast();
-
     postMonitorQueue();
 }
 

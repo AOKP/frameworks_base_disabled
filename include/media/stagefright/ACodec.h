@@ -22,7 +22,6 @@
 #include <android/native_window.h>
 #include <media/IOMX.h>
 #include <media/stagefright/foundation/AHierarchicalStateMachine.h>
-#include <OMX_Component.h>
 
 namespace android {
 
@@ -61,7 +60,6 @@ private:
     struct ExecutingToIdleState;
     struct IdleToLoadedState;
     struct FlushingState;
-    struct FlushingOutputState;
 
     enum {
         kWhatSetup                   = 'setu',
@@ -105,7 +103,6 @@ private:
     sp<ExecutingToIdleState> mExecutingToIdleState;
     sp<IdleToLoadedState> mIdleToLoadedState;
     sp<FlushingState> mFlushingState;
-    sp<FlushingOutputState> mFlushingOutputState;
 
     AString mComponentName;
     sp<IOMX> mOMX;
@@ -177,11 +174,6 @@ private:
     void sendFormatChange();
 
     void signalError(OMX_ERRORTYPE error = OMX_ErrorUndefined);
-
-    //Smooth streaming related
-    status_t InitSmoothStreaming();
-    OMX_PARAM_PORTDEFINITIONTYPE mOutputPortDef;
-    bool mSmoothStreaming;
 
     DISALLOW_EVIL_CONSTRUCTORS(ACodec);
 };

@@ -96,21 +96,6 @@
             android:background="@android:drawable/divider_horizontal_dark"
                 />
 
-	<com.android.internal.policy.impl.WeatherText
-		  android:id="@+id/weather"
-                  android:layout_width="match_parent"
-                  android:layout_height="wrap_content"
-                  android:gravity="center"
-                  android:textSize="18sp"/>
-
-        <!-- spacer after weather -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dip"
-            android:layout_marginBottom="8dip"
-            android:background="@android:drawable/divider_horizontal_dark"
-                />
-
         <!-- battery info -->
         <LinearLayout android:id="@+id/batteryInfo"
                 android:orientation="horizontal"

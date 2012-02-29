@@ -20,17 +20,29 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SyncStatusObserver;
+import android.os.Handler;
+import android.os.RemoteException;
+import android.view.KeyEvent;
 
 import com.android.systemui.R;
 
 public class SyncToggle extends Toggle {
+	
+	private Handler mHandler = new Handler();
 
     private SyncStatusObserver mSyncObserver = new SyncStatusObserver() {
         public void onStatusChanged(int which) {
-            updateState();
+        	mHandler.post(onSyncUpdated);
+        	// View cannot be updated outside UI thread.  use handler to run update
         }
     };
 
+    final Runnable onSyncUpdated = new Runnable() {
+    	public void run() {
+    		updateState();
+    	}
+    };
+    
     public SyncToggle(Context context) {
         super(context);
         updateState();

@@ -62,9 +62,8 @@ import com.android.internal.widget.multiwaveview.MultiWaveView;
 class LockScreen extends LinearLayout implements KeyguardScreen {
 
     private static final int ON_RESUME_PING_DELAY = 500; // delay first ping until the screen is on
-    private static final boolean DBG = true;
+    private static final boolean DBG = false;
     private static final boolean DEBUG = DBG;
-    private static final boolean COLOR_DEBUGGING = true; // this dies when we fix colorized text
     private static final String TAG = "LockScreen";
     private static final String ENABLE_MENU_KEY_FILE = "/data/local/enable_menu_key";
     private static final int WAIT_FOR_ANIMATION_TIMEOUT = 0;
@@ -75,7 +74,6 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
     public static final int LAYOUT_OCTO = 8;
 
     private static final int COLOR_WHITE = 16777215;
-    private static final int COLOR_DEBUG = 16711680;
 
     private int mLockscreenTargets = LAYOUT_STOCK;
 
@@ -98,9 +96,6 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
     // to allow coloring of lockscreen texts
     private TextView mCarrier;
     private DigitalClock mDigitalClock;
-    private TextView mDate;
-    private TextView mAlarmStatus;
-    private TextView mStatus;
 
     private Drawable[] lockDrawables;
     
@@ -593,9 +588,6 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 
         mDigitalClock = (DigitalClock) findViewById(R.id.time);
         mCarrier = (TextView) findViewById(R.id.carrier);
-        mDate = (TextView) findViewById(R.id.date);
-        mAlarmStatus = (TextView) findViewById(R.id.alarm_status);
-        mStatus = (TextView) findViewById(R.id.status1);
 
         mUnlockWidget = findViewById(R.id.unlock_widget);
         if (mUnlockWidget instanceof SlidingTab) {
@@ -820,8 +812,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
         int mLockscreenColor = Settings.System.getInt(resolver,
                 Settings.System.LOCKSCREEN_CUSTOM_TEXT_COLOR, COLOR_WHITE);
 
-        // XXX: each could throw a null pointer so watch your ass
-        // update colors
+        // XXX: UPDATE COLORS each could throw a null pointer so watch your ass
         // digital clock first (see @link com.android.internal.widget.DigitalClock.updateTime())
         try {
             mDigitalClock.updateTime();

@@ -517,6 +517,7 @@ status_t ACodec::allocateOutputBuffersFromNativeWindow() {
         return err;
     }
 
+#ifdef QCOM_HARDWARE
     int format = (def.format.video.eColorFormat == (OMX_COLOR_FORMATTYPE)QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka)?
                  HAL_PIXEL_FORMAT_YCbCr_420_SP_TILED : def.format.video.eColorFormat;
     if(def.format.video.eColorFormat == OMX_QCOM_COLOR_FormatYVU420SemiPlanar)
@@ -527,6 +528,13 @@ status_t ACodec::allocateOutputBuffersFromNativeWindow() {
             def.format.video.nFrameWidth,
             def.format.video.nFrameHeight,
             format);
+#else
+     err = native_window_set_buffers_geometry(
+             mNativeWindow.get(),
+             def.format.video.nFrameWidth,
+             def.format.video.nFrameHeight,
+            def.format.video.eColorFormat);
+#endif
 
     if (err != 0) {
         LOGE("native_window_set_buffers_geometry failed: %s (%d)",
@@ -599,6 +607,7 @@ status_t ACodec::allocateOutputBuffersFromNativeWindow() {
         return err;
     }
 
+#ifdef QCOM_HARDWARE
     err = mNativeWindow.get()->perform(mNativeWindow.get(),
                               NATIVE_WINDOW_SET_BUFFERS_SIZE,
                               def.nBufferSize);
@@ -608,7 +617,7 @@ status_t ACodec::allocateOutputBuffersFromNativeWindow() {
                 -err);
         return err;
     }
-
+#endif
 
     LOGV("[%s] Allocating %lu buffers from a native window of size %lu on "
          "output port",
@@ -1090,6 +1099,7 @@ status_t ACodec::setSupportedOutputFormat() {
     format.nPortIndex = kPortIndexOutput;
     format.nIndex = 0;
 
+#ifdef QCOM_HARDWARE
     if (!strncmp(mComponentName.c_str(), "OMX.qcom",8)) {
         int32_t reqdColorFormat = ColorFormatInfo::getPreferredFormat();
         for(format.nIndex = 0;
@@ -1102,6 +1112,7 @@ status_t ACodec::setSupportedOutputFormat() {
 
     LOGV("Video O/P format.nIndex 0x%x",format.nIndex);
     LOGW("Video O/P format.eColorFormat 0x%x",format.eColorFormat);
+#endif
 
     status_t err = mOMX->getParameter(
             mNode, OMX_IndexParamVideoPortFormat,
@@ -1113,8 +1124,12 @@ status_t ACodec::setSupportedOutputFormat() {
            || format.eColorFormat == OMX_COLOR_FormatYUV420SemiPlanar
            || format.eColorFormat == OMX_COLOR_FormatCbYCrY
            || format.eColorFormat == OMX_TI_COLOR_FormatYUV420PackedSemiPlanar
+#ifdef QCOM_HARDWARE
            || format.eColorFormat == (OMX_COLOR_FORMATTYPE)OMX_QCOM_COLOR_FormatYVU420SemiPlanar
            || format.eColorFormat ==  (OMX_COLOR_FORMATTYPE)QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka);
+#else
+           || format.eColorFormat == OMX_QCOM_COLOR_FormatYVU420SemiPlanar);
+#endif
 
     return mOMX->setParameter(
             mNode, OMX_IndexParamVideoPortFormat,
@@ -1309,6 +1324,7 @@ void ACodec::sendFormatChange() {
             CHECK_LE(rect.nLeft + rect.nWidth - 1, videoDef->nFrameWidth);
             CHECK_LE(rect.nTop + rect.nHeight - 1, videoDef->nFrameHeight);
 
+#ifdef QCOM_HARDWARE
             int format = (def.format.video.eColorFormat == (OMX_COLOR_FORMATTYPE)QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka)?
                  HAL_PIXEL_FORMAT_YCbCr_420_SP_TILED : def.format.video.eColorFormat;
 
@@ -1322,6 +1338,7 @@ void ACodec::sendFormatChange() {
                    LOGE("native_window_update_buffers_geometry failed in SS mode %d", err);
                }
             }
+#endif
 
             notify->setRect(
                     "crop",
@@ -1377,6 +1394,7 @@ void ACodec::sendFormatChange() {
     mSentFormat = true;
 }
 
+#ifdef QCOM_HARDWARE
 status_t ACodec::InitSmoothStreaming() {
 
     // get Extension index for smooth streaming
@@ -1488,6 +1506,7 @@ status_t ACodec::InitSmoothStreaming() {
             def.nBufferCountActual, def.nBufferCountMin, def.nBufferSize);
     return OK;
 }
+#endif
 
 
 void ACodec::signalError(OMX_ERRORTYPE error) {
@@ -1824,6 +1843,7 @@ void ACodec::BaseState::getMoreInputDataIfPossible() {
     postFillThisBuffer(eligible);
 }
 
+#ifdef QCOM_HARDWARE
 void ACodec::BaseState::HandleExtraData(IOMX::buffer_id bufferID) {
     OMX_OTHER_EXTRADATATYPE *pExtra;
     OMX_BUFFERHEADERTYPE* pBufHdr = (OMX_BUFFERHEADERTYPE*)bufferID;
@@ -1862,6 +1882,7 @@ void ACodec::BaseState::HandleExtraData(IOMX::buffer_id bufferID) {
         }
     }
 }
+#endif
 
 
 bool ACodec::BaseState::onOMXFillBufferDone(
@@ -2139,6 +2160,7 @@ void ACodec::UninitializedState::onSetup(
 
     mCodec->mInputEOSResult = OK;
 
+#ifdef QCOM_HARDWARE
     char value[PROPERTY_VALUE_MAX];
     if(property_get("hls.enable.smooth.streaming", value, NULL) &&
       (!strcasecmp(value, "true") || !strcmp(value, "1")) &&
@@ -2154,6 +2176,7 @@ void ACodec::UninitializedState::onSetup(
             LOGI("Smooth streaming is enabled ");
         }
     }
+#endif
     mCodec->configureCodec(mime.c_str(), msg);
 
     sp<RefBase> obj;
@@ -2428,12 +2451,13 @@ bool ACodec::ExecutingState::onOMXEvent(
 
             return true;
         }
+#ifdef QCOM_HARDWARE
         case OMX_EventIndexsettingChanged:
         {
             LOGV("[%s] Received OMX_EventIndexsettingChanged event ", mCodec->mComponentName.c_str());
             return true;
         }
-
+#endif
         case OMX_EventBufferFlag:
         {
             return true;

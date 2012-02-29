@@ -15,6 +15,8 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.ImageView;
 import android.widget.FrameLayout;
+import android.widget.Toast;
+
 import com.android.systemui.R;
 
 public class WeatherPanel extends FrameLayout {
@@ -80,10 +82,20 @@ public class WeatherPanel extends FrameLayout {
         }
     };
 
+    private View.OnClickListener mPanelOnClickListener = new View.OnClickListener() {
+
+        @Override
+        public void onClick(View v) {
+            v.getContext().sendBroadcast(new Intent("com.aokp.romcontrol.INTENT_WEATHER_REQUEST"));
+            Toast.makeText(v.getContext(), "Requesting weather update!", Toast.LENGTH_LONG).show();
+        }
+    };
+
     public WeatherPanel(Context context, AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
         setVisibility(View.GONE);
+        setOnClickListener(mPanelOnClickListener);
     }
 
     @Override

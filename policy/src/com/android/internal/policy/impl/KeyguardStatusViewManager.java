@@ -43,7 +43,7 @@ import com.android.internal.widget.TransportControlView;
  *
  */
 class KeyguardStatusViewManager implements OnClickListener {
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
     private static final String TAG = "KeyguardStatusView";
 
     public static final int LOCK_ICON = 0; // R.drawable.ic_lock_idle_lock;
@@ -698,6 +698,55 @@ class KeyguardStatusViewManager implements OnClickListener {
             return spn;
         } else {
             return "";
+        }
+    }
+
+    public void updateColors() {
+        int white = 16777215;
+        if (DEBUG) Log.d(TAG, "Lets update the colors");
+        ContentResolver resolver = getContext().getContentResolver();
+        int color = Settings.System.getInt(resolver,
+                Settings.System.LOCKSCREEN_CUSTOM_TEXT_COLOR, white);
+        // XXX: EACH CAN THROW NULL POINTER SO WATCH YOUR ASS
+ 
+        // carrier view
+        try {
+            mCarrierView.setTextColor(color);
+            if (DEBUG) Log.d(TAG, String.format("Setting mCarrierView text color to %d", color));
+        } catch (NullPointerException ne) {
+            if (DEBUG) ne.printStackTrace();
+        }
+
+        // date view
+        try {
+            mDateView.setTextColor(color);
+            if (DEBUG) Log.d(TAG, String.format("Setting mDateView DATE text color to %d", color));
+        } catch (NullPointerException ne) {
+            if (DEBUG) ne.printStackTrace();
+        }
+
+        // status view
+        try {
+            mStatus1View.setTextColor(color);
+            if (DEBUG) Log.d(TAG, String.format("Setting mStatus1View DATE text color to %d", color));
+        } catch (NullPointerException ne) {
+            if (DEBUG) ne.printStackTrace();
+        }
+
+        // owner info view
+        try {
+            mOwnerInfoView.setTextColor(color);
+            if (DEBUG) Log.d(TAG, String.format("Setting mOwnerInfoView DATE text color to %d", color));
+        } catch (NullPointerException ne) {
+            if (DEBUG) ne.printStackTrace();
+        }
+
+        // alarm status view
+        try {
+            mAlarmStatusView.setTextColor(color);
+            if (DEBUG) Log.d(TAG, String.format("Setting mAlarmStatusView DATE text color to %d", color));
+        } catch (NullPointerException ne) {
+            if (DEBUG) ne.printStackTrace();
         }
     }
 }

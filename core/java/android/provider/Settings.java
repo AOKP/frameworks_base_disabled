@@ -2417,6 +2417,12 @@ public final class Settings {
         public static final String MENU_VISIBILITY = "menu_visibility";
 
         /**
+         * Return CUSTOM_CARRIER_LABEL to the default
+         * @hide
+         */
+        public static final String DEFAULT_CARRIER_LABEL = "default_carrier_label";
+
+        /**
          * custom carrier text to display
          * 
          * @hide
@@ -2667,6 +2673,12 @@ public final class Settings {
          * @hide
          */
         public static final String VOLUME_WAKE_SCREEN = "volume_wake_screen";
+
+        /**
+         * custom lockscreen text color
+         * @hide
+         */
+        public static final String LOCKSCREEN_CUSTOM_TEXT_COLOR = "lockscreen_custom_text_color";
 
         /**
          * launch a custom app for sms

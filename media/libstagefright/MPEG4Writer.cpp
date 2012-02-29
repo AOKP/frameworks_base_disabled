@@ -2755,7 +2755,7 @@ void MPEG4Writer::Track::writeCttsBox() {
 
     mOwner->beginBox("ctts");
     if (mHasNegativeCttsDeltaDuration) {
-        mOwner->writeInt32(0x00010000);  // version=1, flags=0
+        mOwner->writeInt32(0x01000000);  // version=1 (1 byte), flags=0 (3 bytes)
     } else {
         mOwner->writeInt32(0);  // version=0, flags=0
     }

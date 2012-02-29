@@ -32,7 +32,16 @@
         android:layout_weight="1"
         android:background="@drawable/notification_tracking_bg"
         >
-        
+
+        <com.android.systemui.statusbar.policy.WeatherText
+            android:textAppearance="@style/TextAppearance.StatusBar.Clock"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_gravity="bottom"
+            android:gravity="center"
+            android:paddingBottom="40dp"
+            />
+
         <com.android.systemui.statusbar.phone.CarrierLabel
             android:textAppearance="@style/TextAppearance.StatusBar.Clock"
             android:layout_height="wrap_content"

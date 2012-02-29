@@ -1,3 +1,4 @@
+
 package com.android.systemui.statusbar.policy;
 
 import android.content.BroadcastReceiver;
@@ -31,7 +32,7 @@ public class WeatherPanel extends FrameLayout {
     public static final String EXTRA_WIND = "wind";
     public static final String EXTRA_LOW = "todays_low";
     public static final String EXTRA_HIGH = "todays_high";
-    
+
     private TextView mHighTemp;
     private TextView mLowTemp;
     private TextView mCurrentTemp;
@@ -40,43 +41,47 @@ public class WeatherPanel extends FrameLayout {
     private TextView mHumidity;
     private TextView mWinds;
     private ImageView mConditionImage;
-    private Context mContext;  
+    private Context mContext;
     private String mCondition_code = "";
 
     BroadcastReceiver weatherReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-        	mCondition_code = (String) intent.getCharSequenceExtra(EXTRA_CONDITION_CODE);
-        	if (mCurrentTemp !=null)
-        		mCurrentTemp.setText("Current:" + intent.getCharSequenceExtra("temp"));
-        	if (mHighTemp !=null)
-        		mHighTemp.setText("High:" + intent.getCharSequenceExtra(EXTRA_HIGH));
-        	if (mLowTemp !=null)
-        		mLowTemp.setText("Low:" + intent.getCharSequenceExtra(EXTRA_LOW));
-        	if (mCity !=null)
-        		mCity.setText(intent.getCharSequenceExtra(EXTRA_CITY));
-        	if (mZipCode !=null)
-        		mZipCode.setText("ZipCode:" + intent.getCharSequenceExtra(EXTRA_ZIP));
-        	if (mHumidity !=null)
-        		mHumidity.setText(intent.getCharSequenceExtra(EXTRA_HUMIDITY));
-        	if (mWinds !=null)
-        		mWinds.setText(intent.getCharSequenceExtra(EXTRA_WIND));
-        	if (mConditionImage != null){ 
-        		String condition_filename = "weather_" + mCondition_code;
-        		int resID = getResources().getIdentifier(condition_filename, "drawable", mContext.getPackageName());
-        		Log.d("Weather","Condition:" + mCondition_code + " ID:" + resID);
-        		if (resID != 0) {
-        			mConditionImage.setImageDrawable(getResources().getDrawable(resID));
-        		} else {
-        			mConditionImage.setImageDrawable(getResources().getDrawable(R.drawable.weather_na));
-        		}
-        	}
+            mCondition_code = (String) intent.getCharSequenceExtra(EXTRA_CONDITION_CODE);
+            if (mCurrentTemp != null)
+                mCurrentTemp.setText("Current:" + intent.getCharSequenceExtra("temp"));
+            if (mHighTemp != null)
+                mHighTemp.setText("High:" + intent.getCharSequenceExtra(EXTRA_HIGH));
+            if (mLowTemp != null)
+                mLowTemp.setText("Low:" + intent.getCharSequenceExtra(EXTRA_LOW));
+            if (mCity != null)
+                mCity.setText(intent.getCharSequenceExtra(EXTRA_CITY));
+            if (mZipCode != null)
+                mZipCode.setText("ZipCode:" + intent.getCharSequenceExtra(EXTRA_ZIP));
+            if (mHumidity != null)
+                mHumidity.setText(intent.getCharSequenceExtra(EXTRA_HUMIDITY));
+            if (mWinds != null)
+                mWinds.setText(intent.getCharSequenceExtra(EXTRA_WIND));
+            if (mConditionImage != null) {
+                String condition_filename = "weather_" + mCondition_code;
+                int resID = getResources().getIdentifier(condition_filename, "drawable",
+                        mContext.getPackageName());
+                Log.d("Weather", "Condition:" + mCondition_code + " ID:" + resID);
+                if (resID != 0) {
+                    mConditionImage.setImageDrawable(getResources().getDrawable(resID));
+                } else {
+                    mConditionImage.setImageDrawable(getResources().getDrawable(
+                            R.drawable.weather_na));
+                }
+            }
+            setVisibility(View.VISIBLE);
         }
     };
 
     public WeatherPanel(Context context, AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
+        setVisibility(View.GONE);
     }
 
     @Override
@@ -119,6 +124,9 @@ public class WeatherPanel extends FrameLayout {
             resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.USE_WEATHER), false,
                     this);
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.WEATHER_STATUSBAR_STYLE), false,
+                    this);
             updateSettings();
         }
 
@@ -131,7 +139,8 @@ public class WeatherPanel extends FrameLayout {
     protected void updateSettings() {
         ContentResolver resolver = mContext.getContentResolver();
 
-        boolean useWeather = Settings.System.getInt(resolver, Settings.System.USE_WEATHER, 0) == 1;
+        boolean useWeather = Settings.System.getInt(resolver, Settings.System.USE_WEATHER, 0) == 1
+                && Settings.System.getInt(resolver, Settings.System.WEATHER_STATUSBAR_STYLE, 1) == 1;
         this.setVisibility(useWeather ? View.VISIBLE : View.GONE);
-      }
+    }
 }

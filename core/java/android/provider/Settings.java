@@ -2642,6 +2642,11 @@ public final class Settings {
          * @hide
          */
         public static final String WEATHER_SHOW_LOCATION = "weather_show_location";
+        
+        /**
+         * @hide
+         */
+        public static final String WEATHER_STATUSBAR_STYLE = "weather_statusbar_style";
 
         /**
          * Whether to enable torch by long pressing power from a screen-off state

@@ -67,12 +67,11 @@ status_t NuPlayerDriver::setUID(uid_t uid) {
 status_t NuPlayerDriver::setDataSource(
         const char *url, const KeyedVector<String8, String8> *headers) {
     CHECK_EQ((int)mState, (int)UNINITIALIZED);
-
-    mPlayer->setDataSource(url, headers);
-
+    status_t nRet = mPlayer->setDataSource(url, headers);
+    LOGV("creating source %d",nRet);
     mState = STOPPED;
 
-    return OK;
+    return nRet;
 }
 
 status_t NuPlayerDriver::setDataSource(int fd, int64_t offset, int64_t length) {

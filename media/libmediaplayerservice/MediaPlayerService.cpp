@@ -583,6 +583,10 @@ player_type getPlayerType(const char* url)
         if (len >= 5 && !strcasecmp(".m3u8", &url[len - 5])) {
             return NU_PLAYER;
         }
+        else if(len >= 4 && !strcasecmp(".mpd", &url[len - 4])) {
+            LOGV("NuPlayer is getting created");
+            return NU_PLAYER;
+        }
 
         if (strstr(url,"m3u8")) {
             return NU_PLAYER;

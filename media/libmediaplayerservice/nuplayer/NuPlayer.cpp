@@ -17,7 +17,7 @@
 //#define LOG_NDEBUG 0
 #define LOG_TAG "NuPlayer"
 #include <utils/Log.h>
-
+#include <dlfcn.h>  // for dlopen/dlclose
 #include "NuPlayer.h"
 
 #include "HTTPLiveSource.h"
@@ -63,7 +63,9 @@ NuPlayer::NuPlayer()
       mSkipRenderingVideoUntilMediaTimeUs(-1ll),
       mVideoLateByUs(0ll),
       mNumFramesTotal(0ll),
-      mNumFramesDropped(0ll) {
+      mNumFramesDropped(0ll),
+      mIsHttpLive(false),
+      mLiveSourceType(kDefaultSource) {
 }
 
 NuPlayer::~NuPlayer() {
@@ -82,22 +84,46 @@ void NuPlayer::setDataSource(const sp<IStreamSource> &source) {
     sp<AMessage> msg = new AMessage(kWhatSetDataSource, id());
 
     msg->setObject("source", new StreamingSource(source));
+    mLiveSourceType = kStreamingSource;
     msg->post();
 }
 
-void NuPlayer::setDataSource(
+status_t NuPlayer::setDataSource(
         const char *url, const KeyedVector<String8, String8> *headers) {
     sp<AMessage> msg = new AMessage(kWhatSetDataSource, id());
 
-    if (!strncasecmp(url, "rtsp://", 7)) {
-        msg->setObject(
-                "source", new RTSPSource(url, headers, mUIDValid, mUID));
-    } else {
-        msg->setObject(
-                "source", new HTTPLiveSource(url, headers, mUIDValid, mUID));
-    }
+    status_t nRet = OK;
+    String8 mUri(url);
+    size_t len = strlen(url);
 
+    if (!strncasecmp(url, "rtsp://", 7)) {
+           msg->setObject(
+                "source", new RTSPSource(url, headers, mUIDValid, mUID));
+           mIsHttpLive = false;
+           mLiveSourceType = kRtspSource;
+    } else {
+       if (!strncasecmp(mUri.string(), "http://", 7) && (len >= 4 && !strcasecmp(".mpd", &url[len - 4]))) {
+           /* Load the DASH HTTP Live source librery here */
+           LOGV("NuPlayer setDataSource url sting %s",mUri.string());
+           sp<NuPlayer::Source> DashHttpLiveSource = LoadCreateDashHttpSource(url, headers, mUIDValid, mUID);
+           mIsHttpLive = false;
+           if (DashHttpLiveSource != NULL) {
+              mLiveSourceType = kHttpDashSource;
+              msg->setObject("source", DashHttpLiveSource);
+           } else {
+             LOGE("Error creating DASH source");
+             return UNKNOWN_ERROR;
+           }
+       } else {
+           msg->setObject(
+                "source", new HTTPLiveSource(url, headers, mUIDValid, mUID));
+           mIsHttpLive = true;
+           mLiveSourceType = kHttpLiveSource;
+       }
+    }
     msg->post();
+
+    return nRet;
 }
 
 void NuPlayer::setVideoSurfaceTexture(const sp<ISurfaceTexture> &surfaceTexture) {
@@ -128,6 +154,9 @@ void NuPlayer::resume() {
 
 void NuPlayer::resetAsync() {
     (new AMessage(kWhatReset, id()))->post();
+    if ((mLiveSourceType == kHttpDashSource) && (mSource != NULL)) {
+       mSource->stop();
+    }
 }
 
 void NuPlayer::seekToAsync(int64_t seekTimeUs) {
@@ -438,6 +467,10 @@ void NuPlayer::onMessageReceived(const sp<AMessage> &msg) {
 
                 CHECK(msg->findInt64("videoLateByUs", &mVideoLateByUs));
 
+                if (mSource != NULL && (mLiveSourceType == kHttpDashSource)) {
+                    mSource->notifyRenderingPosition(positionUs);
+                }
+
                 if (mDriver != NULL) {
                     sp<NuPlayerDriver> driver = mDriver.promote();
                     if (driver != NULL) {
@@ -468,6 +501,7 @@ void NuPlayer::onMessageReceived(const sp<AMessage> &msg) {
             LOGV("kWhatReset");
             Mutex::Autolock autoLock(mLock);
 
+            /*TODO We have to evaluate if this fix is required from google */
             if (mRenderer != NULL) {
                 // There's an edge case where the renderer owns all output
                 // buffers and is paused, therefore the decoder will not read
@@ -515,15 +549,40 @@ void NuPlayer::onMessageReceived(const sp<AMessage> &msg) {
         {
             Mutex::Autolock autoLock(mLock);
             int64_t seekTimeUs = -1, newSeekTime = -1;
+            status_t nRet = OK;
             CHECK(msg->findInt64("seekTimeUs", &seekTimeUs));
 
             LOGV("kWhatSeek seekTimeUs=%lld us (%.2f secs)",
                  seekTimeUs, seekTimeUs / 1E6);
 
-            mSource->seekTo(seekTimeUs, &newSeekTime);
-            LOGV("newSeekTime %lld", newSeekTime);
+            nRet = mSource->seekTo(seekTimeUs);
 
-            if( newSeekTime >= 0 ) {
+            if( mIsHttpLive ) {
+                mSource->getNewSeekTime(&newSeekTime);
+                LOGV("newSeekTime %lld", newSeekTime);
+            }
+            else if ( (mLiveSourceType == kHttpDashSource) && (nRet == OK)) // if seek success then flush the audio,video decoder and renderer
+            {
+                if( (mVideoDecoder != NULL) &&
+                    (mFlushingVideo == NONE || mFlushingVideo == AWAITING_DISCONTINUITY) ) {
+                    flushDecoder( false, false ); // flush video, do not shutdown
+                }
+
+               if( (mAudioDecoder != NULL) &&
+                   (mFlushingAudio == NONE|| mFlushingAudio == AWAITING_DISCONTINUITY) )
+               {
+                   flushDecoder( true, false );  // flush audio, do not shut down
+               }
+               // notify the UI about the seeked position, temp fix.. once seek works properly need to find a way to set the correct seeked position
+               //newSeekTime = seekTimeUs;
+
+               // get the new seeked position
+               mSource->getNewSeekTime(&newSeekTime);
+
+               LOGV("newSeekTime %lld", newSeekTime);
+            }
+            if( (newSeekTime >= 0 ) && (mLiveSourceType != kHttpDashSource)) {
+               mTimeDiscontinuityPending = true;
                if( (mAudioDecoder != NULL) &&
                    (mFlushingAudio == NONE || mFlushingAudio == AWAITING_DISCONTINUITY) ) {
                   flushDecoder( true, true );
@@ -944,6 +1003,46 @@ void NuPlayer::flushDecoder(bool audio, bool needShutdown) {
         }
     }
     LOGV("flushDecoder end states Audio %d, Video %d", mFlushingAudio, mFlushingVideo);
+}
+sp<NuPlayer::Source> NuPlayer::LoadCreateDashHttpSource(const char * uri, const KeyedVector<String8, String8> *headers, bool uidValid, uid_t uid)
+{
+   const char* DASH_HTTP_LIVE_LIB = "libmmipstreamaal.so";
+   const char* DASH_HTTP_LIVE_CREATE_SOURCE = "CreateDashHttpLiveSource";
+   void* pDashhttpLiveLib = NULL;
+
+   typedef NuPlayer::Source* (*DashHttpLiveSourceFactory)(const char * uri, const KeyedVector<String8, String8> *headers, bool uidValid, uid_t uid);
+
+   /* Open librery */
+   pDashhttpLiveLib = ::dlopen(DASH_HTTP_LIVE_LIB, RTLD_LAZY);
+
+   if (pDashhttpLiveLib == NULL) {
+       LOGE("DASH Source Library (libmmipstreamaal.so) Load Failed  Error : %s ",::dlerror());
+       return NULL;
+   }
+
+   LOGV("DASH Source Library (libmmipstreamaal.so) Loaded successfully");
+
+   LOGV("Searching for symbol \"%s\" in libmmipstreamaal.so",DASH_HTTP_LIVE_CREATE_SOURCE);
+
+   /* Get the entry level symbol which gets us the pointer to DASH HTTP Live Source object */
+   DashHttpLiveSourceFactory DashSourcefunPtr = (DashHttpLiveSourceFactory) dlsym(pDashhttpLiveLib, DASH_HTTP_LIVE_CREATE_SOURCE);
+
+   if (DashSourcefunPtr == NULL) {
+       LOGE("CreateDashHttpLiveSource symbol not found in libmmipstreamaal.so, return NULL ");
+       return NULL;
+   }
+
+    /*Get the DASH Live Source object, which will be used to communicate with DASH */
+    sp<NuPlayer::Source> DashhttpLiveSource = DashSourcefunPtr(uri, headers, uidValid, uid);
+
+    if(DashhttpLiveSource==NULL) {
+        LOGE("DashhttpLiveSource failed to instantiate Source ");
+        return NULL;
+    }
+
+    LOGV("DashhttpLiveSource instantiated successfully ");
+
+    return DashhttpLiveSource;
 }
 
 }  // namespace android

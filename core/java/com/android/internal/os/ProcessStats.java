@@ -679,6 +679,11 @@ public class ProcessStats {
     }
 
     final public String printCurrentState(long now) {
+        if (mFirst) {
+            // should call update before calling this method
+            update();
+        }
+
         buildWorkingProcs();
         
         StringWriter sw = new StringWriter();

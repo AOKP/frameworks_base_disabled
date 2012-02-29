@@ -20,6 +20,7 @@ import com.android.systemui.R;
 public class WeatherPanel extends FrameLayout {
 
     private boolean mAttached;
+    private boolean mUpdateReceived = false;
 
     public static final String EXTRA_CITY = "city";
     public static final String EXTRA_ZIP = "zip";
@@ -74,6 +75,7 @@ public class WeatherPanel extends FrameLayout {
                             R.drawable.weather_na));
                 }
             }
+            mUpdateReceived = true;
             setVisibility(View.VISIBLE);
         }
     };
@@ -141,6 +143,6 @@ public class WeatherPanel extends FrameLayout {
 
         boolean useWeather = Settings.System.getInt(resolver, Settings.System.USE_WEATHER, 0) == 1
                 && Settings.System.getInt(resolver, Settings.System.WEATHER_STATUSBAR_STYLE, 1) == 1;
-        this.setVisibility(useWeather ? View.VISIBLE : View.GONE);
+        this.setVisibility(mUpdateReceived && useWeather ? View.VISIBLE : View.GONE);
     }
 }

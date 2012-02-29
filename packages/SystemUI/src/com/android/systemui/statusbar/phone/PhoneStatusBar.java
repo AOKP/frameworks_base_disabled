@@ -257,10 +257,13 @@ public class PhoneStatusBar extends StatusBar {
     // custom statusbar window shade background color
     private ExpandedView expanded;
     private int newWindowShadeColor;
+    private int newStatusbarColor;
+    private float newStatusbarAlpha;
 
     // custom carrier label
     private TextView mCarrierLabel;
     private View mPhoneCarrierLabel;
+    private View mStatusbarUnexpanded;
 
     private class ExpandedDialog extends Dialog {
         ExpandedDialog(Context context) {
@@ -371,18 +374,10 @@ public class PhoneStatusBar extends StatusBar {
         mClearButton.setOnClickListener(mClearButtonListener);
         mClearButton.setAlpha(0f);
         mClearButton.setEnabled(false);
-        mDateView = (DateView) expanded.findViewById(R.id.date);
         mSettingsButton = expanded.findViewById(R.id.settings_button);
         mSettingsButton.setOnClickListener(mSettingsButtonListener);
         mSettingsButton.setOnLongClickListener(mSettingsLongClickListener);
         mScrollView = (ScrollView) expanded.findViewById(R.id.scroll);
-
-        //LiquidControl quick access
-        mLiquidButton = expanded.findViewById(R.id.liquid_button);
-        mLiquidButton.setOnClickListener(mLiquidButtonListener);
-
-        //lanuch clock or calender app when we click on the date
-        mDateView.setOnClickListener(mDateListener);
 
         mQuickToggles = (TogglesView) expanded.findViewById(R.id.quick_toggles);
         mTicker = new MyTicker(context, sb);
@@ -404,6 +399,22 @@ public class PhoneStatusBar extends StatusBar {
         mCloseView.mService = this;
 
         mEdgeBorder = res.getDimensionPixelSize(R.dimen.status_bar_edge_ignore);
+
+        //LiquidControl quick access
+        mLiquidButton = expanded.findViewById(R.id.liquid_button);
+        mLiquidButton.setOnClickListener(mLiquidButtonListener);
+
+        //lanuch clock or calender app when we click on the date
+        mDateView = (DateView) expanded.findViewById(R.id.date);
+        mDateView.setOnClickListener(mDateListener);
+
+        // statusbar color
+        mFrameLayout = mTrackingView.findViewById(R.id.notification_frame_layout);
+        // custom carrier label
+        mCarrierLabel = (TextView) mTrackingView.findViewById(R.id.custom_carrier_label);
+        mPhoneCarrierLabel = mTrackingView.findViewById(R.id.phone_carrier_label);
+        // custom color and alpha for statusbar
+        mStatusbarUnexpanded = sb.findViewById(R.id.phone_statusbar_view);
 
         // set the inital view visibility
         setAreThereNotifications();
@@ -2502,6 +2513,10 @@ public class PhoneStatusBar extends StatusBar {
                     Settings.System.SCREEN_BRIGHTNESS_MODE), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.CUSTOM_CARRIER_LABEL), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.STATUSBAR_UNEXPANDED_ALPHA), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.STATUSBAR_UNEXPANDED_COLOR), false, this);
         }
 
         @Override
@@ -2563,10 +2578,10 @@ public class PhoneStatusBar extends StatusBar {
         try {
             newAlpha = Settings.System.getFloat(cr, Settings.System.STATUSBAR_EXPANDED_BOTTOM_ALPHA);
             customBottomBarAlpha = true;
-            if (DEBUG) Log.d(TAG, String.format("Custom alpha preference detected %f", newAlpha));
+            if (DEBUG) Log.d(TAG, String.format("Expanded statusbar alpha preference detected %f", newAlpha));
         } catch (SettingNotFoundException snfe) {
             customBottomBarAlpha = false;
-            if (DEBUG) Log.d(TAG, "Custom alpha preference not detected");
+            if (DEBUG) Log.d(TAG, "Expanded statusbar alpha preference not detected");
         }
         if (customBottomBarAlpha) {
             mFrameLayout.setAlpha(newAlpha);
@@ -2577,10 +2592,10 @@ public class PhoneStatusBar extends StatusBar {
         try {
             newWindowShadeColor = Settings.System.getInt(cr, Settings.System.STATUSBAR_EXPANDED_BACKGROUND_COLOR);
             customWindowShadeColor = true;
-            if (DEBUG) Log.d(TAG, String.format("Custom color preference detected %d", newWindowShadeColor));
+            if (DEBUG) Log.d(TAG, String.format("Expanded statusbar background color preference detected %d", newWindowShadeColor));
         } catch (SettingNotFoundException snfe) {
             customWindowShadeColor = false;
-            if (DEBUG) Log.d(TAG, "Custom color preference not detected");
+            if (DEBUG) Log.d(TAG, "Expanded statusbar background color preference not detected");
         }
         if (DEBUG) Log.d(TAG, String.format("Custom color int: %d", newWindowShadeColor));
         if (customWindowShadeColor) {
@@ -2610,6 +2625,38 @@ public class PhoneStatusBar extends StatusBar {
         } else {
             mPhoneCarrierLabel.setVisibility(View.VISIBLE);
             mCarrierLabel.setVisibility(View.GONE);
+        }
+
+        // unexpanded statusbar alpha state
+        boolean customStatusAlpha = false;
+        try {
+            newStatusbarAlpha = Settings.System.getFloat(cr, Settings.System.STATUSBAR_UNEXPANDED_ALPHA);
+            customStatusAlpha = true;
+            if (DEBUG) Log.d(TAG, String.format("Unexpanded statusbar alpha preference detected %f", newStatusbarAlpha));
+        } catch (SettingNotFoundException snfe) {
+            customStatusAlpha = false;
+            if (DEBUG) Log.d(TAG, "Unexpanded statusbar alpha preference not detected");
+        }
+        if (customStatusAlpha) {
+            mStatusbarUnexpanded.setAlpha(newStatusbarAlpha);
+            float unexpanded_alpha_float = mStatusbarUnexpanded.getAlpha();
+            if (DEBUG) Log.d(TAG, String.format("mStatusbarUnexpanded alpha %f", unexpanded_alpha_float));
+        }
+
+        // unexpanded statusbar color
+        boolean customStatusColor = false;
+        int newStatusbarColor = 0;
+        try {
+            newStatusbarColor = Settings.System.getInt(cr, Settings.System.STATUSBAR_UNEXPANDED_COLOR);
+            customStatusColor = true;
+            if (DEBUG) Log.d(TAG, String.format("Unexpanded statusbar color preference detected %d", newStatusbarColor));
+        } catch (SettingNotFoundException snfe) {
+            customStatusColor = false;
+            if (DEBUG) Log.d(TAG, "Unexpanded statusbar color preference not detected");
+        }
+        if (DEBUG) Log.d(TAG, String.format("Custom color int: %d", newStatusbarColor));
+        if (customStatusColor) {
+            mStatusbarUnexpanded.setBackgroundColor(newStatusbarColor);
         }
     }
 

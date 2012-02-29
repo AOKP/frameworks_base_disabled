@@ -39,7 +39,7 @@ import java.util.Date;
 
 public final class DateView extends TextView {
     private static final String TAG = "DateView";
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     private boolean mAttachedToWindow;
     private boolean mWindowVisible;

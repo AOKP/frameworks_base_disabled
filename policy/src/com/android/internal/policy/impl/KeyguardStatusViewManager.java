@@ -203,6 +203,7 @@ class KeyguardStatusViewManager implements OnClickListener {
         resetStatusInfo();
         refreshDate();
         updateOwnerInfo();
+        updateColors();
 
         // Required to get Marquee to work.
         final View scrollableViews[] = { mCarrierView, mDateView, mStatus1View, mOwnerInfoView,

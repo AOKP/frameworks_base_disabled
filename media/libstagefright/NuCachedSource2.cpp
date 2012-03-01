@@ -131,6 +131,7 @@ size_t PageCache::releaseFromStart(size_t maxBytes) {
     }
 
     mTotalSize -= bytesReleased;
+    LOGV("Size of cache after release %d", mTotalSize);
     return bytesReleased;
 }
 
@@ -255,6 +256,15 @@ uint32_t NuCachedSource2::flags() {
     // Remove HTTP related flags since NuCachedSource2 is not HTTP-based.
     uint32_t flags = mSource->flags() & ~(kWantsPrefetching | kIsHTTPBasedSource);
     return (flags | kIsCachingDataSource);
+}
+
+void NuCachedSource2::setAVInterleavingOffset(int64_t av_offset){
+    Mutex::Autolock autoLock(mLock);
+
+    mAVOffset = av_offset > kMaxAVInterleavingOffset ? kMaxAVInterleavingOffset: av_offset;
+    mAVOffset = mAVOffset < kMinAVInterleavingOffset ? kMinAVInterleavingOffset: mAVOffset;
+
+    LOGV("setAVOffset %lld", mAVOffset);
 }
 
 void NuCachedSource2::onMessageReceived(const sp<AMessage> &msg) {
@@ -431,7 +441,9 @@ void NuCachedSource2::restartPrefetcherIfNecessary_l(
 
     if (!ignoreLowWaterThreshold && !force
             && mCacheOffset + mCache->totalSize() - mLastAccessPos
-                >= mLowwaterThresholdBytes) {
+                >= mLowwaterThresholdBytes + mAVOffset) {
+        int64_t cacheLeft = mCacheOffset + mCache->totalSize() - mLastAccessPos;
+        LOGV("Dont restart prefetcher last access %lld, cache left %lld", mLastAccessPos, cacheLeft);
         return;
     }
 
@@ -448,7 +460,7 @@ void NuCachedSource2::restartPrefetcherIfNecessary_l(
     size_t actualBytes = mCache->releaseFromStart(maxBytes);
     mCacheOffset += actualBytes;
 
-    LOGI("restarting prefetcher, totalSize = %d", mCache->totalSize());
+    LOGI("restarting prefetcher, totalSize = %d, offset %lld", mCache->totalSize(), mCacheOffset);
     mFetching = true;
 }
 

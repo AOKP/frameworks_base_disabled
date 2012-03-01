@@ -104,6 +104,8 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
     public static final String INTENT_TORCH_OFF = "com.android.systemui.INTENT_TORCH_OFF";
     private Profile mChosenProfile;
 
+    private Profile mChosenProfile;
+
     /**
      * @param context everything needs a context :(
      */
@@ -472,9 +474,6 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                             }
                 }).create();
         dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG);
-        if (!mContext.getResources().getBoolean(com.android.internal.R.bool.config_sf_slowBlur)) {
-            dialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
-        }
         dialog.show();
     }
 
@@ -752,6 +751,42 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             statusView.setText(mProfileManager.getActiveProfile().getName());
             icon.setImageDrawable(context.getResources().getDrawable(com.android.internal.R.drawable.ic_lock_profile));
             messageView.setText(R.string.global_action_choose_profile);
+            return v;
+        }
+    }
+
+    /**
+     * A single press action maintains no state, just responds to a press
+     * and takes an action.
+     */
+    private abstract class ProfileChooseAction implements Action {
+        private ProfileManager mProfileManager;
+
+        protected ProfileChooseAction() {
+            mProfileManager = (ProfileManager)mContext.getSystemService(Context.PROFILE_SERVICE);
+        }
+
+        public boolean isEnabled() {
+            return true;
+        }
+
+        abstract public void onPress();
+
+        public View create(
+                Context context, View convertView, ViewGroup parent, LayoutInflater inflater) {
+            View v = (convertView != null) ?
+                    convertView :
+                    inflater.inflate(R.layout.global_actions_item, parent, false);
+
+            ImageView icon = (ImageView) v.findViewById(R.id.icon);
+            TextView messageView = (TextView) v.findViewById(R.id.message);
+            TextView statusView = (TextView) v.findViewById(R.id.status);
+            statusView.setVisibility(View.VISIBLE);
+            statusView.setText(mProfileManager.getActiveProfile().getName());
+
+            icon.setImageDrawable(context.getResources().getDrawable(com.android.internal.R.drawable.ic_lock_profile));
+            messageView.setText(R.string.global_action_choose_profile);
+
             return v;
         }
     }

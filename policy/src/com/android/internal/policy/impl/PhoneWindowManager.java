@@ -515,7 +515,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.ENABLE_FAST_TORCH), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.NAVIGATION_BAR_BUTTONS_HIDE), false, this);
+                    Settings.System.NAVIGATION_BAR_BUTTONS_SHOW), false, this);
             updateSettings();
         }
 
@@ -994,17 +994,10 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 mStatusBarCanHide
                 ? com.android.internal.R.dimen.status_bar_height
                 : com.android.internal.R.dimen.system_bar_height);
-        if (mNavBarFirstBootFlag){
-        	// this is our first time here.  Let's obey the framework setup
-            boolean frameworkDefault = mContext.getResources().getBoolean(
-                    com.android.internal.R.bool.config_showNavigationBar);
-            mHasNavigationBar = Settings.System.getInt(mContext.getContentResolver(),
-                    Settings.System.NAVIGATION_BAR_SHOW, frameworkDefault ? 1 : 0) == 1;
-            mNavBarFirstBootFlag = false;
-        } else {
-        	mHasNavigationBar = Settings.System.getInt(mContext.getContentResolver(), 
-        		Settings.System.NAVIGATION_BAR_BUTTONS_HIDE, 0) == 0;
-        }
+        final int showByDefault = mContext.getResources().getBoolean(
+                com.android.internal.R.bool.config_showNavigationBar) ? 1 : 0;
+        mHasNavigationBar = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.NAVIGATION_BAR_BUTTONS_SHOW, showByDefault) == 1;
         // Allow a system property to override this. Used by the emulator.
         // See also hasNavigationBar().
         String navBarOverride = SystemProperties.get("qemu.hw.mainkeys");
@@ -1012,6 +1005,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             if      (navBarOverride.equals("1")) mHasNavigationBar = false;
             else if (navBarOverride.equals("0")) mHasNavigationBar = true;
         }
+        // make sure tablets never ever try and use this
+        if(mStatusBarCanHide)
+            mHasNavigationBar = false;
 
         if (mHasNavigationBar) {
             mNavigationBarHeight = Settings.System.getInt(
@@ -1064,11 +1060,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     Settings.System.ACCELEROMETER_ROTATION_ANGLES, -1);
             mEnableQuickTorch = Settings.System.getInt(resolver, Settings.System.ENABLE_FAST_TORCH,
                     0) == 1;
-            boolean hasNavBarChanged = Settings.System.getInt(resolver, Settings.System.NAVIGATION_BAR_BUTTONS_HIDE,
-                            0) == 0;
-            if (mHasNavigationBar != hasNavBarChanged) { 
-            	// NavBar setting has changed, need to reset screen.
-            	mHasNavigationBar = hasNavBarChanged;
+            boolean hasNavBarChanged = Settings.System.getInt(resolver, Settings.System.NAVIGATION_BAR_BUTTONS_SHOW,
+                            0) == 1;
+            if (mHasNavigationBar != hasNavBarChanged) {
             	setInitialDisplaySize(mUnrestrictedScreenWidth,mUnrestrictedScreenHeight);
             }
 

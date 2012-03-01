@@ -738,6 +738,15 @@ void LPAPlayer::reset() {
 
     pmemBufferDeAlloc();
     LOGE("Buffer Deallocation complete! Closing pcm handle");
+
+    if (local_handle->start) {
+        if (ioctl(local_handle->fd, SNDRV_PCM_IOCTL_PAUSE,1) < 0) {
+            LOGE("Audio Pause failed");
+        }
+    }
+    local_handle->start = 0;
+    if (mIsAudioRouted)
+       pcm_prepare(local_handle);
     pcm_close(local_handle);
     handle = (void*)local_handle;
 

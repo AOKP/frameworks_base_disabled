@@ -556,6 +556,54 @@ rinse_repeat:
     bool explicitDiscontinuity = false;
     bool bandwidthChanged = false;
 
+    if (mSeekTimeUs >= 0) {
+        if (mPlaylist->isComplete()) {
+            size_t index = 0;
+            int64_t segmentStartUs = 0;
+            while (index < mPlaylist->size()) {
+                sp<AMessage> itemMeta;
+                CHECK(mPlaylist->itemAt(
+                                        index, NULL /* uri */, &itemMeta));
+                
+                int64_t itemDurationUs;
+                CHECK(itemMeta->findInt64("durationUs", &itemDurationUs));
+                
+                if (mSeekTimeUs < segmentStartUs + itemDurationUs) {
+                    break;
+                }
+                
+                segmentStartUs += itemDurationUs;
+                ++index;
+            }
+            
+            if (index < mPlaylist->size()) {
+                int32_t newSeqNumber = firstSeqNumberInPlaylist + index;
+                
+                if (newSeqNumber != mSeqNumber) {
+                    ALOGI("seeking to seq no %d", newSeqNumber);
+                    
+                    mSeqNumber = newSeqNumber;
+                    
+                    mDataSource->reset();
+                    
+                    // reseting the data source will have had the
+                    // side effect of discarding any previously queued
+                    // bandwidth change discontinuity.
+                    // Therefore we'll need to treat these seek
+                    // discontinuities as involving a bandwidth change
+                    // even if they aren't directly.
+                    seekDiscontinuity = true;
+                    bandwidthChanged = true;
+                }
+            }
+        }
+        
+        mSeekTimeUs = -1;
+        
+        Mutex::Autolock autoLock(mLock);
+        mSeekDone = true;
+        mCondition.broadcast();
+    }
 
     if (mSeqNumber < 0) {
         mSeqNumber = mFirstSeqNumber;

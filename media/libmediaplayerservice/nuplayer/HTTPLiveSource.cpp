@@ -42,7 +42,8 @@ NuPlayer::HTTPLiveSource::HTTPLiveSource(
       mUID(uid),
       mFlags(0),
       mFinalResult(OK),
-      mOffset(0) {
+      mOffset(0),
+      mNewSeekTime(-1) {
     if (headers) {
         mExtraHeaders = *headers;
 
@@ -169,7 +170,7 @@ status_t NuPlayer::HTTPLiveSource::getDuration(int64_t *durationUs) {
     return mLiveSession->getDuration(durationUs);
 }
 
-status_t NuPlayer::HTTPLiveSource::seekTo(int64_t seekTimeUs, int64_t* newSeekTime) {
+status_t NuPlayer::HTTPLiveSource::seekTo(int64_t seekTimeUs) {
     // We need to make sure we're not seeking until we have seen the very first
     // PTS timestamp in the whole stream (from the beginning of the stream).
     while (!mTSParser->PTSTimeDeltaEstablished() && feedMoreTSData() == OK) {
@@ -180,16 +181,24 @@ status_t NuPlayer::HTTPLiveSource::seekTo(int64_t seekTimeUs, int64_t* newSeekTi
        return mFinalResult;
     }
 
-    mLiveSession->seekTo(seekTimeUs, newSeekTime);
-    if( *newSeekTime >= 0 ) {
+    int64_t newSeekTime = -1;
+    mLiveSession->seekTo(seekTimeUs, &newSeekTime);
+    if( newSeekTime >= 0 ) {
        mTSParser->signalDiscontinuity( ATSParser::DISCONTINUITY_SEEK, NULL);
     }
+
+    mNewSeekTime = newSeekTime;
 
     return OK;
 }
 
 bool NuPlayer::HTTPLiveSource::isSeekable() {
     return mLiveSession->isSeekable();
+}
+
+status_t NuPlayer::HTTPLiveSource::getNewSeekTime(int64_t *newSeek) {
+    *newSeek = mNewSeekTime;
+    return OK;
 }
 
 }  // namespace android

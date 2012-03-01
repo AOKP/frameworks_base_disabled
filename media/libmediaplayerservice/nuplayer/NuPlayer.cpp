@@ -422,7 +422,6 @@ void NuPlayer::onMessageReceived(const sp<AMessage> &msg) {
                 mRenderer->queueEOS(audio, UNKNOWN_ERROR);
             } else {
                 CHECK_EQ((int)what, (int)ACodec::kWhatDrainThisBuffer);
-
                 renderBuffer(audio, codecRequest);
             }
 
@@ -578,6 +577,7 @@ void NuPlayer::onMessageReceived(const sp<AMessage> &msg) {
 
                // get the new seeked position
                mSource->getNewSeekTime(&newSeekTime);
+
                LOGV("newSeekTime %lld", newSeekTime);
             }
             if( (newSeekTime >= 0 ) && (mLiveSourceType != kHttpDashSource)) {
@@ -1045,3 +1045,4 @@ sp<NuPlayer::Source> NuPlayer::LoadCreateDashHttpSource(const char * uri, const 
 }
 
 }  // namespace android
+

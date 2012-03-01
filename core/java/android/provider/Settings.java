@@ -2965,11 +2965,6 @@ public final class Settings {
         /**
          * @hide
          */
-        public static final String NAVIGATION_BAR_SHOW = "navigation_bar_show";
-
-        /**
-         * @hide
-         */
         public static final String NAVIGATION_BAR_HEIGHT = "navigation_bar_height";
 
         /**

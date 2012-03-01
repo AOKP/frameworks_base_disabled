@@ -226,7 +226,7 @@ static sp<DrmManagerClientImpl> getDrmManagerClientImpl(JNIEnv* env, jobject thi
 
 static jint android_drm_DrmManagerClient_initialize(
         JNIEnv* env, jobject thiz) {
-    ALOGV("initialize - Enter");
+    LOGV("initialize - Enter");
 
     int uniqueId = 0;
     sp<DrmManagerClientImpl> drmManager = DrmManagerClientImpl::create(&uniqueId, false);
@@ -240,18 +240,18 @@ static jint android_drm_DrmManagerClient_initialize(
 
 static void android_drm_DrmManagerClient_setListeners(
         JNIEnv* env, jobject thiz, jint uniqueId, jobject weak_thiz) {
-    ALOGV("setListeners - Enter");
+    LOGV("setListeners - Enter");
 
     // Set the listener to DrmManager
     sp<DrmManagerClient::OnInfoListener> listener = new JNIOnInfoListener(env, thiz, weak_thiz);
     getDrmManagerClientImpl(env, thiz)->setOnInfoListener(uniqueId, listener);
 
-    ALOGV("setListeners - Exit");
+    LOGV("setListeners - Exit");
 }
 
 static void android_drm_DrmManagerClient_release(
         JNIEnv* env, jobject thiz, jint uniqueId) {
-    ALOGV("release - Enter");
+    LOGV("release - Enter");
     DrmManagerClientImpl::remove(uniqueId);
     getDrmManagerClientImpl(env, thiz)->setOnInfoListener(uniqueId, NULL);
 
@@ -260,7 +260,7 @@ static void android_drm_DrmManagerClient_release(
         oldClient->setOnInfoListener(uniqueId, NULL);
         oldClient->removeClient(uniqueId);
     }
-    ALOGV("release - Exit");
+    LOGV("release - Exit");
 }
 
 static jobject android_drm_DrmManagerClient_getConstraintsFromContent(

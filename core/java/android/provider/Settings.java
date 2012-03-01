@@ -2374,6 +2374,12 @@ public final class Settings {
          * @hide
          */
         public static final String STATUSBAR_TOGGLES_BRIGHTNESS_LOC = "statusbar_toggles_brightness_loc";
+        
+        /**
+         * Show Icon next to brightness slider
+         * @hide
+         */
+        public static String STATUSBAR_TOGGLES_BRIGHTNESS_SHOW_ICON = "statusbar_toggles_brightness_show_icon";
 
         /**
          * @hide

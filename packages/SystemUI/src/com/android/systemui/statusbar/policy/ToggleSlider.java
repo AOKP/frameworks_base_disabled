@@ -28,6 +28,7 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.ImageView;
 
 import com.android.systemui.R;
 
@@ -45,6 +46,7 @@ public class ToggleSlider extends RelativeLayout
     private CompoundButton mToggle;
     private SeekBar mSlider;
     private TextView mLabel;
+	private ImageView mIcon;
 
     public ToggleSlider(Context context) {
         this(context, null);
@@ -71,8 +73,17 @@ public class ToggleSlider extends RelativeLayout
 
         mLabel = (TextView)findViewById(R.id.label);
         mLabel.setText(a.getString(R.styleable.ToggleSlider_text));
+        
+        mIcon = (ImageView)findViewById(R.id.icon);
+        mIcon.setVisibility(GONE);
 
         a.recycle();
+    }
+    
+    public void setIcon(int res) {
+        if (mIcon != null) {
+            mIcon.setImageResource(res);
+        }
     }
 
     public void onCheckedChanged(CompoundButton toggle, boolean checked) {

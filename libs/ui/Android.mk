@@ -42,7 +42,6 @@ include $(CLEAR_VARS)
 
 LOCAL_SRC_FILES:= \
 	$(commonSources) \
-	Overlay.cpp \
 	EGLUtils.cpp \
 	FramebufferNativeWindow.cpp \
 	GraphicBuffer.cpp \
@@ -70,6 +69,8 @@ LOCAL_C_INCLUDES := \
 
 ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
 LOCAL_CFLAGS += -DQCOM_HARDWARE
+else
+LOCAL_SRC_FILES+= Overlay.cpp
 endif
 
 LOCAL_MODULE:= libui

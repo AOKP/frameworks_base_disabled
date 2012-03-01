@@ -521,7 +521,9 @@ status_t LPAPlayer::seekTo(int64_t time_us) {
             }
         }
     } else {
-        mSeeked = true;
+        if (!pmemBuffersResponseQueue.empty())
+            mSeeked = true;
+
         if (!isPaused) {
             mAudioSink->pause();
             mAudioSink->flush();
@@ -834,37 +836,19 @@ void LPAPlayer::decoderThreadEntry() {
             buf.bytesToWrite = fillBuffer(buf.localBuf, PMEM_BUFFER_SIZE);
             LOGV("fillBuffer returned size %d",buf.bytesToWrite);
 
-            /* TODO: Check if we have to notify the app if an error occurs */
-            if (!bIsA2DPEnabled) {
-                if ( buf.bytesToWrite > 0) {
-                    memset(&aio_buf_local, 0, sizeof(msm_audio_aio_buf));
-                    aio_buf_local.buf_addr = buf.pmemBuf;
-                    aio_buf_local.buf_len = buf.bytesToWrite;
-                    aio_buf_local.data_len = buf.bytesToWrite;
-                    aio_buf_local.private_data = (void*) buf.pmemFd;
-
-                    if ( (buf.bytesToWrite % 2) != 0 ) {
-                        LOGV("Increment for even bytes");
-                        aio_buf_local.data_len += 1;
-                    }
-
-                    if (timeStarted == 0) {
-                        timeStarted = nanoseconds_to_microseconds(systemTime(SYSTEM_TIME_MONOTONIC));
-                    }
-                } else {
-                    /* Put the buffer back into requestQ */
-                    /* This is zero byte buffer - no need to put in response Q*/
-                    pthread_mutex_lock(&pmem_request_mutex);
-                    pmemBuffersRequestQueue.push_back(buf);
-                    pthread_mutex_unlock(&pmem_request_mutex);
-                    /*Post EOS to Awesome player when i/p EOS is reached,
-                      all input buffers have been decoded and response queue is empty*/
-                    if(mObserver && mReachedEOS && pmemBuffersResponseQueue.empty()) {
-                        LOGV("Posting EOS event..zero byte buffer and response queue is empty");
-                        mObserver->postAudioEOS();
-                    }
-                    continue;
+            if ( buf.bytesToWrite ==  0) {
+                /* Put the buffer back into requestQ */
+                /* This is zero byte buffer - no need to put in response Q*/
+                pthread_mutex_lock(&pmem_request_mutex);
+                pmemBuffersRequestQueue.push_front(buf);
+                pthread_mutex_unlock(&pmem_request_mutex);
+                /*Post EOS to Awesome player when i/p EOS is reached,
+                  all input buffers have been decoded and response queue is empty*/
+                if(mObserver && mReachedEOS && pmemBuffersResponseQueue.empty()) {
+                    LOGV("Posting EOS event..zero byte buffer and response queue is empty");
+                    mObserver->postAudioEOS();
                 }
+                continue;
             }
             pthread_mutex_lock(&pmem_response_mutex);
             pmemBuffersResponseQueue.push_back(buf);

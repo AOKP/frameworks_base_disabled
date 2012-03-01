@@ -195,7 +195,8 @@ NuCachedSource2::NuCachedSource2(
       mHighwaterThresholdBytes(kDefaultHighWaterThreshold),
       mLowwaterThresholdBytes(kDefaultLowWaterThreshold),
       mKeepAliveIntervalUs(kDefaultKeepAliveIntervalUs),
-      mDisconnectAtHighwatermark(disconnectAtHighwatermark) {
+      mDisconnectAtHighwatermark(disconnectAtHighwatermark),
+      mAVOffset(kMinAVInterleavingOffset){
     // We are NOT going to support disconnect-at-highwatermark indefinitely
     // and we are not guaranteeing support for client-specified cache
     // parameters. Both of these are temporary measures to solve a specific
@@ -435,7 +436,7 @@ void NuCachedSource2::restartPrefetcherIfNecessary_l(
         bool ignoreLowWaterThreshold, bool force) {
     static const size_t kGrayArea = 1024 * 1024;
 
-    if (mFetching || (mFinalStatus != OK && mNumRetriesLeft == 0)) {
+    if ((!force && mFetching) || (mFinalStatus != OK && mNumRetriesLeft == 0)) {
         return;
     }
 
@@ -449,14 +450,7 @@ void NuCachedSource2::restartPrefetcherIfNecessary_l(
 
     size_t maxBytes = mLastAccessPos - mCacheOffset;
 
-    if (!force) {
-        if (maxBytes < kGrayArea) {
-            return;
-        }
-
-        maxBytes -= kGrayArea;
-    }
-
+    maxBytes = (maxBytes > mAVOffset) ? maxBytes - mAVOffset : maxBytes;
     size_t actualBytes = mCache->releaseFromStart(maxBytes);
     mCacheOffset += actualBytes;
 
@@ -525,11 +519,16 @@ size_t NuCachedSource2::approxDataRemaining_l(status_t *finalStatus) {
         *finalStatus = OK;
     }
 
-    off64_t lastBytePosCached = mCacheOffset + mCache->totalSize();
+    off64_t lastBytePosCached = mCacheOffset + mCache->totalSize() + mAVOffset;
     if (mLastAccessPos < lastBytePosCached) {
         return lastBytePosCached - mLastAccessPos;
     }
     return 0;
+}
+
+bool NuCachedSource2::isCacheFull() {
+    Mutex::Autolock autoLock(mLock);
+    return (mCache->totalSize() >= mHighwaterThresholdBytes);
 }
 
 ssize_t NuCachedSource2::readInternal(off64_t offset, void *data, size_t size) {
@@ -548,13 +547,12 @@ ssize_t NuCachedSource2::readInternal(off64_t offset, void *data, size_t size) {
 
     if (offset < mCacheOffset
             || offset >= (off64_t)(mCacheOffset + mCache->totalSize())) {
-        static const off64_t kPadding = 256 * 1024;
 
         // In the presence of multiple decoded streams, once of them will
         // trigger this seek request, the other one will request data "nearby"
         // soon, adjust the seek position so that that subsequent request
         // does not trigger another seek.
-        off64_t seekOffset = (offset > kPadding) ? offset - kPadding : 0;
+        off64_t seekOffset = (offset > mAVOffset) ? offset - mAVOffset : 0;
 
         seekInternal_l(seekOffset);
     }

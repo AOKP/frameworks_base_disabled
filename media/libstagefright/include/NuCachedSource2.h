@@ -119,6 +119,7 @@ private:
     int64_t mKeepAliveIntervalUs;
 
     bool mDisconnectAtHighwatermark;
+    int64_t mAVOffset;
 
     void onMessageReceived(const sp<AMessage> &msg);
     void onFetch();
@@ -137,6 +138,9 @@ private:
     void updateCacheParamsFromString(const char *s);
 
     DISALLOW_EVIL_CONSTRUCTORS(NuCachedSource2);
+public:
+    bool isCacheFull();
+    void setAVInterleavingOffset(int64_t av_offset);
 };
 
 }  // namespace android

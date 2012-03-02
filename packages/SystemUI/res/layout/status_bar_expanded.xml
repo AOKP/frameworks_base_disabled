@@ -131,17 +131,31 @@
         	android:layout_centerHorizontal="true"
 		android:layout_centerVertical="true" />
         	
-        <LinearLayout
-        	android:orientation="vertical"
-        	android:textAppearance="@style/TextAppearance.StatusBar.Clock"
+        <GridLayout
         	android:layout_width="wrap_content"
         	android:layout_height="match_parent" 
+        	android:columnCount="2"
+        	android:rowCount="3"
         	android:paddingRight="5dp"
         	android:paddingLeft="5dp"
         	android:layout_alignParentRight="true">
+        	
+    		<TextView
+        		android:text="@string/weatherpanel_current"
+        		android:textAppearance="@style/TextAppearance.StatusBar.Clock"
+        		android:layout_width="wrap_content" 
+            	android:layout_height="wrap_content"
+            	android:layout_gravity="right" />
 
     		<TextView
         		android:id="@+id/current_temp"
+        		android:textAppearance="@style/TextAppearance.StatusBar.Clock"
+        		android:layout_width="wrap_content" 
+            	android:layout_height="wrap_content"
+            	android:layout_gravity="right" />
+            	
+    		<TextView
+        		android:text="@string/weatherpanel_high"
         		android:textAppearance="@style/TextAppearance.StatusBar.Clock"
         		android:layout_width="wrap_content" 
             	android:layout_height="wrap_content"
@@ -153,6 +167,13 @@
         		android:layout_width="wrap_content" 
             	android:layout_height="wrap_content"
             	android:layout_gravity="right"/>
+            	
+    		<TextView
+        		android:text="@string/weatherpanel_low"
+        		android:textAppearance="@style/TextAppearance.StatusBar.Clock"
+        		android:layout_width="wrap_content" 
+            	android:layout_height="wrap_content"
+            	android:layout_gravity="right" />
         	
         	<TextView
        			android:id="@+id/low_temp"
@@ -160,7 +181,7 @@
         		android:layout_width="wrap_content" 
             	android:layout_height="wrap_content"
             	android:layout_gravity="right" />
-         </LinearLayout>
+         </GridLayout>
       
       </RelativeLayout>
             	

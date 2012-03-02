@@ -145,21 +145,21 @@
         		android:textAppearance="@style/TextAppearance.StatusBar.Clock"
         		android:layout_width="wrap_content" 
             	android:layout_height="wrap_content"
-            	android:gravity="right" />
+            	android:layout_gravity="right" />
         		
     		<TextView
        			android:id="@+id/high_temp"
        			android:textAppearance="@style/TextAppearance.StatusBar.Clock"
         		android:layout_width="wrap_content" 
             	android:layout_height="wrap_content"
-            	android:gravity="right"/>
+            	android:layout_gravity="right"/>
         	
         	<TextView
        			android:id="@+id/low_temp"
         		android:textAppearance="@style/TextAppearance.StatusBar.Clock"
         		android:layout_width="wrap_content" 
             	android:layout_height="wrap_content"
-            	android:gravity="right" />
+            	android:layout_gravity="right" />
          </LinearLayout>
       
       </RelativeLayout>

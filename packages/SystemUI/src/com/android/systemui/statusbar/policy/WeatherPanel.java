@@ -50,7 +50,7 @@ public class WeatherPanel extends FrameLayout {
         public void onReceive(Context context, Intent intent) {
             mCondition_code = (String) intent.getCharSequenceExtra(EXTRA_CONDITION_CODE);
             if (mCurrentTemp != null)
-                mCurrentTemp.setText(intent.getCharSequenceExtra(EXTRA_TEMP));
+                mCurrentTemp.setText("Current: " + intent.getCharSequenceExtra(EXTRA_TEMP));
             if (mHighTemp != null)
                 mHighTemp.setText("High: " + intent.getCharSequenceExtra(EXTRA_HIGH));
             if (mLowTemp != null)

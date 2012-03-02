@@ -83,12 +83,7 @@ public class SignalText extends TextView {
         super.onAttachedToWindow();
 
         if (!mAttached) {
-        	Log.d("db","attached to Window");
             mAttached = true;
-           // ((TelephonyManager) getContext().getSystemService(Context.TELEPHONY_SERVICE)).listen(
-           //         mPhoneStateListener, PhoneStateListener.LISTEN_SERVICE_STATE
-           //                 | PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
-
             mHandler = new MyHandler(this);
             SettingsObserver settingsObserver = new SettingsObserver(mHandler);
             settingsObserver.observe();
@@ -150,12 +145,10 @@ public class SignalText extends TextView {
         ASU = mPhoneStateReceiver.getSignalStrengthLevelAsu();
 
         if (-1 == ASU) ASU = 0;
-        Log.d("db","updateSignalStrength - "+ dBm);
         updateSignalText();
     }
 
     private void updateSignalText() {
-    	Log.d("db","updating signal text");
         style = Settings.System.getInt(getContext().getContentResolver(),
                 Settings.System.STATUSBAR_SIGNAL_TEXT, STYLE_HIDE);
 
@@ -175,41 +168,4 @@ public class SignalText extends TextView {
             setText(formatted);
         } 
     }
-
-    /*
-     * Phone listener to update signal information
-     */
-/*    private PhoneStateListener mPhoneStateListener = new PhoneStateListener() {
-        @Override
-        public void onSignalStrengthsChanged(SignalStrength signalStrength) {
-            signal = signalStrength;
-
-            if (signal != null) {
-                if (signal.isGsm()) {
-                    ASU = signal.getGsmSignalStrength();
-                    if (ASU != -1)
-                        dBm = -113 + (2 * ASU);
-                    else
-                        dBm = 0;
-                } else {
-                    dBm = signal.getCdmaDbm();
-                }
-            } else {
-                ASU = 0;
-                dBm = 0;
-            }
-
-            // update text if it's visible
-            if (mAttached)
-                updateSignalText();
-        }
-
-        public void onServiceStateChanged(ServiceState serviceState) {
-            mInAirplaneMode = serviceState.getState() == ServiceState.STATE_POWER_OFF;
-            if (mAttached)
-            	updateSignalText();
-        }
-
-    }; */
-
 }

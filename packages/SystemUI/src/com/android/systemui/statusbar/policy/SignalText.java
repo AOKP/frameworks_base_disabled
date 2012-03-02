@@ -110,22 +110,11 @@ public class SignalText extends TextView {
         style = Settings.System.getInt(getContext().getContentResolver(),
                 Settings.System.STATUSBAR_SIGNAL_TEXT, STYLE_HIDE);
 
-        if (mInAirplaneMode || dBm == 0) {
-            this.setVisibility(View.GONE);
-            return;
-        } else {
-            this.setVisibility(View.VISIBLE);
-        }
-
         if (style == STYLE_SHOW) {
-            this.setVisibility(View.VISIBLE);
-
             String result = Integer.toString(dBm);
 
             setText(result + " ");
         } else if (style == STYLE_SHOW_DBM) {
-            this.setVisibility(View.VISIBLE);
-
             String result = Integer.toString(dBm) + " dBm ";
 
             SpannableStringBuilder formatted = new SpannableStringBuilder(result);
@@ -135,9 +124,7 @@ public class SignalText extends TextView {
             formatted.setSpan(style, start, start + 3, Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
 
             setText(formatted);
-        } else {
-            this.setVisibility(View.GONE);
-        }
+        } 
     }
 
     /*
@@ -170,6 +157,8 @@ public class SignalText extends TextView {
 
         public void onServiceStateChanged(ServiceState serviceState) {
             mInAirplaneMode = serviceState.getState() == ServiceState.STATE_POWER_OFF;
+            if (mAttached)
+            	updateSignalText();
         }
 
     };

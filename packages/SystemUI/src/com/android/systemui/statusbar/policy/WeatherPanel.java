@@ -25,7 +25,6 @@ public class WeatherPanel extends FrameLayout {
     private boolean mUpdateReceived = false;
 
     public static final String EXTRA_CITY = "city";
-    public static final String EXTRA_ZIP = "zip";
     public static final String EXTRA_CONDITION = "condition";
     public static final String EXTRA_CONDITION_CODE = "condition_code";
     public static final String EXTRA_FORECAST_DATE = "forecast_date";
@@ -39,7 +38,6 @@ public class WeatherPanel extends FrameLayout {
     private TextView mLowTemp;
     private TextView mCurrentTemp;
     private TextView mCity;
-    private TextView mZipCode;
     private TextView mHumidity;
     private TextView mWinds;
     private TextView mCondition;
@@ -59,13 +57,11 @@ public class WeatherPanel extends FrameLayout {
                 mLowTemp.setText("Low:" + intent.getCharSequenceExtra(EXTRA_LOW));
             if (mCity != null)
                 mCity.setText(intent.getCharSequenceExtra(EXTRA_CITY));
-            if (mZipCode != null)
-                mZipCode.setText("ZipCode:" + intent.getCharSequenceExtra(EXTRA_ZIP));
             if (mHumidity != null)
                 mHumidity.setText(intent.getCharSequenceExtra(EXTRA_HUMIDITY));
             if (mWinds != null)
                 mWinds.setText(intent.getCharSequenceExtra(EXTRA_WIND));
-	    if (mCondition != null)
+            if (mCondition != null)
                 mCondition.setText(intent.getCharSequenceExtra(EXTRA_CONDITION));
             if (mConditionImage != null) {
                 String condition_filename = "weather_" + mCondition_code;
@@ -107,7 +103,6 @@ public class WeatherPanel extends FrameLayout {
         mLowTemp = (TextView) this.findViewById(R.id.low_temp);
         mCurrentTemp = (TextView) this.findViewById(R.id.current_temp);
         mCity = (TextView) this.findViewById(R.id.city);
-        mZipCode = (TextView) this.findViewById(R.id.zipcode);
         mHumidity = (TextView) this.findViewById(R.id.humidity);
         mWinds = (TextView) this.findViewById(R.id.winds);
         mCondition = (TextView) this.findViewById(R.id.condition);

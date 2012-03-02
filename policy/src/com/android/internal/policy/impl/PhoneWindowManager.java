@@ -1058,8 +1058,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             mEnableQuickTorch = Settings.System.getInt(resolver, Settings.System.ENABLE_FAST_TORCH,
                     0) == 1;
             boolean hasNavBarChanged = Settings.System.getInt(resolver, Settings.System.NAVIGATION_BAR_BUTTONS_SHOW,
-                            0) == 1;
+                            1) == 1;
             if (mHasNavigationBar != hasNavBarChanged) {
+                mHasNavigationBar = hasNavBarChanged;
             	setInitialDisplaySize(mUnrestrictedScreenWidth,mUnrestrictedScreenHeight);
             }
 

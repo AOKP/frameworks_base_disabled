@@ -839,7 +839,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 LayoutInflater inflater) {
         	mContext = context;
         	mNavBarHideOn = Settings.System.getInt(mContext.getContentResolver(),
-                    Settings.System.NAVIGATION_BAR_BUTTONS_SHOW, 0) == 0;
+                    Settings.System.NAVIGATION_BAR_BUTTONS_SHOW, 1) == 0;
         	mWindowManager = IWindowManager.Stub.asInterface(ServiceManager.getService("window"));
                  	
             View v = inflater.inflate(R.layout.global_actions_navbar_mode, parent, false);
@@ -880,10 +880,10 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             switch (index) {
             
             case 0 :
-            	mNavBarHideOn = !mNavBarHideOn;
+                mNavBarHideOn = !mNavBarHideOn;
                 Settings.System.putInt(mContext.getContentResolver(),
                         Settings.System.NAVIGATION_BAR_BUTTONS_SHOW,
-                         mNavBarHideOn ? 1 : 0);
+                         mNavBarHideOn ? 0 : 1);
                 v.setSelected(!mNavBarHideOn);
                 mHandler.sendEmptyMessage(MESSAGE_DISMISS);
                 break;

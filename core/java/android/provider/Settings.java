@@ -2618,7 +2618,22 @@ public final class Settings {
         /**
          * @hide
          */
+        public static final String STATUSBAR_CLOCK_WEEKDAY = "statusbar_clock_weekday";
+
+        /**
+         * @hide
+         */
+        public static final String STATUS_BAR_TRANSPARENCY = "status_bar_transparency";
+
+        /**
+         * @hide
+         */
         public static final String POWER_DIALOG_SHOW_AIRPLANE = "power_dialog_show_airplane";
+
+        /**
+         * @hide
+         */
+        public static final String POWER_DIALOG_SHOW_POWER_SAVER = "power_dialog_show_power_saver";
 
         /**
          * @hide
@@ -2638,7 +2653,17 @@ public final class Settings {
         /**
          * @hide
          */
+        public static final String POWER_DIALOG_SHOW_HIDENAVBAR = "power_dialog_show_hidenavbar";
+
+        /**
+         * @hide
+         */
         public static final String POWER_DIALOG_SHOW_POWERSAVER = "power_dialog_show_powersaver";
+
+        /**
+         * @hide
+         */
+        public static final String POWER_DIALOG_SHOW_PROFILES = "power_dialog_show_profiles";
 
         /**
          * @hide

@@ -1849,7 +1849,7 @@ status_t MPEG4Writer::Track::threadEntry() {
     int64_t previousPausedDurationUs = 0;
     int64_t timestampUs = 0;
     int64_t cttsDeltaTimeUs = 0;
-    bool hasBFrames = false;
+    bool hasBFrames = true;
 
 #if 1
     // XXX: Samsung's video encoder's output buffer timestamp

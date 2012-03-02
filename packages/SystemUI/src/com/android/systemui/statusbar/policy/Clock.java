@@ -143,35 +143,34 @@ public class Clock extends TextView {
     }
 
     protected final CharSequence getSmallTime() {
-        Context context = getContext();
-        boolean b24 = DateFormat.is24HourFormat(context);
-        int res;
-
-        if (b24) {
-            res = R.string.twenty_four_hour_time_format;
-        } else {
-            res = R.string.twelve_hour_time_format;
-        }
-
+        // previous version with !format.equals(mClockFormatString) was always true
+        // for small am/pm due to formatted string + magic chars and remade sdf every time
         final char MAGIC1 = '\uEF00';
         final char MAGIC2 = '\uEF01';
 
         // new magic for weekday display
         final char MAGIC3 = '\uEF02';
         final char MAGIC4 = '\uEF03';
+        if (mClockFormat == null) {
+            Context context = getContext();
+            boolean b24 = DateFormat.is24HourFormat(context);
+            int res;
 
-        SimpleDateFormat sdf;
-        String format = context.getString(res);
+            if (b24) {
+                res = R.string.twenty_four_hour_time_format;
+            } else {
+                res = R.string.twelve_hour_time_format;
+            }
 
-        if (mWeekday == WEEKDAY_STYLE_NORMAL) {
-            format = "EEE " + format;
-        }
-        else {
-            format = MAGIC3 + "EEE " + MAGIC4 + format;
-        }
+            String format = context.getString(res);
 
-        // this is always true for small am/pm :(
-        if (!format.equals(mClockFormatString)) {
+            if (mWeekday == WEEKDAY_STYLE_NORMAL) {
+                format = "EEE " + format;
+            }
+            else {
+                format = MAGIC3 + "EEE " + MAGIC4 + format;
+            }
+
             /*
              * Search for an unquoted "a" in the format string, so we can add dummy characters
              * around it to let us find it again after formatting and change its size.
@@ -201,22 +200,16 @@ public class Clock extends TextView {
                             + "a" + MAGIC2 + format.substring(b + 1);
                 }
             }
-
-            mClockFormat = sdf = new SimpleDateFormat(format);
+            mClockFormat = new SimpleDateFormat(format);
             mClockFormatString = format;
-        } else {
-            sdf = mClockFormat;
         }
-        String result = sdf.format(mCalendar.getTime());
+        String result = mClockFormat.format(mCalendar.getTime());
 
         SpannableStringBuilder formatted = new SpannableStringBuilder(result);
         if (mAmPmStyle != AM_PM_STYLE_NORMAL) {
-            //int magic1 = result.indexOf(MAGIC1);
-            //int magic2 = result.indexOf(MAGIC2);
             int magic1 = result.indexOf(MAGIC1);
             int magic2 = result.indexOf(MAGIC2);
             if (magic1 >= 0 && magic2 > magic1) {
-                //SpannableStringBuilder formatted = new SpannableStringBuilder(result);
                 if (mAmPmStyle == AM_PM_STYLE_GONE) {
                     formatted.delete(magic1, magic2 + 1);
                 } else {
@@ -228,7 +221,6 @@ public class Clock extends TextView {
                     formatted.delete(magic2, magic2 + 1);
                     formatted.delete(magic1, magic1 + 1);
                 }
-                //return formatted;
             }
         }
         if (mWeekday != WEEKDAY_STYLE_NORMAL) {
@@ -236,7 +228,6 @@ public class Clock extends TextView {
             int magic3 = result.indexOf(MAGIC3);
             int magic4 = result.indexOf(MAGIC4);
             if (magic3 >= 0 && magic4 > magic3) {
-                //SpannableStringBuilder formatted = new SpannableStringBuilder(result);
                 if (mWeekday == AM_PM_STYLE_GONE) {
                     formatted.delete(magic3, magic4 + 1);
                 } else {
@@ -248,13 +239,9 @@ public class Clock extends TextView {
                     formatted.delete(magic4, magic4 + 1);
                     formatted.delete(magic3, magic3 + 1);
                 }
-                //return formatted;   
             }
         }
-
-        //return result;
         return formatted;
-
     }
 
     public void updateVisibilityFromStatusBar(boolean show) {
@@ -295,6 +282,8 @@ public class Clock extends TextView {
         ContentResolver resolver = mContext.getContentResolver();
 
         mClockFormatString = "";
+        mClockFormat = null;
+
         mAmPmStyle = Settings.System.getInt(resolver, Settings.System.STATUSBAR_CLOCK_AM_PM_STYLE,
                 AM_PM_STYLE_GONE);
 

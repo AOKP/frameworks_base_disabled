@@ -112,13 +112,13 @@
         		android:layout_width="wrap_content"
         		android:layout_height="wrap_content" />
     		<TextView
-       			android:id="@+id/winds"
+       			android:id="@+id/current_temp"
        			android:textAppearance="@style/TextAppearance.StatusBar.Clock"
         		android:layout_width="wrap_content"
         		android:layout_height="wrap_content" />
 
     		<TextView
-        		android:id="@+id/humidity"
+        		android:id="@+id/condition"
         		android:textAppearance="@style/TextAppearance.StatusBar.Clock"
         		android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
@@ -140,21 +140,21 @@
         	android:layout_alignParentRight="true">
 
     		<TextView
-        		android:id="@+id/current_temp"
+        		android:id="@+id/high_temp"
         		android:textAppearance="@style/TextAppearance.StatusBar.Clock"
         		android:layout_width="wrap_content" 
             	android:layout_height="wrap_content"
             	android:gravity="right" />
         		
     		<TextView
-       			android:id="@+id/high_temp"
+       			android:id="@+id/low_temp"
        			android:textAppearance="@style/TextAppearance.StatusBar.Clock"
         		android:layout_width="wrap_content" 
             	android:layout_height="wrap_content"
             	android:gravity="right"/>
         	
         	<TextView
-       			android:id="@+id/low_temp"
+       			android:id="@+id/winds"
         		android:textAppearance="@style/TextAppearance.StatusBar.Clock"
         		android:layout_width="wrap_content" 
             	android:layout_height="wrap_content"

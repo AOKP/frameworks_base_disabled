@@ -979,18 +979,19 @@ status_t OMXCodec::parseAVCCodecSpecificData(
 #ifdef QCOM_HARDWARE
     uint16_t spsSize = (((uint16_t)ptr[6]) << 8)
       + (uint16_t)(ptr[7]);
-    CODEC_LOGV(" numSeqParameterSets = %d , spsSize = %d",numSeqParameterSets,spsSize);
+    CODEC_LOGV("numSeqParameterSets = %d , spsSize = %d",
+               numSeqParameterSets,spsSize);
     SpsInfo info;
-    if ( parseSps( spsSize, ptr + 9, &info ) == OK ) {
-      mSPSParsed = true;
-      CODEC_LOGV("SPS parsed");
-      if (info.mInterlaced) {
-	mInterlaceFormatDetected = true;
-	meta->setInt32(kKeyUseArbitraryMode, 1);
-	CODEC_LOGI("Interlace format detected");
-      } else {
-	CODEC_LOGI("Non-Interlaced format detected");
-      }
+    if (parseSps(spsSize, ptr + 9, &info) == OK) {
+        mSPSParsed = true;
+        CODEC_LOGV("SPS parsed");
+        if (info.mInterlaced) {
+            mInterlaceFormatDetected = true;
+            mUseArbitraryMode = true;
+            CODEC_LOGI("Interlace format detected");
+        } else {
+            CODEC_LOGI("Non-Interlaced format detected");
+        }
     }
     else {
       CODEC_LOGI("ParseSPS could not find if content is interlaced");
@@ -1064,6 +1065,15 @@ status_t OMXCodec::configureCodec(const sp<MetaData> &meta) {
 #ifdef QCOM_HARDWARE
         const char *mime_type;
 #endif
+
+        if (!strncasecmp(mMIME, "video/", 6)) {
+            int32_t arbitraryMode = 1;
+            bool success = meta->findInt32(kKeyUseArbitraryMode, &arbitraryMode);
+            if (success) {
+                mUseArbitraryMode = arbitraryMode ? true : false;
+            }
+        }
+
         if (meta->findData(kKeyESDS, &type, &data, &size)) {
             ESDS esds((const char *)data, size);
             CHECK_EQ(esds.InitCheck(), (status_t)OK);
@@ -1284,9 +1294,7 @@ status_t OMXCodec::configureCodec(const sp<MetaData> &meta) {
             }
 
 #ifdef QCOM_HARDWARE
-            int32_t useArbitraryMode = 0;
-            success = meta->findInt32(kKeyUseArbitraryMode, &useArbitraryMode);
-            if (success && useArbitraryMode == 1) {
+            if (mUseArbitraryMode) {
                 CODEC_LOGI("Decoder should be in arbitrary mode");
                 // Is it required to set OMX_QCOM_FramePacking_Arbitrary ??
             }
@@ -2391,7 +2399,9 @@ OMXCodec::OMXCodec(
       mNativeWindow(
               (!strncmp(componentName, "OMX.google.", 11)
               || !strcmp(componentName, "OMX.Nvidia.mpeg2v.decode"))
-                        ? NULL : nativeWindow) {
+                        ? NULL : nativeWindow),
+      mNumBFrames(0),
+      mUseArbitraryMode(true) {
 #ifdef QCOM_HARDWARE
     parseFlags();
 #endif

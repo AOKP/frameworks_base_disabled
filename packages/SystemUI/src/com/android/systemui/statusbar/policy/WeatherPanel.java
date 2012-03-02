@@ -78,7 +78,7 @@ public class WeatherPanel extends FrameLayout {
                 }
             }
             mUpdateReceived = true;
-            setVisibility(View.VISIBLE);
+            updateSettings();
         }
     };
 

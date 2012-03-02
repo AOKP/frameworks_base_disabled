@@ -46,7 +46,6 @@ import com.android.internal.R;
 public class Clock extends TextView {
     protected boolean mAttached;
     protected Calendar mCalendar;
-    protected String mClockFormatString;
     protected SimpleDateFormat mClockFormat;
 
     public static final int AM_PM_STYLE_NORMAL = 0;
@@ -143,14 +142,13 @@ public class Clock extends TextView {
     }
 
     protected final CharSequence getSmallTime() {
-        // previous version with !format.equals(mClockFormatString) was always true
-        // for small am/pm due to formatted string + magic chars and remade sdf every time
         final char MAGIC1 = '\uEF00';
         final char MAGIC2 = '\uEF01';
 
         // new magic for weekday display
         final char MAGIC3 = '\uEF02';
         final char MAGIC4 = '\uEF03';
+
         if (mClockFormat == null) {
             Context context = getContext();
             boolean b24 = DateFormat.is24HourFormat(context);
@@ -201,7 +199,6 @@ public class Clock extends TextView {
                 }
             }
             mClockFormat = new SimpleDateFormat(format);
-            mClockFormatString = format;
         }
         String result = mClockFormat.format(mCalendar.getTime());
 
@@ -281,7 +278,6 @@ public class Clock extends TextView {
     protected void updateSettings() {
         ContentResolver resolver = mContext.getContentResolver();
 
-        mClockFormatString = "";
         mClockFormat = null;
 
         mAmPmStyle = Settings.System.getInt(resolver, Settings.System.STATUSBAR_CLOCK_AM_PM_STYLE,

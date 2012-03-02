@@ -58,10 +58,6 @@ LOCAL_SRC_FILES:=                         \
 ifneq ($(BOARD_USES_QCOM_HARDWARE),true)
         LOCAL_SRC_FILES += AVIExtractor.cpp
 endif
-ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
-        LOCAL_SRC_FILES += ExtendedExtractor.cpp
-        LOCAL_SRC_FILES += ExtendedWriter.cpp
-endif
 
 LOCAL_C_INCLUDES:= \
 	$(JNI_H_INCLUDE) \

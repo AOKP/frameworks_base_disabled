@@ -61,7 +61,7 @@ public class WeatherPanel extends FrameLayout {
                 mHumidity.setText(intent.getCharSequenceExtra(EXTRA_HUMIDITY));
             if (mWinds != null)
                 mWinds.setText(intent.getCharSequenceExtra(EXTRA_WIND));
-	    if (mCondition != null)
+            if (mCondition != null)
                 mCondition.setText(intent.getCharSequenceExtra(EXTRA_CONDITION));
             if (mConditionImage != null) {
                 String condition_filename = "weather_" + mCondition_code;

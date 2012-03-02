@@ -28,17 +28,17 @@
         android:layout_height="wrap_content" />
 
     <TextView
-        android:id="@+id/zipcode"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
-    <TextView
         android:id="@+id/humidity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
     <TextView
         android:id="@+id/winds"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+        
+    <TextView
+        android:id="@+id/condition"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 

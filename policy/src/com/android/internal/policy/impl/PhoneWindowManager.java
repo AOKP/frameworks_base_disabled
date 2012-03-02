@@ -1005,9 +1005,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             if      (navBarOverride.equals("1")) mHasNavigationBar = false;
             else if (navBarOverride.equals("0")) mHasNavigationBar = true;
         }
-        // make sure tablets never ever try and use this
-        if(mStatusBarCanHide)
-            mHasNavigationBar = false;
 
         if (mHasNavigationBar) {
             mNavigationBarHeight = Settings.System.getInt(
@@ -1061,8 +1058,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             mEnableQuickTorch = Settings.System.getInt(resolver, Settings.System.ENABLE_FAST_TORCH,
                     0) == 1;
             boolean hasNavBarChanged = Settings.System.getInt(resolver, Settings.System.NAVIGATION_BAR_BUTTONS_SHOW,
-                            0) == 1;
+                            1) == 1;
             if (mHasNavigationBar != hasNavBarChanged) {
+                mHasNavigationBar = hasNavBarChanged;
             	setInitialDisplaySize(mUnrestrictedScreenWidth,mUnrestrictedScreenHeight);
             }
 

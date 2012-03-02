@@ -56,10 +56,9 @@ public class BrightnessSlider implements ToggleSlider.Listener {
         mView = View.inflate(mContext, R.layout.brightness_slider, null);
 
         mControl = (ToggleSlider) mView.findViewById(R.id.brightness);
-        
-        if(Settings.Secure.getInt(mContext.getContentResolver(),
-				Settings.System.STATUSBAR_TOGGLES_BRIGHTNESS_SHOW_ICON, 0) == 1)
-        	mControl.setIcon(R.drawable.ic_sysbar_brightness);
+        mControl.setIcon(R.drawable.ic_sysbar_brightness);
+        mControl.setupInfo(Settings.System.getInt(mContext.getContentResolver(),
+				Settings.System.STATUSBAR_TOGGLES_BRIGHTNESS_SHOW_ICON, 0) == 1);
         
         mScreenBrightnessDim = mContext.getResources().getInteger(
                 com.android.internal.R.integer.config_screenBrightnessDim);
@@ -97,6 +96,7 @@ public class BrightnessSlider implements ToggleSlider.Listener {
 
         SettingsObserver so = new SettingsObserver(new Handler());
         so.observe();
+
     }
 
     public View getView() {

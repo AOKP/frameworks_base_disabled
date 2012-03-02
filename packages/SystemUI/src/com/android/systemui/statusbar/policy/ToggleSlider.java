@@ -75,7 +75,6 @@ public class ToggleSlider extends RelativeLayout
         mLabel.setText(a.getString(R.styleable.ToggleSlider_text));
         
         mIcon = (ImageView)findViewById(R.id.icon);
-        mIcon.setVisibility(GONE);
 
         a.recycle();
     }
@@ -84,6 +83,10 @@ public class ToggleSlider extends RelativeLayout
         if (mIcon != null) {
             mIcon.setImageResource(res);
         }
+    }
+    
+    public void setupInfo(boolean showIcon) {
+        mIcon.setVisibility(showIcon ? View.VISIBLE : View.GONE);
     }
 
     public void onCheckedChanged(CompoundButton toggle, boolean checked) {

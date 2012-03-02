@@ -234,6 +234,9 @@ public class TogglesView extends LinearLayout {
                     Settings.System.getUriFor(Settings.System.STATUSBAR_TOGGLES_BRIGHTNESS_LOC),
                     false, this);
             resolver.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.STATUSBAR_TOGGLES_BRIGHTNESS_SHOW_ICON),
+                    false, this);
+            resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.STATUSBAR_TOGGLES_NUMBER_PER_ROW),
                     false, this);
             resolver.registerContentObserver(

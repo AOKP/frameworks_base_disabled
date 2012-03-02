@@ -162,7 +162,7 @@ private:
     // must be used from the lock/unlock thread
     sp<GraphicBuffer>           mLockedBuffer;
     sp<GraphicBuffer>           mPostedBuffer;
-    mutable Region              mOldDirtyRegion;
+    mutable Region              mOldDirtyRegion[NUM_BUFFER_SLOTS];
     bool                        mConnectedToCpu;
 };
 

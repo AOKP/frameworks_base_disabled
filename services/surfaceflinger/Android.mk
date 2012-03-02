@@ -18,7 +18,8 @@ LOCAL_SRC_FILES:= \
     MessageQueue.cpp 						\
     SurfaceFlinger.cpp 						\
     SurfaceTextureLayer.cpp 				\
-    Transform.cpp
+    Transform.cpp 							\
+    
 
 LOCAL_CFLAGS:= -DLOG_TAG=\"SurfaceFlinger\"
 LOCAL_CFLAGS += -DGL_GLEXT_PROTOTYPES -DEGL_EGLEXT_PROTOTYPES
@@ -32,6 +33,12 @@ endif
 ifeq ($(TARGET_BOARD_PLATFORM), s5pc110)
 	LOCAL_CFLAGS += -DHAS_CONTEXT_PRIORITY -DNEVER_DEFAULT_TO_ASYNC_MODE -DSURFACEFLINGER_FORCE_SCREEN_RELEASE
 	LOCAL_CFLAGS += -DREFRESH_RATE=56
+endif
+ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
+LOCAL_SHARED_LIBRARIES := \
+	libQcomUI
+LOCAL_C_INCLUDES += hardware/qcom/display/libqcomui
+LOCAL_CFLAGS += -DQCOM_HARDWARE
 endif
 
 LOCAL_SHARED_LIBRARIES := \
@@ -53,22 +60,25 @@ LOCAL_SHARED_LIBRARIES += \
 	libnvdispmgr_d
 endif
 
+ifeq ($(TARGET_HAVE_BYPASS),true)
+    LOCAL_CFLAGS += -DBUFFER_COUNT_SERVER=3
+else
+    LOCAL_CFLAGS += -DBUFFER_COUNT_SERVER=2
+endif
+
 LOCAL_C_INCLUDES := \
 	$(call include-path-for, corecg graphics)
 
 LOCAL_C_INCLUDES += hardware/libhardware/modules/gralloc
 
 ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
-
 LOCAL_SHARED_LIBRARIES += \
 	libQcomUI
 LOCAL_C_INCLUDES += hardware/qcom/display/libqcomui
 LOCAL_CFLAGS += -DQCOM_HARDWARE
-
 ifeq ($(TARGET_QCOM_HDMI_OUT),true)
 LOCAL_CFLAGS += -DQCOM_HDMI_OUT
 endif
-
 endif
 
 LOCAL_MODULE:= libsurfaceflinger

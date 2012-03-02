@@ -93,7 +93,7 @@ void Layer::onFirstRef()
     mSurfaceTexture = new SurfaceTextureLayer(mTextureName, this);
     mSurfaceTexture->setFrameAvailableListener(new FrameQueuedListener(this));
     mSurfaceTexture->setSynchronousMode(true);
-    mSurfaceTexture->setBufferCountServer(2);
+    mSurfaceTexture->setBufferCountServer(BUFFER_COUNT_SERVER);
 }
 
 Layer::~Layer()

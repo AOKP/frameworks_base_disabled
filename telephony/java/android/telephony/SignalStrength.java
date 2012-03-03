@@ -20,6 +20,7 @@ package android.telephony;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.os.SystemProperties;
 import android.util.Log;
 
 /**
@@ -456,7 +457,7 @@ public class SignalStrength implements Parcelable {
         else if (cdmaEcio >= -150) levelEcio = SIGNAL_STRENGTH_POOR;
         else levelEcio = SIGNAL_STRENGTH_NONE_OR_UNKNOWN;
 
-        int level = (levelDbm < levelEcio) ? levelDbm : levelEcio;
+        int level = ((levelDbm < levelEcio) || (SystemProperties.get("ro.ril.samsung_cdma").equals("true"))) ? levelDbm : levelEcio;
         if (DBG) log("getCdmaLevel=" + level);
         return level;
     }

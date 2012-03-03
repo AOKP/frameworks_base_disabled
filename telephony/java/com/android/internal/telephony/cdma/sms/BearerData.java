@@ -20,6 +20,7 @@ import static android.telephony.SmsMessage.ENCODING_16BIT;
 import static android.telephony.SmsMessage.MAX_USER_DATA_BYTES;
 import static android.telephony.SmsMessage.MAX_USER_DATA_BYTES_WITH_HEADER;
 
+import android.os.SystemProperties;
 import android.util.Log;
 
 import android.telephony.SmsMessage;
@@ -878,10 +879,17 @@ public final class BearerData {
             paramBits -= EXPECTED_PARAM_SIZE;
             decodeSuccess = true;
             bData.messageType = inStream.read(4);
-            bData.messageId = inStream.read(8) << 8;
-            bData.messageId |= inStream.read(8);
-            bData.hasUserDataHeader = (inStream.read(1) == 1);
-            inStream.skip(3);
+            if ((SystemProperties.get("ro.ril.samsung_cdma").equals("true")) && !("epic".equals(SystemProperties.get("ro.product.device")))) {
+                inStream.skip(4);
+                bData.messageId = inStream.read(8) << 8;
+                bData.messageId |= inStream.read(8);
+                bData.hasUserDataHeader = (inStream.read(8) == 1);
+            } else {
+                bData.messageId = inStream.read(8) << 8;
+                bData.messageId |= inStream.read(8);
+                bData.hasUserDataHeader = (inStream.read(1) == 1);
+                inStream.skip(3);
+            }
         }
         if ((! decodeSuccess) || (paramBits > 0)) {
             Log.d(LOG_TAG, "MESSAGE_IDENTIFIER decode " +

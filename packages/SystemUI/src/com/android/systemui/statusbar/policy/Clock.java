@@ -96,10 +96,6 @@ public class Clock extends TextView {
             filter.addAction(Intent.ACTION_CONFIGURATION_CHANGED);
 
             getContext().registerReceiver(mIntentReceiver, filter, null, getHandler());
-
-            SettingsObserver settingsObserver = new SettingsObserver(new Handler());
-            settingsObserver.observe();
-            updateSettings();
         }
 
         // NOTE: It's safe to do these after registering the receiver since the receiver always runs
@@ -109,7 +105,10 @@ public class Clock extends TextView {
         mCalendar = Calendar.getInstance(TimeZone.getDefault());
 
         // Make sure we update to the current time
-        updateClock();
+        //        updateClock();
+        SettingsObserver settingsObserver = new SettingsObserver(new Handler());
+        settingsObserver.observe();
+        updateSettings();
     }
 
     @Override
@@ -162,10 +161,7 @@ public class Clock extends TextView {
 
             String format = context.getString(res);
 
-            if (mWeekday == WEEKDAY_STYLE_NORMAL) {
-                format = "EEE " + format;
-            }
-            else {
+            if (mWeekday != WEEKDAY_STYLE_GONE) {
                 format = MAGIC3 + "EEE " + MAGIC4 + format;
             }
 
@@ -225,10 +221,10 @@ public class Clock extends TextView {
             int magic3 = result.indexOf(MAGIC3);
             int magic4 = result.indexOf(MAGIC4);
             if (magic3 >= 0 && magic4 > magic3) {
-                if (mWeekday == AM_PM_STYLE_GONE) {
+                if (mWeekday == WEEKDAY_STYLE_GONE) {
                     formatted.delete(magic3, magic4 + 1);
                 } else {
-                    if (mWeekday == AM_PM_STYLE_SMALL) {
+                    if (mWeekday == WEEKDAY_STYLE_SMALL) {
                         CharacterStyle style = new RelativeSizeSpan(0.7f);
                         formatted.setSpan(style, magic3, magic4,
                                 Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
@@ -297,6 +293,7 @@ public class Clock extends TextView {
 
         mShowClockDuringLockscreen = (Settings.System.getInt(resolver,
                 Settings.System.STATUSBAR_CLOCK_LOCKSCREEN_HIDE, 1) == 1);
+        updateClock();
     }
 
     protected void updateClockVisibility() {

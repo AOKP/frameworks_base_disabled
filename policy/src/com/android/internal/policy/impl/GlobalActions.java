@@ -846,7 +846,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
             for (int i = 0; i < 4; i++) {
                 View itemView = v.findViewById(ITEM_IDS[i]);
-                itemView.setSelected((i==0)&&(!mNavBarHideOn));  // set selected on item 0 if NavBarHideOn is off
+                itemView.setSelected((i==0)&&mNavBarHideOn);  // set selected on item 0 if NavBarHideOn is off
                 // Set up click handler
                 itemView.setTag(i);
                 itemView.setOnClickListener(this);
@@ -880,7 +880,6 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             switch (index) {
             
             case 0 :
-                mNavBarHideOn = !mNavBarHideOn;
                 Settings.System.putInt(mContext.getContentResolver(),
                         Settings.System.NAVIGATION_BAR_BUTTONS_SHOW,
                          mNavBarHideOn ? 0 : 1);

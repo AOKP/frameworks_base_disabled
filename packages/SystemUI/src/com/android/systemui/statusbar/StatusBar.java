@@ -132,9 +132,6 @@ public abstract class StatusBar extends SystemUI implements CommandQueue.Callbac
                 (int) (((float)transparency / 100.0F) * 255) * 0x1000000
             );
         }
-
-
-        //sb.setBackgroundColor(144 * 0x1000000);
         
         // the status bar should be in an overlay if possible
         final Display defaultDisplay 

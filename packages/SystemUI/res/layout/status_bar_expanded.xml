@@ -27,6 +27,7 @@
     >
 
     <RelativeLayout
+        android:id="@+id/drawer_header"
         android:layout_width="match_parent"
         android:layout_height="52dp"
         android:paddingTop="3dp"
@@ -80,6 +81,7 @@
     </RelativeLayout>
 
 	<View
+        android:id="@+id/drawer_header_hr"
 		android:layout_width="match_parent"
 		android:layout_height="2dp"
 		android:background="@drawable/status_bar_hr" />
@@ -89,6 +91,7 @@
                 android:layout_height="wrap_content" />
                 
    <com.android.systemui.statusbar.policy.WeatherPanel
+          android:id="@+id/weather_panel"
           android:layout_width="match_parent"
           android:layout_height="64.0dp"
           android:background="@*android:drawable/notify_panel_notification_icon_bg_tile"
@@ -166,6 +169,7 @@
     </com.android.systemui.statusbar.policy.WeatherPanel>
     
     <FrameLayout
+        android:id="@+id/notifications"
         android:layout_width="match_parent" 
         android:layout_height="wrap_content"
         android:layout_weight="1"

@@ -25,12 +25,10 @@ public class WeatherPanel extends FrameLayout {
     private boolean mUpdateReceived = false;
 
     public static final String EXTRA_CITY = "city";
-    public static final String EXTRA_ZIP = "zip";
     public static final String EXTRA_CONDITION = "condition";
     public static final String EXTRA_CONDITION_CODE = "condition_code";
-    public static final String EXTRA_FORECAST_DATE = "forecase_date";
-    public static final String EXTRA_TEMP_F = "temp_f";
-    public static final String EXTRA_TEMP_C = "temp_c";
+    public static final String EXTRA_FORECAST_DATE = "forecast_date";
+    public static final String EXTRA_TEMP = "temp";
     public static final String EXTRA_HUMIDITY = "humidity";
     public static final String EXTRA_WIND = "wind";
     public static final String EXTRA_LOW = "todays_low";
@@ -40,9 +38,9 @@ public class WeatherPanel extends FrameLayout {
     private TextView mLowTemp;
     private TextView mCurrentTemp;
     private TextView mCity;
-    private TextView mZipCode;
     private TextView mHumidity;
     private TextView mWinds;
+    private TextView mCondition;
     private ImageView mConditionImage;
     private Context mContext;
     private String mCondition_code = "";
@@ -52,19 +50,19 @@ public class WeatherPanel extends FrameLayout {
         public void onReceive(Context context, Intent intent) {
             mCondition_code = (String) intent.getCharSequenceExtra(EXTRA_CONDITION_CODE);
             if (mCurrentTemp != null)
-                mCurrentTemp.setText("Current:" + intent.getCharSequenceExtra("temp"));
+                mCurrentTemp.setText(intent.getCharSequenceExtra(EXTRA_TEMP));
             if (mHighTemp != null)
-                mHighTemp.setText("High:" + intent.getCharSequenceExtra(EXTRA_HIGH));
+                mHighTemp.setText(intent.getCharSequenceExtra(EXTRA_HIGH));
             if (mLowTemp != null)
-                mLowTemp.setText("Low:" + intent.getCharSequenceExtra(EXTRA_LOW));
+                mLowTemp.setText(intent.getCharSequenceExtra(EXTRA_LOW));
             if (mCity != null)
                 mCity.setText(intent.getCharSequenceExtra(EXTRA_CITY));
-            if (mZipCode != null)
-                mZipCode.setText("ZipCode:" + intent.getCharSequenceExtra(EXTRA_ZIP));
             if (mHumidity != null)
                 mHumidity.setText(intent.getCharSequenceExtra(EXTRA_HUMIDITY));
             if (mWinds != null)
                 mWinds.setText(intent.getCharSequenceExtra(EXTRA_WIND));
+            if (mCondition != null)
+                mCondition.setText(intent.getCharSequenceExtra(EXTRA_CONDITION));
             if (mConditionImage != null) {
                 String condition_filename = "weather_" + mCondition_code;
                 int resID = getResources().getIdentifier(condition_filename, "drawable",
@@ -105,9 +103,9 @@ public class WeatherPanel extends FrameLayout {
         mLowTemp = (TextView) this.findViewById(R.id.low_temp);
         mCurrentTemp = (TextView) this.findViewById(R.id.current_temp);
         mCity = (TextView) this.findViewById(R.id.city);
-        mZipCode = (TextView) this.findViewById(R.id.zipcode);
         mHumidity = (TextView) this.findViewById(R.id.humidity);
         mWinds = (TextView) this.findViewById(R.id.winds);
+        mCondition = (TextView) this.findViewById(R.id.condition);
         mConditionImage = (ImageView) this.findViewById(R.id.condition_image);
         if (!mAttached) {
             mAttached = true;

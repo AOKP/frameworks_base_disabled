@@ -1025,21 +1025,6 @@ status_t OMXCodec::configureCodec(const sp<MetaData> &meta) {
                 // The profile is unsupported by the decoder
                 return ERROR_UNSUPPORTED;
             }
-#else
-            int32_t width, height;
-            bool success = meta->findInt32(kKeyWidth, &width);
-            success = success && meta->findInt32(kKeyHeight, &height);
-            CHECK(success);
-            if (!strcmp(mComponentName, "OMX.TI.720P.Decoder")
-                && (profile == kAVCProfileBaseline && level <= 39)
-                && (width*height <= MAX_RESOLUTION)
-                && (width <= MAX_RESOLUTION_WIDTH && height <= MAX_RESOLUTION_HEIGHT ))
-            {
-                // Though this decoder can handle this profile/level,
-                // we prefer to use "OMX.TI.Video.Decoder" for
-                // Baseline Profile with level <=39 and sub 720p
-                return ERROR_UNSUPPORTED;
-            }
 #endif
 
         } else if (meta->findData(kKeyVorbisInfo, &type, &data, &size)) {

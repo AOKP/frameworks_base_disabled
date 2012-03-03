@@ -8,15 +8,15 @@ LOCAL_SRC_FILES:=       \
 
 LOCAL_SHARED_LIBRARIES := \
 	libstagefright libmedia libutils libbinder libstagefright_foundation \
-        libskia libgui
+    libskia libgui
 
 LOCAL_C_INCLUDES:= \
 	$(JNI_H_INCLUDE) \
 	frameworks/base/media/libstagefright \
 	frameworks/base/media/libstagefright/include \
 	$(TOP)/frameworks/base/include/media/stagefright/openmax \
-        external/skia/include/core \
-        external/skia/include/images \
+    external/skia/include/core \
+    external/skia/include/images \
 
 ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
 LOCAL_C_INCLUDES += \
@@ -126,7 +126,7 @@ LOCAL_SRC_FILES:=         \
 
 LOCAL_SHARED_LIBRARIES := \
 	libstagefright liblog libutils libbinder libgui \
-        libstagefright_foundation libmedia
+    libstagefright_foundation libmedia
 
 LOCAL_C_INCLUDES:= \
 	$(JNI_H_INCLUDE) \
@@ -156,7 +156,7 @@ LOCAL_SRC_FILES:=         \
 
 LOCAL_SHARED_LIBRARIES := \
 	libstagefright liblog libutils libbinder libstagefright_foundation \
-        libmedia libgui libcutils libui
+    libmedia libgui libcutils libui
 
 LOCAL_C_INCLUDES:= \
 	$(JNI_H_INCLUDE) \
@@ -176,5 +176,3 @@ LOCAL_MODULE_TAGS := debug
 LOCAL_MODULE:= sf2
 
 include $(BUILD_EXECUTABLE)
-
-

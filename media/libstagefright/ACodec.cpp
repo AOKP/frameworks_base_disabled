@@ -599,6 +599,7 @@ status_t ACodec::allocateOutputBuffersFromNativeWindow() {
         return err;
     }
 
+#ifdef QCOM_HARDWARE
     err = mNativeWindow.get()->perform(mNativeWindow.get(),
                               NATIVE_WINDOW_SET_BUFFERS_SIZE,
                               def.nBufferSize);
@@ -608,7 +609,7 @@ status_t ACodec::allocateOutputBuffersFromNativeWindow() {
                 -err);
         return err;
     }
-
+#endif
 
     LOGV("[%s] Allocating %lu buffers from a native window of size %lu on "
          "output port",
@@ -1313,9 +1314,9 @@ void ACodec::sendFormatChange() {
             CHECK_LE(rect.nLeft + rect.nWidth - 1, videoDef->nFrameWidth);
             CHECK_LE(rect.nTop + rect.nHeight - 1, videoDef->nFrameHeight);
 
+#ifdef QCOM_HARDWARE
             int format = (def.format.video.eColorFormat == (OMX_COLOR_FORMATTYPE)QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka)?
                  HAL_PIXEL_FORMAT_YCbCr_420_SP_TILED : def.format.video.eColorFormat;
-
 
             if( mSmoothStreaming ) {
                //call Update buffer geometry here
@@ -1326,6 +1327,7 @@ void ACodec::sendFormatChange() {
                    LOGE("native_window_update_buffers_geometry failed in SS mode %d", err);
                }
             }
+#endif
 
             notify->setRect(
                     "crop",
@@ -1381,6 +1383,7 @@ void ACodec::sendFormatChange() {
     mSentFormat = true;
 }
 
+#ifdef QCOM_HARDWARE
 status_t ACodec::InitSmoothStreaming() {
 
     // get Extension index for smooth streaming
@@ -1492,7 +1495,7 @@ status_t ACodec::InitSmoothStreaming() {
             def.nBufferCountActual, def.nBufferCountMin, def.nBufferSize);
     return OK;
 }
-
+#endif
 
 void ACodec::signalError(OMX_ERRORTYPE error) {
     sp<AMessage> notify = mNotify->dup();
@@ -1828,6 +1831,7 @@ void ACodec::BaseState::getMoreInputDataIfPossible() {
     postFillThisBuffer(eligible);
 }
 
+#ifdef QCOM_HARDWARE
 void ACodec::BaseState::HandleExtraData(IOMX::buffer_id bufferID) {
     OMX_OTHER_EXTRADATATYPE *pExtra;
     OMX_BUFFERHEADERTYPE* pBufHdr = (OMX_BUFFERHEADERTYPE*)bufferID;
@@ -1866,7 +1870,7 @@ void ACodec::BaseState::HandleExtraData(IOMX::buffer_id bufferID) {
         }
     }
 }
-
+#endif
 
 bool ACodec::BaseState::onOMXFillBufferDone(
         IOMX::buffer_id bufferID,
@@ -1967,11 +1971,13 @@ void ACodec::BaseState::onOutputBufferDrained(const sp<AMessage> &msg) {
         mCodec->findBufferByID(kPortIndexOutput, bufferID, &index);
     CHECK_EQ((int)info->mStatus, (int)BufferInfo::OWNED_BY_DOWNSTREAM);
 
+#ifdef QCOM_HARDWARE
     int32_t flags;
     CHECK(msg->findInt32("flags", &flags));
     if (mCodec->mSmoothStreaming && (flags & OMX_BUFFERFLAG_EXTRADATA)) {
         HandleExtraData( bufferID );
     }
+#endif
     int32_t render;
     if (mCodec->mNativeWindow != NULL
             && msg->findInt32("render", &render) && render != 0) {
@@ -2143,6 +2149,7 @@ void ACodec::UninitializedState::onSetup(
 
     mCodec->mInputEOSResult = OK;
 
+#ifdef QCOM_HARDWARE
     char value[PROPERTY_VALUE_MAX];
     if(property_get("hls.enable.smooth.streaming", value, NULL) &&
       (!strcasecmp(value, "true") || !strcmp(value, "1")) &&
@@ -2158,6 +2165,8 @@ void ACodec::UninitializedState::onSetup(
             LOGI("Smooth streaming is enabled ");
         }
     }
+#endif
+
     mCodec->configureCodec(mime.c_str(), msg);
 
     sp<RefBase> obj;
@@ -2432,11 +2441,13 @@ bool ACodec::ExecutingState::onOMXEvent(
 
             return true;
         }
+#ifdef QCOM_HARDWARE
         case OMX_EventIndexsettingChanged:
         {
             LOGV("[%s] Received OMX_EventIndexsettingChanged event ", mCodec->mComponentName.c_str());
             return true;
         }
+#endif
 
         case OMX_EventBufferFlag:
         {

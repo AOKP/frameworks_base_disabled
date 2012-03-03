@@ -55,10 +55,6 @@ LOCAL_SRC_FILES:=                         \
         XINGSeeker.cpp                    \
         avc_utils.cpp                     \
 
-ifneq ($(BOARD_USES_QCOM_HARDWARE),true)
-        LOCAL_SRC_FILES += AVIExtractor.cpp
-endif
-
 LOCAL_C_INCLUDES:= \
 	$(JNI_H_INCLUDE) \
         $(TOP)/frameworks/base/include/media/stagefright/openmax \
@@ -213,14 +209,6 @@ LOCAL_SHARED_LIBRARIES += \
         libdl
 
 LOCAL_CFLAGS += -Wno-multichar
-
-ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
-        LOCAL_C_INCLUDES += $(TOP)/hardware/qcom/display/libgralloc
-        LOCAL_C_INCLUDES += $(TOP)/hardware/qcom/media/mm-core/omxcore/inc
-        LOCAL_C_INCLUDES += $(TOP)/system/core/include
-        LOCAL_C_INCLUDES += $(TOP)/hardware/libhardware_legacy/include
-        LOCAL_CFLAGS += -DQCOM_HARDWARE
-endif
 
 LOCAL_MODULE:= libstagefright
 

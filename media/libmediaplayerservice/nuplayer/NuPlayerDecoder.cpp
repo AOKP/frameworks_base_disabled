@@ -233,6 +233,7 @@ sp<AMessage> NuPlayer::Decoder::makeFormat(const sp<MetaData> &meta) {
         buffer->meta()->setInt32("csd", true);
         mCSD.push(buffer);
     }
+#ifdef QCOM_HARDWARE
     else if (meta->findData(kKeyAacCodecSpecificData, &type, &data, &size)) {
       if (size > 0 && data != NULL) {
         sp<ABuffer> buffer = new ABuffer(size);
@@ -249,6 +250,8 @@ sp<AMessage> NuPlayer::Decoder::makeFormat(const sp<MetaData> &meta) {
           LOGE("Not a valid data pointer or size == 0");
       }
     }
+#endif
+
     return msg;
 }
 

@@ -825,7 +825,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         private final int[] ITEM_IDS = { R.id.navbartoggle, R.id.navbarhome, R.id.navbarback,R.id.navbarmenu };
         
         public Context mContext;
-        public boolean mNavBarHideOn;
+        public boolean mNavBarVisible;
         private final Handler mHandler;
         private IWindowManager mWindowManager;
         private int mInjectKeycode;
@@ -838,15 +838,15 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         public View create(Context context, View convertView, ViewGroup parent,
                 LayoutInflater inflater) {
         	mContext = context;
-        	mNavBarHideOn = Settings.System.getInt(mContext.getContentResolver(),
-                    Settings.System.NAVIGATION_BAR_BUTTONS_SHOW, 1) == 0;
+        	mNavBarVisible = Settings.System.getInt(mContext.getContentResolver(),
+                    Settings.System.NAVIGATION_BAR_BUTTONS_SHOW, 1) == 1;
         	mWindowManager = IWindowManager.Stub.asInterface(ServiceManager.getService("window"));
                  	
             View v = inflater.inflate(R.layout.global_actions_navbar_mode, parent, false);
 
             for (int i = 0; i < 4; i++) {
                 View itemView = v.findViewById(ITEM_IDS[i]);
-                itemView.setSelected((i==0)&&mNavBarHideOn);  // set selected on item 0 if NavBarHideOn is off
+                itemView.setSelected((i==0)&&mNavBarVisible);  // set selected on item 0 if NavBarHideOn is off
                 // Set up click handler
                 itemView.setTag(i);
                 itemView.setOnClickListener(this);
@@ -882,8 +882,8 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             case 0 :
                 Settings.System.putInt(mContext.getContentResolver(),
                         Settings.System.NAVIGATION_BAR_BUTTONS_SHOW,
-                         mNavBarHideOn ? 0 : 1);
-                v.setSelected(!mNavBarHideOn);
+                         mNavBarVisible ? 0 : 1);
+                v.setSelected(!mNavBarVisible);
                 mHandler.sendEmptyMessage(MESSAGE_DISMISS);
                 break;
                 

@@ -2,7 +2,7 @@
 <!--
 /* apps/common/assets/default/default/skins/StatusBar.xml
 **
-** Copyright 2006, The Android Open Source Project
+** Copyright 2012, The Android Open Source Project
 **
 ** Licensed under the Apache License, Version 2.0 (the "License"); 
 ** you may not use this file except in compliance with the License. 
@@ -17,7 +17,6 @@
 ** limitations under the License.
 */
 -->
-
 <com.android.systemui.statusbar.phone.ExpandedView 
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:systemui="http://schemas.android.com/apk/res/com.android.systemui"
@@ -25,8 +24,8 @@
     android:focusable="true"
     android:descendantFocusability="afterDescendants"
     >
-
     <RelativeLayout
+        android:id="@+id/drawer_header"
         android:layout_width="match_parent"
         android:layout_height="52dp"
         android:paddingTop="3dp"
@@ -43,7 +42,6 @@
             android:gravity="center_vertical|left"
             android:paddingLeft="16dp"
             />
-
         <ImageView android:id="@+id/settings_button"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
@@ -53,7 +51,6 @@
             android:src="@drawable/ic_notify_quicksettings"
             android:contentDescription="@string/accessibility_settings_button"
             />
-
         <ImageView android:id="@+id/liquid_button"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
@@ -62,7 +59,6 @@
             android:src="@drawable/ic_notify_liquid"
             android:contentDescription="@string/accessibility_liquid_control"
             />
-
         <ImageView android:id="@+id/clear_all_button"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
@@ -73,17 +69,26 @@
             android:contentDescription="@string/accessibility_clear_all"
             />
     </RelativeLayout>
-
 	<View
+        android:id="@+id/drawer_header_hr"
 		android:layout_width="match_parent"
 		android:layout_height="2dp"
 		android:background="@drawable/status_bar_hr" />
-    
     <include layout="@layout/quick_toggles" 
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
-
-    <FrameLayout
+     <RelativeLayout
+       	android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+     <LinearLayout
+        	android:orientation="vertical"
+        	android:layout_width="wrap_content"
+        	android:layout_height="match_parent"
+        	android:paddingLeft="5dp"
+        	android:paddingRight="5dp"
+        	android:layout_alignParentLeft = "true" >
+     <FrameLayout
+        android:id="@+id/notifications"
         android:layout_width="match_parent" 
         android:layout_height="wrap_content"
         android:layout_weight="1"
@@ -97,7 +102,6 @@
             android:gravity="left"
             android:text="@string/status_bar_no_notifications_title"
             />
-
         <ScrollView
             android:id="@+id/scroll"
             android:layout_width="match_parent"
@@ -116,17 +120,13 @@
                     android:layout_height="wrap_content"
                     systemui:rowHeight="@dimen/notification_height"
                     />
-
             </LinearLayout>
         </ScrollView>
-
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:src="@drawable/title_bar_shadow"
             android:scaleType="fitXY"
         />
-
     </FrameLayout>
 </com.android.systemui.statusbar.phone.ExpandedView>
-

@@ -312,7 +312,6 @@ public class PhoneStatusBar extends StatusBar {
         final Context context = mContext;
 
         Resources res = context.getResources();
-
         updateDisplaySize(); // populates mDisplayMetrics
         loadDimens();
 
@@ -320,17 +319,14 @@ public class PhoneStatusBar extends StatusBar {
         mScreenWidth = (float) context.getResources().getDisplayMetrics().widthPixels;
         mMinBrightness = context.getResources().getInteger(
                 com.android.internal.R.integer.config_screenBrightnessDim);
-        expanded = (ExpandedView) View.inflate(context,
-                R.layout.status_bar_expanded, null);
 
-        /* disable debug coloring
+        ExpandedView expanded = (ExpandedView) View.inflate(context,R.layout.status_bar_expanded, null);
+
         if (DEBUG) {
             expanded.setBackgroundColor(0x6000FF80);
         }
-        */
 
         expanded.mService = this;
-
         mIntruderAlertView = View.inflate(context, R.layout.intruder_alert, null);
         mIntruderAlertView.setVisibility(View.GONE);
         mIntruderAlertView.setClickable(true);
@@ -352,7 +348,7 @@ public class PhoneStatusBar extends StatusBar {
         } catch (RemoteException ex) {
             // no window manager? good luck with that
         }
-        
+
         // figure out which pixel-format to use for the status bar.
         mPixelFormat = PixelFormat.OPAQUE;
         mStatusIcons = (LinearLayout) sb.findViewById(R.id.statusIcons);
@@ -366,7 +362,6 @@ public class PhoneStatusBar extends StatusBar {
         mExpandedDialog = new ExpandedDialog(context);
         mExpandedView = expanded;
         mPile = (NotificationRowLayout) expanded.findViewById(R.id.latestItems);
-        mExpandedContents = mPile; // was: expanded.findViewById(R.id.notificationLinearLayout);
         mNoNotificationsTitle = (TextView) expanded.findViewById(R.id.noNotificationsTitle);
         mNoNotificationsTitle.setVisibility(View.GONE); // disabling for now
 
@@ -378,8 +373,31 @@ public class PhoneStatusBar extends StatusBar {
         mSettingsButton.setOnClickListener(mSettingsButtonListener);
         mSettingsButton.setOnLongClickListener(mSettingsLongClickListener);
         mScrollView = (ScrollView) expanded.findViewById(R.id.scroll);
-
         mQuickToggles = (TogglesView) expanded.findViewById(R.id.quick_toggles);
+
+        // check and change layout type :)
+        final int layout_type = Settings.System.getInt(mContext.getContentResolver(),Settings.System.STATUS_BAR_LAYOUT, 0);
+        if (layout_type == 0) {
+            mExpandedContents = mPile;
+        } else {
+            View drawer_header = expanded.findViewById(R.id.drawer_header);
+            View drawer_header_hr = expanded.findViewById(R.id.drawer_header_hr);
+            View notifications = expanded.findViewById(R.id.notifications);
+
+            expanded.removeView(drawer_header);
+            expanded.removeView(drawer_header_hr);
+            expanded.removeView(mQuickToggles);
+            expanded.removeView(notifications);
+
+            if (layout_type == 1) {
+                expanded.addView(notifications);
+                expanded.addView(mQuickToggles);
+                expanded.addView(drawer_header_hr);
+                expanded.addView(drawer_header);
+                mExpandedContents = mQuickToggles;
+            }
+        }
+
         mTicker = new MyTicker(context, sb);
 
         TickerView tickerView = (TickerView) sb.findViewById(R.id.tickerText);

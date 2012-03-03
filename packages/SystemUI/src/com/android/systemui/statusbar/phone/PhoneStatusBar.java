@@ -375,9 +375,9 @@ public class PhoneStatusBar extends StatusBar {
 
             if (layout_type == 1) {
                 expanded.addView(notifications);
-                expanded.addView(weather_panel);
                 expanded.addView(drawer_header_hr);
                 expanded.addView(drawer_header);
+                expanded.addView(weather_panel);
                 expanded.addView(mQuickToggles);
 
                 mExpandedContents = mQuickToggles;

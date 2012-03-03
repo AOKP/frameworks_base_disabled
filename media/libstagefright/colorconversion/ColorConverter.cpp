@@ -54,9 +54,7 @@ bool ColorConverter::isValid() const {
         case OMX_QCOM_COLOR_FormatYVU420SemiPlanar:
         case OMX_COLOR_FormatYUV420SemiPlanar:
         case OMX_TI_COLOR_FormatYUV420PackedSemiPlanar:
-#ifdef QCOM_HARDWARE
         case QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka:
-#endif
             return true;
 
         default:
@@ -132,7 +130,6 @@ status_t ColorConverter::convert(
             err = convertTIYUV420PackedSemiPlanar(src, dst);
             break;
 
-#ifdef QCOM_HARDWARE
         case QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka:
             {
                 void * lib = dlopen("libmm-color-convertor.so", RTLD_NOW);
@@ -183,7 +180,6 @@ status_t ColorConverter::convert(
                 dlclose(lib);
             }
             break;
-#endif
 
         default:
         {

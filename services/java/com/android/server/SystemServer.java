@@ -272,7 +272,6 @@ class ServerThread extends Thread {
         StatusBarManagerService statusBar = null;
         InputMethodManagerService imm = null;
         AppWidgetService appWidget = null;
-        ProfileManagerService profile = null;
         NotificationManagerService notification = null;
         WallpaperManagerService wallpaper = null;
         LocationManagerService location = null;
@@ -425,14 +424,6 @@ class ServerThread extends Thread {
                 ServiceManager.addService("mount", new MountService(context));
             } catch (Throwable e) {
                 reportWtf("starting Mount Service", e);
-            }
-
-            try {
-                Slog.i(TAG, "Profile Manager");
-                profile = new ProfileManagerService(context);
-                ServiceManager.addService(Context.PROFILE_SERVICE, profile);
-            } catch (Throwable e) {
-                Slog.e(TAG, "Failure starting Profile Manager", e);
             }
 
             try {

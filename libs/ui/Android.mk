@@ -72,10 +72,12 @@ LOCAL_C_INCLUDES := \
 
 ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
     LOCAL_CFLAGS += -DQCOM_HARDWARE
+ifeq ($(TARGET_BOARD_PLATFORM),msm7x30)
     LOCAL_C_INCLUDES += 7x30
     LOCAL_SRC_FILES+= 7x30/Overlay.cpp
 else
     LOCAL_SRC_FILES+= Overlay.cpp
+endif
 endif
 
 LOCAL_MODULE:= libui

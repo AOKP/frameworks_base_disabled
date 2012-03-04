@@ -110,7 +110,7 @@ SurfaceFlinger::SurfaceFlinger()
         mCanSkipComposition(false),
 #endif
 #ifdef QCOM_HDMI_OUT
-        mHDMIOutput(false),
+	mHDMIOutput(EXT_DISPLAY_OFF),
 #endif
         mSecureFrameBuffer(0)
 {
@@ -1386,20 +1386,24 @@ int SurfaceFlinger::setOrientation(DisplayID dpy,
 }
 
 #ifdef QCOM_HDMI_OUT
-void SurfaceFlinger::updateHwcHDMI(bool enable)
+void SurfaceFlinger::updateHwcHDMI(int externaltype)
 {
     invalidateHwcGeometry();
     const DisplayHardware& hw(graphicPlane(0).displayHardware());
     HWComposer& hwc(hw.getHwComposer());
-    hwc.enableHDMIOutput(enable);
+    hwc.enableHDMIOutput(externaltype);
 }
 
-void SurfaceFlinger::enableHDMIOutput(int enable)
+void SurfaceFlinger::enableHDMIOutput(int externaltype)
 {
     Mutex::Autolock _l(mHDMILock);
-    mHDMIOutput = enable;
-    updateHwcHDMI(enable);
-    signalEvent();
+    external_display newState = handleEventHDMI((external_display)externaltype,
+                                                (external_display)mHDMIOutput);
+    if(newState != mHDMIOutput) {
+        mHDMIOutput = (int) newState;
+        updateHwcHDMI(mHDMIOutput);
+        signalEvent();
+    }
 }
 
 void SurfaceFlinger::setActionSafeWidthRatio(float asWidthRatio){

@@ -16,15 +16,7 @@
 
 package com.android.internal.policy.impl;
 
-import java.util.ArrayList;
-
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.ActivityNotFoundException;
-import android.app.Dialog;
-import android.app.Profile;
-import android.app.ProfileManager;
-import android.app.StatusBarManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -66,15 +58,6 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 /**
- * Needed for takeScreenshot
- */
-import android.content.ServiceConnection;
-import android.content.ComponentName;
-import android.os.IBinder;
-import android.os.Messenger;
-import android.os.RemoteException;
-
-/**
  * Helper to show the global actions dialog.  Each item is an {@link Action} that
  * may show depending on whether the keyguard is showing, and whether the device
  * is provisioned.
@@ -91,7 +74,6 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
     private AlertDialog mDialog;
 
     private ToggleAction mAirplaneOn;
-    private ToggleAction mFullscreenOn;
     private ToggleAction mPowersaverOn;
     private ToggleAction mFlashlightOn;
     private NavBarAction mHidenavbarOn;
@@ -104,11 +86,10 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
     private ToggleAction.State mAirplaneState = ToggleAction.State.Off;
     
     private boolean mEnableAirplane = true;
+    private boolean mEnableProfiles = true;
     private boolean mEnableEasteregg = false;
     private boolean mEnableFlashlight = true;
-    private boolean mEnableFullscreen = false;
     private boolean mEnablePowersaver = false;
-    private boolean mEnableProfiles = true;
     private boolean mEnableScreenshot = true;
     private boolean mEnableHidenavbar = false;
     private boolean mReceiverRegistered = false;
@@ -172,9 +153,6 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
         mEnableFlashlight = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.POWER_DIALOG_SHOW_FLASHLIGHT, 0) == 1;
-
-        mEnableFullscreen = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.POWER_DIALOG_SHOW_FULLSCREEN, 0) == 1;
 
         mEnableHidenavbar = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.POWER_DIALOG_SHOW_HIDENAVBAR, 0) == 1;
@@ -280,27 +258,6 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 return false;
             }
         };
-
-        mFullscreenOn = new ToggleAction(
-                R.drawable.ic_lock_full_screen,
-                R.drawable.ic_lock_full_screen,
-                R.string.global_actions_toggle_fullscreen,
-                R.string.global_actions_fullscreen_title_on,
-                R.string.global_actions_fullscreen_title_off) {
-
-            void onToggle(boolean on) {
-                Settings.System.putInt(mContext.getContentResolver(),
-                        Settings.System.POWER_DIALOG_FULLSCREEN, on ? 1 : 0);
-            }
-
-            public boolean showDuringKeyguard() {
-                return true;
-            }
-
-            public boolean showBeforeProvisioning() {
-                return false;
-            }
-        };
         
         mHidenavbarOn = new NavBarAction(mHandler);
         mItems = new ArrayList<Action>();
@@ -347,14 +304,6 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             mItems.add(mFlashlightOn); 
         } else {
             Log.d(TAG, "Not Adding Flashlight");
-        }
-
-        // next: fullscreen
-        if(mEnableFullscreen) {
-            Log.d(TAG, "Adding Fullscreen Menu");
-            mItems.add(mFullscreenOn);
-        } else {
-            Log.d(TAG, "Not Adding Fullscreen");
         }
 
         // next: hidenavbar
@@ -600,10 +549,6 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             mContext.registerReceiver(mRingerModeReceiver, filter);
             mReceiverRegistered = true;
         }
-        final boolean fullScreenOn = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.POWER_DIALOG_FULLSCREEN, 0) == 1;
-        mFullscreenOn.updateState(fullScreenOn ? ToggleAction.State.On : ToggleAction.State.Off);
-
         final boolean powerSaverOn = Settings.Secure.getInt(mContext.getContentResolver(),
                 Settings.Secure.POWER_SAVER_MODE, PowerSaverService.POWER_SAVER_MODE_OFF) == PowerSaverService.POWER_SAVER_MODE_ON;
         mPowersaverOn.updateState(powerSaverOn ? ToggleAction.State.On : ToggleAction.State.Off);
@@ -968,7 +913,6 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
         public void onClick(View v) {
             if (!(v.getTag() instanceof Integer)) return;
-
             int index = (Integer) v.getTag();
             mAudioManager.setRingerMode(indexToRingerMode(index));
             mHandler.sendEmptyMessageDelayed(MESSAGE_DISMISS, DIALOG_DISMISS_DELAY);
@@ -980,11 +924,11 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         private final int[] ITEM_IDS = { R.id.navbartoggle, R.id.navbarhome, R.id.navbarback,R.id.navbarmenu };
         
         public Context mContext;
-        public boolean mHidenavbarOn;
+        private int mInjectKeycode;
+        public boolean mNavBarVisible;
         private final Handler mHandler;
         private IWindowManager mWindowManager;
-        private int mInjectKeycode;
-
+        
         NavBarAction(Handler handler) {
         	mHandler = handler;
         }
@@ -992,15 +936,14 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         public View create(Context context, View convertView, ViewGroup parent,
                 LayoutInflater inflater) {
         	mContext = context;
-        	mHidenavbarOn = Settings.System.getInt(mContext.getContentResolver(),
-                    Settings.System.NAVIGATION_BAR_BUTTONS_HIDE, 0) == 1;
+        	mNavBarVisible = Settings.System.getInt(mContext.getContentResolver(),
+                    Settings.System.NAVIGATION_BAR_BUTTONS_SHOW, 0) == 0;
         	mWindowManager = IWindowManager.Stub.asInterface(ServiceManager.getService("window"));
             View v = inflater.inflate(R.layout.global_actions_navbar_mode, parent, false);
 
             for (int i = 0; i < 4; i++) {
                 View itemView = v.findViewById(ITEM_IDS[i]);
-                itemView.setSelected((i==0)&&(!mNavBarHideOn));  // set selected on item 0 if NavBarHideOn is off
-                // Set up click handler
+                itemView.setSelected((i==0)&&mNavBarVisible);
                 itemView.setTag(i);
                 itemView.setOnClickListener(this);
             }
@@ -1032,11 +975,10 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             switch (index) {
             
             case 0 :
-            	mHidenavbarOn = !mNavBarHideOn;
                 Settings.System.putInt(mContext.getContentResolver(),
-                        Settings.System.NAVIGATION_BAR_BUTTONS_HIDE,
-                         mNavBarHideOn ? 1 : 0);
-                v.setSelected(!mNavBarHideOn);
+                        Settings.System.NAVIGATION_BAR_BUTTONS_SHOW,
+                         mNavBarVisible ? 1 : 0);
+                v.setSelected(!mNavBarVisible);
                 mHandler.sendEmptyMessage(MESSAGE_DISMISS);
                 break;
             case 1:

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006 The Android Open Source Project
+ * Copyright (C) 2012 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -295,12 +295,10 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     final ArrayList<WindowState> mStatusBarPanels = new ArrayList<WindowState>();
     WindowState mNavigationBar = null;
     boolean mHasNavigationBar = false;
-    // User override to enable soft keys alongside hard keys
-    boolean mUserNavigationBar = false;
-    int mNavigationBarWidth = 0, mNavigationBarHeight = 0;
-
-    // on every boot reset fullscreen mode to off
+    // in order to properly setup the NavBar and still be able to hide it when the user
+    // selects to, I need to know if its first boot.
     private boolean mNavBarFirstBootFlag = true;
+    int mNavigationBarWidth = 0, mNavigationBarHeight = 0;
 
     WindowState mKeyguard = null;
     KeyguardViewMediator mKeyguardMediator;
@@ -513,11 +511,11 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             resolver.registerContentObserver(Settings.System.getUriFor(
                     "fancy_rotation_anim"), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.POWER_DIALOG_FULLSCREEN), false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.ACCELEROMETER_ROTATION_ANGLES), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.ENABLE_FAST_TORCH), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.NAVIGATION_BAR_BUTTONS_SHOW), false, this);
             updateSettings();
         }
 
@@ -997,18 +995,10 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 ? com.android.internal.R.dimen.status_bar_height
                 : com.android.internal.R.dimen.system_bar_height);
 
-        if (mNavBarFirstBootFlag){
-        	// this is our first time here.  Let's obey the framework setup
-            boolean frameworkDefault = mContext.getResources().getBoolean(
-                    com.android.internal.R.bool.config_showNavigationBar);
-            mHasNavigationBar = Settings.System.getInt(mContext.getContentResolver(),
-                    Settings.System.NAVIGATION_BAR_SHOW, frameworkDefault ? 1 : 0) == 1;
-            mNavBarFirstBootFlag = false;
-        } else {
-        	mHasNavigationBar = Settings.System.getInt(mContext.getContentResolver(), 
-        		Settings.System.POWER_DIALOG_FULLSCREEN, 0) == 0;
-        }
-
+        final int showByDefault = mContext.getResources().getBoolean(
+                com.android.internal.R.bool.config_showNavigationBar) ? 1 : 0;
+        mHasNavigationBar = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.NAVIGATION_BAR_BUTTONS_SHOW, showByDefault) == 1;
         // Allow a system property to override this. Used by the emulator.
         // See also hasNavigationBar().
         String navBarOverride = SystemProperties.get("qemu.hw.mainkeys");
@@ -1016,11 +1006,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             if      (navBarOverride.equals("1")) mHasNavigationBar = false;
             else if (navBarOverride.equals("0")) mHasNavigationBar = true;
         }
-        // Allow user to override this if phone has hard keys (eg. nav bar is
-        // not enabled by default in the configuration)
-        if(!mHasNavigationBar) {
-            mHasNavigationBar = mUserNavigationBar;
-        }
+        // make sure tablets never ever try and use this
+        if(mStatusBarCanHide)
+            mHasNavigationBar = false;
 
         if (mHasNavigationBar) {
             mNavigationBarHeight = Settings.System.getInt(
@@ -1071,8 +1059,14 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     Surface.ROTATION_0);
             mUserRotationAngles = Settings.System.getInt(resolver,
                     Settings.System.ACCELEROMETER_ROTATION_ANGLES, -1);
-            mEnableQuickTorch = Settings.System.getInt(resolver, Settings.System.ENABLE_FAST_TORCH,
-                    0) == 1;
+            mEnableQuickTorch = Settings.System.getInt(resolver, 
+                    Settings.System.ENABLE_FAST_TORCH, 0) == 1;
+            boolean hasNavBarChanged = Settings.System.getInt(resolver, 
+                    Settings.System.NAVIGATION_BAR_BUTTONS_SHOW, 0) == 1;
+
+            if (mHasNavigationBar != hasNavBarChanged) {
+             setInitialDisplaySize(mUnrestrictedScreenWidth,mUnrestrictedScreenHeight);
+            }
 
             if (mAccelerometerDefault != accelerometerDefault) {
                 mAccelerometerDefault = accelerometerDefault;
@@ -1116,13 +1110,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 updateRotation = true;
             }
         }
-        boolean hasNavBarChanged = Settings.System.getInt(resolver, Settings.System.POWER_DIALOG_FULLSCREEN, 0) == 0;
-        if (mHasNavigationBar != hasNavBarChanged) { 
-            // NavBar setting has changed, need to reset screen.
-            mHasNavigationBar = hasNavBarChanged;
-            setInitialDisplaySize(mUnrestrictedScreenWidth, mUnrestrictedScreenHeight);
-        }
-
         if (updateRotation) {
             updateRotation(true);
         }

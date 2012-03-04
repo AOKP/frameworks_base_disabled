@@ -422,17 +422,8 @@
 
     <!-- status message in phone options dialog for when powersaver is off -->
     <string name="global_actions_power_saver_off_status">Powersaver is OFF</string>
-
-    <!-- label for item that toggles fullscreen -->
-    <string name="global_actions_toggle_fullscreen">Fullscreen</string>
-
-    <!-- status message in phone options dialog for when fullscreen is on -->
-    <string name="global_actions_fullscreen_title_on">Fullscreen is ON</string>
-
-    <!-- status message in phone options dialog for when fullscreen is off -->
-    <string name="global_actions_fullscreen_title_off">Fullscreen is OFF</string>
     
-     <!-- label for item that toggles flashlight -->
+    <!-- label for item that toggles flashlight -->
     <string name="global_actions_toggle_torch">Flashlight</string>
 
     <!-- status message in phone options dialog for when flashlight is on -->

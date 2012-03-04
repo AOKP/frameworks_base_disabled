@@ -1906,7 +1906,7 @@ public final class Settings {
          * value is boolean (1 or 0).
          * @hide
          */
-        public static final String NAVIGATION_BAR_VISIBLE = "navigation_bar_visible";
+        public static final String NAVIGATION_BAR_BUTTONS_SHOW = "navigation_bar_buttons_show";
 
         /**
          * Whether the battery LED should repeatedly flash when the battery is low
@@ -2567,11 +2567,6 @@ public final class Settings {
         public static final String GOOGLE_MUSIC_IS_PLAYING = "google_music_is_playing";
 
         /**
-         * @hide
-         */
-        public static final String STATUSBAR_6BAR_SIGNAL = "statusbar_6bar_signal";
-
-        /**
          * the bottom of the expanded statusbar visibility in alpha float value
          * @hide
          */
@@ -2653,11 +2648,6 @@ public final class Settings {
         /**
          * @hide
          */
-        public static final String POWER_DIALOG_SHOW_FULLSCREEN = "power_dialog_show_fullscreen";
-
-        /**
-         * @hide
-         */
         public static final String POWER_DIALOG_SHOW_HIDENAVBAR = "power_dialog_show_hidenavbar";
 
         /**
@@ -2674,11 +2664,6 @@ public final class Settings {
          * @hide
          */
         public static final String POWER_DIALOG_SHOW_SCREENSHOT = "power_dialog_show_screenshot";
-
-        /**
-         * @hide
-         */
-        public static final String POWER_DIALOG_FULLSCREEN = "power_dialog_fullscreen";
 
         /**
          * @hide
@@ -2745,6 +2730,7 @@ public final class Settings {
          * @hide
          */
         public static final String NAVIGATION_BAR_BUTTONS = "navigation_bar_buttons";
+
         /**
          * whether volume keys wake the screen. boolean value
          * 

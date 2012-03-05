@@ -388,25 +388,18 @@ public class PhoneStatusBar extends StatusBar {
 
             View drawer_header = expanded.findViewById(R.id.drawer_header);
             View drawer_header_hr = expanded.findViewById(R.id.drawer_header_hr);
-            View wp1 = expanded.findViewById(R.id.wp1);
-            View wp2 = expanded.findViewById(R.id.wp2);
             View notifications = expanded.findViewById(R.id.notifications);
 
             expanded.removeView(drawer_header);
             expanded.removeView(drawer_header_hr);
             expanded.removeView(mQuickToggles);
-            expanded.removeView(wp1);
-            expanded.removeView(wp2);
             expanded.removeView(notifications);
 
             if (layout_type == 1) {
                 expanded.addView(notifications);
                 expanded.addView(drawer_header_hr);
                 expanded.addView(drawer_header);
-                expanded.addView(wp1);
-                expanded.addView(wp2);
                 expanded.addView(mQuickToggles);
-
                 mExpandedContents = mQuickToggles;
             }
 

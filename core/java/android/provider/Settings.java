@@ -2522,6 +2522,12 @@ public final class Settings {
          * @hide
          */
         public static final String LOCKSCREEN_BATTERY = "lockscreen_battery";
+        
+        /**
+         * Setting to use lockscreen alongside secure lock
+         * @hide
+         */
+        public static final String SHOW_LOCK_BEFORE_UNLOCK = "show_lock_before_unlock";
 
         /**
          * The action to take when long pressing home

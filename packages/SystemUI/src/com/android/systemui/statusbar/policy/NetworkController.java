@@ -448,7 +448,7 @@ public class NetworkController extends BroadcastReceiver {
     private final void updateTelephonySignalStrength() {
 
         boolean useSixBar = (Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.STATUSBAR_6BAR_SIGNAL, 1) == 1);
+                Settings.System.STATUSBAR_SIXBAR_SIGNAL, 0) == 1);
 
         if (!hasService()) {
             if (CHATTY) Slog.d(TAG, "updateTelephonySignalStrength: !hasService()");
@@ -1280,5 +1280,5 @@ public class NetworkController extends BroadcastReceiver {
             return "(null)";
         }
     }
-
 }
+

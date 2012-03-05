@@ -26,6 +26,7 @@
     android:descendantFocusability="afterDescendants"
     >
     <LinearLayout
+        android:id="@+id/drawer_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"

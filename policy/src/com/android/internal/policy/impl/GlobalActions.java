@@ -16,7 +16,13 @@
 
 package com.android.internal.policy.impl;
 
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
+import android.app.Dialog;
+import android.app.Profile;
+import android.app.ProfileManager;
+import android.app.StatusBarManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -54,6 +60,7 @@ import com.android.internal.app.ShutdownThread;
 import com.android.internal.telephony.TelephonyIntents;
 import com.android.internal.telephony.TelephonyProperties;
 import com.google.android.collect.Lists;
+
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -78,7 +85,6 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
     private ToggleAction mFlashlightOn;
     private NavBarAction mHidenavbarOn;
     private SilentModeAction mSilentModeAction;
-    private MyAdapter mAdapter;
 
     private boolean mKeyguardShowing = false;
     private boolean mDeviceProvisioned = false;
@@ -367,7 +373,8 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         // next: profiles
         if (mEnableProfiles) {
             Log.d(TAG, "Adding Profiles Menu");
-            mItems.add(new ProfileChooseAction()) {
+            mItems.add(
+                new ProfileChooseAction() {
                 public void onPress() {
                     createProfileDialog();
                 }
@@ -391,6 +398,18 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 new SinglePressAction(
                         com.android.internal.R.drawable.ic_lock_screenshot,
                         R.string.global_action_screenshot) {
+                public void onPress() {
+                    takeScreenshot();
+                }
+
+                public boolean showDuringKeyguard() {
+                    return true;
+                }
+
+                public boolean showBeforeProvisioning() {
+                    return true;
+                }
+            });
         } else {
             Log.d(TAG, "Not Adding Screenshot");
         }
@@ -404,6 +423,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         final AlertDialog.Builder ab = new AlertDialog.Builder(mContext);
         ab.setAdapter(mAdapter, this).setInverseBackgroundForced(true);
         final AlertDialog dialog = ab.create();
+
         dialog.getListView().setItemsCanFocus(true);
         dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG);
         dialog.setOnDismissListener(this);
@@ -859,7 +879,6 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
     private static class SilentModeAction implements Action, View.OnClickListener {
 
         private final int[] ITEM_IDS = { R.id.option1, R.id.option2, R.id.option3 };
-
         private final AudioManager mAudioManager;
         private final Handler mHandler;
 

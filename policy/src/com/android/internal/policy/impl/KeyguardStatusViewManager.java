@@ -703,7 +703,7 @@ class KeyguardStatusViewManager implements OnClickListener {
     }
 
     public void updateColors() {
-        int white = 16777215;
+        int white = 0xFFFFFFFF;
         if (DEBUG) Log.d(TAG, "Lets update the colors");
         ContentResolver resolver = getContext().getContentResolver();
         int color = Settings.System.getInt(resolver,

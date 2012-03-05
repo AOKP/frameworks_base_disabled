@@ -318,7 +318,6 @@ static const CodecInfo kEncoderInfo[] = {
     { MEDIA_MIMETYPE_VIDEO_MPEG4, "OMX.qcom.7x30.video.encoder.mpeg4" },
 #ifdef QCOM_HARDWARE
     { MEDIA_MIMETYPE_AUDIO_EVRC,   "OMX.qcom.audio.encoder.evrc" },
-    { MEDIA_MIMETYPE_AUDIO_QCELP, "OMX.qcom.audio.decoder.Qcelp13Hw"},
     { MEDIA_MIMETYPE_AUDIO_QCELP,  "OMX.qcom.audio.encoder.qcelp13" },
 #endif
     { MEDIA_MIMETYPE_VIDEO_MPEG4, "OMX.qcom.video.encoder.mpeg4" },
@@ -1130,9 +1129,10 @@ status_t OMXCodec::configureCodec(const sp<MetaData> &meta) {
                 CODEC_LOGE("DIVX 311 set frame by frame mode error");
                 return err;
             }
-#endif
         }
     }
+
+#endif
 
     int32_t bitRate = 0;
     if (mIsEncoder) {

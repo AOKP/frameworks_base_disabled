@@ -210,6 +210,14 @@ LOCAL_SHARED_LIBRARIES += \
 
 LOCAL_CFLAGS += -Wno-multichar
 
+ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
+        LOCAL_C_INCLUDES += $(TOP)/hardware/qcom/display/libgralloc
+        LOCAL_C_INCLUDES += $(TOP)/vendor/qcom/opensource/omx/mm-core/omxcore/inc
+        LOCAL_C_INCLUDES += $(TOP)/system/core/include
+        LOCAL_C_INCLUDES += $(TOP)/hardware/libhardware_legacy/include
+        LOCAL_CFLAGS += -DQCOM_HARDWARE
+endif
+
 LOCAL_MODULE:= libstagefright
 
 include $(BUILD_SHARED_LIBRARY)

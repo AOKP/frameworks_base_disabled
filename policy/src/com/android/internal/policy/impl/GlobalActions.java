@@ -391,7 +391,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             mItems.add(
                 new SinglePressAction(
                         com.android.internal.R.drawable.ic_lock_screenshot,
-                        R.string.global_action_screenshot)) {
+                        R.string.global_action_screenshot) {
                 public void onPress() {
                     takeScreenshot();
                 }

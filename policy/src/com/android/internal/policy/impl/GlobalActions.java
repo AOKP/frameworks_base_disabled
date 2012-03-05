@@ -17,6 +17,10 @@
 package com.android.internal.policy.impl;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.Profile;
+import android.app.ProfileManager;
+import android.app.StatusBarManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -54,6 +58,7 @@ import com.android.internal.app.ShutdownThread;
 import com.android.internal.telephony.TelephonyIntents;
 import com.android.internal.telephony.TelephonyProperties;
 import com.google.android.collect.Lists;
+
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -78,7 +83,6 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
     private ToggleAction mFlashlightOn;
     private NavBarAction mHidenavbarOn;
     private SilentModeAction mSilentModeAction;
-    private MyAdapter mAdapter;
 
     private boolean mKeyguardShowing = false;
     private boolean mDeviceProvisioned = false;

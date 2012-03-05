@@ -21,9 +21,48 @@
 #include <utils/Errors.h>
 #include <binder/MemoryHeapBase.h>
 
-#include "Overlay.h"
+#include <ui/7x30/Overlay.h>
 
 namespace android {
+
+int getBppFromOverlayFormat(const OverlayFormats format) {
+    int bpp;
+    switch(format) {
+        case OVERLAY_FORMAT_RGBA8888:
+            bpp=32;
+            break;
+        case OVERLAY_FORMAT_RGB565:
+        case OVERLAY_FORMAT_YUV422I:
+        case OVERLAY_FORMAT_YUV422SP:
+            bpp = 16;
+            break;
+        case OVERLAY_FORMAT_YUV420SP:
+        case OVERLAY_FORMAT_YUV420P:
+            bpp = 12;
+            break;
+        default:
+            bpp = 0;
+    }
+    return bpp;
+}
+
+OverlayFormats getOverlayFormatFromString(const char* name) {
+    OverlayFormats rv = OVERLAY_FORMAT_UNKNOWN;
+    if( strcmp(name, "yuv422sp") == 0 ) {
+        rv = OVERLAY_FORMAT_YUV422SP;
+    } else if( strcmp(name, "yuv420sp") == 0 ) {
+        rv = OVERLAY_FORMAT_YUV420SP;
+    } else if( strcmp(name, "yuv422i-yuyv") == 0 ) {
+        rv = OVERLAY_FORMAT_YUV422I;
+    } else if( strcmp(name, "yuv420p") == 0 ) {
+        rv = OVERLAY_FORMAT_YUV420P;
+    } else if( strcmp(name, "rgb565") == 0 ) {
+        rv = OVERLAY_FORMAT_RGB565;
+    } else if( strcmp(name, "rgba8888") == 0 ) {
+        rv = OVERLAY_FORMAT_RGBA8888;
+    }
+    return rv;
+}
 
 Overlay::Overlay(overlay_set_fd_hook set_fd,
         overlay_set_crop_hook set_crop,

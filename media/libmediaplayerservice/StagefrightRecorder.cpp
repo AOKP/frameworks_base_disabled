@@ -430,7 +430,7 @@ status_t StagefrightRecorder::setParamMaxFileSizeBytes(int64_t bytes) {
     }
 
     if (bytes >= 0xffffffffLL) {
-        ALOGW("Target file size (%lld bytes) too larger than supported, clip to 4GB", bytes);
+        LOGW("Target file size (%lld bytes) too larger than supported, clip to 4GB", bytes);
         bytes = 0xffffffffLL;
     }
 
@@ -751,17 +751,17 @@ status_t StagefrightRecorder::setListener(const sp<IMediaRecorderClient> &listen
 }
 
 status_t StagefrightRecorder::prepare() {
-  ALOGV(" %s E", __func__ );
+  LOGV(" %s E", __func__ );
 
   if(mVideoHeight && mVideoWidth &&             /*Video recording*/
          (mMaxFileDurationUs <=0 ||             /*Max duration is not set*/
          (mVideoHeight * mVideoWidth < 720 * 1280 && mMaxFileDurationUs > 30*60*1000*1000) ||
          (mVideoHeight * mVideoWidth >= 720 * 1280 && mMaxFileDurationUs > 10*60*1000*1000))) {
     /*Above Check can be further optimized for lower resolutions to reduce file size*/
-    ALOGV("File is huge so setting 64 bit file offsets");
+    LOGV("File is huge so setting 64 bit file offsets");
     setParam64BitFileOffset(true);
   }
-  ALOGV(" %s X", __func__ );
+  LOGV(" %s X", __func__ );
   return OK;
 }
 
@@ -1461,35 +1461,35 @@ status_t StagefrightRecorder::setupVideoEncoder(
         case VIDEO_ENCODER_H264:
             if (strncmp("base", value, 4) == 0) {
                 mVideoEncoderProfile = OMX_VIDEO_AVCProfileBaseline;
-                ALOGI("H264 Baseline Profile");
+                LOGI("H264 Baseline Profile");
             }
             else if (strncmp("main", value, 4) == 0) {
                 mVideoEncoderProfile = OMX_VIDEO_AVCProfileMain;
-                ALOGI("H264 Main Profile");
+                LOGI("H264 Main Profile");
             }
             else if (strncmp("high", value, 4) == 0) {
                 mVideoEncoderProfile = OMX_VIDEO_AVCProfileHigh;
-                ALOGI("H264 High Profile");
+                LOGI("H264 High Profile");
             }
             else {
-               ALOGW("Unsupported H264 Profile");
+               LOGW("Unsupported H264 Profile");
             }
             break;
         case VIDEO_ENCODER_MPEG_4_SP:
             if (strncmp("simple", value, 5) == 0 ) {
                 mVideoEncoderProfile = OMX_VIDEO_MPEG4ProfileSimple;
-                ALOGI("MPEG4 Simple profile");
+                LOGI("MPEG4 Simple profile");
             }
             else if (strncmp("asp", value, 3) == 0 ) {
                 mVideoEncoderProfile = OMX_VIDEO_MPEG4ProfileAdvancedSimple;
-                ALOGI("MPEG4 Advanced Simple Profile");
+                LOGI("MPEG4 Advanced Simple Profile");
             }
             else {
-                ALOGW("Unsupported MPEG4 Profile");
+                LOGW("Unsupported MPEG4 Profile");
             }
             break;
         default:
-            ALOGW("No custom profile support for other codecs");
+            LOGW("No custom profile support for other codecs");
             break;
         }
     }

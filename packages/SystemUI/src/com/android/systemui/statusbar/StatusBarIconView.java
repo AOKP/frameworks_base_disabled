@@ -17,6 +17,7 @@
 package com.android.systemui.statusbar;
 
 import android.app.Notification;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -24,6 +25,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Slog;
@@ -35,7 +37,6 @@ import android.widget.ImageView;
 import java.text.NumberFormat;
 
 import com.android.internal.statusbar.StatusBarIcon;
-
 import com.android.systemui.R;
 
 public class StatusBarIconView extends AnimatedImageView {
@@ -69,7 +70,9 @@ public class StatusBarIconView extends AnimatedImageView {
             final float scale = (float)imageBounds / (float)outerBounds;
             setScaleX(scale);
             setScaleY(scale);
-            final float alpha = res.getFraction(R.dimen.status_bar_icon_drawing_alpha, 1, 1);
+            final float alpha = System.Settings.getFloat(context.getContentResolver(),
+                    System.Settings.STATUSBAR_UNEXPANDED_ALPHA, 100);
+            //final float alpha = res.getFraction(R.dimen.status_bar_icon_drawing_alpha, 1, 1);
             setAlpha(alpha);
         }
 
@@ -84,7 +87,9 @@ public class StatusBarIconView extends AnimatedImageView {
         final float scale = (float)imageBounds / (float)outerBounds;
         setScaleX(scale);
         setScaleY(scale);
-        final float alpha = res.getFraction(R.dimen.status_bar_icon_drawing_alpha, 1, 1);
+        final float alpha = System.Settings.getFloat(context.getContentResolver(),
+                System.Settings.STATUSBAR_UNEXPANDED_ALPHA, 100);
+        //final float alpha = res.getFraction(R.dimen.status_bar_icon_drawing_alpha, 1, 1);
         setAlpha(alpha);
     }
 

@@ -390,7 +390,19 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             mItems.add(
                 new SinglePressAction(
                         com.android.internal.R.drawable.ic_lock_screenshot,
-                        R.string.global_action_screenshot) {
+                        R.string.global_action_screenshot)) {
+                public void onPress() {
+                    takeScreenshot();
+                }
+
+                public boolean showDuringKeyguard() {
+                    return true;
+                }
+
+                public boolean showBeforeProvisioning() {
+                    return true;
+                }
+            });
         } else {
             Log.d(TAG, "Not Adding Screenshot");
         }
@@ -404,6 +416,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         final AlertDialog.Builder ab = new AlertDialog.Builder(mContext);
         ab.setAdapter(mAdapter, this).setInverseBackgroundForced(true);
         final AlertDialog dialog = ab.create();
+
         dialog.getListView().setItemsCanFocus(true);
         dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG);
         dialog.setOnDismissListener(this);
@@ -859,7 +872,6 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
     private static class SilentModeAction implements Action, View.OnClickListener {
 
         private final int[] ITEM_IDS = { R.id.option1, R.id.option2, R.id.option3 };
-
         private final AudioManager mAudioManager;
         private final Handler mHandler;
 

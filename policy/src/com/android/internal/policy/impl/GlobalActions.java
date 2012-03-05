@@ -367,7 +367,8 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         // next: profiles
         if (mEnableProfiles) {
             Log.d(TAG, "Adding Profiles Menu");
-            mItems.add(new ProfileChooseAction()) {
+            mItems.add(
+                new ProfileChooseAction() {
                 public void onPress() {
                     createProfileDialog();
                 }

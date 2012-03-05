@@ -63,7 +63,7 @@
         
         <com.android.systemui.statusbar.policy.DateView android:id="@+id/date"
             android:textAppearance="@style/TextAppearance.StatusBar.Date"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:singleLine="true"
             android:gravity="center"
@@ -71,29 +71,29 @@
             
          <com.android.systemui.statusbar.policy.WeatherPanel
         	android:id="@+id/wp2"
-        	android:layout_width="wrap_content"
+        	android:layout_width="match_parent"
         	android:layout_height="wrap_content"
-        	android:gravity="center_horizontal"
+        	android:gravity="center"
     	    android:visibility="gone" >
     	    
     	    <LinearLayout
         		android:gravity="center_horizontal"
         		android:orientation="vertical"
-        		android:layout_width="wrap_content"
+        		android:layout_width="match_parent"
         		android:layout_height="wrap_content">
     	    
     	    <LinearLayout
     	    	android:id="@+id/cityandtemp"
         		android:orientation="horizontal"
+        		android:gravity="center"
         		android:layout_width="wrap_content"
-        		android:layout_gravity="center_horizontal"
         		android:layout_height="wrap_content">
         		
     	    	<TextView
         		android:id="@+id/city"
         		android:textAppearance="@style/TextAppearance.StatusBar.Date"
         		android:textColor="#ffffffff"
-        		android:paddingRight="5dip"
+        		android:paddingRight="4dip"
         		android:layout_width="wrap_content"
         		android:layout_height="wrap_content" />
         		
@@ -101,7 +101,7 @@
         		android:id="@+id/current_temp"
         		android:textAppearance="@style/TextAppearance.StatusBar.Date"
         		android:textColor="#ffffffff"
-        		android:paddingLeft="5dip"
+        		android:paddingLeft="4dip"
         		android:layout_width="wrap_content"
         		android:layout_height="wrap_content" />
         		
@@ -109,11 +109,11 @@
         	
         	<LinearLayout
 				android:orientation="horizontal"
-				android:layout_width="wrap_content"
+				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:paddingTop="4dp"
 				android:paddingBottom="4dp"
-				android:layout_gravity="center_horizontal">
+				android:gravity="center">
 
 				<TextView
 					android:id="@+id/condition"

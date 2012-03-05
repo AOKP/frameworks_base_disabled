@@ -18,6 +18,7 @@ package com.android.internal.policy.impl;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
 import android.app.Dialog;
 import android.app.Profile;
 import android.app.ProfileManager;

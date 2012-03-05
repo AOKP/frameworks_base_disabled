@@ -87,56 +87,58 @@
         <include layout="@layout/quick_toggles" 
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
-     <RelativeLayout
-       	android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
-     <LinearLayout
-        	android:orientation="vertical"
-        	android:layout_width="wrap_content"
-        	android:layout_height="match_parent"
-        	android:paddingLeft="5dp"
-        	android:paddingRight="5dp"
-        	android:layout_alignParentLeft = "true" >
-     <FrameLayout
-        android:id="@+id/notifications"
-        android:layout_width="match_parent" 
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        >
-        <TextView android:id="@+id/noNotificationsTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAppearance="@android:style/TextAppearance.Large"
-            android:padding="8dp"
-            android:layout_gravity="top"
-            android:gravity="left"
-            android:text="@string/status_bar_no_notifications_title"
-            />
-        <ScrollView
-            android:id="@+id/scroll"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:fadingEdge="none"
-            android:overScrollMode="ifContentScrolls"
-            >
-            <LinearLayout
-                android:layout_width="match_parent"
+    <RelativeLayout
+       	 android:layout_width="match_parent"
+         android:layout_height="wrap_content" >
+         <LinearLayout
+            	android:orientation="vertical"
+            	android:layout_width="wrap_content"
+            	android:layout_height="match_parent"
+            	android:paddingLeft="5dp"
+            	android:paddingRight="5dp"
+            	android:layout_alignParentLeft = "true" >
+             <FrameLayout
+                android:id="@+id/notifications"
+                android:layout_width="match_parent" 
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
+                android:layout_weight="1"
                 >
-                <com.android.systemui.statusbar.policy.NotificationRowLayout
-                    android:id="@+id/latestItems"
+                <TextView android:id="@+id/noNotificationsTitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    systemui:rowHeight="@dimen/notification_height"
+                    android:textAppearance="@android:style/TextAppearance.Large"
+                    android:padding="8dp"
+                    android:layout_gravity="top"
+                    android:gravity="left"
+                    android:text="@string/status_bar_no_notifications_title"
                     />
-            </LinearLayout>
-        </ScrollView>
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:src="@drawable/title_bar_shadow"
-            android:scaleType="fitXY"
-        />
-    </FrameLayout>
+                <ScrollView
+                    android:id="@+id/scroll"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:fadingEdge="none"
+                    android:overScrollMode="ifContentScrolls"
+                    >
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        >
+                        <com.android.systemui.statusbar.policy.NotificationRowLayout
+                            android:id="@+id/latestItems"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            systemui:rowHeight="@dimen/notification_height"
+                            />
+                    </LinearLayout>
+                </ScrollView>
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/title_bar_shadow"
+                    android:scaleType="fitXY"
+                />
+            </FrameLayout>
+        </LinearLayout>
+    </RelativeLayout>
 </com.android.systemui.statusbar.phone.ExpandedView>

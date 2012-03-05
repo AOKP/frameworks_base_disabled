@@ -71,6 +71,11 @@ static bool gWriteMP4;
 static bool gDisplayHistogram;
 static String8 gWriteMP4Filename;
 
+#ifdef OMAP_ENHANCEMENT
+static bool gDumpOutput = false;
+static FILE * gDumpOutputFile=NULL;
+#endif
+
 static sp<ANativeWindow> gSurface;
 
 static int64_t getNowUs() {
@@ -346,6 +351,17 @@ static void playSource(OMXClient *client, sp<MediaSource> &source) {
                 }
             }
 
+#ifdef OMAP_ENHANCEMENT
+            if(gDumpOutput == true){
+                /* Dump complete frame along with padding (if any) */
+                CHECK_EQ(
+                        fwrite((const uint8_t *)buffer->data(),
+                                1,
+                                buffer->size(),
+                                gDumpOutputFile),
+                        (ssize_t)buffer->size());
+            }
+#endif
             sumDecodeUs += delayDecodeUs;
             totalBytes += buffer->range_length();
 
@@ -611,6 +627,9 @@ static void usage(const char *me) {
     fprintf(stderr, "       -S allocate buffers from a surface\n");
     fprintf(stderr, "       -T allocate buffers from a surface texture\n");
     fprintf(stderr, "       -d(ump) filename (raw stream data to a file)\n");
+#ifdef OMAP_ENHANCEMENT
+    fprintf(stderr, "       -D(ump) filename (Decoded output to a file), Don't use with '-S' or '-T'.\n");
+#endif
 }
 
 int main(int argc, char **argv) {
@@ -638,7 +657,11 @@ int main(int argc, char **argv) {
     sp<LiveSession> liveSession;
 
     int res;
+#ifdef OMAP_ENHANCEMENT
+    while ((res = getopt(argc, argv, "han:lm:b:ptsrow:kxSTdD:")) >= 0) {
+#else
     while ((res = getopt(argc, argv, "han:lm:b:ptsrow:kxSTd:")) >= 0) {
+#endif
         switch (res) {
             case 'a':
             {
@@ -652,6 +675,15 @@ int main(int argc, char **argv) {
                 dumpStreamFilename.setTo(optarg);
                 break;
             }
+
+#ifdef OMAP_ENHANCEMENT
+            case 'D':
+            {
+                gDumpOutput = true;
+                CHECK(gDumpOutputFile = fopen(optarg, "wb"));
+                break;
+            }
+#endif
 
             case 'l':
             {
@@ -752,6 +784,14 @@ int main(int argc, char **argv) {
             }
         }
     }
+
+#ifdef OMAP_ENHANCEMENT
+    if((useSurfaceAlloc || useSurfaceTexAlloc) && gDumpOutput) {
+        usage("dump for gralloc buffers not supported, don't use '-D' along with '-S' or '-T' ");
+        fclose(gDumpOutputFile);
+        exit(1);
+    }
+#endif
 
     if (gPlaybackAudio && !audioOnly) {
         // This doesn't make any sense if we're decoding the video track.
@@ -1111,6 +1151,12 @@ int main(int argc, char **argv) {
             composerClient->dispose();
         }
     }
+
+#ifdef OMAP_ENHANCEMENT
+    if(gDumpOutputFile){
+        fclose(gDumpOutputFile);
+    }
+#endif
 
     client.disconnect();
 

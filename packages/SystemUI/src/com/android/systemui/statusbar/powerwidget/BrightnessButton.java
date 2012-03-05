@@ -51,8 +51,6 @@ public class BrightnessButton extends PowerButton {
     static {
         OBSERVED_URIS.add(BRIGHTNESS_URI);
         OBSERVED_URIS.add(BRIGHTNESS_MODE_URI);
-        OBSERVED_URIS.add(Settings.System.getUriFor(Settings.System.LIGHT_SENSOR_CUSTOM));
-        OBSERVED_URIS.add(Settings.System.getUriFor(Settings.System.LIGHT_SCREEN_DIM));
         OBSERVED_URIS.add(Settings.System.getUriFor(Settings.System.EXPANDED_BRIGHTNESS_MODE));
     }
 
@@ -162,14 +160,7 @@ public class BrightnessButton extends PowerButton {
     private void updateSettings() {
         ContentResolver resolver = mView.getContext().getContentResolver();
 
-        boolean lightSensorCustom = (Settings.System.getInt(resolver,
-                Settings.System.LIGHT_SENSOR_CUSTOM, 0) != 0);
-        if (lightSensorCustom) {
-            BACKLIGHTS[1] = Settings.System.getInt(resolver, Settings.System.LIGHT_SCREEN_DIM,
-                    MIN_BACKLIGHT);
-        } else {
-            BACKLIGHTS[1] = MIN_BACKLIGHT;
-        }
+        BACKLIGHTS[1] = MIN_BACKLIGHT;
 
         String[] modes = ListPreferenceMultiSelect.parseStoredValue(Settings.System.getString(
                 resolver, Settings.System.EXPANDED_BRIGHTNESS_MODE));
@@ -200,5 +191,5 @@ public class BrightnessButton extends PowerButton {
         }
         updateState();
     }
-
 }
+

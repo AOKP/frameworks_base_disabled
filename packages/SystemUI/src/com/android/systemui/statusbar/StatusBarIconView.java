@@ -70,8 +70,8 @@ public class StatusBarIconView extends AnimatedImageView {
             final float scale = (float)imageBounds / (float)outerBounds;
             setScaleX(scale);
             setScaleY(scale);
-            final float alpha = System.Settings.getFloat(context.getContentResolver(),
-                    System.Settings.STATUSBAR_UNEXPANDED_ALPHA, 100);
+            final float alpha = Settings.System.getFloat(context.getContentResolver(),
+                    Settings.System.STATUSBAR_UNEXPANDED_ALPHA, 100);
             //final float alpha = res.getFraction(R.dimen.status_bar_icon_drawing_alpha, 1, 1);
             setAlpha(alpha);
         }
@@ -87,8 +87,8 @@ public class StatusBarIconView extends AnimatedImageView {
         final float scale = (float)imageBounds / (float)outerBounds;
         setScaleX(scale);
         setScaleY(scale);
-        final float alpha = System.Settings.getFloat(context.getContentResolver(),
-                System.Settings.STATUSBAR_UNEXPANDED_ALPHA, 100);
+        final float alpha = Settings.System.getFloat(context.getContentResolver(),
+                Settings.System.STATUSBAR_UNEXPANDED_ALPHA, 100);
         //final float alpha = res.getFraction(R.dimen.status_bar_icon_drawing_alpha, 1, 1);
         setAlpha(alpha);
     }

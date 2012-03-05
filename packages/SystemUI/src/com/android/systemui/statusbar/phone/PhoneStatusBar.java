@@ -102,6 +102,7 @@ import com.android.systemui.statusbar.policy.toggles.TogglesView;
 public class PhoneStatusBar extends StatusBar {
     static final String TAG = "PhoneStatusBar";
     public static final boolean DEBUG = true;
+    public static final boolean DEBUG_TRACKINGVIEW = false;
     public static final boolean SPEW = false;
     public static final boolean DUMPTRUCK = true; // extra dumpsys info
 
@@ -327,7 +328,7 @@ public class PhoneStatusBar extends StatusBar {
 
         ExpandedView expanded = (ExpandedView) View.inflate(context,R.layout.status_bar_expanded, null);
 
-        if (DEBUG) {
+        if (DEBUG_TRACKINGVIEW) {
             expanded.setBackgroundColor(0x6000FF80);
         }
 

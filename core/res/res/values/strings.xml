@@ -396,9 +396,6 @@
     <!-- label for item profiles in phone options dialog -->
     <string name="global_action_choose_profile">Profiles</string>
 
-    <!-- label for item that enables silent mode in phone options dialog -->
-    <string name="global_action_toggle_silent_mode">Silent mode</string>
-
     <!-- status message in phone options dialog for when silent is on -->
     <string name="global_action_silent_mode_on_status">Sound is OFF</string>
 

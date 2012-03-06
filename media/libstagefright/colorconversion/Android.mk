@@ -11,6 +11,8 @@ LOCAL_C_INCLUDES := \
 
 ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
 LOCAL_C_INCLUDES += \
+        $(TOP)/hardware/qcom/display \
+        $(TOP)/hardware/qcom/media \
 	$(TOP)/vendor/qcom/opensource/omx/mm-core/omxcore/inc
 endif
 

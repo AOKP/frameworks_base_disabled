@@ -516,6 +516,10 @@ status_t ACodec::allocateOutputBuffersFromNativeWindow() {
 #ifdef QCOM_HARDWARE
     int format = (def.format.video.eColorFormat == (OMX_COLOR_FORMATTYPE)QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka)?
                  HAL_PIXEL_FORMAT_YCbCr_420_SP_TILED : def.format.video.eColorFormat;
+    if(def.format.video.eColorFormat == OMX_QCOM_COLOR_FormatYVU420SemiPlanar)
+        format = HAL_PIXEL_FORMAT_YCrCb_420_SP;
+#else
+    int format = HAL_PIXEL_FORMAT_YCrCb_420_SP;
 #endif
 
     err = native_window_set_buffers_geometry(
@@ -603,6 +607,7 @@ status_t ACodec::allocateOutputBuffersFromNativeWindow() {
     err = mNativeWindow.get()->perform(mNativeWindow.get(),
                               NATIVE_WINDOW_SET_BUFFERS_SIZE,
                               def.nBufferSize);
+#endif
 
     if (err != 0) {
         LOGE("native_window_set_buffer_size failed: %s (%d)", strerror(-err),
@@ -1091,6 +1096,7 @@ status_t ACodec::setSupportedOutputFormat() {
     format.nPortIndex = kPortIndexOutput;
     format.nIndex = 0;
 
+#ifdef QCOM_HARDWARE
     if (!strncmp(mComponentName.c_str(), "OMX.qcom",8)) {
         int32_t reqdColorFormat = ColorFormatInfo::getPreferredFormat();
         for(format.nIndex = 0;
@@ -1100,6 +1106,7 @@ status_t ACodec::setSupportedOutputFormat() {
                 break;
         }
     }
+#endif
 
     LOGV("Video O/P format.nIndex 0x%x",format.nIndex);
     LOGW("Video O/P format.eColorFormat 0x%x",format.eColorFormat);
@@ -1114,12 +1121,11 @@ status_t ACodec::setSupportedOutputFormat() {
            || format.eColorFormat == OMX_COLOR_FormatYUV420SemiPlanar
            || format.eColorFormat == OMX_COLOR_FormatCbYCrY
            || format.eColorFormat == OMX_TI_COLOR_FormatYUV420PackedSemiPlanar
-#ifdef QCOM_HARDWARE
            || format.eColorFormat == (OMX_COLOR_FORMATTYPE)OMX_QCOM_COLOR_FormatYVU420SemiPlanar
-           || format.eColorFormat ==  (OMX_COLOR_FORMATTYPE)QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka);
-#else
-           || format.eColorFormat == OMX_QCOM_COLOR_FormatYVU420SemiPlanar);
+#ifdef QCOM_HARDWARE
+           || format.eColorFormat ==  (OMX_COLOR_FORMATTYPE)QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka
 #endif
+          );
 
     return mOMX->setParameter(
             mNode, OMX_IndexParamVideoPortFormat,
@@ -1327,6 +1333,8 @@ void ACodec::sendFormatChange() {
                    LOGE("native_window_update_buffers_geometry failed in SS mode %d", err);
                }
             }
+#else
+            int format = HAL_PIXEL_FORMAT_YCrCb_420_SP;
 #endif
 
             notify->setRect(
@@ -1974,6 +1982,7 @@ void ACodec::BaseState::onOutputBufferDrained(const sp<AMessage> &msg) {
 #ifdef QCOM_HARDWARE
     int32_t flags;
     CHECK(msg->findInt32("flags", &flags));
+#ifdef QCOM_HARDWARE
     if (mCodec->mSmoothStreaming && (flags & OMX_BUFFERFLAG_EXTRADATA)) {
         HandleExtraData( bufferID );
     }
@@ -2166,7 +2175,6 @@ void ACodec::UninitializedState::onSetup(
         }
     }
 #endif
-
     mCodec->configureCodec(mime.c_str(), msg);
 
     sp<RefBase> obj;

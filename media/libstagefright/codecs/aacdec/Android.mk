@@ -151,11 +151,7 @@ LOCAL_C_INCLUDES := \
 
 LOCAL_ARM_MODE := arm
 
-ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
-    LOCAL_MODULE := libstagefright_aacdec_omx
-endif
-
-LOCAL_MODULE := libstagefright_aacdec
+LOCAL_MODULE := libstagefright_aacdec_omx
 
 include $(BUILD_STATIC_LIBRARY)
 
@@ -172,11 +168,8 @@ LOCAL_C_INCLUDES := \
 
 LOCAL_CFLAGS := -DOSCL_IMPORT_REF=
 
-ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
-    LOCAL_STATIC_LIBRARIES := libstagefright_aacdec_omx
-else
-    LOCAL_STATIC_LIBRARIES := libstagefright_aacdec
-endif
+LOCAL_STATIC_LIBRARIES := \
+        libstagefright_aacdec_omx
 
 LOCAL_SHARED_LIBRARIES := \
         libstagefright_omx libstagefright_foundation libutils
@@ -335,7 +328,10 @@ LOCAL_SRC_FILES := \
  	AACDecoder.cpp
 
 LOCAL_CFLAGS := -DAAC_PLUS -DHQ_SBR -DPARAMETRICSTEREO -DOSCL_IMPORT_REF= -DOSCL_EXPORT_REF= -DOSCL_UNUSED_ARG=
+
 LOCAL_C_INCLUDES := frameworks/base/media/libstagefright/include
+
+LOCAL_MODULE := libstagefright_aacdec
 
 include $(BUILD_STATIC_LIBRARY)
 

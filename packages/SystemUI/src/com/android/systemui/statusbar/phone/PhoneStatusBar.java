@@ -388,8 +388,10 @@ public class PhoneStatusBar extends StatusBar {
 
             View drawer_header = expanded.findViewById(R.id.drawer_header);
             View drawer_header_hr = expanded.findViewById(R.id.drawer_header_hr);
+            View drawer_header_hr2 = expanded.findViewById(R.id.drawer_header_hr2);
             View notifications = expanded.findViewById(R.id.notifications);
 
+            expanded.removeView(drawer_header_hr2);
             expanded.removeView(drawer_header);
             expanded.removeView(drawer_header_hr);
             expanded.removeView(mQuickToggles);
@@ -399,6 +401,7 @@ public class PhoneStatusBar extends StatusBar {
                 expanded.addView(notifications);
                 expanded.addView(drawer_header_hr);
                 expanded.addView(drawer_header);
+                expanded.addView(drawer_header_hr2);
                 expanded.addView(mQuickToggles);
                 mExpandedContents = mQuickToggles;
             }
@@ -2553,6 +2556,8 @@ public class PhoneStatusBar extends StatusBar {
             mClearParams.addRule(RelativeLayout.BELOW, 0);
             mClearParams.addRule(RelativeLayout.CENTER_VERTICAL, RelativeLayout.TRUE);
         }
+        View drawer_header_hr2 = mExpandedView.findViewById(R.id.drawer_header_hr2);
+        drawer_header_hr2.setVisibility(weatherOn ? View.VISIBLE : View.GONE);
         setAreThereNotifications();
         mTxtLayout.setLayoutParams(mTxtParams);
         mClearButton.setLayoutParams(mClearParams);

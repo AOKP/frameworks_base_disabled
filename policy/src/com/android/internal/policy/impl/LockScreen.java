@@ -619,6 +619,9 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
         // Update widget with initial ring state
         mUnlockWidgetMethods.updateResources();
 
+        // Update the settings everytime we draw lockscreen
+        updateSettings();
+
         if (DBG)
             Log.v(TAG, "*** LockScreen accel is "
                     + (mUnlockWidget.isHardwareAccelerated() ? "on" : "off"));
@@ -696,6 +699,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
                     + ", new config=" + getResources().getConfiguration());
         }
         updateConfiguration();
+        updateSettings();
     }
 
     /** {@inheritDoc} */
@@ -724,9 +728,6 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
     public void onPause() {
         mStatusViewManager.onPause();
         mUnlockWidgetMethods.reset(false);
-        // update the settings when we pause
-        if (DEBUG) Log.d(TAG, "We are pausing and want to update settings");
-        updateSettings();
     }
 
     private final Runnable mOnResumePing = new Runnable() {
@@ -802,7 +803,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
         }
     }
 
-    protected void updateSettings() {
+    private void updateSettings() {
         if (DEBUG) Log.d(TAG, "Settings for lockscreen have changed lets update");
         ContentResolver resolver = mContext.getContentResolver();
 

@@ -25,6 +25,11 @@
     android:focusable="true"
     android:descendantFocusability="afterDescendants"
     >
+    <View
+        android:id="@+id/drawer_header_hr2"
+		android:layout_width="match_parent"
+		android:layout_height="2dp"
+		android:background="@drawable/status_bar_hr" />
 
     <RelativeLayout
         android:id="@+id/drawer_header"
@@ -36,17 +41,12 @@
         android:background="@drawable/notification_header_bg"
         >
         
-        <View
-        android:id="@+id/drawer_header_hr2"
-		android:layout_width="match_parent"
-		android:layout_height="2dp"
-		android:background="@drawable/status_bar_hr" />
-        
         <com.android.systemui.statusbar.policy.WeatherPanel
         	android:id="@+id/wp1"
         	android:layout_width="wrap_content"
         	android:layout_height="wrap_content"
     	    android:visibility="gone"
+    	    android:paddingLeft="2dp"
     	    android:layout_alignParentLeft="true" >
     	    
     	<LinearLayout
@@ -58,14 +58,13 @@
         	android:id="@+id/condition_image"
         	android:layout_width="wrap_content"
         	android:layout_height="wrap_content"
-        	android:paddingTop="2dp"
+        	android:paddingTop="4dp"
         	android:gravity="top|center_horizontal"/>
         	
         	<LinearLayout
 				android:orientation="horizontal"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:paddingLeft="8dp"
 				android:paddingBottom="2dp"
 				android:gravity="bottom|center_horizontal">
 
@@ -80,6 +79,8 @@
 				<TextView
 					android:text="@string/weatherpanel_slash"
 					android:textSize="10.0sp"
+					android:paddingLeft="1dp"
+					android:paddingRight="1dp"
 					android:textStyle="normal"
 					android:textColor="#ff555555"
 					android:layout_width="wrap_content"
@@ -156,7 +157,7 @@
         	
         	<TextView
 					android:id="@+id/condition"
-					android:textSize="13.0sp"
+					android:textSize="14.0sp"
 					android:textStyle="normal"
 					android:textColor="#ff2789af"
 					android:singleLine="true"

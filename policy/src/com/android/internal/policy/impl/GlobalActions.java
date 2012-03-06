@@ -91,7 +91,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
     private boolean mIsWaitingForEcmExit = false;
     private ToggleAction.State mAirplaneState = ToggleAction.State.Off;
     
-    private boolean mEnableAirplane = true;
+    private boolean mEnableAirplane = false;
     private boolean mEnableProfiles = true;
     private boolean mEnableEasteregg = false;
     private boolean mEnableFlashlight = true;
@@ -151,17 +151,17 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
      */
     private AlertDialog createDialog() {
 
+        mEnableHidenavbar = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.POWER_DIALOG_SHOW_HIDENAVBAR, 1) == 1;
+
         mEnableAirplane = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.POWER_DIALOG_SHOW_AIRPLANE, 1) == 1;
+                Settings.System.POWER_DIALOG_SHOW_AIRPLANE, 0) == 1;
 
         mEnableEasteregg = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.POWER_DIALOG_SHOW_EASTEREGG, 0) == 1;
 
         mEnableFlashlight = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.POWER_DIALOG_SHOW_FLASHLIGHT, 0) == 1;
-
-        mEnableHidenavbar = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.POWER_DIALOG_SHOW_HIDENAVBAR, 0) == 1;
 
         mEnablePowersaver = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.POWER_DIALOG_SHOW_POWERSAVER, 0) == 1;
@@ -173,6 +173,8 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 Settings.System.POWER_DIALOG_SHOW_SCREENSHOT, 1) == 1;
 
         mSilentModeAction = new SilentModeAction(mAudioManager, mHandler);
+
+        mHidenavbarOn = new NavBarAction(mHandler);
 
         mAirplaneOn = new ToggleAction(
                 R.drawable.ic_lock_airplane_mode,
@@ -213,30 +215,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 return false;
             }
         };
-        
-        mPowersaverOn = new ToggleAction(
-                R.drawable.ic_lock_power_saver,
-                R.drawable.ic_lock_power_saver,
-                R.string.global_actions_toggle_power_saver,
-                R.string.global_actions_power_saver_on_status,
-                R.string.global_actions_power_saver_off_status) {
-
-            void onToggle(boolean on) {
-                Settings.Secure.putInt(mContext.getContentResolver(),
-                        Settings.Secure.POWER_SAVER_MODE,
-                         on ? PowerSaverService.POWER_SAVER_MODE_ON
-                                : PowerSaverService.POWER_SAVER_MODE_OFF);
-            }
-
-            public boolean showDuringKeyguard() {
-                return true;
-            }
-
-            public boolean showBeforeProvisioning() {
-                return false;
-            }
-        }; 
-        
+                
         mFlashlightOn = new ToggleAction(
                 R.drawable.ic_lock_torch,
                 R.drawable.ic_lock_torch,
@@ -264,9 +243,39 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 return false;
             }
         };
+
+        mPowersaverOn = new ToggleAction(
+                R.drawable.ic_lock_power_saver,
+                R.drawable.ic_lock_power_saver,
+                R.string.global_actions_toggle_power_saver,
+                R.string.global_actions_power_saver_on_status,
+                R.string.global_actions_power_saver_off_status) {
+
+            void onToggle(boolean on) {
+                Settings.Secure.putInt(mContext.getContentResolver(),
+                        Settings.Secure.POWER_SAVER_MODE,
+                         on ? PowerSaverService.POWER_SAVER_MODE_ON
+                                : PowerSaverService.POWER_SAVER_MODE_OFF);
+            }
+
+            public boolean showDuringKeyguard() {
+                return true;
+            }
+
+            public boolean showBeforeProvisioning() {
+                return false;
+            }
+        };
         
-        mHidenavbarOn = new NavBarAction(mHandler);
         mItems = new ArrayList<Action>();
+
+        // next: hidenavbar
+        if(mEnableHidenavbar) {
+            Log.d(TAG, "Adding Hidenavbar Menu");
+            mItems.add(mHidenavbarOn); 
+        } else {
+            Log.d(TAG, "Not Adding Hidenavbar");
+        }
 
         // first: airplane
         if(mEnableAirplane) {
@@ -310,14 +319,6 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             mItems.add(mFlashlightOn); 
         } else {
             Log.d(TAG, "Not Adding Flashlight");
-        }
-
-        // next: hidenavbar
-        if(mEnableHidenavbar) {
-            Log.d(TAG, "Adding Hidenavbar Menu");
-            mItems.add(mHidenavbarOn); 
-        } else {
-            Log.d(TAG, "Not Adding Hidenavbar");
         }
 
         // next: powersaver

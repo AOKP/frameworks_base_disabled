@@ -188,7 +188,6 @@ include $(BUILD_SHARED_LIBRARY)
 
 ################################################################################
 
-ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
 include $(CLEAR_VARS)
 
 LOCAL_SRC_FILES := \
@@ -333,7 +332,7 @@ LOCAL_SRC_FILES := \
  	unpack_idx.cpp \
  	window_tables_fxp.cpp \
  	pvmp4setaudioconfig.cpp \
-    AACDecoder.cpp
+ 	AACDecoder.cpp
 
 LOCAL_CFLAGS := -DAAC_PLUS -DHQ_SBR -DPARAMETRICSTEREO -DOSCL_IMPORT_REF= -DOSCL_EXPORT_REF= -DOSCL_UNUSED_ARG=
 
@@ -342,6 +341,4 @@ LOCAL_C_INCLUDES := frameworks/base/media/libstagefright/include
 LOCAL_MODULE := libstagefright_aacdec
 
 include $(BUILD_STATIC_LIBRARY)
-
-endif
 

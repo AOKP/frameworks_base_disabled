@@ -309,27 +309,28 @@ void Layer::onDraw(const Region& clip) const
 	}
 #endif
 
+    GLuint currentTextureTarget = mSurfaceTexture->getCurrentTextureTarget();
+
     if (!isProtected()) {
-        glBindTexture(GL_TEXTURE_EXTERNAL_OES, mTextureName);
+        glBindTexture(currentTextureTarget, mTextureName);
         GLenum filter = GL_NEAREST;
         if (getFiltering() || needsFiltering() || isFixedSize() || isCropped()) {
             // TODO: we could be more subtle with isFixedSize()
             filter = GL_LINEAR;
         }
-        glTexParameterx(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MAG_FILTER, filter);
-        glTexParameterx(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MIN_FILTER, filter);
+        glTexParameterx(currentTextureTarget, GL_TEXTURE_MAG_FILTER, filter);
+        glTexParameterx(currentTextureTarget, GL_TEXTURE_MIN_FILTER, filter);
         glMatrixMode(GL_TEXTURE);
         glLoadMatrixf(mTextureMatrix);
         glMatrixMode(GL_MODELVIEW);
         glDisable(GL_TEXTURE_2D);
-        glEnable(GL_TEXTURE_EXTERNAL_OES);
+        glEnable(currentTextureTarget);
     } else {
-        glBindTexture(GL_TEXTURE_2D, mFlinger->getProtectedTexName());
+        glBindTexture(currentTextureTarget, mFlinger->getProtectedTexName());
         glMatrixMode(GL_TEXTURE);
         glLoadIdentity();
         glMatrixMode(GL_MODELVIEW);
-        glDisable(GL_TEXTURE_EXTERNAL_OES);
-        glEnable(GL_TEXTURE_2D);
+        glEnable(currentTextureTarget);
     }
 
     drawWithOpenGL(clip);
@@ -450,7 +451,13 @@ void Layer::lockPageFlip(bool& recomputeVisibleRegions)
         bool avoidTex = (hw.getFlags() & DisplayHardware::MDP_COMPOSITION) ?
                           true : false;
 
-        if (mSurfaceTexture->updateTexImage(avoidTex) < NO_ERROR) {
+        // While calling updateTexImage() from SurfaceFlinger, let it know
+        // by passing an extra parameter
+        // This will be true always.
+
+        bool isComposition = true;
+
+        if (mSurfaceTexture->updateTexImage(avoidTex, isComposition) < NO_ERROR) {
 #else
         if (mSurfaceTexture->updateTexImage() < NO_ERROR) {
 #endif

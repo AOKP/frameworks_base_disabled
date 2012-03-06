@@ -153,9 +153,9 @@ LOCAL_ARM_MODE := arm
 
 ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
     LOCAL_MODULE := libstagefright_aacdec_omx
-else
-    LOCAL_MODULE := libstagefright_aacdec
 endif
+
+LOCAL_MODULE := libstagefright_aacdec
 
 include $(BUILD_STATIC_LIBRARY)
 
@@ -335,10 +335,7 @@ LOCAL_SRC_FILES := \
  	AACDecoder.cpp
 
 LOCAL_CFLAGS := -DAAC_PLUS -DHQ_SBR -DPARAMETRICSTEREO -DOSCL_IMPORT_REF= -DOSCL_EXPORT_REF= -DOSCL_UNUSED_ARG=
-
 LOCAL_C_INCLUDES := frameworks/base/media/libstagefright/include
-
-LOCAL_MODULE := libstagefright_aacdec
 
 include $(BUILD_STATIC_LIBRARY)
 

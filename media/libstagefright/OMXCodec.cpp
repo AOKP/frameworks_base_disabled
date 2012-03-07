@@ -2646,7 +2646,7 @@ status_t OMXCodec::allocateBuffersOnPort(OMX_U32 portIndex) {
         }
 
         if (err != OK) {
-            CODEC_LOGE("allocate_buffer_with_backup failed");
+            LOGE("allocate_buffer_with_backup failed");
             return err;
         }
 

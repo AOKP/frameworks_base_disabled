@@ -360,9 +360,8 @@ status_t SampleTable::setCompositionTimeToSampleParams(
         return ERROR_IO;
     }
 
-    if (U32_AT(header) != 0 &&
-        U32_AT(header) != 0x00010000) {
-        // Expected version = 0 or 1, flags = 0.
+    if (U32_AT(header) != 0) {
+        // Expected version = 0, flags = 0.
         return ERROR_MALFORMED;
     }
 
@@ -503,7 +502,7 @@ void SampleTable::buildSampleEntriesTable() {
 
                 mSampleTimeEntries[sampleIndex].mSampleIndex = sampleIndex;
 
-                int32_t compTimeDelta = (int32_t)
+                uint32_t compTimeDelta =
                     mCompositionDeltaLookup->getCompositionTimeOffset(
                             sampleIndex);
 

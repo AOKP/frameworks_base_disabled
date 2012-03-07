@@ -43,6 +43,7 @@ import android.os.ParcelFileDescriptor;
 import android.os.RemoteCallbackList;
 import android.os.ServiceManager;
 import android.os.SystemClock;
+import android.os.SystemProperties;
 import android.service.wallpaper.IWallpaperConnection;
 import android.service.wallpaper.IWallpaperEngine;
 import android.service.wallpaper.IWallpaperService;
@@ -391,6 +392,16 @@ class WallpaperManagerService extends IWallpaperManager.Stub {
 
         if (width <= 0 || height <= 0) {
             throw new IllegalArgumentException("width and height must be > 0");
+        }
+
+        if (SystemProperties.OMAP_ENHANCEMENT) {
+            WindowManager wm = (WindowManager)mContext.getSystemService(Context.WINDOW_SERVICE);
+            int maxTextureSize = wm.getDefaultDisplay().getMaximumTextureSize();
+
+            if (maxTextureSize > 0) {
+                if (width > maxTextureSize) width = maxTextureSize;
+                if (height > maxTextureSize) height = maxTextureSize;
+            }
         }
 
         synchronized (mLock) {

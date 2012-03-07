@@ -97,6 +97,15 @@
             android:textSize="16sp"/>
 
     </LinearLayout>
+    
+    <com.android.internal.policy.impl.WeatherText
+		android:id="@+id/weather"
+	    android:layout_gravity="right"
+	    android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+		android:layout_marginTop="10dip"
+        android:textSize="16sp"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <!-- Status1 is generally battery status and informational messages -->
     <TextView

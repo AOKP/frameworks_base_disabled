@@ -1005,6 +1005,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             if      (navBarOverride.equals("1")) mHasNavigationBar = false;
             else if (navBarOverride.equals("0")) mHasNavigationBar = true;
         }
+        if(!mStatusBarCanHide)
+            mHasNavigationBar = false;
 
         if (mHasNavigationBar) {
             mNavigationBarHeight = Settings.System.getInt(

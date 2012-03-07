@@ -997,7 +997,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             case 0 :
                 Settings.System.putInt(mContext.getContentResolver(),
                         Settings.System.NAVIGATION_BAR_BUTTONS_SHOW,
-                         mNavBarVisible ? 1 : 0);
+                         mNavBarVisible ? 0 : 1);
                 v.setSelected(!mNavBarVisible);
                 mHandler.sendEmptyMessage(MESSAGE_DISMISS);
                 break;

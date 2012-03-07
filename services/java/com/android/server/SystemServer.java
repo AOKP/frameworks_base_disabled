@@ -148,7 +148,6 @@ class ServerThread extends Thread {
         RecognitionManagerService recognition = null;
         ThrottleService throttle = null;
         NetworkTimeUpdateService networkTimeUpdater = null;
-        CpuGovernorService cpuGovernorManager = null;
 
         // Critical services...
         try {
@@ -266,14 +265,6 @@ class ServerThread extends Thread {
                 }
             }
 
-            Slog.i(TAG, "DynamicMemoryManager Service");
-            dmm = new DynamicMemoryManagerService(context);
-
-            cpuGovernorManager = new CpuGovernorService(context);
-
-            if (cpuGovernorManager == null) {
-                Slog.e(TAG, "CpuGovernorService failed to start");
-            }
         } catch (RuntimeException e) {
             Slog.e("System", "******************************************");
             Slog.e("System", "************ Failure starting core service", e);

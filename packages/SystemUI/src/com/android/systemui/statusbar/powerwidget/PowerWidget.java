@@ -47,10 +47,12 @@ public class PowerWidget extends FrameLayout {
 
     public static final String BUTTON_DELIMITER = "|";
 
-    private static final String BUTTONS_DEFAULT = PowerButton.BUTTON_WIFI
-                             + BUTTON_DELIMITER + PowerButton.BUTTON_BLUETOOTH
+    private static final String BUTTONS_DEFAULT = PowerButton.BUTTON_BLUETOOTH
+                             + BUTTON_DELIMITER + PowerButton.BUTTON_BRIGHTNESS
                              + BUTTON_DELIMITER + PowerButton.BUTTON_GPS
-                             + BUTTON_DELIMITER + PowerButton.BUTTON_SOUND;
+                             + BUTTON_DELIMITER + PowerButton.BUTTON_SOUND
+                             + BUTTON_DELIMITER + PowerButton.BUTTON_SYNC
+                             + BUTTON_DELIMITER + PowerButton.BUTTON_WIFI;
 
     private static final FrameLayout.LayoutParams WIDGET_LAYOUT_PARAMS = new FrameLayout.LayoutParams(
                                         ViewGroup.LayoutParams.MATCH_PARENT, // width = match_parent
@@ -277,7 +279,6 @@ public class PowerWidget extends FrameLayout {
 
         public void unobserve() {
             ContentResolver resolver = mContext.getContentResolver();
-
             resolver.unregisterContentObserver(this);
         }
 

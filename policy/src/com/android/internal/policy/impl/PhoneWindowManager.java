@@ -158,6 +158,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     static final String TAG = "WindowManager";
     static final boolean DEBUG = false;
     static final boolean localLOGV = false;
+    static final boolean DEBUG_BOOTMSG = false;
     static final boolean DEBUG_LAYOUT = false;
     static final boolean DEBUG_FALLBACK = false;
     static final boolean SHOW_STARTING_ANIMATIONS = true;
@@ -471,6 +472,10 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     public static final String INTENT_TORCH_OFF = "com.android.systemui.INTENT_TORCH_OFF";
     boolean mFastTorchOn; // local state of torch
     boolean mEnableQuickTorch; // System.Setting
+
+    public static ProgressDialog mBootMsgDialog = null;
+    public static String CURRENT_PACKAGE_NAME = "no";
+    public static String MESSAGE_TO_HOLD = "no";
 
     final KeyCharacterMap.FallbackAction mFallbackAction = new KeyCharacterMap.FallbackAction();
 
@@ -1063,7 +1068,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 
             if (mHasNavigationBar != hasNavBarChanged) {
                 mHasNavigationBar = hasNavBarChanged;
-                setInitialDisplaySize(mUnrestrictedScreenWidth,mUnrestrictedScreenHeight);
+                setInitialDisplaySize(mUnrestrictedScreenWidth, mUnrestrictedScreenHeight);
             }
 
             if (mAccelerometerDefault != accelerometerDefault) {
@@ -3576,15 +3581,12 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         // mUserRotationMode and mUserRotation will be assigned by the content observer
         if (mode == WindowManagerPolicy.USER_ROTATION_LOCKED) {
             Settings.System.putInt(res,
-                    Settings.System.USER_ROTATION,
-                    rot);
+                    Settings.System.USER_ROTATION, rot);
             Settings.System.putInt(res,
-                    Settings.System.ACCELEROMETER_ROTATION,
-                    0);
+                    Settings.System.ACCELEROMETER_ROTATION, 0);
         } else {
             Settings.System.putInt(res,
-                    Settings.System.ACCELEROMETER_ROTATION,
-                    1);
+                    Settings.System.ACCELEROMETER_ROTATION, 1);
         }
     }
 
@@ -3648,10 +3650,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         }
     }
 
-    ProgressDialog mBootMsgDialog = null;
-
     /** {@inheritDoc} */
     public void showBootMessage(final CharSequence msg, final boolean always) {
+        Log.d(TAG, "showBootMessage msg: " + msg);
         mHandler.post(new Runnable() {
             @Override public void run() {
                 if (mBootMsgDialog == null) {
@@ -3693,9 +3694,43 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     mBootMsgDialog.setCancelable(false);
                     mBootMsgDialog.show();
                 }
+                mBootMsgDialog.setTitle(R.string.android_upgrading_title);
                 mBootMsgDialog.setMessage(msg);
+                if (DEBUG_BOOTMSG) Log.d(TAG, "********** showBootMessage(" + msg +", " + always + ") updated ***********");
+                if (!MESSAGE_TO_HOLD.equals("no") && CURRENT_PACKAGE_NAME != null) {
+                    mBootMsgDialog.setTitle(msg);
+                    mBootMsgDialog.setMessage(CURRENT_PACKAGE_NAME);
+                    if (DEBUG_BOOTMSG) Log.d(TAG, "setTitle: " + msg + "	setMessage: " + CURRENT_PACKAGE_NAME);
+                } else {
+                    if (DEBUG_BOOTMSG) Log.d(TAG, "failed to find MESSAGE_TO_HOLD != 'no' and CURRENT_PACKAGE_NAME != null");
+                }
+                if (MESSAGE_TO_HOLD.equals(mContext.getResources().getString(R.string.android_upgrading_starting_apps))) {
+                    mBootMsgDialog.setTitle(R.string.android_upgrading_title);
+                    mBootMsgDialog.setMessage(mContext.getResources().getString(R.string.android_upgrading_starting_apps));
+                    if (DEBUG_BOOTMSG) Log.d(TAG, "starting apps so we use normal layout");
+                } else {
+                    if (DEBUG_BOOTMSG) Log.d(TAG, "not starting apps");
+                }
             }
         });
+    }
+
+    public void setMessageToHold(CharSequence messageToHold) {
+        try {
+            MESSAGE_TO_HOLD = messageToHold.toString();
+        } catch (NullPointerException npe) {
+            // just let it go
+        }
+        if (DEBUG_BOOTMSG) Log.d(TAG, String.format("new message to hold: {%s}	MESSAGE_TO_HOLD: {%s}", messageToHold, MESSAGE_TO_HOLD));
+    }
+
+    public void setPackageName(String pkgName) {
+        try {
+            CURRENT_PACKAGE_NAME = pkgName;
+            if (DEBUG_BOOTMSG) Log.d(TAG, String.format("pkgName: {%s}	MESSAGE_TO_HOLD: {%s}", pkgName, MESSAGE_TO_HOLD));
+        } catch (NullPointerException npe) {
+            // just let it go
+        }
     }
 
     /** {@inheritDoc} */
@@ -3703,6 +3738,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         mHandler.post(new Runnable() {
             @Override public void run() {
                 if (mBootMsgDialog != null) {
+                    CURRENT_PACKAGE_NAME = "no";
                     mBootMsgDialog.dismiss();
                     mBootMsgDialog = null;
                 }

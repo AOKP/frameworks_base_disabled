@@ -958,6 +958,10 @@ public interface WindowManagerPolicy {
     public void showBootMessage(final CharSequence msg, final boolean always);
 
     /**
+     * name of package being worked on durring boot time message.
+     */
+    public void setPackageName(String pkgName);
+    /**
      * Hide the UI for showing boot messages, never to be displayed again.
      */
     public void hideBootMessages();

@@ -2860,7 +2860,6 @@ public class PackageManagerService extends IPackageManager.Stub {
         synchronized (mPackages) {
             // Look to see if we already know about this package.
             String oldName = mSettings.mRenamedPackages.get(pkg.packageName);
-            mPolicy.setPackageName(oldName);
             if (pkg.mOriginalPackages != null && pkg.mOriginalPackages.contains(oldName)) {
                 // This package has been renamed to its original name.  Let's
                 // use that.
@@ -3298,7 +3297,6 @@ public class PackageManagerService extends IPackageManager.Stub {
                         // care of renaming the package; only do it here if
                         // it is not already done.
                         pkg.setPackageName(renamed);
-                        mPolicy.setPackageName(renamed);
                     }
                     
                 } else {
@@ -3353,7 +3351,6 @@ public class PackageManagerService extends IPackageManager.Stub {
                 // looking up the package under its new name, so getPackageLP
                 // can take care of fiddling things correctly.
                 pkg.setPackageName(origPackage.name);
-                mPolicy.setPackageName(origPackage.name);
                 
                 // File a report about this.
                 String msg = "New package " + pkgSetting.realName
@@ -6688,7 +6685,6 @@ public class PackageManagerService extends IPackageManager.Stub {
                     // name.  We must continue using the original name, so
                     // rename the new package here.
                     pkg.setPackageName(oldName);
-                    mPolicy.setPackageName(oldName);
                     pkgName = pkg.packageName;
                     replace = true;
                 } else if (mPackages.containsKey(pkgName)) {

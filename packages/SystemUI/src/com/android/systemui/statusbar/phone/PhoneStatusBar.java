@@ -264,7 +264,6 @@ public class PhoneStatusBar extends StatusBar {
     private ExpandedView expanded;
     private int newWindowShadeColor;
     private int newStatusbarColor;
-    private float newStatusbarAlpha;
 
     // custom carrier label
     private TextView mCarrierLabel;
@@ -2560,8 +2559,6 @@ public class PhoneStatusBar extends StatusBar {
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.CUSTOM_CARRIER_LABEL), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.STATUSBAR_UNEXPANDED_ALPHA), false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUSBAR_UNEXPANDED_COLOR), false, this);
         }
 
@@ -2671,22 +2668,6 @@ public class PhoneStatusBar extends StatusBar {
         } else {
             mPhoneCarrierLabel.setVisibility(View.VISIBLE);
             mCarrierLabel.setVisibility(View.GONE);
-        }
-
-        // unexpanded statusbar alpha state
-        boolean customStatusAlpha = false;
-        try {
-            newStatusbarAlpha = Settings.System.getFloat(cr, Settings.System.STATUSBAR_UNEXPANDED_ALPHA);
-            customStatusAlpha = true;
-            if (DEBUG) Log.d(TAG, String.format("Unexpanded statusbar alpha preference detected %f", newStatusbarAlpha));
-        } catch (SettingNotFoundException snfe) {
-            customStatusAlpha = false;
-            if (DEBUG) Log.d(TAG, "Unexpanded statusbar alpha preference not detected");
-        }
-        if (customStatusAlpha) {
-            mStatusbarUnexpanded.setAlpha(newStatusbarAlpha);
-            float unexpanded_alpha_float = mStatusbarUnexpanded.getAlpha();
-            if (DEBUG) Log.d(TAG, String.format("mStatusbarUnexpanded alpha %f", unexpanded_alpha_float));
         }
 
         // unexpanded statusbar color

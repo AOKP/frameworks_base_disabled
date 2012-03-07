@@ -475,7 +475,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 
     public static ProgressDialog mBootMsgDialog = null;
     public static String CURRENT_PACKAGE_NAME = "no";
-    public static String MESSAGE_TO_HOLD = "no";
 
     final KeyCharacterMap.FallbackAction mFallbackAction = new KeyCharacterMap.FallbackAction();
 
@@ -3697,14 +3696,14 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 mBootMsgDialog.setTitle(R.string.android_upgrading_title);
                 mBootMsgDialog.setMessage(msg);
                 if (DEBUG_BOOTMSG) Log.d(TAG, "********** showBootMessage(" + msg +", " + always + ") updated ***********");
-                if (!MESSAGE_TO_HOLD.equals("no") && CURRENT_PACKAGE_NAME != null) {
+                if (CURRENT_PACKAGE_NAME != null) {
                     mBootMsgDialog.setTitle(msg);
                     mBootMsgDialog.setMessage(CURRENT_PACKAGE_NAME);
                     if (DEBUG_BOOTMSG) Log.d(TAG, "setTitle: " + msg + "	setMessage: " + CURRENT_PACKAGE_NAME);
                 } else {
-                    if (DEBUG_BOOTMSG) Log.d(TAG, "failed to find MESSAGE_TO_HOLD != 'no' and CURRENT_PACKAGE_NAME != null");
+                    if (DEBUG_BOOTMSG) Log.d(TAG, "failed; CURRENT_PACKAGE_NAME == null");
                 }
-                if (MESSAGE_TO_HOLD.equals(mContext.getResources().getString(R.string.android_upgrading_starting_apps))) {
+                if (msg.equals(mContext.getResources().getString(R.string.android_upgrading_starting_apps))) {
                     mBootMsgDialog.setTitle(R.string.android_upgrading_title);
                     mBootMsgDialog.setMessage(mContext.getResources().getString(R.string.android_upgrading_starting_apps));
                     if (DEBUG_BOOTMSG) Log.d(TAG, "starting apps so we use normal layout");
@@ -3715,19 +3714,10 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         });
     }
 
-    public void setMessageToHold(CharSequence messageToHold) {
-        try {
-            MESSAGE_TO_HOLD = messageToHold.toString();
-        } catch (NullPointerException npe) {
-            // just let it go
-        }
-        if (DEBUG_BOOTMSG) Log.d(TAG, String.format("new message to hold: {%s}	MESSAGE_TO_HOLD: {%s}", messageToHold, MESSAGE_TO_HOLD));
-    }
-
     public void setPackageName(String pkgName) {
         try {
             CURRENT_PACKAGE_NAME = pkgName;
-            if (DEBUG_BOOTMSG) Log.d(TAG, String.format("pkgName: {%s}	MESSAGE_TO_HOLD: {%s}", pkgName, MESSAGE_TO_HOLD));
+            if (DEBUG_BOOTMSG) Log.d(TAG, String.format("pkgName: {%s}", pkgName));
         } catch (NullPointerException npe) {
             // just let it go
         }

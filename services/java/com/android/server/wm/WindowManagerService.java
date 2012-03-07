@@ -4946,9 +4946,6 @@ public class WindowManagerService extends IWindowManager.Stub
     }
 
     public void showBootMessage(final CharSequence msg, final boolean always) {
-        PhoneWindowManager pm = new PhoneWindowManager();
-        pm.setMessageToHold(msg);
-
         boolean first = false;
         synchronized(mWindowMap) {
             if (DEBUG_BOOT) {

@@ -50,6 +50,7 @@ public class StatusBarIconView extends AnimatedImageView {
     private int mNumberY;
     private String mNumberText;
     private Notification mNotification;
+    public float mAlpha;
 
     public StatusBarIconView(Context context, String slot, Notification notification) {
         super(context);
@@ -70,12 +71,11 @@ public class StatusBarIconView extends AnimatedImageView {
             final float scale = (float)imageBounds / (float)outerBounds;
             setScaleX(scale);
             setScaleY(scale);
-            final float alpha = Settings.System.getFloat(context.getContentResolver(),
-                    Settings.System.STATUSBAR_UNEXPANDED_ALPHA, 100);
-            //final float alpha = res.getFraction(R.dimen.status_bar_icon_drawing_alpha, 1, 1);
-            setAlpha(alpha);
         }
-
+        mAlpha = Settings.System.getFloat(context.getContentResolver(),
+                Settings.System.STATUSBAR_UNEXPANDED_ALPHA, 0.8f);
+        //final float alpha = res.getFraction(R.dimen.status_bar_icon_drawing_alpha, 1, 1);
+        setAlpha(mAlpha);
         setScaleType(ImageView.ScaleType.CENTER);
     }
 
@@ -87,10 +87,10 @@ public class StatusBarIconView extends AnimatedImageView {
         final float scale = (float)imageBounds / (float)outerBounds;
         setScaleX(scale);
         setScaleY(scale);
-        final float alpha = Settings.System.getFloat(context.getContentResolver(),
-                Settings.System.STATUSBAR_UNEXPANDED_ALPHA, 100);
+        mAlpha = Settings.System.getFloat(context.getContentResolver(),
+                Settings.System.STATUSBAR_UNEXPANDED_ALPHA, 0.8f);
         //final float alpha = res.getFraction(R.dimen.status_bar_icon_drawing_alpha, 1, 1);
-        setAlpha(alpha);
+        setAlpha(mAlpha);
     }
 
     private static boolean streq(String a, String b) {
@@ -275,6 +275,6 @@ public class StatusBarIconView extends AnimatedImageView {
 
     public String toString() {
         return "StatusBarIconView(slot=" + mSlot + " icon=" + mIcon 
-            + " notification=" + mNotification + ")";
+            + " notification=" + mNotification + " alpha=" + mAlpha + ")";
     }
 }

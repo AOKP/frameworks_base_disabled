@@ -36,19 +36,6 @@ typedef void (*overlay_queue_buffer_hook)(void *data,
 
 namespace android {
 
-enum OverlayFormats {
-    OVERLAY_FORMAT_YUV422SP,
-    OVERLAY_FORMAT_YUV420SP,
-    OVERLAY_FORMAT_YUV422I,
-    OVERLAY_FORMAT_YUV420P,
-    OVERLAY_FORMAT_RGB565,
-    OVERLAY_FORMAT_RGBA8888,
-    OVERLAY_FORMAT_UNKNOWN
-};
-
-int getBppFromOverlayFormat(OverlayFormats format);
-OverlayFormats getOverlayFormatFromString(const char* name);
-
 class IMemory;
 class IMemoryHeap;
 

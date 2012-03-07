@@ -174,8 +174,6 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
         mSilentModeAction = new SilentModeAction(mAudioManager, mHandler);
 
-        mHidenavbarOn = new NavBarAction(mHandler);
-
         mAirplaneOn = new ToggleAction(
                 R.drawable.ic_lock_airplane_mode,
                 R.drawable.ic_lock_airplane_mode_off,
@@ -215,7 +213,9 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 return false;
             }
         };
-                
+
+        mHidenavbarOn = new NavBarAction(mHandler);
+
         mFlashlightOn = new ToggleAction(
                 R.drawable.ic_lock_torch,
                 R.drawable.ic_lock_torch,

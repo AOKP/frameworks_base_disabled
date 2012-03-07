@@ -34,11 +34,6 @@ sources := \
 LOCAL_PATH:= $(call my-dir)
 
 include $(CLEAR_VARS)
-
-ifeq ($(BOARD_KEEP_PARCEL_GB_COMPATIBLE),true)
-  LOCAL_CFLAGS += -DKEEP_PARCEL_GB_COMPATIBLE
-endif
-
 LOCAL_LDLIBS += -lpthread
 LOCAL_MODULE := libbinder
 LOCAL_SHARED_LIBRARIES := liblog libcutils libutils

@@ -68,6 +68,8 @@ public class TogglesView extends LinearLayout {
             + TOGGLE_AUTOROTATE;
 
     View mBrightnessSlider;
+    
+    LinearLayout mToggleSpacer;
 
     private static final LinearLayout.LayoutParams PARAMS_BRIGHTNESS = new LinearLayout.LayoutParams(
             LayoutParams.MATCH_PARENT,
@@ -159,6 +161,13 @@ public class TogglesView extends LinearLayout {
             }
             rows.get(rows.size() - 1).addView(toggles.get(i).getView(),
                     (useAltButtonLayout ? PARAMS_TOGGLE_SCROLL : PARAMS_TOGGLE));
+        }
+        
+        if (!useAltButtonLayout && (toggles.size() % 2 !=0)) {
+        	// we are using switches, and have an uneven number - let's add a spacer
+        	mToggleSpacer = new LinearLayout(mContext);
+        	rows.get(rows.size() - 1).addView(mToggleSpacer,PARAMS_TOGGLE);
+        	
         }
         if (useAltButtonLayout) {
             LinearLayout togglesRowLayout;

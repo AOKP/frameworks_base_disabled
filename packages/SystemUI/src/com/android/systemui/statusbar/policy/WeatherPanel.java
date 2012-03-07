@@ -12,9 +12,9 @@ import android.provider.Settings;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
-import android.widget.ImageView;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.systemui.R;
@@ -22,7 +22,6 @@ import com.android.systemui.R;
 public class WeatherPanel extends FrameLayout {
 
     private boolean mAttached;
-    private boolean mUpdateReceived = false;
 
     public static final String EXTRA_CITY = "city";
     public static final String EXTRA_CONDITION = "condition";
@@ -75,7 +74,6 @@ public class WeatherPanel extends FrameLayout {
                             R.drawable.weather_na));
                 }
             }
-            mUpdateReceived = true;
             updateSettings();
         }
     };
@@ -92,7 +90,6 @@ public class WeatherPanel extends FrameLayout {
     public WeatherPanel(Context context, AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
-        setVisibility(View.GONE);
         setOnClickListener(mPanelOnClickListener);
     }
 
@@ -134,11 +131,9 @@ public class WeatherPanel extends FrameLayout {
         void observe() {
             ContentResolver resolver = mContext.getContentResolver();
             resolver.registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.USE_WEATHER), false,
-                    this);
+                    Settings.System.getUriFor(Settings.System.USE_WEATHER), false, this);
             resolver.registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.WEATHER_STATUSBAR_STYLE), false,
-                    this);
+                    Settings.System.getUriFor(Settings.System.WEATHER_STATUSBAR_STYLE), false, this);
             updateSettings();
         }
 
@@ -153,6 +148,6 @@ public class WeatherPanel extends FrameLayout {
 
         boolean useWeather = Settings.System.getInt(resolver, Settings.System.USE_WEATHER, 0) == 1
                 && Settings.System.getInt(resolver, Settings.System.WEATHER_STATUSBAR_STYLE, 1) == 1;
-        this.setVisibility(mUpdateReceived && useWeather ? View.VISIBLE : View.GONE);
+        this.setVisibility(useWeather ? View.VISIBLE : View.GONE);
     }
 }

@@ -47,7 +47,7 @@ public class DigitalClock extends RelativeLayout {
     private static final String SYSTEM_FONT_TIME_FOREGROUND = SYSTEM + "AndroidClock_Highlight.ttf";
     private final static String M12 = "h:mm";
     private final static String M24 = "kk:mm";
-    private static final int COLOR_WHITE = 16777215;
+    private static final int COLOR_WHITE = 0xFFFFFFFF;
 
     private Calendar mCalendar;
     private String mFormat;

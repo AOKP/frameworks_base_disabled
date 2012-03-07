@@ -576,8 +576,6 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 
         mStatusViewManager = new KeyguardStatusViewManager(this, mUpdateMonitor, mLockPatternUtils,
                 mCallback, false);
-        // Update the settings everytime we draw lockscreen
-        updateSettings();
 
         setFocusable(true);
         setFocusableInTouchMode(true);
@@ -618,6 +616,8 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 
         // Update widget with initial ring state
         mUnlockWidgetMethods.updateResources();
+        // Update the settings everytime we draw lockscreen
+        updateSettings();
 
         if (DBG)
             Log.v(TAG, "*** LockScreen accel is "
@@ -810,19 +810,19 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
         int mLockscreenColor = Settings.System.getInt(resolver,
                 Settings.System.LOCKSCREEN_CUSTOM_TEXT_COLOR, COLOR_WHITE);
 
-        // then the rest (see @link com.android.internal.policy.impl.KeyguardStatusViewManager.updateColors())
-        try {
-            mStatusViewManager.updateColors();
-        } catch (NullPointerException npe) {
-            if (DEBUG) Log.d(TAG, "KeyguardStatusViewManager.updateColors() failed: NullPointerException");
-        }
-
         // XXX: UPDATE COLORS each could throw a null pointer so watch your ass
         // digital clock first (see @link com.android.internal.widget.DigitalClock.updateTime())
         try {
             mDigitalClock.updateTime();
         } catch (NullPointerException npe) {
             if (DEBUG) Log.d(TAG, "date update time failed: NullPointerException");
+        }
+
+        // then the rest (see @link com.android.internal.policy.impl.KeyguardStatusViewManager.updateColors())
+        try {
+            mStatusViewManager.updateColors();
+        } catch (NullPointerException npe) {
+            if (DEBUG) Log.d(TAG, "KeyguardStatusViewManager.updateColors() failed: NullPointerException");
         }
     }
 }

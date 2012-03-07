@@ -348,6 +348,17 @@ public class Display {
     }
 
     /**
+    * Gets maximal supported texture size.
+    * @hide
+    */
+    public int getMaximumTextureSize() {
+        if (SystemProperties.OMAP_ENHANCEMENT) {
+            return mMaximumTextureSize;
+        }
+        return -1;
+    }
+
+    /**
      * Gets display metrics based on an explicit assumed display size.
      * @hide
      */
@@ -390,6 +401,7 @@ public class Display {
     /*package*/ float   mDensity;
     /*package*/ float   mDpiX;
     /*package*/ float   mDpiY;
+    private int         mMaximumTextureSize;
     
     private final Point mTmpPoint = new Point();
     private final DisplayMetrics mTmpMetrics = new DisplayMetrics();

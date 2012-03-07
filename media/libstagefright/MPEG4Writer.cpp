@@ -1946,15 +1946,11 @@ status_t MPEG4Writer::Track::threadEntry() {
         if (mOwner->exceedsFileSizeLimit()) {
             LOGE("notify FileSizeLimit exceeded");
             mOwner->notify(MEDIA_RECORDER_EVENT_INFO, MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED, 0);
-            copy->release();
-            copy = NULL;
             break;
         }
         if (mOwner->exceedsFileDurationLimit()) {
             LOGE("notify FileDurationLimit exceeded");
             mOwner->notify(MEDIA_RECORDER_EVENT_INFO, MEDIA_RECORDER_INFO_MAX_DURATION_REACHED, 0);
-            copy->release();
-            copy = NULL;
             break;
         }
 

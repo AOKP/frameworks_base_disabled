@@ -124,28 +124,20 @@ status_t ElementaryStreamQueue::appendData(
             case H264:
             case MPEG_VIDEO:
             {
+#if 0
+                if (size < 4 || memcmp("\x00\x00\x00\x01", data, 4)) {
+                    return ERROR_MALFORMED;
+                }
+#else
                 uint8_t *ptr = (uint8_t *)data;
 
                 ssize_t startOffset = -1;
-
-                if(mMode == MPEG_VIDEO) {
-                    // this will take care of searching for 0001 or 001
-                    // start frame
-                    for (size_t i = 0; i + 1 < size; ++i) {
-                        if (!memcmp("\x00\x00\x01", &ptr[i], 3)) {
-                            startOffset = i;
-                            break;
-                        }
-                    }
-                } else {
-                    for (size_t i = 0; i + 3 < size; ++i) {
-                        if (!memcmp("\x00\x00\x00\x01", &ptr[i], 4)) {
-                            startOffset = i;
-                            break;
-                        }
+                for (size_t i = 0; i + 3 < size; ++i) {
+                    if (!memcmp("\x00\x00\x00\x01", &ptr[i], 4)) {
+                        startOffset = i;
+                        break;
                     }
                 }
-
 
                 if (startOffset < 0) {
                     return ERROR_MALFORMED;
@@ -159,6 +151,7 @@ status_t ElementaryStreamQueue::appendData(
 
                 data = &ptr[startOffset];
                 size -= startOffset;
+#endif
                 break;
             }
 

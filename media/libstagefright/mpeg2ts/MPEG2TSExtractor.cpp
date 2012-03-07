@@ -190,19 +190,7 @@ void MPEG2TSExtractor::init() {
 
             if (impl != NULL) {
                 haveAudio = true;
-
-                sp<MetaData> meta = impl->getFormat();
-                const char *mime;
-                CHECK(meta->findCString(kKeyMIMEType, &mime));
-
-               //if this audio/mpeg* then drop the audio
-               //we are intrested in only audio/mpeg (size ==10) if audio is mpeg format (mp3)
-               if ((!strncasecmp("audio/mpeg", mime, 10)) && (strlen(mime) > 10)) {
-                    LOGE("Audio is %s - Droping this",mime);
-                } else{
-                    LOGE("Audio is %s - keeping this",mime);
-                    mSourceImpls.push(impl);
-                }
+                mSourceImpls.push(impl);
             }
         }
 

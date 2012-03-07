@@ -383,9 +383,7 @@
     <string name="toggle_sync">Sync</string>
     <string name="toggle_swagger">Swagger</string>
     <string name="status_bar_settings_toggles">Toggles</string>
-    <string name="weatherpanel_current">Current: </string>
-    <string name="weatherpanel_low">Low: </string>
-    <string name="weatherpanel_high">High: </string>
+    <string name="weatherpanel_slash">/</string>
     
 	<!-- Title for the pseudo-notification shown when notifications are disabled (do-not-disturb
          mode) -->

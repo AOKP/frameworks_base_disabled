@@ -829,7 +829,7 @@ status_t SurfaceTexture::setScalingMode(int mode) {
 }
 
 #ifdef QCOM_HARDWARE
-status_t SurfaceTexture::updateTexImage(bool avoidBindTexture, bool isComposition) {
+status_t SurfaceTexture::updateTexImage(bool avoidBindTexture) {
 #else
 status_t SurfaceTexture::updateTexImage() {
 #endif
@@ -876,16 +876,6 @@ status_t SurfaceTexture::updateTexImage() {
                 image = createImage(dpy, mSlots[buf].mGraphicBuffer);
                 mSlots[buf].mEglImage = image;
                 mSlots[buf].mEglDisplay = dpy;
-
-                // GPU is not efficient in handling GL_TEXTURE_EXTERNAL_OES
-                // texture target. Depending on the image format, decide,
-                // the texture target to be used
-
-                if (isComposition) {
-                mTexTarget =
-                   decideTextureTarget (mSlots[buf].mGraphicBuffer->format);
-                }
-
                 if (image == EGL_NO_IMAGE_KHR) {
 #endif
                 // NOTE: if dpy was invalid, createImage() is guaranteed to

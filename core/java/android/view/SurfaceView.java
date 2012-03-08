@@ -1,6 +1,5 @@
 /*
  * Copyright (C) 2006 The Android Open Source Project
- * Copyright (C) 2011 Twisted Playground
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -446,7 +445,7 @@ public class SurfaceView extends View {
                               | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
                               ;
                 boolean mCompatOverride = SystemProperties.get(COMPAT_PROPERTY).equalsIgnoreCase("true");
-                if (!mPreviewOverride) {
+                if (!mCompatOverride) {
                     if (!getContext().getResources().getCompatibilityInfo().supportsScreen()) {
                         mLayout.flags |= WindowManager.LayoutParams.FLAG_COMPATIBLE_WINDOW;
                     }

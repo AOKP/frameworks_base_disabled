@@ -451,7 +451,7 @@ public final class ViewRootImpl extends Handler implements ViewParent,
                 if (DEBUG_LAYOUT) Log.d(TAG, "WindowLayout in setView:" + attrs);
 
                 boolean mCompatOverride = SystemProperties.get(COMPAT_PROPERTY).equalsIgnoreCase("true");
-                if (!mPreviewOverride) {
+                if (!mCompatOverride) {
                     if (!compatibilityInfo.supportsScreen()) {
                         attrs.flags |= WindowManager.LayoutParams.FLAG_COMPATIBLE_WINDOW;
                         mLastInCompatMode = true;

@@ -262,9 +262,6 @@ static const CodecInfo kDecoderInfo[] = {
     { MEDIA_MIMETYPE_VIDEO_MPEG4, "OMX.ittiam.video.decoder.mpeg4" },
 #endif
     { MEDIA_MIMETYPE_VIDEO_MPEG4, "OMX.TI.Video.Decoder" },
-#ifndef QCOM_HARDWARE
-    { MEDIA_MIMETYPE_VIDEO_MPEG4, "OMX.TI.720P.Decoder" },
-#endif
     { MEDIA_MIMETYPE_VIDEO_MPEG4, "OMX.SEC.MPEG4.Decoder" },
     { MEDIA_MIMETYPE_VIDEO_MPEG4, "OMX.google.mpeg4.decoder" },
     { MEDIA_MIMETYPE_VIDEO_H263, "OMX.TI.DUCATI1.VIDEO.DECODER" },
@@ -279,8 +276,6 @@ static const CodecInfo kDecoderInfo[] = {
     { MEDIA_MIMETYPE_VIDEO_AVC, "OMX.qcom.video.decoder.avc" },
 #ifdef QCOM_HARDWARE
     { MEDIA_MIMETYPE_VIDEO_AVC, "OMX.ittiam.video.decoder.avc" },
-#else
-    { MEDIA_MIMETYPE_VIDEO_AVC, "OMX.TI.720P.Decoder" },
 #endif
     { MEDIA_MIMETYPE_VIDEO_AVC, "OMX.TI.Video.Decoder" },
     { MEDIA_MIMETYPE_VIDEO_AVC, "OMX.SEC.AVC.Decoder" },
@@ -327,9 +322,6 @@ static const CodecInfo kEncoderInfo[] = {
 #endif
     { MEDIA_MIMETYPE_VIDEO_MPEG4, "OMX.qcom.video.encoder.mpeg4" },
     { MEDIA_MIMETYPE_VIDEO_MPEG4, "OMX.TI.Video.encoder" },
-#ifndef QCOM_HARDWARE
-    { MEDIA_MIMETYPE_VIDEO_MPEG4, "OMX.TI.720P.encoder" },
-#endif
     { MEDIA_MIMETYPE_VIDEO_MPEG4, "OMX.Nvidia.mp4.encoder" },
     { MEDIA_MIMETYPE_VIDEO_MPEG4, "OMX.SEC.MPEG4.Encoder" },
     { MEDIA_MIMETYPE_VIDEO_MPEG4, "M4vH263Encoder" },
@@ -337,9 +329,6 @@ static const CodecInfo kEncoderInfo[] = {
     { MEDIA_MIMETYPE_VIDEO_H263, "OMX.qcom.7x30.video.encoder.h263" },
     { MEDIA_MIMETYPE_VIDEO_H263, "OMX.qcom.video.encoder.h263" },
     { MEDIA_MIMETYPE_VIDEO_H263, "OMX.TI.Video.encoder" },
-#ifndef QCOM_HARDWARE
-    { MEDIA_MIMETYPE_VIDEO_H263, "OMX.TI.720P.encoder" },
-#endif
     { MEDIA_MIMETYPE_VIDEO_H263, "OMX.Nvidia.h263.encoder" },
     { MEDIA_MIMETYPE_VIDEO_H263, "OMX.SEC.H263.Encoder" },
     { MEDIA_MIMETYPE_VIDEO_H263, "M4vH263Encoder" },
@@ -606,22 +595,6 @@ uint32_t OMXCodec::getComponentQuirks(
         quirks |= kDefersOutputBufferAllocation;
     }
 
-#ifndef QCOM_HARDWARE
-    if (!strcmp(componentName, "OMX.TI.Video.Decoder") ||
-        !strcmp(componentName, "OMX.TI.720P.Decoder")) {
-        // TI Video Decoder and TI 720p Decoder must use buffers allocated
-        // by Overlay for output port. So, I cannot call OMX_AllocateBuffer
-        // on output port. I must use OMX_UseBuffer on input port to ensure
-        // 128 byte alignment.
-        quirks |= kRequiresAllocateBufferOnInputPorts;
-        quirks |= kInputBufferSizesAreBogus;
-
-        if(kPreferThumbnailMode) {
-            quirks |= OMXCodec::kRequiresAllocateBufferOnOutputPorts;
-        }
-    }
-#endif
-
     if (!strcmp(componentName, "OMX.TI.DUCATI1.VIDEO.DECODER")) {
         quirks |= kRequiresAllocateBufferOnInputPorts;
         quirks |= kRequiresAllocateBufferOnOutputPorts;
@@ -828,21 +801,6 @@ sp<MediaSource> OMXCodec::Create(
               componentName= "OMX.qcom.audio.decoder.wmaLossLess";
            }
         }
-#ifndef QCOM_HARDWARE
-        if (!strcmp(componentName, "OMX.TI.Video.Decoder")) {
-            int32_t width, height;
-            bool success = meta->findInt32(kKeyWidth, &width);
-            success = success && meta->findInt32(kKeyHeight, &height);
-            CHECK(success);
-            // We need this for 720p video without AVC profile
-            // Not a good solution, but ..
-            if (width*height > 412800) { //860*480
-                componentName = "OMX.TI.720P.Decoder";
-                LOGE("Format exceed the decoder's capabilities. %d", width*height);
-                continue;
-            }
-        }
-#endif
 #if USE_AAC_HW_DEC
         int aacformattype = 0;
         int aacLTPType = 0;
@@ -1068,21 +1026,6 @@ status_t OMXCodec::configureCodec(const sp<MetaData> &meta) {
                 // The profile is unsupported by the decoder
                 return ERROR_UNSUPPORTED;
             }
-#else
-            int32_t width, height;
-            bool success = meta->findInt32(kKeyWidth, &width);
-            success = success && meta->findInt32(kKeyHeight, &height);
-            CHECK(success);
-            if (!strcmp(mComponentName, "OMX.TI.720P.Decoder")
-                && (profile == kAVCProfileBaseline && level <= 39)
-                && (width*height <= MAX_RESOLUTION)
-                && (width <= MAX_RESOLUTION_WIDTH && height <= MAX_RESOLUTION_HEIGHT ))
-                {
-                    // Though this decoder can handle this profile/level,
-                    // we prefer to use "OMX.TI.Video.Decoder" for
-                    // Baseline Profile with level <=39 and sub 720p
-                    return ERROR_UNSUPPORTED;
-                }
 #endif
 
         } else if (meta->findData(kKeyVorbisInfo, &type, &data, &size)) {

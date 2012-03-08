@@ -4,8 +4,9 @@ include $(CLEAR_VARS)
 include frameworks/base/media/libstagefright/codecs/common/Config.mk
 
 ifeq ($(BOARD_HAVE_CODEC_SUPPORT),SAMSUNG_CODEC_SUPPORT)
-LOCAL_CFLAGS     += -DSAMSUNG_CODEC_SUPPORT
+    LOCAL_CFLAGS     += -DSAMSUNG_CODEC_SUPPORT
 endif
+
 LOCAL_SRC_FILES:=                         \
         ACodec.cpp                        \
         AACExtractor.cpp                  \
@@ -14,6 +15,7 @@ LOCAL_SRC_FILES:=                         \
         AMRWriter.cpp                     \
         AudioPlayer.cpp                   \
         AudioSource.cpp                   \
+        AVIExtractor.cpp                  \
         AwesomePlayer.cpp                 \
         CameraSource.cpp                  \
         CameraSourceTimeLapse.cpp         \
@@ -56,7 +58,7 @@ LOCAL_SRC_FILES:=                         \
         avc_utils.cpp                     \
 
 LOCAL_C_INCLUDES:= \
-	$(JNI_H_INCLUDE) \
+	    $(JNI_H_INCLUDE) \
         $(TOP)/frameworks/base/include/media/stagefright/openmax \
         $(TOP)/external/flac/include \
         $(TOP)/external/tremolo \
@@ -99,7 +101,7 @@ LOCAL_SRC_FILES += \
         FMA2DPWriter.cpp
 
 LOCAL_C_INCLUDES += \
-	$(TOP)/external/alsa-lib/include/sound \
+	    $(TOP)/external/alsa-lib/include/sound \
         $(TOP)/hardware/qcom/display/libgralloc \
         $(TOP)/hardware/qcom/display/libqcomui \
         $(TOP)/vendor/qcom/opensource/omx/mm-core/omxcore/inc \
@@ -130,7 +132,6 @@ endif
 ifeq ($(TARGET_BOARD_PLATFORM),msm7627_surf)
     LOCAL_CFLAGS += -DUSE_AAC_HW_DEC
 endif
-
 ifeq ($(TARGET_BOARD_PLATFORM),msm7627)
     LOCAL_CFLAGS += -DTARGET7x27
 endif
@@ -152,7 +153,6 @@ endif
 endif
 
 ################################################################################
-
 # The following was shamelessly copied from external/webkit/Android.mk and
 # currently must follow the same logic to determine how webkit was built and
 # if it's safe to link against libchromium.net

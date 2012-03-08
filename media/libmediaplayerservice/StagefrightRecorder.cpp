@@ -76,12 +76,7 @@ StagefrightRecorder::StagefrightRecorder()
       mOutputFd(-1),
       mAudioSource(AUDIO_SOURCE_CNT),
       mVideoSource(VIDEO_SOURCE_LIST_END),
-#ifdef QCOM_HARDWARE
-      mStarted(false), mSurfaceMediaSource(NULL),
-      mDisableAudio(false) {
-#else
       mStarted(false), mSurfaceMediaSource(NULL) {
-#endif
 
     LOGV("Constructor");
     reset();
@@ -112,12 +107,6 @@ status_t StagefrightRecorder::setAudioSource(audio_source_t as) {
         LOGE("Invalid audio source: %d", as);
         return BAD_VALUE;
     }
-
-#ifdef QCOM_HARDWARE
-    if (mDisableAudio) {
-        return OK;
-    }
-#endif
 
     if (as == AUDIO_SOURCE_DEFAULT) {
         mAudioSource = AUDIO_SOURCE_MIC;
@@ -169,12 +158,6 @@ status_t StagefrightRecorder::setAudioEncoder(audio_encoder ae) {
         LOGE("Invalid audio encoder: %d", ae);
         return BAD_VALUE;
     }
-
-#ifdef QCOM_HARDWARE
-    if (mDisableAudio) {
-        return OK;
-    }
-#endif
 
     if (ae == AUDIO_ENCODER_DEFAULT) {
         mAudioEncoder = AUDIO_ENCODER_AMR_NB;
@@ -1805,15 +1788,7 @@ status_t StagefrightRecorder::reset() {
     mRotationDegrees = 0;
     mLatitudex10000 = -3600000;
     mLongitudex10000 = -3600000;
-
     mOutputFd = -1;
-
-#ifdef QCOM_HARDWARE
-    // Disable Audio Encoding
-    char value[PROPERTY_VALUE_MAX];
-    property_get("camcorder.debug.disableaudio", value, "0");
-    if(atoi(value)) mDisableAudio = true;
-#endif
 
     return OK;
 }

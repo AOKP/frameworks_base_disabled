@@ -262,6 +262,9 @@ static const CodecInfo kDecoderInfo[] = {
     { MEDIA_MIMETYPE_VIDEO_MPEG4, "OMX.ittiam.video.decoder.mpeg4" },
 #endif
     { MEDIA_MIMETYPE_VIDEO_MPEG4, "OMX.TI.Video.Decoder" },
+#ifndef QCOM_HARDWARE
+    { MEDIA_MIMETYPE_VIDEO_MPEG4, "OMX.TI.720P.Decoder" },
+#endif
     { MEDIA_MIMETYPE_VIDEO_MPEG4, "OMX.SEC.MPEG4.Decoder" },
     { MEDIA_MIMETYPE_VIDEO_MPEG4, "OMX.google.mpeg4.decoder" },
     { MEDIA_MIMETYPE_VIDEO_H263, "OMX.TI.DUCATI1.VIDEO.DECODER" },
@@ -276,6 +279,8 @@ static const CodecInfo kDecoderInfo[] = {
     { MEDIA_MIMETYPE_VIDEO_AVC, "OMX.qcom.video.decoder.avc" },
 #ifdef QCOM_HARDWARE
     { MEDIA_MIMETYPE_VIDEO_AVC, "OMX.ittiam.video.decoder.avc" },
+#else
+    { MEDIA_MIMETYPE_VIDEO_AVC, "OMX.TI.720P.Decoder" },
 #endif
     { MEDIA_MIMETYPE_VIDEO_AVC, "OMX.TI.Video.Decoder" },
     { MEDIA_MIMETYPE_VIDEO_AVC, "OMX.SEC.AVC.Decoder" },
@@ -322,6 +327,9 @@ static const CodecInfo kEncoderInfo[] = {
 #endif
     { MEDIA_MIMETYPE_VIDEO_MPEG4, "OMX.qcom.video.encoder.mpeg4" },
     { MEDIA_MIMETYPE_VIDEO_MPEG4, "OMX.TI.Video.encoder" },
+#ifndef QCOM_HARDWARE
+    { MEDIA_MIMETYPE_VIDEO_MPEG4, "OMX.TI.720P.encoder" },
+#endif
     { MEDIA_MIMETYPE_VIDEO_MPEG4, "OMX.Nvidia.mp4.encoder" },
     { MEDIA_MIMETYPE_VIDEO_MPEG4, "OMX.SEC.MPEG4.Encoder" },
     { MEDIA_MIMETYPE_VIDEO_MPEG4, "M4vH263Encoder" },
@@ -329,6 +337,9 @@ static const CodecInfo kEncoderInfo[] = {
     { MEDIA_MIMETYPE_VIDEO_H263, "OMX.qcom.7x30.video.encoder.h263" },
     { MEDIA_MIMETYPE_VIDEO_H263, "OMX.qcom.video.encoder.h263" },
     { MEDIA_MIMETYPE_VIDEO_H263, "OMX.TI.Video.encoder" },
+#ifndef QCOM_HARDWARE
+    { MEDIA_MIMETYPE_VIDEO_H263, "OMX.TI.720P.encoder" },
+#endif
     { MEDIA_MIMETYPE_VIDEO_H263, "OMX.Nvidia.h263.encoder" },
     { MEDIA_MIMETYPE_VIDEO_H263, "OMX.SEC.H263.Encoder" },
     { MEDIA_MIMETYPE_VIDEO_H263, "M4vH263Encoder" },
@@ -595,6 +606,22 @@ uint32_t OMXCodec::getComponentQuirks(
         quirks |= kDefersOutputBufferAllocation;
     }
 
+#ifndef QCOM_HARDWARE
+    if (!strcmp(componentName, "OMX.TI.Video.Decoder") ||
+        !strcmp(componentName, "OMX.TI.720P.Decoder")) {
+        // TI Video Decoder and TI 720p Decoder must use buffers allocated
+        // by Overlay for output port. So, I cannot call OMX_AllocateBuffer
+        // on output port. I must use OMX_UseBuffer on input port to ensure
+        // 128 byte alignment.
+        quirks |= kRequiresAllocateBufferOnInputPorts;
+        quirks |= kInputBufferSizesAreBogus;
+
+        if(kPreferThumbnailMode) {
+            quirks |= OMXCodec::kRequiresAllocateBufferOnOutputPorts;
+        }
+    }
+#endif
+
     if (!strcmp(componentName, "OMX.TI.DUCATI1.VIDEO.DECODER")) {
         quirks |= kRequiresAllocateBufferOnInputPorts;
         quirks |= kRequiresAllocateBufferOnOutputPorts;
@@ -801,6 +828,21 @@ sp<MediaSource> OMXCodec::Create(
               componentName= "OMX.qcom.audio.decoder.wmaLossLess";
            }
         }
+#ifndef QCOM_HARDWARE
+        if (!strcmp(componentName, "OMX.TI.Video.Decoder")) {
+            int32_t width, height;
+            bool success = meta->findInt32(kKeyWidth, &width);
+            success = success && meta->findInt32(kKeyHeight, &height);
+            CHECK(success);
+            // We need this for 720p video without AVC profile
+            // Not a good solution, but ..
+            if (width*height > 412800) { //860*480
+                componentName = "OMX.TI.720P.Decoder";
+                LOGE("Format exceed the decoder's capabilities. %d", width*height);
+                continue;
+            }
+        }
+#endif
 #if USE_AAC_HW_DEC
         int aacformattype = 0;
         int aacLTPType = 0;
@@ -1026,6 +1068,21 @@ status_t OMXCodec::configureCodec(const sp<MetaData> &meta) {
                 // The profile is unsupported by the decoder
                 return ERROR_UNSUPPORTED;
             }
+#else
+            int32_t width, height;
+            bool success = meta->findInt32(kKeyWidth, &width);
+            success = success && meta->findInt32(kKeyHeight, &height);
+            CHECK(success);
+            if (!strcmp(mComponentName, "OMX.TI.720P.Decoder")
+                && (profile == kAVCProfileBaseline && level <= 39)
+                && (width*height <= MAX_RESOLUTION)
+                && (width <= MAX_RESOLUTION_WIDTH && height <= MAX_RESOLUTION_HEIGHT ))
+                {
+                    // Though this decoder can handle this profile/level,
+                    // we prefer to use "OMX.TI.Video.Decoder" for
+                    // Baseline Profile with level <=39 and sub 720p
+                    return ERROR_UNSUPPORTED;
+                }
 #endif
 
         } else if (meta->findData(kKeyVorbisInfo, &type, &data, &size)) {
@@ -1529,7 +1586,6 @@ status_t OMXCodec::findTargetColorFormat(
             *colorFormat = OMX_COLOR_FormatYCbYCr;
         }
     }
-
 
     // Check whether the target color format is supported.
     return isColorFormatSupported(*colorFormat, kPortIndexInput);
@@ -2233,13 +2289,15 @@ status_t OMXCodec::setVideoOutputFormat(
                || format.eColorFormat == OMX_COLOR_FormatYUV420SemiPlanar
                || format.eColorFormat == OMX_COLOR_FormatCbYCrY
                || format.eColorFormat == OMX_TI_COLOR_FormatYUV420PackedSemiPlanar
+#ifdef QCOM_HARDWARE
+               || format.eColorFormat == OMX_QCOM_COLOR_FormatYVU420SemiPlanar
+               || format.eColorFormat == QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka
+#else
                || format.eColorFormat == OMX_QCOM_COLOR_FormatYVU420SemiPlanar
 #ifdef SAMSUNG_CODEC_SUPPORT
                || format.eColorFormat == OMX_SEC_COLOR_FormatNV12TPhysicalAddress
                || format.eColorFormat == OMX_SEC_COLOR_FormatNV12Tiled
 #endif
-#ifdef QCOM_HARDWARE
-               || format.eColorFormat == QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka
 #endif
         );
 #ifdef SAMSUNG_CODEC_SUPPORT
@@ -2752,14 +2810,14 @@ status_t OMXCodec::allocateOutputBuffersFromNativeWindow() {
     if (err != OK) {
         return err;
     }
-#ifndef SAMSUNG_CODEC_SUPPORT
-
 #ifdef QCOM_HARDWARE
     int format = (def.format.video.eColorFormat ==
                   QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka)?
                  HAL_PIXEL_FORMAT_YCbCr_420_SP_TILED : def.format.video.eColorFormat;
     if(def.format.video.eColorFormat == OMX_QCOM_COLOR_FormatYVU420SemiPlanar)
         format = HAL_PIXEL_FORMAT_YCrCb_420_SP;
+
+    format ^= (mInterlaceFormatDetected ? HAL_PIXEL_FORMAT_INTERLACE : 0);
 #endif
 
 #ifdef QCOM_HARDWARE
@@ -2769,12 +2827,12 @@ status_t OMXCodec::allocateOutputBuffersFromNativeWindow() {
             def.format.video.nSliceHeight,
             format);
 #else
+#ifndef SAMSUNG_CODEC_SUPPORT
     err = native_window_set_buffers_geometry(
             mNativeWindow.get(),
             def.format.video.nFrameWidth,
             def.format.video.nFrameHeight,
             def.format.video.eColorFormat);
-#endif //QCOM_HARDWARE
 #else
     OMX_COLOR_FORMATTYPE eColorFormat;
 
@@ -2796,6 +2854,7 @@ status_t OMXCodec::allocateOutputBuffersFromNativeWindow() {
             def.format.video.nFrameWidth,
             def.format.video.nFrameHeight,
             eColorFormat);
+#endif
 #endif
     if (err != 0) {
         LOGE("native_window_set_buffers_geometry failed: %s (%d)",
@@ -5018,7 +5077,6 @@ void OMXCodec::setAC3Format(int32_t /*numChannels*/, int32_t /*sampleRate*/) {
 */
 }
 
-
 status_t OMXCodec::setWMAFormat(const sp<MetaData> &meta)
 	{
 	    if (mIsEncoder) {
@@ -5370,7 +5428,6 @@ status_t OMXCodec::stop() {
                      mComponentName);
             }
 #endif
-
             if (state != OMX_StateExecuting) {
                 break;
             }

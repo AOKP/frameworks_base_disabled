@@ -54,6 +54,10 @@
 
 #include "ARTPWriter.h"
 
+#ifdef QCOM_HARDWARE
+#include <cutils/properties.h>
+#endif
+
 namespace android {
 
 // To collect the encoder usage for the battery app
@@ -72,7 +76,12 @@ StagefrightRecorder::StagefrightRecorder()
       mOutputFd(-1),
       mAudioSource(AUDIO_SOURCE_CNT),
       mVideoSource(VIDEO_SOURCE_LIST_END),
+#ifdef QCOM_HARDWARE
+      mStarted(false), mSurfaceMediaSource(NULL),
+      mDisableAudio(false) {
+#else
       mStarted(false), mSurfaceMediaSource(NULL) {
+#endif
 
     LOGV("Constructor");
     reset();
@@ -103,6 +112,12 @@ status_t StagefrightRecorder::setAudioSource(audio_source_t as) {
         LOGE("Invalid audio source: %d", as);
         return BAD_VALUE;
     }
+
+#ifdef QCOM_HARDWARE
+    if (mDisableAudio) {
+        return OK;
+    }
+#endif
 
     if (as == AUDIO_SOURCE_DEFAULT) {
         mAudioSource = AUDIO_SOURCE_MIC;
@@ -154,6 +169,12 @@ status_t StagefrightRecorder::setAudioEncoder(audio_encoder ae) {
         LOGE("Invalid audio encoder: %d", ae);
         return BAD_VALUE;
     }
+
+#ifdef QCOM_HARDWARE
+    if (mDisableAudio) {
+        return OK;
+    }
+#endif
 
     if (ae == AUDIO_ENCODER_DEFAULT) {
         mAudioEncoder = AUDIO_ENCODER_AMR_NB;
@@ -1364,7 +1385,11 @@ status_t StagefrightRecorder::setupCameraSource(
     } else {
         *cameraSource = CameraSource::CreateFromCamera(
                 mCamera, mCameraProxy, mCameraId, videoSize, mFrameRate,
+#ifdef QCOM_HARDWARE
+                mPreviewSurface, false);
+#else
                 mPreviewSurface, true /*storeMetaDataInVideoBuffers*/);
+#endif
     }
     mCamera.clear();
     mCameraProxy.clear();
@@ -1440,7 +1465,6 @@ status_t StagefrightRecorder::setupVideoEncoder(
     enc_meta->setInt32(kKeyStride, stride);
     enc_meta->setInt32(kKeySliceHeight, sliceHeight);
     enc_meta->setInt32(kKeyColorFormat, colorFormat);
-
     if (mVideoTimeScale > 0) {
         enc_meta->setInt32(kKeyTimeScale, mVideoTimeScale);
     }
@@ -1450,6 +1474,7 @@ status_t StagefrightRecorder::setupVideoEncoder(
      * For the mean time, set from shell
      */
 
+#ifdef QCOM_HARDWARE
     char value[PROPERTY_VALUE_MAX];
     bool customProfile = false;
 
@@ -1462,38 +1487,39 @@ status_t StagefrightRecorder::setupVideoEncoder(
         case VIDEO_ENCODER_H264:
             if (strncmp("base", value, 4) == 0) {
                 mVideoEncoderProfile = OMX_VIDEO_AVCProfileBaseline;
-                ALOGI("H264 Baseline Profile");
+                LOGI("H264 Baseline Profile");
             }
             else if (strncmp("main", value, 4) == 0) {
                 mVideoEncoderProfile = OMX_VIDEO_AVCProfileMain;
-                ALOGI("H264 Main Profile");
+                LOGI("H264 Main Profile");
             }
             else if (strncmp("high", value, 4) == 0) {
                 mVideoEncoderProfile = OMX_VIDEO_AVCProfileHigh;
-                ALOGI("H264 High Profile");
+                LOGI("H264 High Profile");
             }
             else {
-               ALOGW("Unsupported H264 Profile");
+               LOGW("Unsupported H264 Profile");
             }
             break;
         case VIDEO_ENCODER_MPEG_4_SP:
             if (strncmp("simple", value, 5) == 0 ) {
                 mVideoEncoderProfile = OMX_VIDEO_MPEG4ProfileSimple;
-                ALOGI("MPEG4 Simple profile");
+                LOGI("MPEG4 Simple profile");
             }
             else if (strncmp("asp", value, 3) == 0 ) {
                 mVideoEncoderProfile = OMX_VIDEO_MPEG4ProfileAdvancedSimple;
-                ALOGI("MPEG4 Advanced Simple Profile");
+                LOGI("MPEG4 Advanced Simple Profile");
             }
             else {
-                ALOGW("Unsupported MPEG4 Profile");
+                LOGW("Unsupported MPEG4 Profile");
             }
             break;
         default:
-            ALOGW("No custom profile support for other codecs");
+            LOGW("No custom profile support for other codecs");
             break;
         }
     }
+#endif
 
     if (mVideoEncoderProfile != -1) {
         enc_meta->setInt32(kKeyVideoProfile, mVideoEncoderProfile);
@@ -1781,6 +1807,13 @@ status_t StagefrightRecorder::reset() {
     mLongitudex10000 = -3600000;
 
     mOutputFd = -1;
+
+#ifdef QCOM_HARDWARE
+    // Disable Audio Encoding
+    char value[PROPERTY_VALUE_MAX];
+    property_get("camcorder.debug.disableaudio", value, "0");
+    if(atoi(value)) mDisableAudio = true;
+#endif
 
     return OK;
 }

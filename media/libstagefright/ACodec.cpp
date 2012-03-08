@@ -54,6 +54,7 @@ Copyright (c) 2010-2012, Code Aurora Forum. All rights reserved.
 #define MIN_HEIGHT 320;
 #endif
 
+
 namespace android {
 
 template<class T>
@@ -136,9 +137,9 @@ private:
     DISALLOW_EVIL_CONSTRUCTORS(CodecObserver);
 };
 
-static const int OMX_QCOM_COLOR_FormatYVU420SemiPlanar = 0x7FA30C00;
-static const int QOMX_COLOR_FormatYVU420PackedSemiPlanar32m4ka = 0x7FA30C01;
+#ifdef QCOM_HARDWARE
 static const int QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka = 0x7FA30C03;
+static const int OMX_QCOM_COLOR_FormatYVU420SemiPlanar = 0x7FA30C00;
 
 class ColorFormatInfo {
     private:
@@ -157,11 +158,12 @@ const int32_t ColorFormatInfo::preferredFormat =
 #elif TARGET7x27
     OMX_QCOM_COLOR_FormatYVU420SemiPlanar;
 #elif TARGET7x27A
-    QOMX_COLOR_FormatYVU420PackedSemiPlanar32m4ka;
+    OMX_QCOM_COLOR_FormatYVU420SemiPlanar;
 #elif TARGET8x50
     OMX_QCOM_COLOR_FormatYVU420SemiPlanar;
 #else
     OMX_COLOR_FormatUnused;
+#endif
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -526,11 +528,7 @@ status_t ACodec::allocateOutputBuffersFromNativeWindow() {
             mNativeWindow.get(),
             def.format.video.nFrameWidth,
             def.format.video.nFrameHeight,
-#ifdef QCOM_HARDWARE
             format);
-#else
-            def.format.video.eColorFormat);
-#endif
 
     if (err != 0) {
         LOGE("native_window_set_buffers_geometry failed: %s (%d)",

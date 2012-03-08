@@ -181,7 +181,6 @@ include $(BUILD_SHARED_LIBRARY)
 
 ################################################################################
 
-ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
 include $(CLEAR_VARS)
 
 LOCAL_SRC_FILES := \

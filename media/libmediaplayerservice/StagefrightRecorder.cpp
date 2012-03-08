@@ -1401,7 +1401,6 @@ status_t StagefrightRecorder::setupVideoEncoder(
      * For the mean time, set from shell
      */
 
-#ifdef QCOM_HARDWARE
     char value[PROPERTY_VALUE_MAX];
     bool customProfile = false;
 
@@ -1446,7 +1445,6 @@ status_t StagefrightRecorder::setupVideoEncoder(
             break;
         }
     }
-#endif
 
     if (mVideoEncoderProfile != -1) {
         enc_meta->setInt32(kKeyVideoProfile, mVideoEncoderProfile);

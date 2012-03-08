@@ -56,7 +56,7 @@ LOCAL_SRC_FILES:=                         \
         avc_utils.cpp                     \
 
 LOCAL_C_INCLUDES:= \
-	    $(JNI_H_INCLUDE) \
+	$(JNI_H_INCLUDE) \
         $(TOP)/frameworks/base/include/media/stagefright/openmax \
         $(TOP)/external/flac/include \
         $(TOP)/external/tremolo \
@@ -209,6 +209,14 @@ LOCAL_SHARED_LIBRARIES += \
         libdl
 
 LOCAL_CFLAGS += -Wno-multichar
+
+ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
+        LOCAL_C_INCLUDES += $(TOP)/hardware/qcom/display/libgralloc
+        LOCAL_C_INCLUDES += $(TOP)/vendor/qcom/opensource/omx/mm-core/omxcore/inc
+        LOCAL_C_INCLUDES += $(TOP)/system/core/include
+        LOCAL_C_INCLUDES += $(TOP)/hardware/libhardware_legacy/include
+        LOCAL_CFLAGS += -DQCOM_HARDWARE
+endif
 
 LOCAL_MODULE:= libstagefright
 

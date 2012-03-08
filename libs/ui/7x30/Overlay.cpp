@@ -25,45 +25,6 @@
 
 namespace android {
 
-int getBppFromOverlayFormat(const OverlayFormats format) {
-    int bpp;
-    switch(format) {
-        case OVERLAY_FORMAT_RGBA8888:
-            bpp=32;
-            break;
-        case OVERLAY_FORMAT_RGB565:
-        case OVERLAY_FORMAT_YUV422I:
-        case OVERLAY_FORMAT_YUV422SP:
-            bpp = 16;
-            break;
-        case OVERLAY_FORMAT_YUV420SP:
-        case OVERLAY_FORMAT_YUV420P:
-            bpp = 12;
-            break;
-        default:
-            bpp = 0;
-    }
-    return bpp;
-}
-
-OverlayFormats getOverlayFormatFromString(const char* name) {
-    OverlayFormats rv = OVERLAY_FORMAT_UNKNOWN;
-    if( strcmp(name, "yuv422sp") == 0 ) {
-        rv = OVERLAY_FORMAT_YUV422SP;
-    } else if( strcmp(name, "yuv420sp") == 0 ) {
-        rv = OVERLAY_FORMAT_YUV420SP;
-    } else if( strcmp(name, "yuv422i-yuyv") == 0 ) {
-        rv = OVERLAY_FORMAT_YUV422I;
-    } else if( strcmp(name, "yuv420p") == 0 ) {
-        rv = OVERLAY_FORMAT_YUV420P;
-    } else if( strcmp(name, "rgb565") == 0 ) {
-        rv = OVERLAY_FORMAT_RGB565;
-    } else if( strcmp(name, "rgba8888") == 0 ) {
-        rv = OVERLAY_FORMAT_RGBA8888;
-    }
-    return rv;
-}
-
 Overlay::Overlay(overlay_set_fd_hook set_fd,
         overlay_set_crop_hook set_crop,
         overlay_queue_buffer_hook queue_buffer,
@@ -108,14 +69,6 @@ status_t Overlay::setCrop(uint32_t x, uint32_t y, uint32_t w, uint32_t h)
         set_crop_hook(hook_data, x, y, w, h);
     return mStatus;
 }
-
-#ifdef OMAP_ENHANCEMENT
-    status_t Overlay::set_s3d_params(int32_t s3d_mode, uint32_t s3d_fmt, uint32_t s3d_order, uint32_t s3d_subsampling)
-    {
-        return mStatus;
-        return mOverlayData->set_s3d_params(mOverlayData, s3d_mode, s3d_fmt, s3d_order, s3d_subsampling);
-    }
-#endif
 
 status_t Overlay::getCrop(uint32_t* x, uint32_t* y, uint32_t* w, uint32_t* h)
 {

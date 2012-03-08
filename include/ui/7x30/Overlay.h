@@ -36,19 +36,6 @@ typedef void (*overlay_queue_buffer_hook)(void *data,
 
 namespace android {
 
-enum OverlayFormats {
-    OVERLAY_FORMAT_YUV422SP,
-    OVERLAY_FORMAT_YUV420SP,
-    OVERLAY_FORMAT_YUV422I,
-    OVERLAY_FORMAT_YUV420P,
-    OVERLAY_FORMAT_RGB565,
-    OVERLAY_FORMAT_RGBA8888,
-    OVERLAY_FORMAT_UNKNOWN
-};
-
-int getBppFromOverlayFormat(OverlayFormats format);
-OverlayFormats getOverlayFormatFromString(const char* name);
-
 class IMemory;
 class IMemoryHeap;
 
@@ -78,10 +65,6 @@ public:
     status_t resizeInput(uint32_t width, uint32_t height);
 
     status_t setCrop(uint32_t x, uint32_t y, uint32_t w, uint32_t h) ;
-
-#ifdef OMAP_ENHANCEMENT
-    status_t set_s3d_params(int32_t s3d_mode, uint32_t s3d_fmt, uint32_t s3d_order, uint32_t s3d_subsampling);
-#endif
 
     status_t getCrop(uint32_t* x, uint32_t* y, uint32_t* w, uint32_t* h) ;
 

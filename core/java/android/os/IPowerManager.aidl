@@ -53,4 +53,3 @@ interface IPowerManager
     int getLightSensorButtonBrightness();
     int getLightSensorKeyboardBrightness();
 }
-}

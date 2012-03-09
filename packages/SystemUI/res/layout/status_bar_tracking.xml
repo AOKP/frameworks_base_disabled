@@ -61,6 +61,7 @@
         android:background="#EE000000"
         >
         <ImageView
+            android:id="@+id/status_bar_close"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"

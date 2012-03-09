@@ -54,7 +54,6 @@ Copyright (c) 2010-2012, Code Aurora Forum. All rights reserved.
 #define MIN_HEIGHT 320;
 #endif
 
-
 namespace android {
 
 template<class T>
@@ -137,9 +136,9 @@ private:
     DISALLOW_EVIL_CONSTRUCTORS(CodecObserver);
 };
 
-#ifdef QCOM_HARDWARE
-static const int QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka = 0x7FA30C03;
 static const int OMX_QCOM_COLOR_FormatYVU420SemiPlanar = 0x7FA30C00;
+static const int QOMX_COLOR_FormatYVU420PackedSemiPlanar32m4ka = 0x7FA30C01;
+static const int QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka = 0x7FA30C03;
 
 class ColorFormatInfo {
     private:
@@ -158,12 +157,11 @@ const int32_t ColorFormatInfo::preferredFormat =
 #elif TARGET7x27
     OMX_QCOM_COLOR_FormatYVU420SemiPlanar;
 #elif TARGET7x27A
-    OMX_QCOM_COLOR_FormatYVU420SemiPlanar;
+    QOMX_COLOR_FormatYVU420PackedSemiPlanar32m4ka;
 #elif TARGET8x50
     OMX_QCOM_COLOR_FormatYVU420SemiPlanar;
 #else
     OMX_COLOR_FormatUnused;
-#endif
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -518,17 +516,17 @@ status_t ACodec::allocateOutputBuffersFromNativeWindow() {
 #ifdef QCOM_HARDWARE
     int format = (def.format.video.eColorFormat == (OMX_COLOR_FORMATTYPE)QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka)?
                  HAL_PIXEL_FORMAT_YCbCr_420_SP_TILED : def.format.video.eColorFormat;
-    if(def.format.video.eColorFormat == OMX_QCOM_COLOR_FormatYVU420SemiPlanar)
-        format = HAL_PIXEL_FORMAT_YCrCb_420_SP;
-#else
-    int format = HAL_PIXEL_FORMAT_YCrCb_420_SP;
 #endif
 
     err = native_window_set_buffers_geometry(
             mNativeWindow.get(),
             def.format.video.nFrameWidth,
             def.format.video.nFrameHeight,
+#ifdef QCOM_HARDWARE
             format);
+#else
+            def.format.video.eColorFormat);
+#endif
 
     if (err != 0) {
         LOGE("native_window_set_buffers_geometry failed: %s (%d)",
@@ -605,13 +603,13 @@ status_t ACodec::allocateOutputBuffersFromNativeWindow() {
     err = mNativeWindow.get()->perform(mNativeWindow.get(),
                               NATIVE_WINDOW_SET_BUFFERS_SIZE,
                               def.nBufferSize);
-#endif
 
     if (err != 0) {
         LOGE("native_window_set_buffer_size failed: %s (%d)", strerror(-err),
                 -err);
         return err;
     }
+#endif
 
     LOGV("[%s] Allocating %lu buffers from a native window of size %lu on "
          "output port",
@@ -1120,9 +1118,11 @@ status_t ACodec::setSupportedOutputFormat() {
            || format.eColorFormat == OMX_TI_COLOR_FormatYUV420PackedSemiPlanar
            || format.eColorFormat == (OMX_COLOR_FORMATTYPE)OMX_QCOM_COLOR_FormatYVU420SemiPlanar
 #ifdef QCOM_HARDWARE
-           || format.eColorFormat ==  (OMX_COLOR_FORMATTYPE)QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka
+           || format.eColorFormat == (OMX_COLOR_FORMATTYPE)OMX_QCOM_COLOR_FormatYVU420SemiPlanar
+           || format.eColorFormat == (OMX_COLOR_FORMATTYPE)QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka);
+#else
+           || format.eColorFormat == OMX_QCOM_COLOR_FormatYVU420SemiPlanar);
 #endif
-          );
 
     return mOMX->setParameter(
             mNode, OMX_IndexParamVideoPortFormat,
@@ -1330,8 +1330,6 @@ void ACodec::sendFormatChange() {
                    LOGE("native_window_update_buffers_geometry failed in SS mode %d", err);
                }
             }
-#else
-            int format = HAL_PIXEL_FORMAT_YCrCb_420_SP;
 #endif
 
             notify->setRect(
@@ -1976,9 +1974,9 @@ void ACodec::BaseState::onOutputBufferDrained(const sp<AMessage> &msg) {
         mCodec->findBufferByID(kPortIndexOutput, bufferID, &index);
     CHECK_EQ((int)info->mStatus, (int)BufferInfo::OWNED_BY_DOWNSTREAM);
 
+#ifdef QCOM_HARDWARE
     int32_t flags;
     CHECK(msg->findInt32("flags", &flags));
-#ifdef QCOM_HARDWARE
     if (mCodec->mSmoothStreaming && (flags & OMX_BUFFERFLAG_EXTRADATA)) {
         HandleExtraData( bufferID );
     }
@@ -2171,6 +2169,7 @@ void ACodec::UninitializedState::onSetup(
         }
     }
 #endif
+
     mCodec->configureCodec(mime.c_str(), msg);
 
     sp<RefBase> obj;

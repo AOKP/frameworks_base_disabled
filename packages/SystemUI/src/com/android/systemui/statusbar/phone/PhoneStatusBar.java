@@ -265,6 +265,9 @@ public class PhoneStatusBar extends StatusBar {
     private int newWindowShadeColor;
     private int newStatusbarColor;
 
+    // custom statusbar drawables
+    private ImageView mStatusbarHandle;
+
     // custom carrier label
     private TextView mCarrierLabel;
     private View mPhoneCarrierLabel;
@@ -458,6 +461,8 @@ public class PhoneStatusBar extends StatusBar {
         mPhoneCarrierLabel = mTrackingView.findViewById(R.id.phone_carrier_label);
         // custom color and alpha for statusbar
         mStatusbarUnexpanded = sb.findViewById(R.id.phone_statusbar_view);
+        // custom drawables for statusbar
+        mStatusbarHandle = (ImageView) mTrackingView.findViewById(R.id.status_bar_close);
 
         // set the inital view visibility
         setAreThereNotifications();
@@ -2683,8 +2688,16 @@ public class PhoneStatusBar extends StatusBar {
         }
         if (DEBUG) Log.d(TAG, String.format("Custom color int: %d", newStatusbarColor));
         if (customStatusColor) {
+            // set the top statusbar color
             mStatusbarUnexpanded.setBackgroundColor(newStatusbarColor);
+            // match the bottom drag handle to mStatusbarUnexpanded
+            mCloseView.setBackgroundColor(newStatusbarColor);
         }
+
+        //TODO: ExiledThemer is making us some drawables
+        //    when he is done we can include this
+        //mFrameLayout.setBackgroundResource(R.drawable.compat_mode_help_icon);
+        //mStatusbarHandle.setImageResource(R.drawable.compat_mode_help_icon);
     }
 
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {

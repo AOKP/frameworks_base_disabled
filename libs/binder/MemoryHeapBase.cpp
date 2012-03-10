@@ -42,21 +42,13 @@ namespace android {
 
 MemoryHeapBase::MemoryHeapBase()
     : mFD(-1), mSize(0), mBase(MAP_FAILED),
-#ifdef SENSE_CAMERA
       mDevice(NULL), mNeedUnmap(false)
-#else
-      mDevice(NULL), mNeedUnmap(false), mOffset(0)
-#endif
 {
 }
 
 MemoryHeapBase::MemoryHeapBase(size_t size, uint32_t flags, char const * name)
     : mFD(-1), mSize(0), mBase(MAP_FAILED), mFlags(flags),
-#ifdef SENSE_CAMERA
       mDevice(0), mNeedUnmap(false)
-#else
-      mDevice(0), mNeedUnmap(false), mOffset(0)
-#endif
 {
     const size_t pagesize = getpagesize();
     size = ((size + pagesize-1) & ~(pagesize-1));
@@ -73,11 +65,7 @@ MemoryHeapBase::MemoryHeapBase(size_t size, uint32_t flags, char const * name)
 
 MemoryHeapBase::MemoryHeapBase(const char* device, size_t size, uint32_t flags)
     : mFD(-1), mSize(0), mBase(MAP_FAILED), mFlags(flags),
-#ifdef SENSE_CAMERA
       mDevice(0), mNeedUnmap(false)
-#else
-      mDevice(0), mNeedUnmap(false), mOffset(0)
-#endif
 {
     int open_flags = O_RDWR;
     if (flags & NO_CACHING)
@@ -96,11 +84,7 @@ MemoryHeapBase::MemoryHeapBase(const char* device, size_t size, uint32_t flags)
 
 MemoryHeapBase::MemoryHeapBase(int fd, size_t size, uint32_t flags, uint32_t offset)
     : mFD(-1), mSize(0), mBase(MAP_FAILED), mFlags(flags),
-#ifdef SENSE_CAMERA
       mDevice(0), mNeedUnmap(false)
-#else
-      mDevice(0), mNeedUnmap(false), mOffset(0)
-#endif
 {
     const size_t pagesize = getpagesize();
     size = ((size + pagesize-1) & ~(pagesize-1));
@@ -115,9 +99,6 @@ status_t MemoryHeapBase::init(int fd, void *base, int size, int flags, const cha
     mFD = fd;
     mBase = base;
     mSize = size;
-#ifndef SENSE_CAMERA
-    mOffset = offset;
-#endif
     mFlags = flags;
     mDevice = device;
     return NO_ERROR;
@@ -201,12 +182,6 @@ uint32_t MemoryHeapBase::getFlags() const {
 const char* MemoryHeapBase::getDevice() const {
     return mDevice;
 }
-
-#ifndef SENSE_CAMERA
-uint32_t MemoryHeapBase::getOffset() const {
-    return mOffset;
-}
-#endif
 
 // ---------------------------------------------------------------------------
 }; // namespace android

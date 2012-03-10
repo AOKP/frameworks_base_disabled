@@ -61,9 +61,6 @@ public:
     virtual void*       getBase() const;
     virtual size_t      getSize() const;
     virtual uint32_t    getFlags() const;
-#ifndef SENSE_CAMERA
-    virtual uint32_t    getOffset() const;
-#endif
 
     const char*         getDevice() const;
 
@@ -91,9 +88,6 @@ private:
     size_t      mSize;
     void*       mBase;
     uint32_t    mFlags;
-#ifndef SENSE_CAMERA
-    uint32_t    mOffset;
-#endif
     const char* mDevice;
     bool        mNeedUnmap;
 };

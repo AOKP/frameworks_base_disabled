@@ -81,6 +81,9 @@ public:
     virtual void* getBase() const;
     virtual size_t getSize() const;
     virtual uint32_t getFlags() const;
+#ifndef SENSE_CAMERA
+    virtual uint32_t getOffset() const;
+#endif
 
 private:
     friend class IMemory;
@@ -107,6 +110,9 @@ private:
     mutable void*       mBase;
     mutable size_t      mSize;
     mutable uint32_t    mFlags;
+#ifndef SENSE_CAMERA
+    mutable uint32_t    mOffset;
+#endif
     mutable bool        mRealHeap;
     mutable Mutex       mLock;
 };
@@ -229,7 +235,11 @@ status_t BnMemory::onTransact(
 
 BpMemoryHeap::BpMemoryHeap(const sp<IBinder>& impl)
     : BpInterface<IMemoryHeap>(impl),
+#ifdef SENSE_CAMERA
         mHeapId(-1), mBase(MAP_FAILED), mSize(0), mFlags(0), mRealHeap(false)
+#else
+        mHeapId(-1), mBase(MAP_FAILED), mSize(0), mFlags(0), mOffset(0), mRealHeap(false)
+#endif
 {
 }
 
@@ -270,6 +280,9 @@ void BpMemoryHeap::assertMapped() const
             if (mHeapId == -1) {
                 mBase   = heap->mBase;
                 mSize   = heap->mSize;
+#ifndef SENSE_CAMERA
+                mOffset = heap->mOffset;
+#endif
                 android_atomic_write( dup( heap->mHeapId ), &mHeapId );
             }
         } else {
@@ -293,6 +306,9 @@ void BpMemoryHeap::assertReallyMapped() const
         int parcel_fd = reply.readFileDescriptor();
         ssize_t size = reply.readInt32();
         uint32_t flags = reply.readInt32();
+#ifndef SENSE_CAMERA
+        uint32_t offset = reply.readInt32();
+#endif
 
         LOGE_IF(err, "binder=%p transaction failed fd=%d, size=%ld, err=%d (%s)",
                 asBinder().get(), parcel_fd, size, err, strerror(-err));
@@ -309,7 +325,11 @@ void BpMemoryHeap::assertReallyMapped() const
         Mutex::Autolock _l(mLock);
         if (mHeapId == -1) {
             mRealHeap = true;
+#ifdef SENSE_CAMERA
             mBase = mmap(0, size, access, MAP_SHARED, fd, 0);
+#else
+            mBase = mmap(0, size, access, MAP_SHARED, fd, offset);
+#endif
             if (mBase == MAP_FAILED) {
                 LOGE("cannot map BpMemoryHeap (binder=%p), size=%ld, fd=%d (%s)",
                         asBinder().get(), size, fd, strerror(errno));
@@ -317,6 +337,9 @@ void BpMemoryHeap::assertReallyMapped() const
             } else {
                 mSize = size;
                 mFlags = flags;
+#ifndef SENSE_CAMERA
+                mOffset = offset;
+#endif
                 android_atomic_write(fd, &mHeapId);
             }
         }
@@ -342,6 +365,13 @@ uint32_t BpMemoryHeap::getFlags() const {
     assertMapped();
     return mFlags;
 }
+
+#ifndef SENSE_CAMERA
+uint32_t BpMemoryHeap::getOffset() const {
+    assertMapped();
+    return mOffset;
+}
+#endif
 
 // ---------------------------------------------------------------------------
 

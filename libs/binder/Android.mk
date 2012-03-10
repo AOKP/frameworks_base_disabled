@@ -31,6 +31,14 @@ sources := \
     ProcessState.cpp \
     Static.cpp
 
+ifeq ($(TARGET_USES_ION),true)
+    sources += MemoryHeapIon.cpp
+endif
+
+ifeq ($(TARGET_7X30_OVERLAY),true)
+    LOCAL_CFLAGS += -DSENSE_CAMERA
+else
+
 LOCAL_PATH:= $(call my-dir)
 
 include $(CLEAR_VARS)

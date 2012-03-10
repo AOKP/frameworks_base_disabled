@@ -2548,6 +2548,36 @@ public final class Settings {
         public static final String STATUSBAR_UNEXPANDED_COLOR = "statusbar_unexpanded_color";
 
         /**
+         * should we use a custom background or custom color/alpha
+         * ?alpha may be handled via setAlpha(drawable) later, int value
+         * @hide
+         */
+        public static final String STATUSBAR_USE_WINDOWSHADE_BACKGROUND = "statusbar_use_windowshade_background";
+
+        /**
+         * statusbar background liquid style, int value
+         * @hide
+         */
+        public static final String STATUSBAR_WINDOWSHADE_LIQUID_BACKGROUND = "statusbar_windowshade_liquid_background";
+
+        /**
+         * statusbar background user selection, int value
+         * on:off value as location is set and usage
+         * is dependant apon existance of file
+         * (1 == if.exists()) (0 != if.exists())
+         * @hide
+         */
+        public static final String STATUSBAR_WINDOWSHADE_USER_BACKGROUND = "statusbar_windowshade_user_background";
+
+        /**
+         * customizable drawable in the middle of the statusbar expanded
+         * handle that responds to user touch events
+         * //int value so we can expand options in the future
+         * @hide
+         */
+        public static final String STATUSBAR_WINDOWSHADE_HANDLE_IMAGE = "statusbar_windowshade_handle_image";
+
+        /**
          * @hide
          */
         public static final String NOTIFICATION_LIGHT_COLOR = "notification_light_color";

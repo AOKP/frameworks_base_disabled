@@ -16,6 +16,7 @@
 
 package com.android.systemui.statusbar.phone;
 
+import java.io.File;
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -2565,6 +2566,14 @@ public class PhoneStatusBar extends StatusBar {
                     Settings.System.CUSTOM_CARRIER_LABEL), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUSBAR_UNEXPANDED_COLOR), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.STATUSBAR_USE_WINDOWSHADE_BACKGROUND), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.STATUSBAR_WINDOWSHADE_USER_BACKGROUND), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.STATUSBAR_WINDOWSHADE_LIQUID_BACKGROUND), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.STATUSBAR_WINDOWSHADE_HANDLE_IMAGE), false, this);
         }
 
         @Override
@@ -2579,6 +2588,13 @@ public class PhoneStatusBar extends StatusBar {
     boolean mControlLiquidIcon = true;
     boolean mControlAospSettingsIcon = true;
     boolean mShowDate = true;
+
+    // we use false first and change if user wants but we can
+    // only do windowshade color OR background drawable
+    boolean mUseBackgroundDrawable = false;
+    boolean mLiquidStatusbarBackground = false;
+    boolean mUserStatusbarBackgroundFileExists = false;
+    final String USER_IMAGE_NAME = "windowshade_background.jpg";
 
     private void updateSettings() {
         // Check all our settings and respond accordingly
@@ -2601,6 +2617,18 @@ public class PhoneStatusBar extends StatusBar {
         mControlAospSettingsIcon = Settings.System.getInt(cr,
                 Settings.System.STATUSBAR_REMOVE_AOSP_SETTINGS_LINK, 0) == 1;
 
+        // any choice changes mUseBackgroundDrawable so we can enable one and disable the other
+        // really just a convience as other wise we have to write long complex
+        // if (this && this && !this && !this) statements
+        mUseBackgroundDrawable = Settings.System.getInt(cr, Settings.System.STATUSBAR_USE_WINDOWSHADE_BACKGROUND, 0) == 1;
+        mLiquidStatusbarBackground = Settings.System.getInt(cr, Settings.System.STATUSBAR_WINDOWSHADE_LIQUID_BACKGROUND, 0) == 1;
+
+        // we watch the on/off of Settings.System.STATUSBAR_WINDOWSHADE_USER_BACKGROUND
+        // but use exists() to determine if we try to load and set the image
+        File backgroundImageFile = new File(USER_IMAGE_NAME);
+        mUserStatusbarBackgroundFileExists = backgroundImageFile.exists() && backgroundImageFile.canRead();
+        if (DEBUG) Log.d(TAG, "mUserStatusbarBackgroundFileExists: " + mUserStatusbarBackgroundFileExists + " for file " + USER_IMAGE_NAME);
+
         if (mControlLiquidIcon) {
             mLiquidButton.setVisibility(View.GONE);
         } else {
@@ -2621,7 +2649,7 @@ public class PhoneStatusBar extends StatusBar {
             mDateView.setVisibility(View.VISIBLE);
         }
 
-        // check if user wants an alpha status bar bottom
+        // check if user wants an alpha statusbar background
         boolean customBottomBarAlpha = false;
         try {
             newAlpha = Settings.System.getFloat(cr, Settings.System.STATUSBAR_EXPANDED_BOTTOM_ALPHA);
@@ -2631,7 +2659,7 @@ public class PhoneStatusBar extends StatusBar {
             customBottomBarAlpha = false;
             if (DEBUG) Log.d(TAG, "Expanded statusbar alpha preference not detected");
         }
-        if (customBottomBarAlpha) {
+        if (customBottomBarAlpha && !mUseBackgroundDrawable) {
             mFrameLayout.setAlpha(newAlpha);
         }
 
@@ -2646,7 +2674,7 @@ public class PhoneStatusBar extends StatusBar {
             if (DEBUG) Log.d(TAG, "Expanded statusbar background color preference not detected");
         }
         if (DEBUG) Log.d(TAG, String.format("Custom color int: %d", newWindowShadeColor));
-        if (customWindowShadeColor) {
+        if (customWindowShadeColor && !mUseBackgroundDrawable) {
             mFrameLayout.setBackgroundColor(newWindowShadeColor);
         }
 
@@ -2687,17 +2715,22 @@ public class PhoneStatusBar extends StatusBar {
             if (DEBUG) Log.d(TAG, "Unexpanded statusbar color preference not detected");
         }
         if (DEBUG) Log.d(TAG, String.format("Custom color int: %d", newStatusbarColor));
-        if (customStatusColor) {
+        if (customStatusColor && !mUseBackgroundDrawable) {
             // set the top statusbar color
             mStatusbarUnexpanded.setBackgroundColor(newStatusbarColor);
             // match the bottom drag handle to mStatusbarUnexpanded
             mCloseView.setBackgroundColor(newStatusbarColor);
         }
 
-        //TODO: ExiledThemer is making us some drawables
-        //    when he is done we can include this
-        //mFrameLayout.setBackgroundResource(R.drawable.compat_mode_help_icon);
-        //mStatusbarHandle.setImageResource(R.drawable.compat_mode_help_icon);
+        if (mUseBackgroundDrawable) {
+            //TODO: ExiledThemer is making us some drawables
+            //    when he is done we can include this
+            mFrameLayout.setBackgroundResource(R.drawable.jbird);
+            mStatusbarHandle.setImageResource(R.drawable.compat_mode_help_icon);
+        } else {
+            mStatusbarHandle.setImageResource(R.drawable.status_bar_close_on);
+            mFrameLayout.setBackgroundResource(R.drawable.jbird_alt);
+        }
     }
 
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {

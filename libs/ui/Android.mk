@@ -63,10 +63,6 @@ LOCAL_SHARED_LIBRARIES := \
 	libskia \
 	libbinder
 
-ifdef BOARD_EGL_GRALLOC_USAGE_FILTER
-    LOCAL_CFLAGS += -DBOARD_EGL_GRALLOC_USAGE_FILTER=$(BOARD_EGL_GRALLOC_USAGE_FILTER)
-endif
-
 LOCAL_C_INCLUDES := \
     external/skia/include/core
 
@@ -83,7 +79,6 @@ endif
 LOCAL_MODULE:= libui
 
 include $(BUILD_SHARED_LIBRARY)
-
 
 # Include subdirectory makefiles
 # ============================================================

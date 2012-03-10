@@ -37,7 +37,7 @@ endif
 
 ifeq ($(TARGET_7X30_OVERLAY),true)
     LOCAL_CFLAGS += -DSENSE_CAMERA
-endif
+else
 
 LOCAL_PATH:= $(call my-dir)
 

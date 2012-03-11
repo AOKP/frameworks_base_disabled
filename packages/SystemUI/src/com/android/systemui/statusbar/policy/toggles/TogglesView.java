@@ -56,6 +56,7 @@ public class TogglesView extends LinearLayout {
     private static final String TOGGLE_SILENT = "SILENT";
     private static final String TOGGLE_TORCH = "TORCH";
     private static final String TOGGLE_SYNC = "SYNC";
+    private static final String TOGGLE_FCHARGE = "FCHARGE";
 
     private int mWidgetsPerRow = 2;
     private boolean useAltButtonLayout = false;
@@ -126,6 +127,8 @@ public class TogglesView extends LinearLayout {
                 newToggle = new TorchToggle(mContext);
             else if (splitToggle.equals(TOGGLE_SYNC))
                 newToggle = new SyncToggle(mContext);
+            else if (splitToggle.equals(TOGGLE_FCHARGE))
+                newToggle = new FChargeToggle(mContext);
 
             if (newToggle != null)
                 toggles.add(newToggle);

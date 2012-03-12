@@ -109,7 +109,11 @@ static int32_t getColorFormat(const char* colorFormat) {
     }
 
     if (!strcmp(colorFormat, CameraParameters::PIXEL_FORMAT_YUV422I)) {
+#if defined(TARGET_OMAP3) && defined(OMAP_ENHANCEMENT)
+        return OMX_COLOR_FormatCbYCrY;
+#else
         return OMX_COLOR_FormatYCbYCr;
+#endif
     }
 
     if (!strcmp(colorFormat, CameraParameters::PIXEL_FORMAT_RGB565)) {

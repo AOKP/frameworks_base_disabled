@@ -212,7 +212,7 @@ public class PowerWidget extends FrameLayout {
     private void updateScrollbar() {
         if (mScrollView == null) return;
         boolean hideScrollBar = Settings.System.getInt(mContext.getContentResolver(),
-                    Settings.System.EXPANDED_HIDE_SCROLLBAR, 0) == 1;
+                    Settings.System.EXPANDED_HIDE_SCROLLBAR, 1) == 1;
         mScrollView.setHorizontalScrollBarEnabled(!hideScrollBar);
     }
 

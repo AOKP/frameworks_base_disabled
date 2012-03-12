@@ -472,9 +472,6 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                             }
                 }).create();
         dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG);
-        if (!mContext.getResources().getBoolean(com.android.internal.R.bool.config_sf_slowBlur)) {
-            dialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
-        }
         dialog.show();
     }
 
@@ -750,8 +747,10 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             TextView statusView = (TextView) v.findViewById(R.id.status);
             statusView.setVisibility(View.VISIBLE);
             statusView.setText(mProfileManager.getActiveProfile().getName());
+
             icon.setImageDrawable(context.getResources().getDrawable(com.android.internal.R.drawable.ic_lock_profile));
             messageView.setText(R.string.global_action_choose_profile);
+
             return v;
         }
     }

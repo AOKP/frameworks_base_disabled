@@ -312,6 +312,9 @@ public class PhoneStatusBar extends StatusBar {
 
         // addIntruderView();
 
+        SettingsObserver observer = new SettingsObserver(mHandler);
+        observer.observe();
+
         // Lastly, call to the icon policy to install/update all the icons.
         mIconPolicy = new PhoneStatusBarPolicy(mContext);
 
@@ -412,13 +415,12 @@ public class PhoneStatusBar extends StatusBar {
             }
         }
 
-
         mPowerWidget = (PowerWidget)expanded.findViewById(R.id.exp_power_stat);
         mPowerWidget.setupSettingsObserver(mHandler);
         mPowerWidget.setGlobalButtonOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
                         if(Settings.System.getInt(mContext.getContentResolver(),
-                                Settings.System.EXPANDED_HIDE_ONCHANGE, 0) == 1) {
+                                Settings.System.EXPANDED_HIDE_ONCHANGE, 1) == 1) {
                             animateCollapse();
                         }
                     }
@@ -430,7 +432,6 @@ public class PhoneStatusBar extends StatusBar {
                 return true;
             }
         });
-
 
         mTicker = new MyTicker(context, sb);
 
@@ -2603,7 +2604,7 @@ public class PhoneStatusBar extends StatusBar {
                 Settings.System.STATUSBAR_SETTINGS_BEHAVIOR, 0) == 1;
 
         mQuickTogglesHideAfterCollapse = Settings.System.getInt(cr,
-                Settings.System.STATUSBAR_QUICKTOGGLES_AUTOHIDE, 0) == 1;
+                Settings.System.STATUSBAR_QUICKTOGGLES_AUTOHIDE, 1) == 1;
 
         mDropdownDateBehavior = Settings.System.getInt(cr,
                 Settings.System.STATUSBAR_DATE_BEHAVIOR, 0) == 1;

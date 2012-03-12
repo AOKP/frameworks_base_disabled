@@ -58,9 +58,7 @@ Copyright (c) 2011-2012, Code Aurora Forum. All rights reserved.
 #include <OMX_Component.h>
 
 #ifdef QCOM_HARDWARE
-#include <cutils/properties.h>
 #include <OMX_QCOMExtns.h>
-
 #include <gralloc_priv.h>
 #include <qcom_ui.h>
 #include <QOMX_AudioExtensions.h>
@@ -225,6 +223,22 @@ static sp<MediaSource> InstantiateSoftwareDecoder(
 #undef FACTORY_CREATE
 
 static const CodecInfo kDecoderInfo[] = {
+#ifdef SAMSUNG_OMX
+    { MEDIA_MIMETYPE_AUDIO_MPEG, "OMX.SEC.mp3.dec" },
+    { MEDIA_MIMETYPE_AUDIO_AMR_NB, "OMX.SEC.amr.dec" },
+    { MEDIA_MIMETYPE_AUDIO_AMR_WB, "OMX.SEC.amr.dec" },
+    { MEDIA_MIMETYPE_AUDIO_AAC, "OMX.SEC.aac.dec" },
+    { MEDIA_MIMETYPE_AUDIO_FLAC, "OMX.SEC.flac.dec" },
+    { MEDIA_MIMETYPE_VIDEO_MPEG4, "OMX.SEC.mpeg4.dec" },
+    { MEDIA_MIMETYPE_VIDEO_H263, "OMX.SEC.h263.dec" },
+    { MEDIA_MIMETYPE_VIDEO_H263, "OMX.SEC.h263sr.dec" },
+    { MEDIA_MIMETYPE_VIDEO_AVC, "OMX.SEC.avc.dec" },
+    { MEDIA_MIMETYPE_CONTAINER_WVM, "OMX.SEC.vc1.dec" },
+    { MEDIA_MIMETYPE_CONTAINER_WVM, "OMX.SEC.wma.dec" },
+    { MEDIA_MIMETYPE_CONTAINER_WVM, "OMX.SEC.wmv7.dec" },
+    { MEDIA_MIMETYPE_CONTAINER_WVM, "OMX.SEC.wmv8.dec" },
+    { MEDIA_MIMETYPE_VIDEO_VPX, "OMX.SEC.vp8.dec" },
+#endif
     { MEDIA_MIMETYPE_IMAGE_JPEG, "OMX.TI.JPEG.decode" },
 #ifdef QCOM_HARDWARE
     { MEDIA_MIMETYPE_AUDIO_MPEG, "OMX.qcom.audio.decoder.mp3" },
@@ -305,6 +319,14 @@ static const CodecInfo kDecoderInfo[] = {
 };
 
 static const CodecInfo kEncoderInfo[] = {
+#ifdef SAMSUNG_OMX
+    { MEDIA_MIMETYPE_AUDIO_AMR_NB, "OMX.SEC.amr.enc" },
+    { MEDIA_MIMETYPE_AUDIO_AMR_WB, "OMX.SEC.amr.enc" },
+    { MEDIA_MIMETYPE_AUDIO_AAC, "OMX.SEC.aac.enc" },
+    { MEDIA_MIMETYPE_VIDEO_MPEG4, "OMX.SEC.mpeg4.enc" },
+    { MEDIA_MIMETYPE_VIDEO_H263, "OMX.SEC.h263.enc" },
+    { MEDIA_MIMETYPE_VIDEO_AVC, "OMX.SEC.avc.enc" },
+#endif
     { MEDIA_MIMETYPE_AUDIO_AMR_NB, "OMX.TI.AMR.encode" },
     { MEDIA_MIMETYPE_AUDIO_AMR_NB, "AMRNBEncoder" },
     { MEDIA_MIMETYPE_AUDIO_AMR_WB, "OMX.TI.WBAMR.encode" },
@@ -1131,7 +1153,6 @@ status_t OMXCodec::configureCodec(const sp<MetaData> &meta) {
             }
         }
     }
-
 #endif
 
     int32_t bitRate = 0;
@@ -1661,11 +1682,7 @@ void OMXCodec::setVideoInputFormat(
     video_def->nFrameHeight = height;
     video_def->nStride = stride;
     video_def->nSliceHeight = sliceHeight;
-#ifdef QCOM_HARDWARE
     video_def->xFramerate = (frameRate << 16);  // Q16 format
-#else
-    video_def->xFramerate = 0;      // No need for output port
-#endif
     video_def->eCompressionFormat = OMX_VIDEO_CodingUnused;
     video_def->eColorFormat = colorFormat;
 
@@ -2232,15 +2249,12 @@ status_t OMXCodec::setVideoOutputFormat(
                || format.eColorFormat == OMX_COLOR_FormatYUV420SemiPlanar
                || format.eColorFormat == OMX_COLOR_FormatCbYCrY
                || format.eColorFormat == OMX_TI_COLOR_FormatYUV420PackedSemiPlanar
-#ifdef QCOM_HARDWARE
-               || format.eColorFormat == OMX_QCOM_COLOR_FormatYVU420SemiPlanar
-               || format.eColorFormat == QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka
-#else
-               || format.eColorFormat == OMX_QCOM_COLOR_FormatYVU420SemiPlanar
 #ifdef SAMSUNG_CODEC_SUPPORT
                || format.eColorFormat == OMX_SEC_COLOR_FormatNV12TPhysicalAddress
                || format.eColorFormat == OMX_SEC_COLOR_FormatNV12Tiled
 #endif
+#ifdef QCOM_HARDWARE
+               || format.eColorFormat == QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka
 #endif
         );
 #ifdef SAMSUNG_CODEC_SUPPORT
@@ -2753,14 +2767,14 @@ status_t OMXCodec::allocateOutputBuffersFromNativeWindow() {
     if (err != OK) {
         return err;
     }
+#ifndef SAMSUNG_CODEC_SUPPORT
+
 #ifdef QCOM_HARDWARE
     int format = (def.format.video.eColorFormat ==
                   QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka)?
                  HAL_PIXEL_FORMAT_YCbCr_420_SP_TILED : def.format.video.eColorFormat;
     if(def.format.video.eColorFormat == OMX_QCOM_COLOR_FormatYVU420SemiPlanar)
         format = HAL_PIXEL_FORMAT_YCrCb_420_SP;
-
-    format ^= (mInterlaceFormatDetected ? HAL_PIXEL_FORMAT_INTERLACE : 0);
 #endif
 
 #ifdef QCOM_HARDWARE
@@ -2770,12 +2784,12 @@ status_t OMXCodec::allocateOutputBuffersFromNativeWindow() {
             def.format.video.nSliceHeight,
             format);
 #else
-#ifndef SAMSUNG_CODEC_SUPPORT
     err = native_window_set_buffers_geometry(
             mNativeWindow.get(),
             def.format.video.nFrameWidth,
             def.format.video.nFrameHeight,
             def.format.video.eColorFormat);
+#endif //QCOM_HARDWARE
 #else
     OMX_COLOR_FORMATTYPE eColorFormat;
 
@@ -2797,7 +2811,6 @@ status_t OMXCodec::allocateOutputBuffersFromNativeWindow() {
             def.format.video.nFrameWidth,
             def.format.video.nFrameHeight,
             eColorFormat);
-#endif
 #endif
     if (err != 0) {
         LOGE("native_window_set_buffers_geometry failed: %s (%d)",
@@ -2882,7 +2895,7 @@ status_t OMXCodec::allocateOutputBuffersFromNativeWindow() {
         return err;
     }
 
-    // XXX: Is this the right logic to use?  It's not clear to me what the OMX
+    // XXX: Is this the right logic to use? It's not clear to me what the OMX
     // buffer counts refer to - how do they account for the renderer holding on
     // to buffers?
     if (def.nBufferCountActual < def.nBufferCountMin + minUndequeuedBufs) {
@@ -5794,14 +5807,8 @@ static const char *colorFormatString(OMX_COLOR_FORMATTYPE type) {
         return "QOMX_COLOR_FormatYVU420PackedSemiPlanar32m4ka";
     } else if (type == QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka) {
         return "QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka";
-    }
-    /*else if (type ==  OMX_QCOM_COLOR_FormatYVU420SemiPlanarInterlace) {
-        return "OMX_QCOM_COLOR_FormatYVU420SemiPlanarInterlace";
-    } */
-    else if (type < 0 || (size_t)type >= numNames) {
-#else
-    } else if (type < 0 || (size_t)type >= numNames) {
 #endif
+    } else if (type < 0 || (size_t)type >= numNames) {
         return "UNKNOWN";
     } else {
         return kNames[type];

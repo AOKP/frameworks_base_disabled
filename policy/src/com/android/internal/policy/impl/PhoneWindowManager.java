@@ -265,6 +265,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     final Object mLock = new Object();
     
     Context mContext;
+    Context mUiContext;
     IWindowManager mWindowManager;
     WindowManagerFuncs mWindowManagerFuncs;
     LocalPowerManager mPowerManager;
@@ -3526,6 +3527,12 @@ preferredRotation = mUserRotation;
 // We will do exactly what the application asked us to do.
 preferredRotation = -1;
 }
+
+    BroadcastReceiver mThemeChangeReceiver = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+            mUiContext = null;
+        }
+    };
 
 switch (orientation) {
 case ActivityInfo.SCREEN_ORIENTATION_PORTRAIT:

@@ -1285,7 +1285,7 @@ public class InputMethodManagerService extends IInputMethodManager.Stub
         }
         
         mShowOngoingImeSwitcherForPhones = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.SHOW_STATUSBAR_IME_SWITCHER, 0) == 1;
+                Settings.System.SHOW_STATUSBAR_IME_SWITCHER, 1) == 1;
     }
 
     /* package */ void setInputMethodLocked(String id, int subtypeId) {

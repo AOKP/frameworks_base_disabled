@@ -38,6 +38,10 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+#if defined (OMAP_ENHANCEMENT) && defined (TARGET_OMAP3)
+#include <cutils/properties.h>
+#endif
+
 #include "include/ESDS.h"
 
 namespace android {
@@ -574,6 +578,19 @@ void MPEG4Writer::writeCompositionMatrix(int degrees) {
     uint32_t b = 0;
     uint32_t c = 0;
     uint32_t d = 0x00010000;
+
+#if defined (OMAP_ENHANCEMENT) && defined (TARGET_OMAP3)
+    char value[PROPERTY_VALUE_MAX];
+    int newDegrees;
+    property_get("debug.video.force_rotation", value, "-1");
+    newDegrees = atoi(value);
+    if (newDegrees > 0) {
+        LOGI("Rotation changed from %d to %d", degrees, newDegrees);
+        degrees = newDegrees;
+    }
+#endif
+
+
     switch (degrees) {
         case 0:
             break;
@@ -826,6 +843,44 @@ static void StripStartcode(MediaBuffer *buffer) {
         return;
     }
 
+#if defined (OMAP_ENHANCEMENT) && defined (TARGET_OMAP3)
+    uint8_t *data =
+        (uint8_t *)buffer->data() + buffer->range_offset();
+    size_t size = buffer->range_length();
+    uint8_t *tmp = data;
+    uint8_t *foundStartData = data;
+    size_t bytesLeft = size;
+    size_t nal_size;
+    bool foundStartCode = false;
+
+    while (bytesLeft > 4) {
+        if (!memcmp("\x00\x00\x00\x01", tmp, 4)) {
+            if (tmp - foundStartData) {
+                if (foundStartCode == true) {
+                    nal_size = tmp - foundStartData - 4;
+                    foundStartData[0] = nal_size >> 24;
+                    foundStartData[1] = (nal_size >> 16) & 0xFF;
+                    foundStartData[2] = (nal_size >> 8) & 0xFF;
+                    foundStartData[3] = nal_size & 0xFF;
+                }
+                foundStartData = tmp;
+            }
+            foundStartCode = true;
+            tmp += 4;
+            bytesLeft -= 4;
+        } else {
+            bytesLeft--;
+            tmp++;
+        }
+    }
+    if (foundStartCode == true) {
+        nal_size = data + size - foundStartData - 4;
+        foundStartData[0] = nal_size >> 24;
+        foundStartData[1] = (nal_size >> 16) & 0xFF;
+        foundStartData[2] = (nal_size >> 8) & 0xFF;
+        foundStartData[3] = nal_size & 0xFF;
+    }
+#else
     const uint8_t *ptr =
         (const uint8_t *)buffer->data() + buffer->range_offset();
 
@@ -833,6 +888,7 @@ static void StripStartcode(MediaBuffer *buffer) {
         buffer->set_range(
                 buffer->range_offset() + 4, buffer->range_length() - 4);
     }
+#endif
 }
 
 off64_t MPEG4Writer::addLengthPrefixedSample_l(MediaBuffer *buffer) {
@@ -1310,9 +1366,13 @@ void MPEG4Writer::writeChunkToFile(Chunk* chunk) {
     while (!chunk->mSamples.empty()) {
         List<MediaBuffer *>::iterator it = chunk->mSamples.begin();
 
-        off64_t offset = chunk->mTrack->isAvc()
+#if defined (OMAP_ENHANCEMENT) && defined (TARGET_OMAP3)
+        off_t offset = addSample_l(*it);
+#else
+off64_t offset = chunk->mTrack->isAvc()
                                 ? addLengthPrefixedSample_l(*it)
                                 : addSample_l(*it);
+#endif
 
         if (isFirstSample) {
             chunk->mTrack->addChunkOffset(offset);
@@ -1859,6 +1919,12 @@ status_t MPEG4Writer::Track::threadEntry() {
         hasBFrames = true;
     }
 #endif
+
+#if defined(OMAP_ENHANCEMENT) && defined(TARGET_OMAP3)
+    uint8_t *copy_spspps;
+    int32_t copy_spspps_size = 0;
+#endif
+
     if (mIsAudio) {
         prctl(PR_SET_NAME, (unsigned long)"AudioTrackEncoding", 0, 0, 0);
     } else {
@@ -1916,13 +1982,97 @@ status_t MPEG4Writer::Track::threadEntry() {
             mGotAllCodecSpecificData = true;
             continue;
         }
+#if defined(OMAP_ENHANCEMENT) && defined(TARGET_OMAP3)
+        else if (mIsAvc && count < 3) {
+            size_t size = buffer->range_length();
+            size_t start_code_size = 0;
+
+            CHECK(!mGotAllCodecSpecificData);
+
+            start_code_size = memcmp("\x00\x00\x00\x01",
+                    (uint8_t *)buffer->data(), 4) ? 4 : 0;
+
+            switch (count) {
+                case 1:
+                {
+                    copy_spspps = (uint8_t *)malloc(size + start_code_size);
+                    copy_spspps_size = size + start_code_size;
+                    if (start_code_size)
+                        memcpy(copy_spspps,
+                                "\x00\x00\x00\x01", start_code_size);
+                    memcpy((uint8_t *)copy_spspps + start_code_size,
+                            (const uint8_t *)buffer->data()
+                                + buffer->range_offset(),
+                            size);
+                    break;
+                }
+
+                case 2:
+                {
+                    size_t offset = copy_spspps_size;
+                    copy_spspps_size += (size + start_code_size);
+                    copy_spspps = (uint8_t *)realloc(copy_spspps, copy_spspps_size);
+                    if (start_code_size)
+                        memcpy(&copy_spspps[offset],
+                                "\x00\x00\x00\x01", start_code_size);
+                    memcpy(&copy_spspps[offset + start_code_size],
+                            (const uint8_t *)buffer->data()
+                                + buffer->range_offset(),
+                            size);
+                    status_t err = makeAVCCodecSpecificData(
+                            copy_spspps, copy_spspps_size);
+                    CHECK_EQ(OK, err);
+                    free(copy_spspps);
+                    copy_spspps = NULL;
+                    mGotAllCodecSpecificData = true;
+                    break;
+                }
+            }
+
+            buffer->release();
+            buffer = NULL;
+
+            continue;
+
+        } else if (mCodecSpecificData == NULL && mIsMPEG4) {
+            CHECK(!mGotAllCodecSpecificData);
+            mCodecSpecificDataSize = buffer->range_length();
+            mCodecSpecificData = malloc(mCodecSpecificDataSize);
+            memcpy(mCodecSpecificData,
+                    (const uint8_t *)buffer->data()
+                        + buffer->range_offset(),
+                   buffer->range_length());
+            buffer->release();
+            buffer = NULL;
+
+            mGotAllCodecSpecificData = true;
+            continue;
+        }
+#endif
 
         // Make a deep copy of the MediaBuffer and Metadata and release
         // the original as soon as we can
+#if defined (OMAP_ENHANCEMENT) && defined (TARGET_OMAP3)
+        MediaBuffer *copy;
+        size_t start_code_size = 0;
+
+        if (mIsAvc) {
+            start_code_size = memcmp("\x00\x00\x00\x01",
+                    (uint8_t *)buffer->data(), 4) ? 4 : 0;
+        }
+        copy = new MediaBuffer(buffer->range_length() + start_code_size);
+        if (start_code_size)
+            memcpy(copy->data(), "\x00\x00\x00\x01", start_code_size);
+        memcpy((uint8_t *)copy->data() + start_code_size,
+                (uint8_t *)buffer->data() + buffer->range_offset(),
+                buffer->range_length());
+        copy->set_range(0, buffer->range_length() + start_code_size);
+#else
         MediaBuffer *copy = new MediaBuffer(buffer->range_length());
         memcpy(copy->data(), (uint8_t *)buffer->data() + buffer->range_offset(),
                 buffer->range_length());
         copy->set_range(0, buffer->range_length());
+#endif
         meta_data = new MetaData(*buffer->meta_data().get());
         buffer->release();
         buffer = NULL;
@@ -1930,6 +2080,7 @@ status_t MPEG4Writer::Track::threadEntry() {
         if (mIsAvc) StripStartcode(copy);
 
         size_t sampleSize = copy->range_length();
+#if !defined (OMAP_ENHANCEMENT) || !defined (TARGET_OMAP3)
         if (mIsAvc) {
             if (mOwner->useNalLengthFour()) {
                 sampleSize += 4;
@@ -1937,6 +2088,7 @@ status_t MPEG4Writer::Track::threadEntry() {
                 sampleSize += 2;
             }
         }
+#endif
 
         // Max file size or duration handling
         mMdatSizeBytes += sampleSize;
@@ -2100,9 +2252,13 @@ status_t MPEG4Writer::Track::threadEntry() {
             trackProgressStatus(timestampUs);
         }
         if (!hasMultipleTracks) {
-            off64_t offset = mIsAvc? mOwner->addLengthPrefixedSample_l(copy)
+#if defined (OMAP_ENHANCEMENT) && defined (TARGET_OMAP3)
+            off_t offset = mOwner->addSample_l(copy);
+#else
+            off_t offset = mIsAvc? mOwner->addLengthPrefixedSample_l(copy)
                                  : mOwner->addSample_l(copy);
-            if (mChunkOffsets.empty()) {
+#endif
+           if (mChunkOffsets.empty()) {
                 addChunkOffset(offset);
             }
             copy->release();

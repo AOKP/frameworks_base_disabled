@@ -40,8 +40,11 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.ContentObserver;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Handler;
@@ -73,7 +76,9 @@ import android.view.WindowManagerImpl;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.RemoteViews;
 import android.widget.ScrollView;
@@ -258,7 +263,7 @@ public class PhoneStatusBar extends StatusBar {
     DisplayMetrics mDisplayMetrics = new DisplayMetrics();
 
     // for tracking status bar bottom image
-    private View mFrameLayout;
+    private FrameLayout mFrameLayout;
     private float newAlpha;
 
     // custom statusbar window shade background color
@@ -436,7 +441,7 @@ public class PhoneStatusBar extends StatusBar {
         mTrackingView.mService = this;
 
         // statusbar color
-        mFrameLayout = mTrackingView.findViewById(R.id.notification_frame_layout);
+        mFrameLayout = (FrameLayout) mTrackingView.findViewById(R.id.notification_frame_layout);
 
         // custom carrier label
         mCarrierLabel = (TextView) mTrackingView.findViewById(R.id.custom_carrier_label);
@@ -455,8 +460,6 @@ public class PhoneStatusBar extends StatusBar {
         mDateView = (DateView) expanded.findViewById(R.id.date);
         mDateView.setOnClickListener(mDateListener);
 
-        // statusbar color
-        mFrameLayout = mTrackingView.findViewById(R.id.notification_frame_layout);
         // custom carrier label
         mCarrierLabel = (TextView) mTrackingView.findViewById(R.id.custom_carrier_label);
         mPhoneCarrierLabel = mTrackingView.findViewById(R.id.phone_carrier_label);
@@ -2571,8 +2574,6 @@ public class PhoneStatusBar extends StatusBar {
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUSBAR_WINDOWSHADE_USER_BACKGROUND), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.STATUSBAR_WINDOWSHADE_LIQUID_BACKGROUND), false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUSBAR_WINDOWSHADE_HANDLE_IMAGE), false, this);
         }
 
@@ -2592,9 +2593,8 @@ public class PhoneStatusBar extends StatusBar {
     // we use false first and change if user wants but we can
     // only do windowshade color OR background drawable
     boolean mUseBackgroundDrawable = false;
-    boolean mLiquidStatusbarBackground = false;
-    boolean mUserStatusbarBackgroundFileExists = false;
-    final String USER_IMAGE_NAME = "windowshade_background.jpg";
+    boolean mUserStatusbarBackground = false;
+    final String USER_IMAGE_NAME = "/data/data/com.liquid.control/files/windowshade_background.jpg";
 
     private void updateSettings() {
         // Check all our settings and respond accordingly
@@ -2617,18 +2617,12 @@ public class PhoneStatusBar extends StatusBar {
         mControlAospSettingsIcon = Settings.System.getInt(cr,
                 Settings.System.STATUSBAR_REMOVE_AOSP_SETTINGS_LINK, 0) == 1;
 
-        // any choice changes mUseBackgroundDrawable so we can enable one and disable the other
-        // really just a convience as other wise we have to write long complex
-        // if (this && this && !this && !this) statements
+        // mUseBackgroundDrawable is bogus I just left this to show the value
+        // is only watched to trigger the updateSettings() method
         mUseBackgroundDrawable = Settings.System.getInt(cr, Settings.System.STATUSBAR_USE_WINDOWSHADE_BACKGROUND, 0) == 1;
-        mLiquidStatusbarBackground = Settings.System.getInt(cr, Settings.System.STATUSBAR_WINDOWSHADE_LIQUID_BACKGROUND, 0) == 1;
+        mUserStatusbarBackground = Settings.System.getInt(cr, Settings.System.STATUSBAR_WINDOWSHADE_USER_BACKGROUND, 0) == 1;
 
-        // we watch the on/off of Settings.System.STATUSBAR_WINDOWSHADE_USER_BACKGROUND
-        // but use exists() to determine if we try to load and set the image
-        File backgroundImageFile = new File(USER_IMAGE_NAME);
-        mUserStatusbarBackgroundFileExists = backgroundImageFile.exists() && backgroundImageFile.canRead();
-        if (DEBUG) Log.d(TAG, "mUserStatusbarBackgroundFileExists: " + mUserStatusbarBackgroundFileExists + " for file " + USER_IMAGE_NAME);
-
+        if (DEBUG) Log.d(TAG, "mUserStatusbarBackground: " + mUserStatusbarBackground);
         if (mControlLiquidIcon) {
             mLiquidButton.setVisibility(View.GONE);
         } else {
@@ -2659,7 +2653,7 @@ public class PhoneStatusBar extends StatusBar {
             customBottomBarAlpha = false;
             if (DEBUG) Log.d(TAG, "Expanded statusbar alpha preference not detected");
         }
-        if (customBottomBarAlpha && !mUseBackgroundDrawable) {
+        if (customBottomBarAlpha) {
             mFrameLayout.setAlpha(newAlpha);
         }
 
@@ -2674,7 +2668,7 @@ public class PhoneStatusBar extends StatusBar {
             if (DEBUG) Log.d(TAG, "Expanded statusbar background color preference not detected");
         }
         if (DEBUG) Log.d(TAG, String.format("Custom color int: %d", newWindowShadeColor));
-        if (customWindowShadeColor && !mUseBackgroundDrawable) {
+        if (customWindowShadeColor) {
             mFrameLayout.setBackgroundColor(newWindowShadeColor);
         }
 
@@ -2715,21 +2709,79 @@ public class PhoneStatusBar extends StatusBar {
             if (DEBUG) Log.d(TAG, "Unexpanded statusbar color preference not detected");
         }
         if (DEBUG) Log.d(TAG, String.format("Custom color int: %d", newStatusbarColor));
-        if (customStatusColor && !mUseBackgroundDrawable) {
+        if (customStatusColor) {
             // set the top statusbar color
             mStatusbarUnexpanded.setBackgroundColor(newStatusbarColor);
             // match the bottom drag handle to mStatusbarUnexpanded
             mCloseView.setBackgroundColor(newStatusbarColor);
         }
 
+        // XXX: I think I found a better way
         if (mUseBackgroundDrawable) {
-            //TODO: ExiledThemer is making us some drawables
-            //    when he is done we can include this
-            mFrameLayout.setBackgroundResource(R.drawable.jbird);
-            mStatusbarHandle.setImageResource(R.drawable.compat_mode_help_icon);
+            if (DEBUG) Log.d(TAG, "mUseBackgroundDrawable was true");
+        }
+
+        /* these are the statusbar backgrounds we roll with the ROM LiquidSmooth baby ;)
+        if (mLiquidStatusbarBackground) {
+            int whatImage = Settings.System.getInt(cr, Settings.System.STATUSBAR_WINDOWSHADE_LIQUID_BACKGROUND, 0);
+            if (DEBUG) Log.d(TAG, "Liquid Statusbar background: " + whatImage);
+            switch (whatImage) {
+                case 1:
+                    mFrameLayout.setBackgroundResource(R.drawable.jbird); //TODO: update with drawables from ExiledThemer
+                    break;
+                case 0:
+                default:
+                    mFrameLayout.setBackgroundResource(R.drawable.jbird_alt); //TODO: update with drawables from ExiledThemer
+            }
         } else {
-            mStatusbarHandle.setImageResource(R.drawable.status_bar_close_on);
-            mFrameLayout.setBackgroundResource(R.drawable.jbird_alt);
+            if (DEBUG) Log.d(TAG, "Liquid statusbar backgrounds not wanted");
+        }
+        */
+
+        if (DEBUG) {
+            File findImage = new File(USER_IMAGE_NAME);
+            Log.d(TAG, "File: " + USER_IMAGE_NAME + "	exists? " + findImage.exists() + "	canRead? " + findImage.canRead());
+        }
+
+        Bitmap bitmapWallpaper = BitmapFactory.decodeFile(USER_IMAGE_NAME);
+        if (mUserStatusbarBackground) {
+            ImageView mWindowShadeBackground = new ImageView(mContext);
+            mWindowShadeBackground.setScaleType(ScaleType.CENTER_CROP);
+
+            // if file != exist() bitmap is null so check before setting
+            if (bitmapWallpaper != null) {
+                Drawable imageAsDrawable = new BitmapDrawable(mContext.getResources(), bitmapWallpaper);
+                // set the image then throw it in the bottom of the view
+                // we set to the gravity to fill so the entire view is covered
+                mFrameLayout.setForeground(imageAsDrawable);
+                mFrameLayout.setForegroundGravity(Gravity.FILL);
+                if (DEBUG) Log.d(TAG, "drawable found and should be applied");
+            } else {
+                if (DEBUG) Log.d(TAG, "drawable was null :(");
+            }
+
+        } else {
+            if (DEBUG) Log.d(TAG, "User selected image not wanted");
+            bitmapWallpaper = null;
+            try {
+                Drawable nullBitmapDrawable = new BitmapDrawable(mContext.getResources(), bitmapWallpaper);
+                mFrameLayout.setForeground(nullBitmapDrawable);
+            // not sure if this can throw an exception docs don't say so play it safe
+            } catch (Exception e) {
+                if (DEBUG) e.printStackTrace();
+            }
+        }
+
+        // since we default to the normal image alway handle this
+        int handleImage = Settings.System.getInt(cr, Settings.System.STATUSBAR_WINDOWSHADE_HANDLE_IMAGE, 0);
+        Log.d(TAG, "Custom windowshade handle: " + handleImage);
+        switch (handleImage) {
+            case 1:
+                mStatusbarHandle.setImageResource(R.drawable.compat_mode_help_icon); //TODO: update with drawables from ExiledThemer
+                break;
+            case 0:
+            default:
+                mStatusbarHandle.setImageResource(R.drawable.status_bar_close_on); //TODO: update with drawables from ExiledThemer
         }
     }
 

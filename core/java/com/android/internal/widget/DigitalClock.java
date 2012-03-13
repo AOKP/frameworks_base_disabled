@@ -16,9 +16,12 @@
 
 package com.android.internal.widget;
 
-import com.android.internal.R;
+import java.lang.ref.WeakReference;
+import java.text.DateFormatSymbols;
+import java.util.Calendar;
 
 import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -32,9 +35,7 @@ import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import java.lang.ref.WeakReference;
-import java.text.DateFormatSymbols;
-import java.util.Calendar;
+import com.android.internal.R;
 
 /**
  * Displays the time
@@ -46,6 +47,7 @@ public class DigitalClock extends RelativeLayout {
     private static final String SYSTEM_FONT_TIME_FOREGROUND = SYSTEM + "AndroidClock_Highlight.ttf";
     private final static String M12 = "h:mm";
     private final static String M24 = "kk:mm";
+    private static final int COLOR_WHITE = 0xFFFFFFFF;
 
     private Calendar mCalendar;
     private String mFormat;
@@ -228,13 +230,20 @@ public class DigitalClock extends RelativeLayout {
         updateTime();
     }
 
-    private void updateTime() {
+    public void updateTime() {
         mCalendar.setTimeInMillis(System.currentTimeMillis());
 
         CharSequence newTime = DateFormat.format(mFormat, mCalendar);
         mTimeDisplayBackground.setText(newTime);
         mTimeDisplayForeground.setText(newTime);
         mAmPm.setIsMorning(mCalendar.get(Calendar.AM_PM) == 0);
+        
+        ContentResolver resolver = mContext.getContentResolver();
+        // our custom lockscreen colors need to be applied here
+        int mLockscreenColor = Settings.System.getInt(resolver,
+                Settings.System.LOCKSCREEN_CUSTOM_TEXT_COLOR, COLOR_WHITE);
+        mTimeDisplayBackground.setTextColor(mLockscreenColor);
+        mTimeDisplayForeground.setTextColor(mLockscreenColor);
     }
 
     private void setDateFormat() {

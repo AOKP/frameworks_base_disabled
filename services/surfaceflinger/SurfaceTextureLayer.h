@@ -45,6 +45,8 @@ public:
     virtual status_t setBufferCount(int bufferCount);
 
 protected:
+    virtual int query(int what, int* value);
+
     virtual status_t queueBuffer(int buf, int64_t timestamp,
             uint32_t* outWidth, uint32_t* outHeight, uint32_t* outTransform);
 

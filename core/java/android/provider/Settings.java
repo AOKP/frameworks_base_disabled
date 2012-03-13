@@ -2658,6 +2658,12 @@ public final class Settings {
          * @hide
          */
         public static final String SHOW_LOCK_BEFORE_UNLOCK = "show_lock_before_unlock";
+        
+        /**
+         * custom lockscreen text color
+         * @hide
+         */
+        public static final String LOCKSCREEN_CUSTOM_TEXT_COLOR = "lockscreen_custom_text_color";
 
         /**
          * The action to take when long pressing home

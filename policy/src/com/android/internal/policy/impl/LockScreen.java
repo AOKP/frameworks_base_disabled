@@ -47,6 +47,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.internal.R;
+import com.android.internal.widget.DigitalClock;
 import com.android.internal.widget.LockPatternUtils;
 import com.android.internal.widget.SlidingTab;
 import com.android.internal.widget.WaveView;
@@ -61,6 +62,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 
     private static final int ON_RESUME_PING_DELAY = 500; // delay first ping until the screen is on
     private static final boolean DBG = false;
+    private static final boolean DEBUG = DBG;
     private static final String TAG = "LockScreen";
     private static final String ENABLE_MENU_KEY_FILE = "/data/local/enable_menu_key";
     private static final int WAIT_FOR_ANIMATION_TIMEOUT = 0;
@@ -71,6 +73,8 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
     public static final int LAYOUT_OCTO = 8;
 
     private int mLockscreenTargets = LAYOUT_STOCK;
+    
+    private static final int COLOR_WHITE = 0xFFFFFFFF;
 
     private LockPatternUtils mLockPatternUtils;
     private KeyguardUpdateMonitor mUpdateMonitor;
@@ -87,8 +91,9 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
     private KeyguardStatusViewManager mStatusViewManager;
     private UnlockWidgetCommonMethods mUnlockWidgetMethods;
     private View mUnlockWidget;
-
+    
     private TextView mCarrier;
+    private DigitalClock mDigitalClock;
 
     private Drawable[] lockDrawables;
     
@@ -580,6 +585,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
         mSilentMode = isSilentMode();
 
         mCarrier = (TextView) findViewById(R.id.carrier);
+        mDigitalClock = (DigitalClock) findViewById(R.id.time);
 
         mUnlockWidget = findViewById(R.id.unlock_widget);
         if (mUnlockWidget instanceof SlidingTab) {
@@ -610,6 +616,8 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 
         // Update widget with initial ring state
         mUnlockWidgetMethods.updateResources();
+        // Update the settings everytime we draw lockscreen
+        updateSettings();
 
         if (DBG)
             Log.v(TAG, "*** LockScreen accel is "
@@ -688,6 +696,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
                     + ", new config=" + getResources().getConfiguration());
         }
         updateConfiguration();
+        updateSettings();
     }
 
     /** {@inheritDoc} */
@@ -723,6 +732,9 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
     public void onResume() {
         mStatusViewManager.onResume();
         postDelayed(mOnResumePing, ON_RESUME_PING_DELAY);
+        // update the settings when we resume
+        if (DEBUG) Log.d(TAG, "We are resuming and want to update settings");
+        updateSettings();
     }
 
     /** {@inheritDoc} */
@@ -755,6 +767,9 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
             resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.LOCKSCREEN_LAYOUT), false,
                     this);
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.LOCKSCREEN_CUSTOM_TEXT_COLOR), false,
+                    this);
             updateSettings();
         }
 
@@ -780,11 +795,28 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
         }
     }
 
-    protected void updateSettings() {
+    private void updateSettings() {
+    	if (DEBUG) Log.d(TAG, "Settings for lockscreen have changed lets update");
         ContentResolver resolver = mContext.getContentResolver();
 
         mLockscreenTargets = Settings.System.getInt(resolver,
                 Settings.System.LOCKSCREEN_LAYOUT, LAYOUT_STOCK);
+        
+        int mLockscreenColor = Settings.System.getInt(resolver,
+                Settings.System.LOCKSCREEN_CUSTOM_TEXT_COLOR, COLOR_WHITE);
 
+        // digital clock first (see @link com.android.internal.widget.DigitalClock.updateTime())
+        try {
+            mDigitalClock.updateTime();
+        } catch (NullPointerException npe) {
+            if (DEBUG) Log.d(TAG, "date update time failed: NullPointerException");
+        }
+
+        // then the rest (see @link com.android.internal.policy.impl.KeyguardStatusViewManager.updateColors())
+        try {
+            mStatusViewManager.updateColors(); 
+        } catch (NullPointerException npe) {
+            if (DEBUG) Log.d(TAG, "KeyguardStatusViewManager.updateColors() failed: NullPointerException");
+        }
     }
 }

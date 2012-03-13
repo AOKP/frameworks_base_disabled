@@ -61,7 +61,7 @@ public:
     virtual void*       getBase() const;
     virtual size_t      getSize() const;
     virtual uint32_t    getFlags() const;
-#if defined(BINDERIZE_OFFSET)
+#ifdef BINDERIZE_OFFSET
     virtual uint32_t      getOffset() const;
 #endif
 
@@ -93,7 +93,7 @@ private:
     uint32_t    mFlags;
     const char* mDevice;
     bool        mNeedUnmap;
-#if defined(BINDERIZE_OFFSET)
+#ifdef BINDERIZE_OFFSET
     uint32_t    mOffset;
 #endif
 };

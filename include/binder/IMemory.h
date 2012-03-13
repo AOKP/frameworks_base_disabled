@@ -43,7 +43,7 @@ public:
     virtual void*       getBase() const = 0;
     virtual size_t      getSize() const = 0;
     virtual uint32_t    getFlags() const = 0;
-#if defined(BINDERIZE_OFFSET)
+#ifdef BINDERIZE_OFFSET
     virtual uint32_t    getOffset() const = 0;
 #endif
 

@@ -32,7 +32,7 @@ sources := \
     Static.cpp
 
 ifneq ($(TARGET_SENSE_CAMERA),true)
-    GLOBAL_CFLAGS += -DBINDERIZE_OFFSET=1
+    COMMON_GLOBAL_CFLAGS += -DBINDERIZE_OFFSET
 endif
 
 LOCAL_PATH:= $(call my-dir)

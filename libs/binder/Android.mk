@@ -31,10 +31,6 @@ sources := \
     ProcessState.cpp \
     Static.cpp
 
-ifneq ($(TARGET_SENSE_CAMERA),true)
-    COMMON_GLOBAL_CFLAGS += -DBINDERIZE_OFFSET
-endif
-
 LOCAL_PATH:= $(call my-dir)
 
 include $(CLEAR_VARS)

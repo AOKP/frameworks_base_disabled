@@ -415,6 +415,14 @@ public class PhoneStatusBar extends StatusBar {
                 expanded.addView(mQuickToggles);
                 mExpandedContents = mQuickToggles;
             }
+
+            if (layout_type == 2) {
+                expanded.addView(mQuickToggles);
+                expanded.addView(mDrawerHeader_hr);
+                expanded.addView(mDrawerHeader);
+                expanded.addView(notifications);
+                mExpandedContents = mQuickToggles;
+            }
         }
 
         mPowerWidget = (PowerWidget)expanded.findViewById(R.id.exp_power_stat);

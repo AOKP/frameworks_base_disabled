@@ -20,6 +20,16 @@
 <!-- This is the general lock screen which shows information about the
   state of the device, as well as instructions on how to get past it
   depending on the state of the device.-->
+<RelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent">
+
+	<com.android.internal.policy.impl.LockscreenWallpaper
+		android:id="@+id/lockscreen_wallpaper"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent" />
+
 <GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -85,6 +95,18 @@
         android:layout_gravity="right"
         />
 
+    <com.android.internal.policy.impl.WeatherText
+	android:id="@+id/weather"
+	android:layout_width="0dip"
+	android:layout_gravity="fill_horizontal"
+	android:gravity="right"
+	android:layout_marginTop="4dip"
+	android:singleLine="true"
+	android:ellipsize="marquee"
+	android:textAppearance="?android:attr/textAppearanceMedium"
+	android:textSize="@dimen/keyguard_lockscreen_status_line_font_size"
+	android:drawablePadding="4dip" />
+
     <TextView
         android:id="@+id/status1"
         android:layout_width="0dip"
@@ -144,11 +166,11 @@
     <!-- Column 2 -->
     <com.android.internal.widget.SlidingTab
         android:id="@+id/unlock_widget"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_width="300dip"
+        android:layout_rowSpan="8"
         android:layout_height="match_parent"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="80dip"
         />
 
     <!-- Music transport control -->
@@ -164,3 +186,4 @@
         />
 
 </GridLayout>
+</RelativeLayout>

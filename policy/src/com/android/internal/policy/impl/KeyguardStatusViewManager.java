@@ -22,14 +22,21 @@ import java.util.Date;
 import libcore.util.MutableInt;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.ContentUris;
+import android.database.Cursor;
+import android.net.Uri;
 import android.provider.Settings;
+import android.provider.CalendarContract;
+import android.provider.CalendarContract.Calendars;
 import android.text.TextUtils;
+import android.text.format.DateUtils;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.ViewFlipper;
 import android.content.Intent;
 
 import com.android.internal.R;
@@ -89,6 +96,7 @@ class KeyguardStatusViewManager implements OnClickListener {
     private TextView mOwnerInfoView;
     private TextView mAlarmStatusView;
     private TransportControlView mTransportView;
+    private ViewFlipper mCalendarView;
 
     // Top-level container view for above views
     private View mContainer;
@@ -209,6 +217,7 @@ class KeyguardStatusViewManager implements OnClickListener {
         mTransportView = (TransportControlView) findViewById(R.id.transport);
         mEmergencyCallButton = (Button) findViewById(R.id.emergencyCallButton);
         mEmergencyCallButtonEnabledInScreen = emergencyButtonEnabledInScreen;
+        mCalendarView = (ViewFlipper) findViewById(R.id.calendar);
 
         // Hide transport control view until we know we need to show it.
         if (mTransportView != null) {
@@ -231,6 +240,7 @@ class KeyguardStatusViewManager implements OnClickListener {
         updateOwnerInfo();
         updateColors();
         updateWeatherInfo();
+        updateCalendar();
 
         // Required to get Marquee to work.
         final View scrollableViews[] = {
@@ -356,6 +366,7 @@ class KeyguardStatusViewManager implements OnClickListener {
         updateOwnerInfo();
         updateStatus1();
         updateCarrierText();
+        updateCalendar();
     }
 
     private void updateAlarmInfo() {
@@ -404,6 +415,47 @@ class KeyguardStatusViewManager implements OnClickListener {
             }
             mWeatherView.setVisibility((weatherInfoEnabled && !wText.isEmpty()) ? View.VISIBLE
                     : View.GONE);
+        }
+    }
+    
+    private void updateCalendar() {
+        ContentResolver resolver = getContext().getContentResolver();
+        boolean enabled = (Settings.System.getInt(resolver,
+                Settings.System.LOCKSCREEN_CALENDAR, 0) == 1);
+        String sources = Settings.System.getString(resolver,
+                Settings.System.LOCKSCREEN_CALENDAR_SOURCES);
+        boolean multipleEvents = (Settings.System.getInt(resolver,
+                Settings.System.LOCKSCREEN_CALENDAR_FLIP, 0) == 1);
+        int interval = Settings.System.getInt(resolver,
+                Settings.System.LOCKSCREEN_CALENDAR_INTERVAL, 2500);
+        try {
+            if (enabled) {
+                ArrayList<EventBundle> events = getCalendarEvents(resolver, sources, multipleEvents);
+                mCalendarView.removeAllViews();
+                
+                for (EventBundle e : events) {
+                    TextView tv = new TextView(getContext());
+                    tv.setText(e.title + (e.isTomorrow ? ", Tomorrow at " : " at ")
+                            + DateFormat.format("kk:mm", e.begin).toString()
+                            + (!e.location.isEmpty() ? " (" + e.location + ")" : ""));
+                    tv.setTextAppearance(getContext(), android.R.attr.textAppearanceMedium);
+                    tv.setSingleLine(true);
+                    tv.setEllipsize(android.text.TextUtils.TruncateAt.END);
+                    tv.setGravity(android.view.Gravity.RIGHT);
+                    mCalendarView.addView(tv);
+                }
+                mCalendarView.setFlipInterval(interval);
+                mCalendarView.setVisibility(View.VISIBLE);
+                if (!multipleEvents || events.size() <= 1) {
+                    mCalendarView.stopFlipping();
+                } else {
+                    mCalendarView.startFlipping();
+                }
+            } else {
+                mCalendarView.setVisibility(View.GONE);
+            }
+        } catch (Exception e ) {
+            Log.e(TAG, "NOOooooo");
         }
     }
 
@@ -814,6 +866,16 @@ class KeyguardStatusViewManager implements OnClickListener {
         } catch (NullPointerException ne) {
             if (DEBUG) ne.printStackTrace();
         }
+        
+        // calendar view
+        try {
+            for (int i = 0; i < mCalendarView.getChildCount(); i++) {
+                ((TextView) mCalendarView.getChildAt(i)).setTextColor(color);
+            }
+            if (DEBUG) Log.d(TAG, String.format("Setting mWeatherView DATE text color to %d", color));
+        } catch (NullPointerException ne) {
+            if (DEBUG) ne.printStackTrace();
+        }
 
         // owner info view
         try {
@@ -829,6 +891,53 @@ class KeyguardStatusViewManager implements OnClickListener {
             if (DEBUG) Log.d(TAG, String.format("Setting mAlarmStatusView DATE text color to %d", color));
         } catch (NullPointerException ne) {
             if (DEBUG) ne.printStackTrace();
+        }
+    }
+    
+    private ArrayList<EventBundle> getCalendarEvents(ContentResolver resolver, String sources, boolean multipleEvents) {
+        
+        ArrayList<EventBundle> events = new ArrayList<EventBundle>();
+                
+        Date now = new Date();
+        Uri.Builder builder = CalendarContract.Instances.CONTENT_URI.buildUpon();
+        ContentUris.appendId(builder, now.getTime());
+        ContentUris.appendId(builder, now.getTime() + DateUtils.DAY_IN_MILLIS);
+        String selection = CalendarContract.Instances.CALENDAR_ID + " IN ( " + sources + " )";
+        
+        Cursor eventCur = resolver.query(builder.build(), new String[] {
+            CalendarContract.Instances.TITLE,
+            CalendarContract.Instances.BEGIN,
+            CalendarContract.Instances.EVENT_LOCATION }, selection, null,
+            CalendarContract.Instances.START_DAY + " ASC, "
+                + CalendarContract.Instances.START_MINUTE + " ASC");
+        
+        if (!multipleEvents) {
+            eventCur.moveToFirst();
+            events.add(new EventBundle(eventCur.getString(0),
+                    eventCur.getLong(1), eventCur.getString(2),
+                    now));
+        } else {
+            while (eventCur.moveToNext()) {
+                events.add(new EventBundle(eventCur.getString(0),
+                        eventCur.getLong(1), eventCur.getString(2),
+                        now));
+            }
+        }
+        
+        return events;
+    }
+    
+    private class EventBundle {
+        public String title;
+        public Date begin;
+        public String location;
+        public boolean isTomorrow;
+        
+        EventBundle(String s, long b, String l, Date now) {
+            title = s;
+            begin = new Date(b);
+            location = l;
+            isTomorrow = (begin.getDay() > now.getDay() ? true : false);
         }
     }
 }

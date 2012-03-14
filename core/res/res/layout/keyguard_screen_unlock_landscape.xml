@@ -83,6 +83,14 @@
         android:drawablePadding="4dip"
         />
         
+    <ViewFlipper
+        android:id="@+id/calendar"
+        android:inAnimation="@anim/calendar_fadein"
+        android:outAnimation="@anim/calendar_fadeout"
+        android:layout_gravity="right"
+		android:layout_marginRight="@dimen/keyguard_lockscreen_status_line_font_right_margin"
+		android:drawablePadding="4dip" />
+        
     <com.android.internal.policy.impl.WeatherText
         android:id="@+id/weather"
         android:layout_width="0dip"

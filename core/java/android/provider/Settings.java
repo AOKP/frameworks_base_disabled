@@ -2654,6 +2654,30 @@ public final class Settings {
         public static final String LOCKSCREEN_BATTERY = "lockscreen_battery";
         
         /**
+         * 
+         * @hide
+         */
+        public static final String LOCKSCREEN_CALENDAR = "lockscreen_calendar";
+        
+        /**
+         * 
+         * @hide
+         */
+        public static final String LOCKSCREEN_CALENDAR_FLIP = "lockscreen_calendar_flip";
+        
+        /**
+         * 
+         * @hide
+         */
+        public static final String LOCKSCREEN_CALENDAR_SOURCES = "lockscreen_calendar_sources";
+        
+        /**
+         * 
+         * @hide
+         */
+        public static final String LOCKSCREEN_CALENDAR_INTERVAL = "lockscreen_calendar_interval";
+        
+        /**
          * Setting to use lockscreen alongside secure lock
          * @hide
          */

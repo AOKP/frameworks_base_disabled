@@ -143,6 +143,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
                 mCallback.goToUnlockScreen();
             } else if (whichHandle == SlidingTab.OnTriggerListener.RIGHT_HANDLE) {
                 toggleRingMode();
+                mUnlockWidgetMethods.updateResources();
                 mCallback.pokeWakelock();
             }
         }

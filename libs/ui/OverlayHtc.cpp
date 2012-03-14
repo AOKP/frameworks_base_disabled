@@ -21,7 +21,7 @@
 #include <utils/Errors.h>
 #include <binder/MemoryHeapBase.h>
 
-#include <ui/Overlay.h>
+#include <ui/OverlayHtc.h>
 
 namespace android {
 

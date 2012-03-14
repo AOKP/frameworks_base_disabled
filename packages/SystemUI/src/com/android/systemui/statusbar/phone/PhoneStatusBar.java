@@ -406,6 +406,15 @@ public class PhoneStatusBar extends StatusBar {
                 mExpandedContents = mQuickToggles;
             }
 
+            if (layout_type == 2) {
+                expanded.addView(mQuickToggles);
+                expanded.addView(drawer_header_hr2);
+                expanded.addView(drawer_header);
+                expanded.addView(drawer_header_hr);
+                expanded.addView(notifications);
+                mExpandedContents = mQuickToggles;
+            }
+
         }
 
         mTicker = new MyTicker(context, sb);

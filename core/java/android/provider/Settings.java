@@ -2976,6 +2976,9 @@ public final class Settings {
          * 0 = stock
          * 1 = quad
          * 2 = octo
+         * 3 = aosp
+         * 4 = rotary
+         * 5 = ring
          * 
          * @hide
          */

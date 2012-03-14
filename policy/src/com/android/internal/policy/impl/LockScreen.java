@@ -76,6 +76,8 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
     public static final int LAYOUT_STOCK = 2;
     public static final int LAYOUT_QUAD = 6;
     public static final int LAYOUT_OCTO = 8;
+    public static final int LAYOUT_AOSP = 0;
+
     private static final int COLOR_WHITE = 0xFFFFFFFF;
     private int mLockscreenTargets = LAYOUT_STOCK;
 
@@ -594,6 +596,14 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
                             true);
                 else
                     inflater.inflate(R.layout.keyguard_screen_tab_octounlock, this,
+                            true);
+                break;
+            case LAYOUT_AOSP:
+            	if (landscape)
+                    inflater.inflate(R.layout.keyguard_screen_aosp_unlock_land, this,
+                            true);
+                else
+                    inflater.inflate(R.layout.keyguard_screen_aosp_unlock, this,
                             true);
                 break;
         }

@@ -20,7 +20,9 @@ import android.app.ActivityManager;
 import android.app.WallpaperManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
@@ -111,6 +113,8 @@ public class ImageWallpaper extends WallpaperService {
         int mLastXTranslation;
         int mLastYTranslation;
 
+        int mLastOrientation;
+
         private EGL10 mEgl;
         private EGLDisplay mEglDisplay;
         private EGLConfig mEglConfig;
@@ -146,11 +150,31 @@ public class ImageWallpaper extends WallpaperService {
                     Log.d(TAG, "onReceive");
                 }
 
-                synchronized (mLock) {
-                    mBackgroundWidth = mBackgroundHeight = -1;
-                    mBackground = null;
-                    mRedrawNeeded = true;
-                    drawFrameLocked();
+                if(SystemProperties.OMAP_ENHANCEMENT) {
+                    if (Intent.ACTION_WALLPAPER_CHANGED.equals(intent.getAction())) {
+                        synchronized (mLock) {
+                            mBackgroundWidth = mBackgroundHeight = -1;
+                            mBackground = null;
+                            mRedrawNeeded = true;
+                            drawFrameLocked();
+                        }
+                    } else if (Intent.ACTION_CONFIGURATION_CHANGED.equals(intent.getAction())) {
+                        final Configuration newConfig = context.getResources().getConfiguration();
+                        if (mLastOrientation != newConfig.orientation) {
+                            mLastOrientation = newConfig.orientation;
+                            synchronized (mLock) {
+                                mRedrawNeeded = true;
+                                drawFrameLocked();
+                            }
+                        }
+                    }
+                } else {
+                    synchronized (mLock) {
+                        mBackgroundWidth = mBackgroundHeight = -1;
+                        mBackground = null;
+                        mRedrawNeeded = true;
+                        drawFrameLocked();
+                    }
                 }
             }
         }
@@ -163,11 +187,18 @@ public class ImageWallpaper extends WallpaperService {
 
             super.onCreate(surfaceHolder);
             
-            // TODO: Don't need this currently because the wallpaper service
-            // will restart the image wallpaper whenever the image changes.
-            //IntentFilter filter = new IntentFilter(Intent.ACTION_WALLPAPER_CHANGED);
-            //mReceiver = new WallpaperObserver();
-            //registerReceiver(mReceiver, filter, null, mHandler);
+            if(!SystemProperties.OMAP_ENHANCEMENT) {
+                // TODO: Don't need this currently because the wallpaper service
+                // will restart the image wallpaper whenever the image changes.
+                //IntentFilter filter = new IntentFilter(Intent.ACTION_WALLPAPER_CHANGED);
+                //mReceiver = new WallpaperObserver();
+                //registerReceiver(mReceiver, filter, null, mHandler);
+            } else {
+                IntentFilter filter = new IntentFilter();
+                filter.addAction(Intent.ACTION_CONFIGURATION_CHANGED);
+                mReceiver = new WallpaperObserver();
+                registerReceiver(mReceiver, filter);
+            }
 
             updateSurfaceSize(surfaceHolder);
 

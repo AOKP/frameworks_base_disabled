@@ -23,14 +23,12 @@
     xmlns:systemui="http://schemas.android.com/apk/res/com.android.systemui"
     android:layout_height="match_parent"
     android:layout_width="match_parent"
-    android:background="#FF000000"
-    >
+    android:background="#FF000000" >
 
     <FrameLayout android:id="@+id/rot0"
         android:layout_height="match_parent"
         android:layout_width="match_parent"
-        android:visibility="gone" 
-        >
+        android:visibility="gone" >
 
         <LinearLayout
             android:layout_height="match_parent"
@@ -39,16 +37,14 @@
             android:clipChildren="false"
             android:clipToPadding="false"
             android:id="@+id/nav_buttons"
-            android:animateLayoutChanges="true"
-            >
+            android:animateLayoutChanges="true" >
 
             <!-- navigation controls -->
             <View
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:visibility="gone"
-                />
+                android:visibility="gone" />
 			<com.android.systemui.statusbar.policy.KeyButtonView android:id="@+id/menu_left"
                 android:layout_width="40dp"
                 android:layout_height="match_parent"

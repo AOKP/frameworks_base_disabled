@@ -2689,6 +2689,11 @@ public final class Settings {
         public static final String NAVIGATION_BAR_TINT = "navigation_bar_tint";
 
         /**
+         * @hide
+         */
+        public static final String NAVIGATION_BAR_BACKGROUND_COLOR = "navigation_bar_background_color";
+
+        /**
          * The number of milliseconds for which the device posture must be stable before we perform
          * an orientation change. If the device appears to be rotating (being picked up, put down)
          * then we keep waiting until it settles.

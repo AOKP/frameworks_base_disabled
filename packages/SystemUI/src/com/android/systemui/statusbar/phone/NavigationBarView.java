@@ -582,8 +582,7 @@ public class NavigationBarView extends LinearLayout {
             return;
 
         mHidden = hide;
-        Slog.d(TAG,
-                (hide ? "HIDING" : "SHOWING") + " navigation bar");
+        Slog.d(TAG, (hide ? "HIDING" : "SHOWING") + " navigation bar");
 
         // bring up the lights no matter what
         setLowProfile(false);
@@ -605,7 +604,6 @@ public class NavigationBarView extends LinearLayout {
         mRotatedViews[Surface.ROTATION_270] = NAVBAR_ALWAYS_AT_RIGHT
                 ? findViewById(R.id.rot90)
                 : findViewById(R.id.rot270);
-
         for (View v : mRotatedViews) {
             // this helps avoid drawing artifacts with glowing navigation keys
             ViewGroup group = (ViewGroup) v.findViewById(R.id.nav_buttons);

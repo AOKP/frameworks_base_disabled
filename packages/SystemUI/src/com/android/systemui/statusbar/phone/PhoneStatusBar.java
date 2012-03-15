@@ -2576,6 +2576,8 @@ public class PhoneStatusBar extends StatusBar {
                     Settings.System.STATUSBAR_WINDOWSHADE_USER_BACKGROUND), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUSBAR_WINDOWSHADE_HANDLE_IMAGE), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.NAVIGATION_BAR_BACKGROUND_COLOR), false, this);
         }
 
         @Override
@@ -2642,32 +2644,21 @@ public class PhoneStatusBar extends StatusBar {
         }
 
         // check if user wants an alpha statusbar background
-        boolean customBottomBarAlpha = false;
         try {
             newAlpha = Settings.System.getFloat(cr, Settings.System.STATUSBAR_EXPANDED_BOTTOM_ALPHA);
-            customBottomBarAlpha = true;
+            mFrameLayout.setAlpha(newAlpha);
             if (DEBUG) Log.d(TAG, String.format("Expanded statusbar alpha preference detected %f", newAlpha));
         } catch (SettingNotFoundException snfe) {
-            customBottomBarAlpha = false;
             if (DEBUG) Log.d(TAG, "Expanded statusbar alpha preference not detected");
-        }
-        if (customBottomBarAlpha) {
-            mFrameLayout.setAlpha(newAlpha);
         }
 
         // check if user wants custom color background
-        boolean customWindowShadeColor = false;
         try {
             newWindowShadeColor = Settings.System.getInt(cr, Settings.System.STATUSBAR_EXPANDED_BACKGROUND_COLOR);
-            customWindowShadeColor = true;
+            mFrameLayout.setBackgroundColor(newWindowShadeColor);
             if (DEBUG) Log.d(TAG, String.format("Expanded statusbar background color preference detected %d", newWindowShadeColor));
         } catch (SettingNotFoundException snfe) {
-            customWindowShadeColor = false;
             if (DEBUG) Log.d(TAG, "Expanded statusbar background color preference not detected");
-        }
-        if (DEBUG) Log.d(TAG, String.format("Custom color int: %d", newWindowShadeColor));
-        if (customWindowShadeColor) {
-            mFrameLayout.setBackgroundColor(newWindowShadeColor);
         }
 
         boolean brightnessControl = Settings.System.getInt(cr,
@@ -2696,24 +2687,33 @@ public class PhoneStatusBar extends StatusBar {
         }
 
         // unexpanded statusbar color
-        boolean customStatusColor = false;
         int newStatusbarColor = 0;
         try {
             newStatusbarColor = Settings.System.getInt(cr, Settings.System.STATUSBAR_UNEXPANDED_COLOR);
-            customStatusColor = true;
             if (DEBUG) Log.d(TAG, String.format("Unexpanded statusbar color preference detected %d", newStatusbarColor));
-        } catch (SettingNotFoundException snfe) {
-            customStatusColor = false;
-            if (DEBUG) Log.d(TAG, "Unexpanded statusbar color preference not detected");
-        }
-        if (DEBUG) Log.d(TAG, String.format("Custom color int: %d", newStatusbarColor));
-        if (customStatusColor) {
             // set the top statusbar color
             mStatusbarUnexpanded.setBackgroundColor(newStatusbarColor);
             // match the rest of the statusbar
             mCloseView.setBackgroundColor(newStatusbarColor);
             mDrawerHeader.setBackgroundColor(newStatusbarColor);
             mPowerWidget.setBackgroundColor(newStatusbarColor);
+        } catch (SettingNotFoundException snfe) {
+            if (DEBUG) Log.d(TAG, "Unexpanded statusbar color preference not detected");
+        }
+
+        // NavigationBar background color
+        final int DEFAULT_BACKGROUND_COLOR = 0xFF000000;
+        int navbarBackgroundColor = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.NAVIGATION_BAR_BACKGROUND_COLOR, DEFAULT_BACKGROUND_COLOR);
+        if (DEBUG) {
+                if (DEFAULT_BACKGROUND_COLOR != navbarBackgroundColor) Log.d(TAG, String.format
+                        ("background navbar color found to be: %d", navbarBackgroundColor));
+                else Log.d(TAG, "default navbar color found");
+        }
+        try {
+            mNavigationBarView.setBackgroundColor(navbarBackgroundColor);
+        } catch (Exception e) { //TODO: it's late and this is lazy, what exception COULD this throw?
+            e.printStackTrace();
         }
 
         /* these are the statusbar backgrounds we roll with the ROM LiquidSmooth baby ;)

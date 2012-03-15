@@ -68,9 +68,14 @@ class HTML5Audio extends Handler
     private String mUrl;
     private boolean mAskToPlay = false;
     private Context mContext;
+    // The handler for WebCore thread messages;
+    private Handler mWebCoreHandler;
 
     // Timer thread -> UI thread
     private static final int TIMEUPDATE = 100;
+
+    // AudioManager callback thread -> Webcore thread
+    private static final int AUDIOFOCUS_CHANGED = 200;
 
     private static final String COOKIE = "Cookie";
     private static final String HIDE_URL_LOGS = "x-hide-urls-from-log";
@@ -181,6 +186,7 @@ class HTML5Audio extends Handler
     public HTML5Audio(WebViewCore webViewCore, int nativePtr) {
         // Save the native ptr
         mNativePointer = nativePtr;
+        createWebCoreHandler();
         resetMediaPlayer();
         mContext = webViewCore.getContext();
         mIsPrivateBrowsingEnabledGetter = new IsPrivateBrowsingEnabledGetter(
@@ -233,8 +239,7 @@ class HTML5Audio extends Handler
         }
     }
 
-    @Override
-    public void onAudioFocusChange(int focusChange) {
+    private void handleAudioFocusChange(int focusChange) {
         switch (focusChange) {
         case AudioManager.AUDIOFOCUS_GAIN:
             // resume playback
@@ -263,6 +268,25 @@ class HTML5Audio extends Handler
         }
     }
 
+    private void createWebCoreHandler() {
+        mWebCoreHandler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                switch (msg.what) {
+                    case AUDIOFOCUS_CHANGED:
+                        handleAudioFocusChange(msg.arg1);
+                        break;
+                }
+            }
+        };
+    }
+
+    @Override
+    public void onAudioFocusChange(int focusChange) {
+        Message msg = Message.obtain(mWebCoreHandler, AUDIOFOCUS_CHANGED);
+        msg.arg1 = focusChange;
+        mWebCoreHandler.sendMessage(msg);
+    }
 
     private void play() {
         if ((mState >= ERROR && mState < PREPARED) && mUrl != null) {

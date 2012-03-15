@@ -2137,7 +2137,7 @@ void OpenGLRenderer::drawText(const char* text, int bytesCount, int count,
         setupDrawShader();
         setupDrawBlending(true, mode);
         setupDrawProgram();
-        setupDrawModelView(sx, sy, sx + shadow->width, sy + shadow->height);
+        setupDrawModelView(sx, sy, sx + shadow->width, sy + shadow->height, pureTranslate, true);
         setupDrawTexture(shadow->id);
         setupDrawPureColorUniforms();
         setupDrawColorFilterUniforms();

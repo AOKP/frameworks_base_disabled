@@ -822,5 +822,12 @@ class KeyguardStatusViewManager implements OnClickListener {
         } catch (NullPointerException ne) {
             if (DEBUG) ne.printStackTrace();
         }
+        // weather view
+        try {
+            mWeatherView.setTextColor(color);
+            if (DEBUG) Log.d(TAG, String.format("Setting mWeatherView DATE text color to %d", color));
+        } catch (NullPointerException ne) {
+            if (DEBUG) ne.printStackTrace();
+        }
     }
 }

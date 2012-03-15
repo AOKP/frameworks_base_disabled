@@ -104,6 +104,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:singleLine="true"
+                android:paddingBottom="2dp"
                 android:gravity="center" />
 
             <com.android.systemui.statusbar.policy.WeatherPanel
@@ -131,6 +132,7 @@
                             android:textAppearance="@style/TextAppearance.StatusBar.Date"
                             android:textColor="#ffffffff"
                             android:paddingRight="3dip"
+                            android:singleLine="true"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content" />
 
@@ -139,6 +141,7 @@
                             android:textAppearance="@style/TextAppearance.StatusBar.Date"
                             android:textColor="#ffffffff"
                             android:paddingLeft="3dip"
+                            android:singleLine="true"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content" />
 

@@ -95,6 +95,7 @@ import com.android.systemui.statusbar.policy.LocationController;
 import com.android.systemui.statusbar.policy.NetworkController;
 import com.android.systemui.statusbar.policy.NotificationRowLayout;
 import com.android.systemui.statusbar.policy.toggles.TogglesView;
+import com.android.systemui.statusbar.policy.WeatherPanel;
 
 public class PhoneStatusBar extends StatusBar {
     static final String TAG = "PhoneStatusBar";
@@ -185,6 +186,9 @@ public class PhoneStatusBar extends StatusBar {
     RelativeLayout.LayoutParams mSettingswoClearParams;
 
     boolean mWeatherPanelEnabled;
+    WeatherPanel mWeatherPanel1;
+    WeatherPanel mWeatherPanel2;
+    
     TogglesView mQuickToggles;
     BrightnessController mBrightness;
 
@@ -373,6 +377,8 @@ public class PhoneStatusBar extends StatusBar {
         mSettingsButton.setOnLongClickListener(mSettingsLongClickListener);
         mSettingswoClearParams = (RelativeLayout.LayoutParams) mSettingsButton.getLayoutParams();
         mSettingswClearParams = new RelativeLayout.LayoutParams(mSettingswoClearParams);
+        mWeatherPanel1 = (WeatherPanel) expanded.findViewById(R.id.wp1);
+        mWeatherPanel2 = (WeatherPanel) expanded.findViewById(R.id.wp2);
 
         mScrollView = (ScrollView) expanded.findViewById(R.id.scroll);
 
@@ -2542,7 +2548,8 @@ public class PhoneStatusBar extends StatusBar {
             mSettingswoClearParams.addRule(RelativeLayout.RIGHT_OF, 0);
             mClearParams.addRule(RelativeLayout.BELOW, R.id.settings_button);
             mClearParams.addRule(RelativeLayout.CENTER_VERTICAL, 0);
-            
+            mWeatherPanel1.setVisibility(View.VISIBLE);
+            mWeatherPanel2.setVisibility(View.VISIBLE);
         } else {
             mTxtParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT, RelativeLayout.TRUE);
             mTxtParams.addRule(RelativeLayout.CENTER_HORIZONTAL, 0);
@@ -2555,6 +2562,8 @@ public class PhoneStatusBar extends StatusBar {
             mSettingswoClearParams.addRule(RelativeLayout.RIGHT_OF, R.id.txtlayout);
             mClearParams.addRule(RelativeLayout.BELOW, 0);
             mClearParams.addRule(RelativeLayout.CENTER_VERTICAL, RelativeLayout.TRUE);
+            mWeatherPanel1.setVisibility(View.GONE);
+            mWeatherPanel2.setVisibility(View.GONE);
         }
         View drawer_header_hr2 = mExpandedView.findViewById(R.id.drawer_header_hr2);
         drawer_header_hr2.setVisibility(weatherOn ? View.VISIBLE : View.GONE);

@@ -429,6 +429,9 @@ class KeyguardStatusViewManager implements OnClickListener {
                 Settings.System.LOCKSCREEN_CALENDAR_FLIP, 0) == 1);
         int interval = Settings.System.getInt(resolver,
                 Settings.System.LOCKSCREEN_CALENDAR_INTERVAL, 2500);
+        
+        if (sources == null)
+            sources = "";
         try {
             if (enabled) {
                 ArrayList<EventBundle> events = getCalendarEvents(resolver, sources, multipleEvents);

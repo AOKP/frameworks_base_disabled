@@ -238,9 +238,9 @@ class KeyguardStatusViewManager implements OnClickListener {
         resetStatusInfo();
         refreshDate();
         updateOwnerInfo();
-        updateColors();
         updateWeatherInfo();
         updateCalendar();
+        updateColors();
 
         // Required to get Marquee to work.
         final View scrollableViews[] = {
@@ -367,6 +367,7 @@ class KeyguardStatusViewManager implements OnClickListener {
         updateStatus1();
         updateCarrierText();
         updateCalendar();
+        updateColors();
     }
 
     private void updateAlarmInfo() {
@@ -435,8 +436,8 @@ class KeyguardStatusViewManager implements OnClickListener {
                 
                 for (EventBundle e : events) {
                     TextView tv = new TextView(getContext());
-                    tv.setText(e.title + (e.isTomorrow ? ", Tomorrow at " : " at ")
-                            + DateFormat.format("kk:mm", e.begin).toString()
+                    tv.setText(e.title + (e.isTomorrow ? ", Tomorrow " : " ")
+                            + ((e.allDay) ? "all-day" : "at " + DateFormat.format("kk:mm", e.begin).toString())
                             + (!e.location.isEmpty() ? " (" + e.location + ")" : ""));
                     tv.setTextAppearance(getContext(), android.R.attr.textAppearanceMedium);
                     tv.setSingleLine(true);
@@ -859,14 +860,6 @@ class KeyguardStatusViewManager implements OnClickListener {
             if (DEBUG) ne.printStackTrace();
         }
         
-        // weather view
-        try {
-            mWeatherView.setTextColor(color);
-            if (DEBUG) Log.d(TAG, String.format("Setting mWeatherView DATE text color to %d", color));
-        } catch (NullPointerException ne) {
-            if (DEBUG) ne.printStackTrace();
-        }
-        
         // calendar view
         try {
             for (int i = 0; i < mCalendarView.getChildCount(); i++) {
@@ -909,12 +902,15 @@ class KeyguardStatusViewManager implements OnClickListener {
         Uri.Builder builder = CalendarContract.Instances.CONTENT_URI.buildUpon();
         ContentUris.appendId(builder, now.getTime());
         ContentUris.appendId(builder, now.getTime() + DateUtils.DAY_IN_MILLIS);
-        String selection = CalendarContract.Instances.CALENDAR_ID + " IN ( " + sources + " )";
+        String selection = "(( " + CalendarContract.Instances.CALENDAR_ID
+                + " IN ( " + sources + " )) AND ( " + CalendarContract.Instances.BEGIN
+                + " > " + now.getTime() + " ))";
         
         Cursor eventCur = resolver.query(builder.build(), new String[] {
             CalendarContract.Instances.TITLE,
             CalendarContract.Instances.BEGIN,
-            CalendarContract.Instances.EVENT_LOCATION }, selection, null,
+            CalendarContract.Instances.EVENT_LOCATION,
+            CalendarContract.Instances.ALL_DAY }, selection, null,
             CalendarContract.Instances.START_DAY + " ASC, "
                 + CalendarContract.Instances.START_MINUTE + " ASC");
         
@@ -922,12 +918,12 @@ class KeyguardStatusViewManager implements OnClickListener {
             eventCur.moveToFirst();
             events.add(new EventBundle(eventCur.getString(0),
                     eventCur.getLong(1), eventCur.getString(2),
-                    now));
+                    now, (eventCur.getInt(3) != 0)));
         } else {
             while (eventCur.moveToNext()) {
                 events.add(new EventBundle(eventCur.getString(0),
                         eventCur.getLong(1), eventCur.getString(2),
-                        now));
+                        now, (eventCur.getInt(3) != 0)));
             }
         }
         
@@ -939,12 +935,14 @@ class KeyguardStatusViewManager implements OnClickListener {
         public Date begin;
         public String location;
         public boolean isTomorrow;
+        public boolean allDay;
         
-        EventBundle(String s, long b, String l, Date now) {
+        EventBundle(String s, long b, String l, Date now, boolean t) {
             title = s;
             begin = new Date(b);
             location = l;
             isTomorrow = (begin.getDay() > now.getDay() ? true : false);
+            allDay = t;
         }
     }
 }

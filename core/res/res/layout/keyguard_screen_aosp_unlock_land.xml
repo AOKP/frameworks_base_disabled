@@ -34,7 +34,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:rowCount="7"
+    android:rowCount="10"
     android:id="@+id/root"
     android:clipChildren="false">
 
@@ -42,7 +42,8 @@
     <com.android.internal.widget.DigitalClock android:id="@+id/time"
         android:layout_marginTop="80dip"
         android:layout_marginBottom="8dip"
-        android:layout_gravity="right">
+        android:layout_gravity="right"
+        android:layout_rowSpan="2">
 
        <!-- Because we can't have multi-tone fonts, we render two TextViews, one on
         top of the other. Hence the redundant layout... -->
@@ -106,6 +107,14 @@
 	android:textAppearance="?android:attr/textAppearanceMedium"
 	android:textSize="@dimen/keyguard_lockscreen_status_line_font_size"
 	android:drawablePadding="4dip" />
+	
+	<ViewFlipper
+        android:id="@+id/calendar"
+        android:inAnimation="@anim/calendar_fadein"
+        android:outAnimation="@anim/calendar_fadeout"
+        android:layout_gravity="right"
+		android:layout_marginTop="4dip"
+		android:drawablePadding="4dip" />
 
     <TextView
         android:id="@+id/status1"
@@ -161,14 +170,14 @@
         />
 
     <!-- Column 1 -->
-    <Space android:layout_width="64dip" android:layout_rowSpan="7" />
+    <Space android:layout_width="64dip" android:gravity="fill_vertical" android:layout_rowSpan="10" />
 
     <!-- Column 2 -->
     <com.android.internal.widget.SlidingTab
         android:id="@+id/unlock_widget"
         android:orientation="vertical"
         android:layout_width="300dip"
-        android:layout_rowSpan="8"
+        android:layout_rowSpan="10"
         android:layout_height="match_parent"
         android:layout_alignParentBottom="true"
         />
@@ -178,12 +187,25 @@
         layout="@layout/keyguard_transport_control"
         android:layout_row="0"
         android:layout_column="0"
-        android:layout_rowSpan="5"
+        android:layout_rowSpan="7"
         android:layout_columnSpan="1"
         android:layout_gravity="fill"
         android:layout_width="0dip"
         android:layout_height="0dip"
         />
+        
+    <!-- Area to overlay FaceLock -->
+    <TextView android:id="@+id/faceLockAreaView"
+        android:visibility="invisible"
+        android:layout_row="0"
+        android:layout_column="2"
+        android:layout_rowSpan="10"
+        android:layout_columnSpan="1"
+        android:layout_gravity="fill"
+        android:layout_width="0dip"
+        android:layout_height="0dip"
+        android:background="@color/facelock_color_background"
+    />
 
 </GridLayout>
 </RelativeLayout>

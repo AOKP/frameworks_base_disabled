@@ -18,6 +18,7 @@ package com.android.systemui.statusbar.policy.toggles;
 
 import android.content.Context;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnLongClickListener;
 import android.widget.CompoundButton;
@@ -27,6 +28,7 @@ import android.os.ServiceManager;
 import android.os.RemoteException;
 
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.systemui.R;
@@ -37,6 +39,7 @@ import com.android.systemui.R;
 public abstract class Toggle implements OnCheckedChangeListener {
 
     protected static final String TAG = "Toggle";
+    private static final boolean DEBUG = true;
 
     View mView;
     protected Context mContext;
@@ -45,6 +48,7 @@ public abstract class Toggle implements OnCheckedChangeListener {
     protected ImageView mIcon;
     protected TextView mText;
     protected CompoundButton mToggle;
+    protected LinearLayout mLayout;
 
     protected boolean mSystemChange = false;
 
@@ -60,6 +64,7 @@ public abstract class Toggle implements OnCheckedChangeListener {
         mIcon = (ImageView) mView.findViewById(R.id.icon);
         mToggle = (CompoundButton) mView.findViewById(R.id.toggle);
         mText = (TextView) mView.findViewById(R.id.label);
+        mLayout = (LinearLayout) mView.findViewById(R.id.linear_layout);
 
         mToggle.setOnCheckedChangeListener(new OnCheckedChangeListener() {
             @Override

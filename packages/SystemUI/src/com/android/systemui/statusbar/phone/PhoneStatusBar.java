@@ -270,6 +270,8 @@ public class PhoneStatusBar extends StatusBar {
     private ExpandedView expanded;
     private int newWindowShadeColor;
     private int newStatusbarColor;
+    private View mDrawerHeader;
+    private View mDrawerHeader_hr;
 
     // custom statusbar drawables
     private ImageView mStatusbarHandle;
@@ -392,24 +394,24 @@ public class PhoneStatusBar extends StatusBar {
         mScrollView = (ScrollView) expanded.findViewById(R.id.scroll);
         mQuickToggles = (TogglesView) expanded.findViewById(R.id.quick_toggles);
 
+        mDrawerHeader = expanded.findViewById(R.id.drawer_header);
+        mDrawerHeader_hr = expanded.findViewById(R.id.drawer_header_hr);
+        View notifications = expanded.findViewById(R.id.notifications);
+
         // check and change layout type :)
         final int layout_type = Settings.System.getInt(mContext.getContentResolver(),Settings.System.STATUS_BAR_LAYOUT, 0);
         if (layout_type == 0) {
             mExpandedContents = mPile;
         } else {
-            View drawer_header = expanded.findViewById(R.id.drawer_header);
-            View drawer_header_hr = expanded.findViewById(R.id.drawer_header_hr);
-            View notifications = expanded.findViewById(R.id.notifications);
-
-            expanded.removeView(drawer_header);
-            expanded.removeView(drawer_header_hr);
+            expanded.removeView(mDrawerHeader);
+            expanded.removeView(mDrawerHeader_hr);
             expanded.removeView(mQuickToggles);
             expanded.removeView(notifications);
 
             if (layout_type == 1) {
                 expanded.addView(notifications);
-                expanded.addView(drawer_header_hr);
-                expanded.addView(drawer_header);
+                expanded.addView(mDrawerHeader_hr);
+                expanded.addView(mDrawerHeader);
                 expanded.addView(mQuickToggles);
                 mExpandedContents = mQuickToggles;
             }
@@ -2571,8 +2573,6 @@ public class PhoneStatusBar extends StatusBar {
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUSBAR_UNEXPANDED_COLOR), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.STATUSBAR_USE_WINDOWSHADE_BACKGROUND), false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUSBAR_WINDOWSHADE_USER_BACKGROUND), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUSBAR_WINDOWSHADE_HANDLE_IMAGE), false, this);
@@ -2618,9 +2618,6 @@ public class PhoneStatusBar extends StatusBar {
         mControlAospSettingsIcon = Settings.System.getInt(cr,
                 Settings.System.STATUSBAR_REMOVE_AOSP_SETTINGS_LINK, 0) == 1;
 
-        // mUseBackgroundDrawable is bogus I just left this to show the value
-        // is only watched to trigger the updateSettings() method
-        mUseBackgroundDrawable = Settings.System.getInt(cr, Settings.System.STATUSBAR_USE_WINDOWSHADE_BACKGROUND, 0) == 1;
         mUserStatusbarBackground = Settings.System.getInt(cr, Settings.System.STATUSBAR_WINDOWSHADE_USER_BACKGROUND, 0) == 1;
 
         if (DEBUG) Log.d(TAG, "mUserStatusbarBackground: " + mUserStatusbarBackground);
@@ -2658,7 +2655,7 @@ public class PhoneStatusBar extends StatusBar {
             mFrameLayout.setAlpha(newAlpha);
         }
 
-        // check if user wants custom custom background
+        // check if user wants custom color background
         boolean customWindowShadeColor = false;
         try {
             newWindowShadeColor = Settings.System.getInt(cr, Settings.System.STATUSBAR_EXPANDED_BACKGROUND_COLOR);
@@ -2713,13 +2710,10 @@ public class PhoneStatusBar extends StatusBar {
         if (customStatusColor) {
             // set the top statusbar color
             mStatusbarUnexpanded.setBackgroundColor(newStatusbarColor);
-            // match the bottom drag handle to mStatusbarUnexpanded
+            // match the rest of the statusbar
             mCloseView.setBackgroundColor(newStatusbarColor);
-        }
-
-        // XXX: I think I found a better way
-        if (mUseBackgroundDrawable) {
-            if (DEBUG) Log.d(TAG, "mUseBackgroundDrawable was true");
+            mDrawerHeader.setBackgroundColor(newStatusbarColor);
+            mPowerWidget.setBackgroundColor(newStatusbarColor);
         }
 
         /* these are the statusbar backgrounds we roll with the ROM LiquidSmooth baby ;)

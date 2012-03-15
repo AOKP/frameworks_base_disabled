@@ -7,7 +7,8 @@
 	android:layout_height="wrap_content"
 	android:layout_width="60dp"
 	android:clickable="true"
-	xmlns:android="http://schemas.android.com/apk/res/android">
+	xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/linear_layout" >
 
 	<RelativeLayout
 		android:orientation="vertical"

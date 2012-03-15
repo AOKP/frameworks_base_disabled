@@ -24,6 +24,7 @@ import java.util.Map;
 
 public abstract class PowerButton {
     public static final String TAG = "PowerButton";
+    public static final boolean DEBUG = true;
 
     public static final int STATE_ENABLED = 1;
     public static final int STATE_DISABLED = 2;
@@ -105,11 +106,20 @@ public abstract class PowerButton {
                     int buttonIcon = R.id.power_widget_button_image;
                     int buttonState = R.id.power_widget_button_indic;
                     ImageView indic = (ImageView)mView.findViewById(R.id.power_widget_button_indic);
+                    LinearLayout layer = (LinearLayout)mView.findViewById(R.id.power_widget_button);
                     if ((Settings.System.getInt(context.getContentResolver(),Settings.System.EXPANDED_HIDE_INDICATOR, 1)) == 1){
                         indic.setVisibility(8);
                     }else{
                         indic.setVisibility(0);
                     }
+
+                    //apply our awesome color
+                    final int DEFAULT_COLOR = 0xFF000000;
+                    int color = Settings.System.getInt(context.getContentResolver(),
+                            Settings.System.STATUSBAR_DATE_FORMAT, DEFAULT_COLOR);
+                    if (DEBUG) Log.d(TAG, String.format("Button background color detected: %d", color));
+                    layer.setBackgroundColor(color);
+
                     updateImageView(buttonIcon, mIcon);
 
                     int sColorMaskBase = Settings.System.getInt(context.getContentResolver(),

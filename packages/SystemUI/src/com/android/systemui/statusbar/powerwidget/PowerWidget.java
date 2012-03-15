@@ -73,6 +73,7 @@ public class PowerWidget extends FrameLayout {
     private WidgetSettingsObserver mObserver = null;
 
     private HorizontalScrollView mScrollView;
+    private View buttonView;
 
     public PowerWidget(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -125,7 +126,7 @@ public class PowerWidget extends FrameLayout {
         for(String button : buttons.split("\\|")) {
             Log.i(TAG, "Setting up button: " + button);
             // inflate our button, we don't add it to a parent and don't do any layout shit yet
-            View buttonView = mInflater.inflate(R.layout.power_widget_button, null, false);
+            buttonView = mInflater.inflate(R.layout.power_widget_button, null, false);
 
             if(PowerButton.loadButton(button, buttonView)) {
                 // add the button here

@@ -8,6 +8,7 @@ import android.content.Context;
 import android.database.ContentObserver;
 import android.os.Handler;
 import android.provider.Settings;
+import android.provider.Settings.SettingNotFoundException;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -22,6 +23,7 @@ import com.android.systemui.statusbar.StatusBar;
 public class TogglesView extends LinearLayout {
 
     private static final String TAG = "ToggleView";
+    private static final boolean DEBUG = true;
 
     ArrayList<LinearLayout> rows = new ArrayList<LinearLayout>();
     ArrayList<Toggle> toggles = new ArrayList<Toggle>();
@@ -56,9 +58,9 @@ public class TogglesView extends LinearLayout {
     private static final String TOGGLE_SYNC = "SYNC";
 
     private int mWidgetsPerRow = 2;
-
     private boolean useAltButtonLayout = false;
 
+    private LinearLayout ll;
     private StatusBar sb;
 
     public static final String STOCK_TOGGLES = TOGGLE_WIFI + TOGGLE_DELIMITER
@@ -139,6 +141,8 @@ public class TogglesView extends LinearLayout {
         removeViews();
         rows = new ArrayList<LinearLayout>();
 
+        ll = new LinearLayout(mContext);
+
         if (!useAltButtonLayout) {
             DisplayMetrics metrics = getContext().getResources().getDisplayMetrics();
             float dp = 10f;
@@ -171,7 +175,6 @@ public class TogglesView extends LinearLayout {
             togglesRowLayout.setGravity(Gravity.CENTER_HORIZONTAL);
             toggleScrollView.setHorizontalFadingEdgeEnabled(true);
             toggleScrollView.addView(togglesRowLayout, PARAMS_TOGGLE);
-            LinearLayout ll = new LinearLayout(mContext);
             ll.setOrientation(LinearLayout.VERTICAL);
             ll.setGravity(Gravity.CENTER_HORIZONTAL);
             ll.addView(toggleScrollView, PARAMS_TOGGLE_SCROLL);
@@ -179,6 +182,7 @@ public class TogglesView extends LinearLayout {
             rows.add(ll);
 
         }
+
         if (mBrightnessLocation == BRIGHTNESS_LOC_BOTTOM)
             addBrightness();
 
@@ -236,6 +240,9 @@ public class TogglesView extends LinearLayout {
             resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.STATUSBAR_TOGGLES_USE_BUTTONS),
                     false, this);
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.STATUSBAR_UNEXPANDED_COLOR),
+                    false, this);
             updateSettings();
         }
 
@@ -257,7 +264,7 @@ public class TogglesView extends LinearLayout {
                 Settings.System.STATUSBAR_TOGGLES_BRIGHTNESS_LOC,
                 BRIGHTNESS_LOC_TOP);
 
-        useAltButtonLayout = Settings.System.getInt(mContext.getContentResolver(),
+        useAltButtonLayout = Settings.System.getInt(resolver,
                 Settings.System.STATUSBAR_TOGGLES_USE_BUTTONS, 0) == 1;
 
         // mWidgetsPerRow = Settings.System.getInt(resolver,

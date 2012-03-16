@@ -2320,8 +2320,15 @@ public final class GsmDataConnectionTracker extends DataConnectionTracker {
                     log("buildWaitingApns: Preferred APN:" + operator + ":"
                         + mPreferredApn.numeric + ":" + mPreferredApn);
                 }
+                if (mApnContexts.get(requestedApnType).getState() == State.CONNECTED) {
+                    if (DBG) {
+                        log("ApnContext for " + requestedApnType +
+                                " is already connected, staying with preferred APN.");
+                    }
+                }
                 if (mPreferredApn.numeric.equals(operator)) {
-                    if (mPreferredApn.bearer == 0 || mPreferredApn.bearer == radioTech) {
+                    if (mApnContexts.get(requestedApnType).getState() == State.CONNECTED
+                            ||  mPreferredApn.bearer == 0 || mPreferredApn.bearer == radioTech) {
                         apnList.add(mPreferredApn);
                         if (DBG) log("buildWaitingApns: X added preferred apnList=" + apnList);
                         return apnList;
@@ -2337,6 +2344,14 @@ public final class GsmDataConnectionTracker extends DataConnectionTracker {
                 }
             }
         }
+
+        if (mApnContexts.get(Phone.APN_TYPE_DEFAULT).getState() == State.CONNECTED &&
+                mPreferredApn != null && mPreferredApn.canHandleType(requestedApnType)) {
+            if (DBG) log("Default call is CONNECTED, can support apn type:" + requestedApnType);
+            apnList.add(mPreferredApn);
+            return apnList;
+        }
+
         if (mAllApns != null) {
             for (ApnSetting apn : mAllApns) {
                 if (apn.canHandleType(requestedApnType)) {

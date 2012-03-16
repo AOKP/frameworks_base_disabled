@@ -96,7 +96,7 @@
         android:layout_gravity="fill_horizontal"
         android:gravity="right"
         android:singleLine="true"
-        android:ellipsize="marquee"
+        android:ellipsize="end"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textSize="@dimen/keyguard_lockscreen_status_line_font_size"
         />

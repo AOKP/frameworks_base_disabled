@@ -412,6 +412,7 @@ class KeyguardStatusViewManager implements OnClickListener {
                         .getCharSequenceExtra(EXTRA_TEMP) + ", "
                         + mWeatherInfo.getCharSequenceExtra(EXTRA_CONDITION));
                     mWeatherView.setText(wText);
+                    mWeatherView.setWidth((int)(findViewById(R.id.time).getWidth()*1.2));
                 }
             }
             mWeatherView.setVisibility((weatherInfoEnabled && !wText.isEmpty()) ? View.VISIBLE
@@ -443,8 +444,9 @@ class KeyguardStatusViewManager implements OnClickListener {
                             + ((e.allDay) ? "all-day" : "at " + DateFormat.format("kk:mm", e.begin).toString())
                             + (!e.location.isEmpty() ? " (" + e.location + ")" : ""));
                     tv.setTextAppearance(getContext(), android.R.attr.textAppearanceMedium);
+                    tv.setWidth((int)(findViewById(R.id.time).getWidth()*1.2));
                     tv.setSingleLine(true);
-                    tv.setEllipsize(android.text.TextUtils.TruncateAt.END);
+                    tv.setEllipsize(android.text.TextUtils.TruncateAt.MIDDLE);
                     tv.setGravity(android.view.Gravity.RIGHT);
                     mCalendarView.addView(tv);
                 }

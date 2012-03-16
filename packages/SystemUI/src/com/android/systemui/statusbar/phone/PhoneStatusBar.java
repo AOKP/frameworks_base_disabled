@@ -426,9 +426,6 @@ public class PhoneStatusBar extends StatusBar {
 
         mEdgeBorder = res.getDimensionPixelSize(R.dimen.status_bar_edge_ignore);
 
-        // set the inital view visibility
-        setAreThereNotifications();
-
         // Other icons
         mLocationController = new LocationController(mContext); // will post a
                                                                 // notification
@@ -698,7 +695,7 @@ public class PhoneStatusBar extends StatusBar {
         }
 
         // Recalculate the position of the sliding windows and the titles.
-        setAreThereNotifications();
+        reDrawHeader();
         updateExpandedViewPos(EXPANDED_LEAVE_ALONE);
     }
 
@@ -806,7 +803,7 @@ public class PhoneStatusBar extends StatusBar {
         }
 
         // Recalculate the position of the sliding windows and the titles.
-        setAreThereNotifications();
+        reDrawHeader();
         updateExpandedViewPos(EXPANDED_LEAVE_ALONE);
     }
 
@@ -827,7 +824,7 @@ public class PhoneStatusBar extends StatusBar {
             }
         }
 
-        setAreThereNotifications();
+        reDrawHeader();
     }
 
     @Override
@@ -2532,14 +2529,14 @@ public class PhoneStatusBar extends StatusBar {
         mWeatherPanelEnabled = (Settings.System.getInt(cr, Settings.System.WEATHER_STATUSBAR_STYLE, 0) == 1) &&
                 (Settings.System.getInt(cr, Settings.System.USE_WEATHER, 0) == 1);
         
-        reDrawHeader(mWeatherPanelEnabled);
+        reDrawHeader();
     }
     
-    private void reDrawHeader(boolean weatherOn) {
-        if (weatherOn) {
+    private void reDrawHeader() {
+        if (mWeatherPanelEnabled) {
             mTxtParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT, 0);
             mTxtParams.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
-            mTxtLayout.setPadding(0, 5, 0, 0);
+            mTxtLayout.setPadding(0, 1, 0, 0);
             mSettingswClearParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
             mSettingswClearParams.addRule(RelativeLayout.RIGHT_OF, 0);
             mSettingswClearParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
@@ -2566,7 +2563,7 @@ public class PhoneStatusBar extends StatusBar {
             mWeatherPanel2.setVisibility(View.GONE);
         }
         View drawer_header_hr2 = mExpandedView.findViewById(R.id.drawer_header_hr2);
-        drawer_header_hr2.setVisibility(weatherOn ? View.VISIBLE : View.GONE);
+        drawer_header_hr2.setVisibility(mWeatherPanelEnabled ? View.VISIBLE : View.GONE);
         setAreThereNotifications();
         mTxtLayout.setLayoutParams(mTxtParams);
         mClearButton.setLayoutParams(mClearParams);

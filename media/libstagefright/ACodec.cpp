@@ -54,6 +54,7 @@ Copyright (c) 2010-2012, Code Aurora Forum. All rights reserved.
 #define MIN_HEIGHT 320;
 #endif
 
+
 namespace android {
 
 template<class T>
@@ -136,9 +137,9 @@ private:
     DISALLOW_EVIL_CONSTRUCTORS(CodecObserver);
 };
 
-static const int OMX_QCOM_COLOR_FormatYVU420SemiPlanar = 0x7FA30C00;
-static const int QOMX_COLOR_FormatYVU420PackedSemiPlanar32m4ka = 0x7FA30C01;
+#ifdef QCOM_HARDWARE
 static const int QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka = 0x7FA30C03;
+static const int OMX_QCOM_COLOR_FormatYVU420SemiPlanar = 0x7FA30C00;
 
 class ColorFormatInfo {
     private:
@@ -152,16 +153,19 @@ class ColorFormatInfo {
 const int32_t ColorFormatInfo::preferredFormat =
 #ifdef TARGET7x30
     QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka;
-#elif TARGET8x60
+#endif
+#ifdef TARGET8x60
     QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka;
-#elif TARGET7x27
+#endif
+#ifdef TARGET7x27
     OMX_QCOM_COLOR_FormatYVU420SemiPlanar;
-#elif TARGET7x27A
-    QOMX_COLOR_FormatYVU420PackedSemiPlanar32m4ka;
-#elif TARGET8x50
+#endif
+#ifdef TARGET7x27A
     OMX_QCOM_COLOR_FormatYVU420SemiPlanar;
-#else
-    OMX_COLOR_FormatUnused;
+#endif
+#ifdef TARGET8x50
+    OMX_QCOM_COLOR_FormatYVU420SemiPlanar;
+#endif
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////

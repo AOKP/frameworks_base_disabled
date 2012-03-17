@@ -24,8 +24,6 @@ import android.os.IBinder;
 import android.os.ServiceManager;
 import android.util.Log;
 
-import uk.co.lilhermit.android.TAframework.TAnotification;
-
 /**
  * Class to notify the user of events that happen.  This is how you tell
  * the user that something has happened in the background. {@more}
@@ -73,8 +71,7 @@ public class NotificationManager
     private static boolean localLOGV = false;
 
     private static INotificationManager sService;
-	private TAnotification notification_store = null; // temporary storage for the whole notification
-	
+
     /** @hide */
     static public INotificationManager getService()
     {
@@ -89,7 +86,6 @@ public class NotificationManager
     /*package*/ NotificationManager(Context context, Handler handler)
     {
         mContext = context;
-		notification_store = new TAnotification(mContext);
     }
 
     /**
@@ -120,7 +116,17 @@ public class NotificationManager
      */
     public void notify(String tag, int id, Notification notification)
     {
-        notification_store.queueNotify(tag, id, notification);
+        int[] idOut = new int[1];
+        INotificationManager service = getService();
+        String pkg = mContext.getPackageName();
+        if (localLOGV) Log.v(TAG, pkg + ": notify(" + id + ", " + notification + ")");
+        try {
+            service.enqueueNotificationWithTag(pkg, tag, id, notification, idOut);
+            if (id != idOut[0]) {
+                Log.w(TAG, "notify: id corrupted: sent " + id + ", got back " + idOut[0]);
+            }
+        } catch (RemoteException e) {
+        }
     }
 
     /**
@@ -140,7 +146,13 @@ public class NotificationManager
      */
     public void cancel(String tag, int id)
     {
-        notification_store.queueCancel(tag, id);
+        INotificationManager service = getService();
+        String pkg = mContext.getPackageName();
+        if (localLOGV) Log.v(TAG, pkg + ": cancel(" + id + ")");
+        try {
+            service.cancelNotificationWithTag(pkg, tag, id);
+        } catch (RemoteException e) {
+        }
     }
 
     /**
@@ -149,7 +161,13 @@ public class NotificationManager
      */
     public void cancelAll()
     {
-        notification_store.queueCancelAll();
+        INotificationManager service = getService();
+        String pkg = mContext.getPackageName();
+        if (localLOGV) Log.v(TAG, pkg + ": cancelAll()");
+        try {
+            service.cancelAllNotifications(pkg);
+        } catch (RemoteException e) {
+        }
     }
 
     private Context mContext;

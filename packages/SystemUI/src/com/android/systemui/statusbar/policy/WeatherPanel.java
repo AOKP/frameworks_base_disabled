@@ -74,7 +74,6 @@ public class WeatherPanel extends FrameLayout {
                             R.drawable.weather_na));
                 }
             }
-            updateSettings();
         }
     };
 
@@ -108,8 +107,6 @@ public class WeatherPanel extends FrameLayout {
             mAttached = true;
             IntentFilter filter = new IntentFilter("com.aokp.romcontrol.INTENT_WEATHER_UPDATE");
             getContext().registerReceiver(weatherReceiver, filter, null, getHandler());
-
-            SettingsObserver so = new SettingsObserver(getHandler());
         }
     }
 
@@ -120,34 +117,5 @@ public class WeatherPanel extends FrameLayout {
             getContext().unregisterReceiver(weatherReceiver);
             mAttached = false;
         }
-    }
-
-    class SettingsObserver extends ContentObserver {
-        SettingsObserver(Handler handler) {
-            super(handler);
-            observe();
-        }
-
-        void observe() {
-            ContentResolver resolver = mContext.getContentResolver();
-            resolver.registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.USE_WEATHER), false, this);
-            resolver.registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.WEATHER_STATUSBAR_STYLE), false, this);
-            updateSettings();
-        }
-
-        @Override
-        public void onChange(boolean selfChange) {
-            updateSettings();
-        }
-    }
-
-    protected void updateSettings() {
-        ContentResolver resolver = mContext.getContentResolver();
-
-        boolean useWeather = Settings.System.getInt(resolver, Settings.System.USE_WEATHER, 0) == 1
-                && Settings.System.getInt(resolver, Settings.System.WEATHER_STATUSBAR_STYLE, 1) == 1;
-        this.setVisibility(useWeather ? View.VISIBLE : View.GONE);
     }
 }

@@ -2365,6 +2365,13 @@ public final class Settings {
         public static final String SHOW_STATUSBAR_IME_SWITCHER = "show_statusbar_ime_switcher";
 
         /**
+         * Setting to enable volume options.
+         * 
+         * @hide
+         */
+        public static final String ENABLE_VOLUME_OPTIONS = "enable_volume_options";
+
+        /**
          * Which layout to use to display the navigation menu at the bottom.
          * 0 = default
          * 1 = default w/search
@@ -2652,6 +2659,30 @@ public final class Settings {
          * @hide
          */
         public static final String LOCKSCREEN_BATTERY = "lockscreen_battery";
+        
+        /**
+         * 
+         * @hide
+         */
+        public static final String LOCKSCREEN_CALENDAR = "lockscreen_calendar";
+        
+        /**
+         * 
+         * @hide
+         */
+        public static final String LOCKSCREEN_CALENDAR_FLIP = "lockscreen_calendar_flip";
+        
+        /**
+         * 
+         * @hide
+         */
+        public static final String LOCKSCREEN_CALENDAR_SOURCES = "lockscreen_calendar_sources";
+        
+        /**
+         * 
+         * @hide
+         */
+        public static final String LOCKSCREEN_CALENDAR_INTERVAL = "lockscreen_calendar_interval";
         
         /**
          * Setting to use lockscreen alongside secure lock
@@ -4529,13 +4560,12 @@ public final class Settings {
         public static final String KILL_APP_LONGPRESS_BACK = "kill_app_longpress_back";
 
         /**
-         * The {@link ComponentName} string of the service to be used as the voice recognition
-         * service.
-         *
+         * The {@link ComponentName} string of the service to be used as the
+         * voice recognition service.
+         * 
          * @hide
          */
         public static final String VOICE_RECOGNITION_SERVICE = "voice_recognition_service";
-
 
         /**
          * The {@link ComponentName} string of the selected spell checker service which is

@@ -34,7 +34,6 @@ import android.text.format.DateFormat;
 import android.text.style.CharacterStyle;
 import android.text.style.RelativeSizeSpan;
 import android.util.AttributeSet;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.TextView;
 
@@ -148,54 +147,54 @@ public class Clock extends TextView {
         final char MAGIC3 = '\uEF02';
         final char MAGIC4 = '\uEF03';
 
-        if (mClockFormat == null) {
-            Context context = getContext();
-            boolean b24 = DateFormat.is24HourFormat(context);
-            int res;
+        Context context = getContext();
+        boolean b24 = DateFormat.is24HourFormat(context);
+        int res;
 
-            if (b24) {
-                res = R.string.twenty_four_hour_time_format;
-            } else {
-                res = R.string.twelve_hour_time_format;
-            }
-
-            String format = context.getString(res);
-
-            if (mWeekday != WEEKDAY_STYLE_GONE) {
-                format = MAGIC3 + "EEE " + MAGIC4 + format;
-            }
-
-            /*
-             * Search for an unquoted "a" in the format string, so we can add dummy characters
-             * around it to let us find it again after formatting and change its size.
-             */
-            if (mAmPmStyle != AM_PM_STYLE_NORMAL) {
-                int a = -1;
-                boolean quoted = false;
-                for (int i = 0; i < format.length(); i++) {
-                    char c = format.charAt(i);
-
-                    if (c == '\'') {
-                        quoted = !quoted;
-                    }
-                    if (!quoted && c == 'a') {
-                        a = i;
-                        break;
-                    }
-                }
-
-                if (a >= 0) {
-                    // Move a back so any whitespace before AM/PM is also in the alternate size.
-                    final int b = a;
-                    while (a > 0 && Character.isWhitespace(format.charAt(a - 1))) {
-                        a--;
-                    }
-                    format = format.substring(0, a) + MAGIC1 + format.substring(a, b)
-                            + "a" + MAGIC2 + format.substring(b + 1);
-                }
-            }
-            mClockFormat = new SimpleDateFormat(format);
+        if (b24) {
+            res = R.string.twenty_four_hour_time_format;
+        } else {
+            res = R.string.twelve_hour_time_format;
         }
+
+        String format = context.getString(res);
+
+        if (mWeekday != WEEKDAY_STYLE_GONE) {
+            format = MAGIC3 + "EEE " + MAGIC4 + format;
+        }
+
+        /*
+         * Search for an unquoted "a" in the format string, so we can add dummy
+         * characters around it to let us find it again after formatting and
+         * change its size.
+         */
+        if (mAmPmStyle != AM_PM_STYLE_NORMAL) {
+            int a = -1;
+            boolean quoted = false;
+            for (int i = 0; i < format.length(); i++) {
+                char c = format.charAt(i);
+
+                if (c == '\'') {
+                    quoted = !quoted;
+                }
+                if (!quoted && c == 'a') {
+                    a = i;
+                    break;
+                }
+            }
+
+            if (a >= 0) {
+                // Move a back so any whitespace before AM/PM is also in the
+                // alternate size.
+                final int b = a;
+                while (a > 0 && Character.isWhitespace(format.charAt(a - 1))) {
+                    a--;
+                }
+                format = format.substring(0, a) + MAGIC1 + format.substring(a, b) + "a" + MAGIC2
+                        + format.substring(b + 1);
+            }
+        }
+        mClockFormat = new SimpleDateFormat(format);
         String result = mClockFormat.format(mCalendar.getTime());
 
         SpannableStringBuilder formatted = new SpannableStringBuilder(result);
@@ -273,8 +272,6 @@ public class Clock extends TextView {
 
     protected void updateSettings() {
         ContentResolver resolver = mContext.getContentResolver();
-
-        mClockFormat = null;
 
         mAmPmStyle = Settings.System.getInt(resolver, Settings.System.STATUSBAR_CLOCK_AM_PM_STYLE,
                 AM_PM_STYLE_GONE);

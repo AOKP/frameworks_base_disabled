@@ -64,26 +64,21 @@ public class TogglesView extends LinearLayout {
     private LinearLayout ll;
     private StatusBar sb;
 
-    public static final String STOCK_TOGGLES = TOGGLE_WIFI + TOGGLE_DELIMITER
-            + TOGGLE_BLUETOOTH + TOGGLE_DELIMITER
-            + TOGGLE_GPS + TOGGLE_DELIMITER
-            + TOGGLE_AUTOROTATE;
+    public static final String STOCK_TOGGLES = TOGGLE_WIFI + TOGGLE_DELIMITER + TOGGLE_BLUETOOTH
+            + TOGGLE_DELIMITER + TOGGLE_GPS + TOGGLE_DELIMITER + TOGGLE_AUTOROTATE;
 
     View mBrightnessSlider;
-    
+
     LinearLayout mToggleSpacer;
 
     private static final LinearLayout.LayoutParams PARAMS_BRIGHTNESS = new LinearLayout.LayoutParams(
-            LayoutParams.MATCH_PARENT,
-            90);
+            LayoutParams.MATCH_PARENT, 90);
 
     private static final LinearLayout.LayoutParams PARAMS_TOGGLE = new LinearLayout.LayoutParams(
-            LayoutParams.MATCH_PARENT,
-            LayoutParams.WRAP_CONTENT, 1f);
+            LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, 1f);
 
     private static final LinearLayout.LayoutParams PARAMS_TOGGLE_SCROLL = new LinearLayout.LayoutParams(
-            LayoutParams.WRAP_CONTENT,
-            LayoutParams.WRAP_CONTENT, 1f);
+            LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f);
 
     public TogglesView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -166,12 +161,13 @@ public class TogglesView extends LinearLayout {
             rows.get(rows.size() - 1).addView(toggles.get(i).getView(),
                     (useAltButtonLayout ? PARAMS_TOGGLE_SCROLL : PARAMS_TOGGLE));
         }
-        
-        if (!useAltButtonLayout && (toggles.size() % 2 !=0)) {
-        	// we are using switches, and have an uneven number - let's add a spacer
-        	mToggleSpacer = new LinearLayout(mContext);
-        	rows.get(rows.size() - 1).addView(mToggleSpacer,PARAMS_TOGGLE);
-        	
+
+        if (!useAltButtonLayout && (toggles.size() % 2 != 0)) {
+            // we are using switches, and have an uneven number - let's add a
+            // spacer
+            mToggleSpacer = new LinearLayout(mContext);
+            rows.get(rows.size() - 1).addView(mToggleSpacer, PARAMS_TOGGLE);
+
         }
         if (useAltButtonLayout) {
             LinearLayout togglesRowLayout;
@@ -198,7 +194,9 @@ public class TogglesView extends LinearLayout {
         if (mBrightnessLocation == BRIGHTNESS_LOC_BOTTOM)
             addBrightness();
 
-        if (!sb.isTablet())
+        final int layout_type = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.STATUS_BAR_LAYOUT, 0);
+        if (!sb.isTablet() && layout_type != 2)
             addSeparator();
 
         for (LinearLayout row : rows)
@@ -221,8 +219,7 @@ public class TogglesView extends LinearLayout {
         float fpixels = metrics.density * dp;
         int pixels = (int) (metrics.density * dp + 0.5f);
 
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                LayoutParams.MATCH_PARENT,
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,
                 pixels);
 
         sep.setLayoutParams(params);
@@ -239,8 +236,7 @@ public class TogglesView extends LinearLayout {
         void observe() {
             ContentResolver resolver = mContext.getContentResolver();
             resolver.registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.STATUSBAR_TOGGLES), false,
-                    this);
+                    Settings.System.getUriFor(Settings.System.STATUSBAR_TOGGLES), false, this);
             resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.STATUSBAR_TOGGLES_STYLE), false, this);
             resolver.registerContentObserver(
@@ -273,8 +269,7 @@ public class TogglesView extends LinearLayout {
                 STYLE_TEXT);
 
         mBrightnessLocation = Settings.System.getInt(resolver,
-                Settings.System.STATUSBAR_TOGGLES_BRIGHTNESS_LOC,
-                BRIGHTNESS_LOC_TOP);
+                Settings.System.STATUSBAR_TOGGLES_BRIGHTNESS_LOC, BRIGHTNESS_LOC_TOP);
 
         useAltButtonLayout = Settings.System.getInt(resolver,
                 Settings.System.STATUSBAR_TOGGLES_USE_BUTTONS, 0) == 1;
@@ -284,7 +279,8 @@ public class TogglesView extends LinearLayout {
         // 2);
         // use 2 for regular layout, 6 for buttons
         // TODO: make buttons scrollable so we can have more than 6
-        // ZB Edit - Temp make mWidgetsPerRow 100 for altWidgetLayout. A more elegant solution
+        // ZB Edit - Temp make mWidgetsPerRow 100 for altWidgetLayout. A more
+        // elegant solution
         // will need to be implemented in the main loop.
 
         mWidgetsPerRow = useAltButtonLayout ? 100 : 2;

@@ -543,6 +543,7 @@ import java.util.Set;
  *     <li> {@link #CATEGORY_DESK_DOCK}
  *     <li> {@link #CATEGORY_LE_DESK_DOCK}
  *     <li> {@link #CATEGORY_HE_DESK_DOCK}
+ *     <li> {@link #CATEGORY_EOS_KB_DOCK}
  *     <li> {@link #CATEGORY_CAR_MODE}
  *     <li> {@link #CATEGORY_APP_MARKET}
  * </ul>
@@ -563,6 +564,7 @@ import java.util.Set;
  *     <li> {@link #EXTRA_DOCK_STATE_LE_DESK}
  *     <li> {@link #EXTRA_DOCK_STATE_CAR}
  *     <li> {@link #EXTRA_DOCK_STATE_DESK}
+ *     <li> {@link #EXTRA_DOCK_STATE_EOS_KB}
  *     <li> {@link #EXTRA_DOCK_STATE_UNDOCKED}
  *     <li> {@link #EXTRA_DONT_KILL_APP}
  *     <li> {@link #EXTRA_EMAIL}
@@ -2303,6 +2305,14 @@ public class Intent implements Parcelable, Cloneable {
     public static final String CATEGORY_HE_DESK_DOCK = "android.intent.category.HE_DESK_DOCK";
 
     /**
+     * An activity to run when device is inserted into a keyboard dock.
+     * Used with {@link #ACTION_MAIN} to launch an activity.  For more
+     * information, see {@link android.app.UiModeManager}.
+     */
+    @SdkConstant(SdkConstantType.INTENT_CATEGORY)
+    public static final String CATEGORY_EOS_KB_DOCK = "android.intent.category.EOS_KB_DOCK";
+
+    /**
      * Used to indicate that the activity can be used in a car environment.
      */
     @SdkConstant(SdkConstantType.INTENT_CATEGORY)
@@ -2565,7 +2575,8 @@ public class Intent implements Parcelable, Cloneable {
      * {@link android.content.Intent#EXTRA_DOCK_STATE_DESK}, or
      * {@link android.content.Intent#EXTRA_DOCK_STATE_CAR}, or
      * {@link android.content.Intent#EXTRA_DOCK_STATE_LE_DESK}, or
-     * {@link android.content.Intent#EXTRA_DOCK_STATE_HE_DESK}.
+     * {@link android.content.Intent#EXTRA_DOCK_STATE_HE_DESK}, or
+     * {@link android.content.Intent#EXTRA_DOCK_STATE_EOS_KB}.
      */
     public static final String EXTRA_DOCK_STATE = "android.intent.extra.DOCK_STATE";
 
@@ -2598,6 +2609,12 @@ public class Intent implements Parcelable, Cloneable {
      * to represent that the phone is in a digital (high end) dock.
      */
     public static final int EXTRA_DOCK_STATE_HE_DESK = 4;
+
+    /**
+     * Used as an int value for {@link android.content.Intent#EXTRA_DOCK_STATE}
+     * to represent that the device is in a keyboard dock.
+     */
+    public static final int EXTRA_DOCK_STATE_EOS_KB = 10;
 
     /**
      * Boolean that can be supplied as meta-data with a dock activity, to

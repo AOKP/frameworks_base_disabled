@@ -6,7 +6,6 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.Configuration;
 import android.database.ContentObserver;
 import android.graphics.drawable.Animatable;
 import android.os.BatteryManager;
@@ -64,8 +63,7 @@ public class BatteryBar extends RelativeLayout implements Animatable {
                     this);
             resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.STATUSBAR_BATTERY_BAR_ANIMATE),
-                    false,
-                    this);
+                    false, this);
         }
 
         @Override
@@ -104,20 +102,16 @@ public class BatteryBar extends RelativeLayout implements Animatable {
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-
         if (!mAttached) {
             mAttached = true;
-            Log.e(TAG, "vertical bar: " + vertical);
 
             mBatteryBarLayout = new LinearLayout(mContext);
-            addView(mBatteryBarLayout, new RelativeLayout.LayoutParams(
-                    LayoutParams.MATCH_PARENT,
+            addView(mBatteryBarLayout, new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT,
                     LayoutParams.MATCH_PARENT));
 
             mBatteryBar = new View(mContext);
             mBatteryBarLayout.addView(mBatteryBar, new LinearLayout.LayoutParams(
-                    LayoutParams.MATCH_PARENT,
-                    LayoutParams.MATCH_PARENT));
+                    LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 
             DisplayMetrics metrics = getContext().getResources().getDisplayMetrics();
             float dp = 4f;
@@ -127,9 +121,8 @@ public class BatteryBar extends RelativeLayout implements Animatable {
             mChargerLayout = new LinearLayout(mContext);
 
             if (vertical)
-                addView(mChargerLayout, new
-                        RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT,
-                                pixels));
+                addView(mChargerLayout, new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT,
+                        pixels));
             else
                 addView(mChargerLayout, new RelativeLayout.LayoutParams(pixels,
                         LayoutParams.MATCH_PARENT));
@@ -137,8 +130,7 @@ public class BatteryBar extends RelativeLayout implements Animatable {
             mCharger = new View(mContext);
             mChargerLayout.setVisibility(View.GONE);
             mChargerLayout.addView(mCharger, new LinearLayout.LayoutParams(
-                    LayoutParams.MATCH_PARENT,
-                    LayoutParams.MATCH_PARENT));
+                    LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 
             IntentFilter filter = new IntentFilter();
             filter.addAction(Intent.ACTION_BATTERY_CHANGED);
@@ -155,7 +147,6 @@ public class BatteryBar extends RelativeLayout implements Animatable {
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-
         if (mAttached) {
             mAttached = false;
             getContext().unregisterReceiver(mIntentReceiver);
@@ -189,8 +180,8 @@ public class BatteryBar extends RelativeLayout implements Animatable {
     private void updateSettings() {
         ContentResolver resolver = getContext().getContentResolver();
 
-        int color = Settings.System.getInt(resolver,
-                Settings.System.STATUSBAR_BATTERY_BAR_COLOR, 0xFF33B5E5);
+        int color = Settings.System.getInt(resolver, Settings.System.STATUSBAR_BATTERY_BAR_COLOR,
+                0xFF33B5E5);
 
         shouldAnimateCharging = Settings.System.getInt(resolver,
                 Settings.System.STATUSBAR_BATTERY_BAR_ANIMATE, 0) == 1;
@@ -215,7 +206,6 @@ public class BatteryBar extends RelativeLayout implements Animatable {
             mBatteryBarLayout.setLayoutParams(params);
 
         } else {
-            Log.e(TAG, "width: " + getWidth());
             int w = (int) (((getWidth() / 100.0) * n) + 0.5);
             RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) mBatteryBarLayout
                     .getLayoutParams();

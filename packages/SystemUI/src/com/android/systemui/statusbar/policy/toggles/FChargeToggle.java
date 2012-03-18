@@ -31,6 +31,10 @@ public class FChargeToggle extends Toggle {
         	setIcon(R.drawable.toggle_fcharge);
         else
         	setIcon(R.drawable.toggle_fcharge_off);
+        IntentFilter f = new IntentFilter();
+        f.addAction("com.roman.romcontrol.FCHARGE_CHANGED");
+        context.registerReceiver(mIntentReceiver, f);
+        
     }
 
     @Override
@@ -61,10 +65,7 @@ public class FChargeToggle extends Toggle {
     		File fastcharge = new File(FAST_CHARGE_DIR,FAST_CHARGE_FILE);
     		FileReader reader = new FileReader(fastcharge);
     		BufferedReader breader = new BufferedReader(reader);
-    		if (breader.readLine() == "1") 
-    			return true;
-    		else
-    			return false;
+    		return (breader.readLine().equals("1"));
     	} catch (IOException e) {
     		Log.e("FChargeToggle","Couldn't read fast_charge file");
     		return false;
@@ -76,15 +77,20 @@ public class FChargeToggle extends Toggle {
     		File fastcharge = new File(FAST_CHARGE_DIR,FAST_CHARGE_FILE);
     		FileWriter fwriter = new FileWriter(fastcharge);
     		BufferedWriter bwriter = new BufferedWriter(fwriter);
-    		if (on) 
-    			bwriter.write("1");
-    		else
-    			bwriter.write("0");
+    		bwriter.write(on ? "1" : "0");
     		bwriter.close();
     	} catch (IOException e) {
     		Log.e("FChargeToggle","Couldn't write fast_charge file");
     	}	
     	
     }
-    
+    private final BroadcastReceiver mIntentReceiver = new BroadcastReceiver() {
+    	@Override
+    	public void onReceive(Context context, Intent intent) {
+    		String action = intent.getAction();
+    		if (action.equals("com.roman.romcontrol.FCHARGE_CHANGED")) {
+    			updateState();
+    		}
+    }
+    };
 }

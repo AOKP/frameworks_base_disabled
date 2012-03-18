@@ -2899,6 +2899,24 @@ public final class Settings {
         };
 
         /**
+         * Drawable URIs, each index needs to be matched up to LOCKSCREEN_CUSTOM_APP_ACTIVITIES
+         *
+         * OR ELSE
+         *
+         * @hide
+         */
+        public static final String[] LOCKSCREEN_CUSTOM_APP_ICONS = new String[] {
+                "lockscreen_custom_app_icon_0",
+                "lockscreen_custom_app_icon_1",
+                "lockscreen_custom_app_icon_2",
+                "lockscreen_custom_app_icon_3",
+                "lockscreen_custom_app_icon_4",
+                "lockscreen_custom_app_icon_5",
+                "lockscreen_custom_app_icon_6",
+                "lockscreen_custom_app_icon_7",
+        };
+
+        /**
          * Whether volume up/down can be long pressed to skip tracks
          * @hide
          */

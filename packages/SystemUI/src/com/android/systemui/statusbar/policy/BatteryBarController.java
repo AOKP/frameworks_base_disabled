@@ -13,12 +13,14 @@ import android.os.Handler;
 import android.provider.Settings;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 
 public class BatteryBarController extends LinearLayout {
+
+    private static final String TAG = "BatteryBarController";
 
     BatteryBar mainBar;
     BatteryBar alternateStyleBar;
@@ -53,8 +55,7 @@ public class BatteryBarController extends LinearLayout {
                     this);
             resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.STATUSBAR_BATTERY_BAR_THICKNESS),
-                    false,
-                    this);
+                    false, this);
         }
 
         @Override
@@ -70,33 +71,21 @@ public class BatteryBarController extends LinearLayout {
             String ns = "http://schemas.android.com/apk/res/com.android.systemui";
             mLocationToLookFor = attrs.getAttributeIntValue(ns, "viewLocation", 0);
         }
-
-    }
-
-    @Override
-    protected void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-
-        updateSettings();
-
-        invalidate();
     }
 
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-
         if (!isAttached) {
             isVertical = (getLayoutParams().height == LayoutParams.MATCH_PARENT);
+            SettingsObserver observer = new SettingsObserver(new Handler());
+            observer.observer();
+            updateSettings();
 
             isAttached = true;
             IntentFilter filter = new IntentFilter();
             filter.addAction(Intent.ACTION_BATTERY_CHANGED);
             getContext().registerReceiver(mIntentReceiver, filter);
-
-            SettingsObserver observer = new SettingsObserver(new Handler());
-            observer.observer();
-            updateSettings();
         }
     }
 
@@ -108,18 +97,24 @@ public class BatteryBarController extends LinearLayout {
             if (Intent.ACTION_BATTERY_CHANGED.equals(action)) {
                 mBatteryLevel = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0);
                 mBatteryCharging = intent.getIntExtra(BatteryManager.EXTRA_STATUS, 0) == BatteryManager.BATTERY_STATUS_CHARGING;
+                Prefs.setLastBatteryLevel(context, mBatteryLevel);
             }
         }
     };
 
     @Override
     protected void onDetachedFromWindow() {
-
         if (isAttached) {
             isAttached = false;
             removeBars();
         }
         super.onDetachedFromWindow();
+    }
+
+    @Override
+    protected void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        mBatteryLevel = Prefs.getLastBatteryLevel(getContext());
     }
 
     public void addBars() {
@@ -146,8 +141,7 @@ public class BatteryBarController extends LinearLayout {
 
         if (mStyle == STYLE_REGULAR) {
             addView(new BatteryBar(mContext, mBatteryCharging, mBatteryLevel, isVertical),
-                    new LinearLayout.LayoutParams(
-                            LayoutParams.MATCH_PARENT,
+                    new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,
                             LayoutParams.MATCH_PARENT, 1));
         } else if (mStyle == STYLE_SYMMETRIC) {
             BatteryBar bar1 = new BatteryBar(mContext, mBatteryCharging, mBatteryLevel, isVertical);
@@ -175,7 +169,6 @@ public class BatteryBarController extends LinearLayout {
     }
 
     public void updateSettings() {
-
         mStyle = Settings.System.getInt(getContext().getContentResolver(),
                 Settings.System.STATUSBAR_BATTERY_BAR_STYLE, 0);
         mLocation = Settings.System.getInt(getContext().getContentResolver(),
@@ -194,5 +187,4 @@ public class BatteryBarController extends LinearLayout {
     protected boolean isLocationValid(int location) {
         return mLocationToLookFor == location;
     }
-
 }

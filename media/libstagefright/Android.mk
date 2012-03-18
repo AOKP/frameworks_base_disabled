@@ -89,6 +89,14 @@ LOCAL_STATIC_LIBRARIES := \
         libstagefright_id3 \
         libFLAC \
 
+ifeq ($(BOARD_HAVE_CODEC_SUPPORT),SAMSUNG_CODEC_SUPPORT)
+LOCAL_CFLAGS     += -DSAMSUNG_CODEC_SUPPORT
+endif
+
+ifeq ($(BOARD_USES_PROPRIETARY_OMX),SAMSUNG)
+LOCAL_CFLAGS     += -DSAMSUNG_OMX
+endif
+
 ################################################################################
 
 # The following was shamelessly copied from external/webkit/Android.mk and

@@ -2575,55 +2575,6 @@ public final class Settings {
         public static final String VOLUME_WAKE_SCREEN = "volume_wake_screen";
 
         /**
-         * launch a custom app for sms
-         * 
-         * @hide
-         */
-        /** public static final String LOCKSCREEN_CUSTOM_SMS_INTENT = "lockscreen_custom_sms_intent";
-        
-        /**
-         * launch a custom app
-         * 
-         * @hide
-         */
-        public static final String LOCKSCREEN_CUSTOM_APP_INTENT_1 = "lockscreen_custom_app_intent_1";
-        
-        /**
-         * launch a custom app
-         * 
-         * @hide
-         */
-        public static final String LOCKSCREEN_CUSTOM_APP_INTENT_2 = "lockscreen_custom_app_intent_2";
-        
-        /**
-         * launch a custom app
-         * 
-         * @hide
-         */
-        public static final String LOCKSCREEN_CUSTOM_APP_INTENT_3 = "lockscreen_custom_app_intent_3";
-        
-        /**
-         * launch a custom app
-         * 
-         * @hide
-         */
-        public static final String LOCKSCREEN_CUSTOM_APP_INTENT_5 = "lockscreen_custom_app_intent_5";
-        
-        /**
-         * launch a custom app
-         * 
-         * @hide
-         */
-        public static final String LOCKSCREEN_CUSTOM_APP_INTENT_6 = "lockscreen_custom_app_intent_6";
-                     
-        /**
-         * launch a custom app
-         * 
-         * @hide
-         */
-        public static final String LOCKSCREEN_CUSTOM_APP_INTENT_7 = "lockscreen_custom_app_intent_7";
-
-        /**
          * Toggle to force multiwaveview lockscreen silent mode toggle even if
          * we have a camera.
          * 

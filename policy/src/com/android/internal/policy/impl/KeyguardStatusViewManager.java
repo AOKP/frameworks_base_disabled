@@ -422,26 +422,27 @@ class KeyguardStatusViewManager implements OnClickListener {
     
     private void updateCalendar() {
         ContentResolver resolver = getContext().getContentResolver();
-        boolean enabled = (Settings.System.getInt(resolver,
+        boolean calendarEventsEnabled = (Settings.System.getInt(resolver,
                 Settings.System.LOCKSCREEN_CALENDAR, 0) == 1);
-        String sources = Settings.System.getString(resolver,
+        String calendarSources = Settings.System.getString(resolver,
                 Settings.System.LOCKSCREEN_CALENDAR_SOURCES);
-        boolean multipleEvents = (Settings.System.getInt(resolver,
+        boolean multipleEventsEnabled = (Settings.System.getInt(resolver,
                 Settings.System.LOCKSCREEN_CALENDAR_FLIP, 0) == 1);
         int interval = Settings.System.getInt(resolver,
                 Settings.System.LOCKSCREEN_CALENDAR_INTERVAL, 2500);
         
-        if (sources == null)
-            sources = "";
+        if (calendarSources == null)
+            calendarSources = "";
         try {
-            if (enabled) {
-                ArrayList<EventBundle> events = getCalendarEvents(resolver, sources, multipleEvents);
+            if (calendarEventsEnabled) {
+                ArrayList<EventBundle> events = getCalendarEvents(resolver, calendarSources, multipleEventsEnabled);
                 mCalendarView.removeAllViews();
                 
                 for (EventBundle e : events) {
                     TextView tv = new TextView(getContext());
                     tv.setText(e.title + (e.isTomorrow ? ", Tomorrow " : " ")
-                            + ((e.allDay) ? "all-day" : "at " + DateFormat.format("kk:mm", e.begin).toString())
+                            + ((e.allDay) ? "all-day" : "at " 
+                            + DateFormat.format(DateFormat.is24HourFormat(getContext()) ? "kk:mm" : "hh:mm a", e.begin).toString())
                             + (!e.location.isEmpty() ? " (" + e.location + ")" : ""));
                     tv.setTextAppearance(getContext(), android.R.attr.textAppearanceMedium);
                     tv.setWidth((int)(findViewById(R.id.time).getWidth()*1.2));
@@ -452,7 +453,7 @@ class KeyguardStatusViewManager implements OnClickListener {
                 }
                 mCalendarView.setFlipInterval(interval);
                 mCalendarView.setVisibility(View.VISIBLE);
-                if (!multipleEvents || events.size() <= 1) {
+                if (!multipleEventsEnabled || events.size() <= 1) {
                     mCalendarView.stopFlipping();
                 } else {
                     mCalendarView.startFlipping();

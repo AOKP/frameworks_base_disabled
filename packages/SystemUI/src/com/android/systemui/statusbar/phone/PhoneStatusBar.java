@@ -62,6 +62,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
@@ -119,6 +120,7 @@ public class PhoneStatusBar extends StatusBar {
     private static final int MSG_HIDE_INTRUDER = 1003;
     private static final int MSG_OPEN_RECENTS_PANEL = 1020;
     private static final int MSG_CLOSE_RECENTS_PANEL = 1021;
+    private static final int MSG_SAMSUNG_MAGIC = 2000;
 
     // will likely move to a resource or other tunable param at some point
     private static final int INTRUDER_ALERT_DECAY_MS = 10000;
@@ -248,6 +250,12 @@ public class PhoneStatusBar extends StatusBar {
     int[] mAbsPos = new int[2];
     int mLinger = 0;
     Runnable mPostCollapseCleanup = null;
+
+    private int mIsBrightNessMode = 0;
+    private boolean mIsStatusBarBrightNess;
+    private boolean mIsAutoBrightNess;
+    private BrightNessContentObserver mBrightNessContentObs = new BrightNessContentObserver();
+    private Float mPropFactor;
 
     boolean mQuickTogglesHideAfterCollapse = true;
 
@@ -470,7 +478,53 @@ public class PhoneStatusBar extends StatusBar {
                 Settings.System.STATUSBAR_TOGGLES_VISIBILITY, 1) == 1 ? View.VISIBLE : View.GONE);
         mQuickToggles.setBar(this);
 
+        mIsStatusBarBrightNess = Settings.System.getInt(mStatusBarView.getContext()
+                .getContentResolver(),
+                Settings.System.STATUS_BAR_BRIGHTNESS_TOGGLE, 0) == 1;
+        if (mIsStatusBarBrightNess) {
+            mIsAutoBrightNess = checkAutoBrightNess();
+            mContext.getContentResolver().registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.SCREEN_BRIGHTNESS_MODE), false,
+                    mBrightNessContentObs);
+            updatePropFactorValue();
+        }
+
         return sb;
+    }
+
+    private boolean checkAutoBrightNess() {
+        return Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.SCREEN_BRIGHTNESS_MODE,
+                Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL) == Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC;
+    }
+
+    private void doBrightNess(MotionEvent e) {
+        int screenBrightness = checkMinMax(Float.valueOf((e.getRawX() * mPropFactor.floatValue()))
+                .intValue());
+        Settings.System.putInt(mContext.getContentResolver(), "screen_brightness", screenBrightness);
+        // Log.e(TAG, "Screen brightness: " + screenBrightness);
+        try {
+            IPowerManager pw = IPowerManager.Stub.asInterface(ServiceManager.getService("power"));
+            if (pw != null) {
+                pw.setBacklightBrightness(screenBrightness);
+            }
+        } catch (RemoteException e1) {
+        }
+    }
+
+    private int checkMinMax(int brightness) {
+        if (0x1E > brightness) // brightness < 0x1E
+            return 0x1E;
+        else if (0xFF < brightness) { // brightness > 0xFF
+            return 0xFF;
+        }
+
+        return brightness;
+    }
+
+    private void updatePropFactorValue() {
+        mPropFactor = Float.valueOf((float) android.os.Power.BRIGHTNESS_ON
+                / Integer.valueOf(mDisplay.getWidth()).floatValue());
     }
 
     protected WindowManager.LayoutParams getRecentsLayoutParams(LayoutParams layoutParams) {
@@ -1278,6 +1332,13 @@ public class PhoneStatusBar extends StatusBar {
                         mRecentsPanel.show(false, true);
                     }
                     break;
+                case MSG_SAMSUNG_MAGIC:
+                    if (mIsStatusBarBrightNess) {
+                        mIsBrightNessMode = 1;
+                        updateExpandedViewPos(0);
+                        performCollapse();
+                    }
+                    break;
             }
         }
     }
@@ -1634,6 +1695,14 @@ public class PhoneStatusBar extends StatusBar {
                     prepareTracking(y, !mExpanded);// opening if we're not
                                                    // already fully visible
                     trackMovement(event);
+
+                    if (mIsStatusBarBrightNess) {
+                        mIsBrightNessMode = 0;
+                        if (!mIsAutoBrightNess) {
+                            mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG_SAMSUNG_MAGIC),
+                                    ViewConfiguration.getGlobalActionKeyTimeout() * 2);
+                        }
+                    }
                 }
             }
         } else if (mTracking) {
@@ -1641,47 +1710,21 @@ public class PhoneStatusBar extends StatusBar {
             final int minY = statusBarSize + mCloseView.getHeight();
             if (action == MotionEvent.ACTION_MOVE) {
                 if (mAnimatingReveal && y < minY) {
-                    boolean brightnessControl = Settings.System.getInt(mStatusBarView.getContext()
-                            .getContentResolver(),
-                            Settings.System.STATUS_BAR_BRIGHTNESS_TOGGLE, 0) == 1;
-                    if (brightnessControl) {
-                        mVelocityTracker.computeCurrentVelocity(1000);
-                        float yVel = mVelocityTracker.getYVelocity();
-                        yVel = Math.abs(yVel);
-                        if (yVel < 50.0f) {
-                            if (mLinger > 20) {
-                                Context context = mStatusBarView.getContext();
-                                boolean autoBrightness = Settings.System.getInt(
-                                        context.getContentResolver(),
-                                        Settings.System.SCREEN_BRIGHTNESS_MODE, 0) == Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC;
-                                if (!autoBrightness) {
-                                    float x = (float) event.getRawX();
-                                    int newBrightness = (int) Math
-                                            .round(((x / mScreenWidth) * android.os.Power.BRIGHTNESS_ON));
-                                    newBrightness = Math.min(newBrightness,
-                                            android.os.Power.BRIGHTNESS_ON);
-                                    newBrightness = Math.max(newBrightness, mMinBrightness);
-                                    try {
-                                        IPowerManager power = IPowerManager.Stub
-                                                .asInterface(ServiceManager.getService("power"));
-                                        if (power != null) {
-                                            power.setBacklightBrightness(newBrightness);
-                                            Settings.System.putInt(context.getContentResolver(),
-                                                    Settings.System.SCREEN_BRIGHTNESS,
-                                                    newBrightness);
-                                        }
-                                    } catch (RemoteException e) {
-                                        Slog.w(TAG, "Setting Brightness failed: " + e);
-                                    }
-                                }
-                            } else {
-                                mLinger++;
-                            }
-                        } else {
-                            mLinger = 0;
-                        }
+                    // samsung brightness
+                    if (mIsStatusBarBrightNess && mIsBrightNessMode == 1) {
+                        doBrightNess(event);
                     }
                 } else {
+                    // remove brightness events from being posted, change mode
+                    if (mIsStatusBarBrightNess) {
+                        if (!mIsAutoBrightNess && mHandler.hasMessages(MSG_SAMSUNG_MAGIC)) {
+                            mHandler.removeMessages(MSG_SAMSUNG_MAGIC);
+                        }
+
+                        if (mIsBrightNessMode == 1) {
+                            mIsBrightNessMode = 2;
+                        }
+                    }
                     mAnimatingReveal = false;
                     updateExpandedViewPos(y + mViewDelta);
                 }
@@ -1715,6 +1758,10 @@ public class PhoneStatusBar extends StatusBar {
                 }
 
                 performFling(y + mViewDelta, vel, false);
+
+                if (mIsStatusBarBrightNess && mHandler.hasMessages(MSG_SAMSUNG_MAGIC)) {
+                    mHandler.removeMessages(MSG_SAMSUNG_MAGIC);
+                }
             }
 
         }
@@ -2515,12 +2562,27 @@ public class PhoneStatusBar extends StatusBar {
                     Settings.System.getUriFor(Settings.System.USE_WEATHER), false, this);
             resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.WEATHER_STATUSBAR_STYLE), false, this);
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.STATUS_BAR_BRIGHTNESS_TOGGLE), false, this);
         }
 
         @Override
         public void onChange(boolean selfChange) {
             updateSettings();
         }
+    }
+
+    private class BrightNessContentObserver extends ContentObserver {
+
+        public BrightNessContentObserver() {
+            super(new Handler());
+        }
+
+        @Override
+        public void onChange(boolean selfChange) {
+            mIsAutoBrightNess = checkAutoBrightNess();
+        }
+
     }
 
     boolean mDropdownSettingsDefualtBehavior = true;
@@ -2537,7 +2599,11 @@ public class PhoneStatusBar extends StatusBar {
         
         mWeatherPanelEnabled = (Settings.System.getInt(cr, Settings.System.WEATHER_STATUSBAR_STYLE, 0) == 1) &&
                 (Settings.System.getInt(cr, Settings.System.USE_WEATHER, 0) == 1);
-        
+
+        mIsStatusBarBrightNess = Settings.System.getInt(mStatusBarView.getContext()
+                .getContentResolver(),
+                Settings.System.STATUS_BAR_BRIGHTNESS_TOGGLE, 0) == 1;
+
         reDrawHeader();
     }
     

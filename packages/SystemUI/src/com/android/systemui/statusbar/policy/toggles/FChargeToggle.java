@@ -32,7 +32,7 @@ public class FChargeToggle extends Toggle {
         else
         	setIcon(R.drawable.toggle_fcharge_off);
         IntentFilter f = new IntentFilter();
-        f.addAction("com.roman.romcontrol.F_CHARGE_CHANGED");
+        f.addAction("com.roman.romcontrol.FCHARGE_CHANGED");
         context.registerReceiver(mIntentReceiver, f);
         
     }

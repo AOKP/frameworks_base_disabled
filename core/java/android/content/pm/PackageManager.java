@@ -760,6 +760,19 @@ public abstract class PackageManager {
     public static final int PER_USER_RANGE = 100000;
 
     /**
+    * Feature for {@link #getSystemAvailableFeatures} and
+    * {@link #hasSystemFeature}: The device has a keyboard dock.
+    */
+    public static final String FEATURE_EOS_KB_DOCK = "eos.hardware.dock";
+
+    /**
+    * Feature for {@link #getSystemAvailableFeatures} and
+    * {@link #hasSystemFeature}: The device uses a hall effect
+    * sensor to change the value of the lid switch.
+    */
+    public static final String FEATURE_EOS_HALL_SENSOR = "eos.hardware.hall_sensor";
+
+    /**
      * Feature for {@link #getSystemAvailableFeatures} and {@link #hasSystemFeature}: The device's
      * audio pipeline is low-latency, more suitable for audio applications sensitive to delays or
      * lag in sound input or output.

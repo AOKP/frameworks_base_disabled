@@ -254,6 +254,22 @@ enum {
     AKEYCODE_CALENDAR        = 208,
     AKEYCODE_MUSIC           = 209,
     AKEYCODE_CALCULATOR      = 210,
+    AKEYCODE_HANKAKU_ZENKAKU = 211,
+    AKEYCODE_EISU            = 212,
+    AKEYCODE_MUHENKAN        = 213,
+    AKEYCODE_HENKAN          = 214,
+    AKEYCODE_HIRAGANA_KATAKANA = 215,
+    AKEYCODE_YEN             = 216,
+    AKEYCODE_EUROPE_1        = 217,
+    AKEYCODE_EUROPE_2        = 218,
+    AKEYCODE_SLEEP           = 219,
+    AKEYCODE_WIRELESS        = 220,
+    AKEYCODE_BLUETOOTH       = 221,
+    AKEYCODE_TOUCHPAD        = 222,
+    AKEYCODE_BRIGHTNESS_UP   = 223,
+    AKEYCODE_BRIGHTNESS_DOWN = 224,
+    AKEYCODE_BRIGHTNESS_AUTO = 225,
+    AKEYCODE_CAPTURE         = 226,
 
     // NOTE: If you add a new keycode here you must also add it to several other files.
     //       Refer to frameworks/base/core/java/android/view/KeyEvent.java for the full list.

@@ -85,6 +85,10 @@ public:
     virtual uint32_t getOffset() const;
 #endif
 
+#ifndef BINDER_COMPAT
+    virtual uint32_t getOffset() const;
+#endif
+
 private:
     friend class IMemory;
     friend class HeapCache;
@@ -111,6 +115,10 @@ private:
     mutable size_t      mSize;
     mutable uint32_t    mFlags;
 #ifndef BYPASS_OFFSET
+    mutable uint32_t    mOffset;
+#endif
+
+#ifndef BINDER_COMPAT
     mutable uint32_t    mOffset;
 #endif
     mutable bool        mRealHeap;
@@ -239,8 +247,10 @@ BpMemoryHeap::BpMemoryHeap(const sp<IBinder>& impl)
 #ifndef BYPASS_OFFSET
     mOffset(0),
 #endif
-    mRealHeap(false)
-
+#ifndef BINDER_COMPAT
+        mOffset(0),
+#endif
+        mRealHeap(false)
 {
 }
 
@@ -284,6 +294,10 @@ void BpMemoryHeap::assertMapped() const
 #ifndef BYPASS_OFFSET
                 mOffset = heap->mOffset;
 #endif
+
+#ifndef BINDER_COMPAT
+                mOffset = heap->mOffset;
+#endif
                 android_atomic_write( dup( heap->mHeapId ), &mHeapId );
             }
         } else {
@@ -313,6 +327,12 @@ void BpMemoryHeap::assertReallyMapped() const
         uint32_t offset = 0;
 #endif
 
+#ifndef BINDER_COMPAT
+        uint32_t offset = reply.readInt32();
+#else
+        uint32_t offset = 0;
+#endif
+
         ALOGE_IF(err, "binder=%p transaction failed fd=%d, size=%ld, err=%d (%s)",
                 asBinder().get(), parcel_fd, size, err, strerror(-err));
 
@@ -337,6 +357,10 @@ void BpMemoryHeap::assertReallyMapped() const
                 mSize = size;
                 mFlags = flags;
 #ifndef BYPASS_OFFSET
+                mOffset = offset;
+#endif
+
+#ifndef BINDER_COMPAT
                 mOffset = offset;
 #endif
                 android_atomic_write(fd, &mHeapId);
@@ -372,6 +396,13 @@ uint32_t BpMemoryHeap::getOffset() const {
 }
 #endif
 
+#ifndef BINDER_COMPAT
+uint32_t BpMemoryHeap::getOffset() const {
+    assertMapped();
+    return mOffset;
+}
+#endif
+
 // ---------------------------------------------------------------------------
 
 IMPLEMENT_META_INTERFACE(MemoryHeap, "android.utils.IMemoryHeap");
@@ -392,6 +423,10 @@ status_t BnMemoryHeap::onTransact(
             reply->writeInt32(getSize());
             reply->writeInt32(getFlags());
 #ifndef BYPASS_OFFSET
+            reply->writeInt32(getOffset());
+#endif
+
+#ifndef BINDER_COMPAT
             reply->writeInt32(getOffset());
 #endif
             return NO_ERROR;

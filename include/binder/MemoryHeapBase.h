@@ -65,6 +65,9 @@ public:
     virtual uint32_t      getOffset() const;
 #endif
 
+#ifndef BINDER_COMPAT
+    virtual uint32_t    getOffset() const;
+#endif
     const char*         getDevice() const;
 
     /* this closes this heap -- use carefully */
@@ -94,6 +97,10 @@ private:
     const char* mDevice;
     bool        mNeedUnmap;
 #ifndef BYPASS_OFFSET
+    uint32_t    mOffset;
+#endif
+
+#ifndef BINDER_COMPAT
     uint32_t    mOffset;
 #endif
 };

@@ -46,6 +46,10 @@ MemoryHeapBase::MemoryHeapBase()
 #ifndef BYPASS_OFFSET
     , mOffset(0)
 #endif
+
+#ifndef BINDER_COMPAT
+    , mOffset(0)
+#endif
 {
 }
 
@@ -53,6 +57,10 @@ MemoryHeapBase::MemoryHeapBase(size_t size, uint32_t flags, char const * name)
     : mFD(-1), mSize(0), mBase(MAP_FAILED), mFlags(flags),
       mDevice(0), mNeedUnmap(false)
 #ifndef BYPASS_OFFSET
+    , mOffset(0)
+#endif
+
+#ifndef BINDER_COMPAT
     , mOffset(0)
 #endif
 {
@@ -75,6 +83,10 @@ MemoryHeapBase::MemoryHeapBase(const char* device, size_t size, uint32_t flags)
 #ifndef BYPASS_OFFSET
     , mOffset(0)
 #endif
+
+#ifndef BINDER_COMPAT
+    , mOffset(0)
+#endif
 {
     int open_flags = O_RDWR;
     if (flags & NO_CACHING)
@@ -95,6 +107,10 @@ MemoryHeapBase::MemoryHeapBase(int fd, size_t size, uint32_t flags, uint32_t off
     : mFD(-1), mSize(0), mBase(MAP_FAILED), mFlags(flags),
       mDevice(0), mNeedUnmap(false)
 #ifndef BYPASS_OFFSET
+    , mOffset(0)
+#endif
+
+#ifndef BINDER_COMPAT
     , mOffset(0)
 #endif
 {
@@ -156,6 +172,10 @@ status_t MemoryHeapBase::mapfd(int fd, size_t size, uint32_t offset)
 #ifndef BYPASS_OFFSET
     mOffset = offset;
 #endif
+
+#ifndef BINDER_COMPAT
+    mOffset = offset;
+#endif
     return NO_ERROR;
 }
 
@@ -198,6 +218,12 @@ const char* MemoryHeapBase::getDevice() const {
     return mDevice;
 }
 #ifndef BYPASS_OFFSET
+uint32_t MemoryHeapBase::getOffset() const {
+    return mOffset;
+}
+#endif
+
+#ifndef BINDER_COMPAT
 uint32_t MemoryHeapBase::getOffset() const {
     return mOffset;
 }

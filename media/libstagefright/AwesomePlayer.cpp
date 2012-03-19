@@ -1385,7 +1385,7 @@ status_t AwesomePlayer::seekTo_l(int64_t timeUs) {
         notifyListener_l(MEDIA_SEEK_COMPLETE);
         mSeekNotificationSent = true;
 
-        if ((mFlags & PREPARED) && mVideoSource != NULL && mVideoBuffer!= NULL) {
+        if ((mFlags & PREPARED) && mVideoSource != NULL) {
             modifyFlags(SEEK_PREVIEW, SET);
             postVideoEvent_l();
         }

@@ -140,7 +140,7 @@ public final class CdmaDataConnectionTracker extends DataConnectionTracker {
 
     @Override
     public void dispose() {
-        cleanUpConnection(false, null, false);
+        cleanUpConnection(true, null);
 
         super.dispose();
 
@@ -296,7 +296,7 @@ public final class CdmaDataConnectionTracker extends DataConnectionTracker {
      * @param tearDown true if the underlying DataConnection should be disconnected.
      * @param reason for the clean up.
      */
-    private void cleanUpConnection(boolean tearDown, String reason, boolean doAll) {
+    private void cleanUpConnection(boolean tearDown, String reason) {
         if (DBG) log("cleanUpConnection: reason: " + reason);
 
         // Clear the reconnect alarm, if set.
@@ -316,15 +316,9 @@ public final class CdmaDataConnectionTracker extends DataConnectionTracker {
                 DataConnectionAc dcac =
                     mDataConnectionAsyncChannels.get(conn.getDataConnectionId());
                 if (tearDown) {
-                    if (doAll) {
-                        if (DBG) log("cleanUpConnection: teardown, conn.tearDownAll");
-                        conn.tearDownAll(reason, obtainMessage(EVENT_DISCONNECT_DONE,
-                                conn.getDataConnectionId(), 0, reason));
-                    } else {
-                        if (DBG) log("cleanUpConnection: teardown, conn.tearDown");
-                        conn.tearDown(reason, obtainMessage(EVENT_DISCONNECT_DONE,
-                                conn.getDataConnectionId(), 0, reason));
-                    }
+                    if (DBG) log("cleanUpConnection: teardown, call conn.disconnect");
+                    conn.tearDown(reason, obtainMessage(EVENT_DISCONNECT_DONE,
+                            conn.getDataConnectionId(), 0, reason));
                     notificationDeferred = true;
                 } else {
                     if (DBG) log("cleanUpConnection: !tearDown, call conn.resetSynchronously");

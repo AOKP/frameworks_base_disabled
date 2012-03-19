@@ -119,8 +119,13 @@ const char* gVS_Footer =
 
 const char* gFS_Header_Extension_FramebufferFetch =
         "#extension GL_NV_shader_framebuffer_fetch : enable\n\n";
+#ifdef MISSING_EGL_EXTERNAL_IMAGE
+const char* gFS_Header_Extension_ExternalTexture =
+        "\n";
+#else
 const char* gFS_Header_Extension_ExternalTexture =
         "#extension GL_OES_EGL_image_external : require\n\n";
+#endif
 const char* gFS_Header =
         "precision mediump float;\n\n";
 const char* gFS_Uniforms_Color =
@@ -135,8 +140,13 @@ const char* gFS_Header_Uniforms_PointHasBitmap =
         "uniform float pointSize;\n";
 const char* gFS_Uniforms_TextureSampler =
         "uniform sampler2D sampler;\n";
+#ifdef MISSING_EGL_EXTERNAL_IMAGE
+const char* gFS_Uniforms_ExternalTextureSampler =
+        "uniform sampler2D sampler;\n";
+#else
 const char* gFS_Uniforms_ExternalTextureSampler =
         "uniform samplerExternalOES sampler;\n";
+#endif
 const char* gFS_Uniforms_GradientSampler[3] = {
         // Linear
         "uniform sampler2D gradientSampler;\n",

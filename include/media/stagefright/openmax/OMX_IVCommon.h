@@ -113,7 +113,7 @@ typedef enum OMX_COLOR_FORMATTYPE {
     OMX_COLOR_Format16bitBGR565,
     OMX_COLOR_Format18bitRGB666,
     OMX_COLOR_Format18bitARGB1665,
-    OMX_COLOR_Format19bitARGB1666,
+    OMX_COLOR_Format19bitARGB1666,          // 10
     OMX_COLOR_Format24bitRGB888,
     OMX_COLOR_Format24bitBGR888,
     OMX_COLOR_Format24bitARGB1887,
@@ -123,17 +123,17 @@ typedef enum OMX_COLOR_FORMATTYPE {
     OMX_COLOR_FormatYUV411Planar,
     OMX_COLOR_FormatYUV411PackedPlanar,
     OMX_COLOR_FormatYUV420Planar,
-    OMX_COLOR_FormatYUV420PackedPlanar,
+    OMX_COLOR_FormatYUV420PackedPlanar,     // 20
     OMX_COLOR_FormatYUV420SemiPlanar,
     OMX_COLOR_FormatYUV422Planar,
     OMX_COLOR_FormatYUV422PackedPlanar,
     OMX_COLOR_FormatYUV422SemiPlanar,
     OMX_COLOR_FormatYCbYCr,
     OMX_COLOR_FormatYCrYCb,
-    OMX_COLOR_FormatCbYCrY,
+    OMX_COLOR_FormatCbYCrY,                 // 27 (0x1b)
     OMX_COLOR_FormatCrYCbY,
     OMX_COLOR_FormatYUV444Interleaved,
-    OMX_COLOR_FormatRawBayer8bit,
+    OMX_COLOR_FormatRawBayer8bit,           // 30
     OMX_COLOR_FormatRawBayer10bit,
     OMX_COLOR_FormatRawBayer8bitcompressed,
     OMX_COLOR_FormatL2,
@@ -143,7 +143,7 @@ typedef enum OMX_COLOR_FORMATTYPE {
     OMX_COLOR_FormatL24,
     OMX_COLOR_FormatL32,
     OMX_COLOR_FormatYUV420PackedSemiPlanar,
-    OMX_COLOR_FormatYUV422PackedSemiPlanar,
+    OMX_COLOR_FormatYUV422PackedSemiPlanar, // 40
     OMX_COLOR_Format18BitBGR666,
     OMX_COLOR_Format24BitARGB6666,
     OMX_COLOR_Format24BitABGR6666,

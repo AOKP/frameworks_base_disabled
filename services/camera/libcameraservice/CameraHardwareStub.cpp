@@ -50,7 +50,8 @@ void CameraHardwareStub::initDefaultParameters()
     p.set(CameraParameters::KEY_SUPPORTED_PREVIEW_SIZES, "320x240");
     p.setPreviewSize(320, 240);
     p.setPreviewFrameRate(15);
-    p.setPreviewFormat(CameraParameters::PIXEL_FORMAT_YUV420SP);
+    //p.setPreviewFormat(CameraParameters::PIXEL_FORMAT_YUV420SP);
+    p.setPreviewFormat(CameraParameters::PIXEL_FORMAT_YUV422I);
 
     p.set(CameraParameters::KEY_SUPPORTED_PICTURE_SIZES, "320x240");
     p.setPictureSize(320, 240);
@@ -66,14 +67,14 @@ void CameraHardwareStub::initHeapLocked()
     // Create raw heap.
     int picture_width, picture_height;
     mParameters.getPictureSize(&picture_width, &picture_height);
-    mRawHeap = new MemoryHeapBase(picture_width * picture_height * 3 / 2);
+    mRawHeap = new MemoryHeapBase(picture_width * picture_height * 2);
 
     int preview_width, preview_height;
     mParameters.getPreviewSize(&preview_width, &preview_height);
     ALOGD("initHeapLocked: preview size=%dx%d", preview_width, preview_height);
 
-    // Note that we enforce yuv420sp in setParameters().
-    int how_big = preview_width * preview_height * 3 / 2;
+    // Note that we enforce yuv422.
+    int how_big = preview_width * preview_height * 2;
 
     // If we are being reinitialized to the same size as before, no
     // work needs to be done.
@@ -174,7 +175,7 @@ int CameraHardwareStub::previewThread()
 
         // Fill the current frame with the fake camera.
         uint8_t *frame = ((uint8_t *)base) + offset;
-        fakeCamera->getNextFrameAsYuv420(frame);
+        fakeCamera->getNextFrameAsYuv422(frame);
 
         //ALOGV("previewThread: generated frame to buffer %d", mCurrentPreviewFrame);
 
@@ -287,9 +288,9 @@ int CameraHardwareStub::pictureThread()
         // In the meantime just make another fake camera picture.
         int w, h;
         mParameters.getPictureSize(&w, &h);
-        sp<MemoryBase> mem = new MemoryBase(mRawHeap, 0, w * h * 3 / 2);
+        sp<MemoryBase> mem = new MemoryBase(mRawHeap, 0, w * h * 2);
         FakeCamera cam(w, h);
-        cam.getNextFrameAsYuv420((uint8_t *)mRawHeap->base());
+        cam.getNextFrameAsYuv422((uint8_t *)mRawHeap->base());
         mDataCb(CAMERA_MSG_RAW_IMAGE, mem, NULL, mCallbackCookie);
     }
 
@@ -339,8 +340,8 @@ status_t CameraHardwareStub::setParameters(const CameraParameters& params)
     // XXX verify params
 
     if (strcmp(params.getPreviewFormat(),
-        CameraParameters::PIXEL_FORMAT_YUV420SP) != 0) {
-        ALOGE("Only yuv420sp preview is supported");
+        CameraParameters::PIXEL_FORMAT_YUV422I) != 0) {
+        LOGE("Only yuv422i preview is supported");
         return -1;
     }
 

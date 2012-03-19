@@ -305,6 +305,36 @@ static void convert_rgb16_to_yuv420(uint8_t *rgb, uint8_t *yuv, int width, int h
     ccrgb16toyuv_wo_colorkey(rgb, yuv, param, table);
 }
 
+static void convert_rgb16_to_yuv422(uint8_t *rgb, uint8_t *yuv, int width, int height)
+{
+    if (!tables_initialized) {
+        initYtab();
+        initCrtab();
+        initCbtab();
+        tables_initialized = 1;
+    }
+
+    uint32_t param[6];
+    param[0] = (uint32_t) width;
+    param[1] = (uint32_t) height;
+    param[2] = (uint32_t) width;
+    param[3] = (uint32_t) height;
+    param[4] = (uint32_t) width;
+    param[5] = (uint32_t) 0;
+
+    uint8_t *table[3];
+    table[0] = gYTable;
+    table[1] = gCbTable + 384;
+    table[2] = gCrTable + 384;
+
+    //todo: 422i conversion... 16bit vs 12bit for 420sp
+    // 422 seems easier to convert than 420 :
+    //Input: Read 4 bytes of Y'UV (u, y1, v, y2 )
+    //Output: Writes 6 bytes of RGB (R, G, B, R, G, B)
+
+    ccrgb16toyuv_wo_colorkey(rgb, yuv, param, table);
+}
+
 const int FakeCamera::kRed;
 const int FakeCamera::kGreen;
 const int FakeCamera::kBlue;
@@ -357,6 +387,15 @@ void FakeCamera::getNextFrameAsYuv420(uint8_t *buffer)
 
     getNextFrameAsRgb565(mTmpRgb16Buffer);
     convert_rgb16_to_yuv420((uint8_t*)mTmpRgb16Buffer, buffer, mWidth, mHeight);
+}
+
+void FakeCamera::getNextFrameAsYuv422(uint8_t *buffer)
+{
+    if (mTmpRgb16Buffer == 0)
+        mTmpRgb16Buffer = new uint16_t[mWidth * mHeight];
+
+    getNextFrameAsRgb565(mTmpRgb16Buffer);
+    convert_rgb16_to_yuv422((uint8_t*)mTmpRgb16Buffer, buffer, mWidth, mHeight);
 }
 
 void FakeCamera::drawSquare(uint16_t *dst, int x, int y, int size, int color, int shadow)

@@ -414,3 +414,40 @@ EGLNativeWindowType android_createDisplaySurface(void)
     }
     return (EGLNativeWindowType)w;
 }
+
+#ifndef USE_OVERLAY_CPP
+extern "C" status_t _ZN7android7Overlay13dequeueBufferEPPv(void** buffer)
+{
+    return NO_ERROR;
+}
+
+extern "C" status_t _ZN7android7Overlay11queueBufferEPv(void* buffer)
+{
+    return NO_ERROR;
+}
+
+extern "C" int32_t _ZNK7android7Overlay14getBufferCountEv(void)
+{
+    return 0;//NUM_FRAME_BUFFERS;
+}
+
+extern "C" void* _ZN7android7Overlay16getBufferAddressEPv(void* buffer)
+{
+/*
+    void* ret=NULL;
+    LOGD("getBufferAddressEPv: buffer=%p", buffer);
+    //bool keepOwnership=true;
+    //GraphicBuffer* b = new GraphicBuffer((ANativeWindowBuffer*) buffer, keepOwnership);
+    //ret = (void*) b->handle;
+    NativeBuffer* buf = new NativeBuffer(640, 480, 5, 0x1033);
+    return (void*) buf->handle;
+    //return ret;
+*/
+    return NULL;
+}
+
+extern "C" void _ZN7android7Overlay7destroyEv(void)
+{
+    return;
+}
+#endif

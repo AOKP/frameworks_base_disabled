@@ -41,6 +41,8 @@ public:
 
     void setSize(int width, int height);
     void getNextFrameAsYuv420(uint8_t *buffer);
+    void getNextFrameAsYuv422(uint8_t *buffer);
+
     // Write to the fd a string representing the current state.
     void dump(int fd) const;
 
@@ -52,6 +54,7 @@ private:
     void drawSquare(uint16_t *buffer, int x, int y, int size, int color, int shadow);
     void drawCheckerboard(uint16_t *buffer, int size);
 
+    // RGB 565 ?? its 5551 here...
     static const int kRed = 0xf800;
     static const int kGreen = 0x07c0;
     static const int kBlue = 0x003e;

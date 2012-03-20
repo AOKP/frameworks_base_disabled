@@ -51,6 +51,8 @@ public class BrightnessSlider implements ToggleSlider.Listener {
 
     boolean mSystemChange;
 
+    boolean mAsyncChange;
+
     public BrightnessSlider(Context context) {
         mContext = context;
         mView = View.inflate(mContext, R.layout.brightness_slider, null);
@@ -111,8 +113,10 @@ public class BrightnessSlider implements ToggleSlider.Listener {
             if (!tracking) {
                 AsyncTask.execute(new Runnable() {
                     public void run() {
+                        mAsyncChange = true;
                         Settings.System.putInt(mContext.getContentResolver(),
                                 Settings.System.SCREEN_BRIGHTNESS, val);
+                        mAsyncChange = false;
                     }
                 });
             }
@@ -132,6 +136,9 @@ public class BrightnessSlider implements ToggleSlider.Listener {
     }
 
     private void updateValues() {
+        if (mAsyncChange)
+            return;
+
         int automatic;
         mSystemChange = true;
         try {
@@ -155,8 +162,7 @@ public class BrightnessSlider implements ToggleSlider.Listener {
         void observe() {
             ContentResolver resolver = mContext.getContentResolver();
             resolver.registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.SCREEN_BRIGHTNESS), false,
-                    this);
+                    Settings.System.getUriFor(Settings.System.SCREEN_BRIGHTNESS), false, this);
             resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.SCREEN_BRIGHTNESS_MODE), false, this);
         }

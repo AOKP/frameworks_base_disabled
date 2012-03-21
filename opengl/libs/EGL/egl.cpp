@@ -146,7 +146,7 @@ void setGLHooksThreadSpecific(gl_hooks_t const *value) {
 
 static int gl_no_context() {
     if (egl_tls_t::logNoContextCall()) {
-        LOGE("call to OpenGL ES API with no current context "
+        ALOGE("call to OpenGL ES API with no current context "
              "(logged once per thread)");
         char value[PROPERTY_VALUE_MAX];
         property_get("debug.egl.callstack", value, "0");
@@ -270,7 +270,7 @@ static EGLBoolean egl_init_drivers_locked() {
             cnx->hooks[GLESv2_INDEX] = &gHooks[GLESv2_INDEX][IMPL_HARDWARE];
             cnx->dso = loader.open(EGL_DEFAULT_DISPLAY, 1, cnx);
         } else {
-            LOGD("3D hardware acceleration is disabled");
+            ALOGD("3D hardware acceleration is disabled");
         }
     }
 
@@ -292,7 +292,7 @@ EGLBoolean egl_init_drivers() {
 }
 
 void gl_unimplemented() {
-    LOGE("called unimplemented OpenGL ES API");
+    ALOGE("called unimplemented OpenGL ES API");
 }
 
 // ----------------------------------------------------------------------------

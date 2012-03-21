@@ -55,12 +55,12 @@ status_t Tokenizer::open(const String8& filename, Tokenizer** outTokenizer) {
     int fd = ::open(filename.string(), O_RDONLY);
     if (fd < 0) {
         result = -errno;
-        LOGE("Error opening file '%s', %s.", filename.string(), strerror(errno));
+        ALOGE("Error opening file '%s', %s.", filename.string(), strerror(errno));
     } else {
         struct stat stat;
         if (fstat(fd, &stat)) {
             result = -errno;
-            LOGE("Error getting size of file '%s', %s.", filename.string(), strerror(errno));
+            ALOGE("Error getting size of file '%s', %s.", filename.string(), strerror(errno));
         } else {
             size_t length = size_t(stat.st_size);
 
@@ -80,7 +80,7 @@ status_t Tokenizer::open(const String8& filename, Tokenizer** outTokenizer) {
                 ssize_t nrd = read(fd, buffer, length);
                 if (nrd < 0) {
                     result = -errno;
-                    LOGE("Error reading file '%s', %s.", filename.string(), strerror(errno));
+                    ALOGE("Error reading file '%s', %s.", filename.string(), strerror(errno));
                     delete[] buffer;
                     buffer = NULL;
                 } else {
@@ -118,7 +118,7 @@ String8 Tokenizer::peekRemainderOfLine() const {
 
 String8 Tokenizer::nextToken(const char* delimiters) {
 #if DEBUG_TOKENIZER
-    LOGD("nextToken");
+    ALOGD("nextToken");
 #endif
     const char* end = getEnd();
     const char* tokenStart = mCurrent;
@@ -134,7 +134,7 @@ String8 Tokenizer::nextToken(const char* delimiters) {
 
 void Tokenizer::nextLine() {
 #if DEBUG_TOKENIZER
-    LOGD("nextLine");
+    ALOGD("nextLine");
 #endif
     const char* end = getEnd();
     while (mCurrent != end) {
@@ -148,7 +148,7 @@ void Tokenizer::nextLine() {
 
 void Tokenizer::skipDelimiters(const char* delimiters) {
 #if DEBUG_TOKENIZER
-    LOGD("skipDelimiters");
+    ALOGD("skipDelimiters");
 #endif
     const char* end = getEnd();
     while (mCurrent != end) {

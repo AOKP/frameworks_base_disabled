@@ -112,7 +112,7 @@ public:
         data.writeInt32(lSessionId);
         status_t lStatus = remote()->transact(CREATE_TRACK, data, &reply);
         if (lStatus != NO_ERROR) {
-            LOGE("createTrack error: %s", strerror(-lStatus));
+            ALOGE("createTrack error: %s", strerror(-lStatus));
         } else {
             lSessionId = reply.readInt32();
             if (sessionId != NULL) {
@@ -155,7 +155,7 @@ public:
         data.writeInt32(lSessionId);
         status_t lStatus = remote()->transact(OPEN_RECORD, data, &reply);
         if (lStatus != NO_ERROR) {
-            LOGE("openRecord error: %s", strerror(-lStatus));
+            ALOGE("openRecord error: %s", strerror(-lStatus));
         } else {
             lSessionId = reply.readInt32();
             if (sessionId != NULL) {
@@ -377,7 +377,7 @@ public:
         data.writeInt32(flags);
         remote()->transact(OPEN_OUTPUT, data, &reply);
         int  output = reply.readInt32();
-        LOGV("openOutput() returned output, %p", output);
+        ALOGV("openOutput() returned output, %p", output);
         devices = reply.readInt32();
         if (pDevices) *pDevices = devices;
         samplingRate = reply.readInt32();
@@ -632,7 +632,7 @@ public:
 
         status_t lStatus = remote()->transact(CREATE_EFFECT, data, &reply);
         if (lStatus != NO_ERROR) {
-            LOGE("createEffect error: %s", strerror(-lStatus));
+            ALOGE("createEffect error: %s", strerror(-lStatus));
         } else {
             lStatus = reply.readInt32();
             int tmp = reply.readInt32();
@@ -844,7 +844,7 @@ status_t BnAudioFlinger::onTransact(
                                      &channels,
                                      &latency,
                                      flags);
-            LOGV("OPEN_OUTPUT output, %p", output);
+            ALOGV("OPEN_OUTPUT output, %p", output);
             reply->writeInt32(output);
             reply->writeInt32(devices);
             reply->writeInt32(samplingRate);

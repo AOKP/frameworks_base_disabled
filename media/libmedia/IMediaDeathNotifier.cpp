@@ -34,7 +34,7 @@ SortedVector< wp<IMediaDeathNotifier> > IMediaDeathNotifier::sObitRecipients;
 /*static*/const sp<IMediaPlayerService>&
 IMediaDeathNotifier::getMediaPlayerService()
 {
-    LOGV("getMediaPlayerService");
+    ALOGV("getMediaPlayerService");
     Mutex::Autolock _l(sServiceLock);
     if (sMediaPlayerService.get() == 0) {
         sp<IServiceManager> sm = defaultServiceManager();
@@ -44,7 +44,7 @@ IMediaDeathNotifier::getMediaPlayerService()
             if (binder != 0) {
                 break;
              }
-             LOGW("Media player service not published, waiting...");
+             ALOGW("Media player service not published, waiting...");
              usleep(500000); // 0.5 s
         } while(true);
 
@@ -54,14 +54,14 @@ IMediaDeathNotifier::getMediaPlayerService()
     binder->linkToDeath(sDeathNotifier);
     sMediaPlayerService = interface_cast<IMediaPlayerService>(binder);
     }
-    LOGE_IF(sMediaPlayerService == 0, "no media player service!?");
+    ALOGE_IF(sMediaPlayerService == 0, "no media player service!?");
     return sMediaPlayerService;
 }
 
 /*static*/ void
 IMediaDeathNotifier::addObitRecipient(const wp<IMediaDeathNotifier>& recipient)
 {
-    LOGV("addObitRecipient");
+    ALOGV("addObitRecipient");
     Mutex::Autolock _l(sServiceLock);
     sObitRecipients.add(recipient);
 }
@@ -69,14 +69,14 @@ IMediaDeathNotifier::addObitRecipient(const wp<IMediaDeathNotifier>& recipient)
 /*static*/ void
 IMediaDeathNotifier::removeObitRecipient(const wp<IMediaDeathNotifier>& recipient)
 {
-    LOGV("removeObitRecipient");
+    ALOGV("removeObitRecipient");
     Mutex::Autolock _l(sServiceLock);
     sObitRecipients.remove(recipient);
 }
 
 void
 IMediaDeathNotifier::DeathNotifier::binderDied(const wp<IBinder>& who) {
-    LOGW("media server died");
+    ALOGW("media server died");
 
     // Need to do this with the lock held
     SortedVector< wp<IMediaDeathNotifier> > list;
@@ -100,7 +100,7 @@ IMediaDeathNotifier::DeathNotifier::binderDied(const wp<IBinder>& who) {
 
 IMediaDeathNotifier::DeathNotifier::~DeathNotifier()
 {
-    LOGV("DeathNotifier::~DeathNotifier");
+    ALOGV("DeathNotifier::~DeathNotifier");
     Mutex::Autolock _l(sServiceLock);
     sObitRecipients.clear();
     if (sMediaPlayerService != 0) {

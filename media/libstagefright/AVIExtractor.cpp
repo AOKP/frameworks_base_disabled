@@ -457,7 +457,7 @@ ssize_t AVIExtractor::parseChunk(off64_t offset, off64_t size, int depth) {
 
         uint32_t subFourcc = U32_AT(&tmp[8]);
 
-        LOGV("%s offset 0x%08llx LIST of '%c%c%c%c', size %d",
+        ALOGV("%s offset 0x%08llx LIST of '%c%c%c%c', size %d",
              prefix,
              offset,
              (char)(subFourcc >> 24),
@@ -486,7 +486,7 @@ ssize_t AVIExtractor::parseChunk(off64_t offset, off64_t size, int depth) {
             }
         }
     } else {
-        LOGV("%s offset 0x%08llx CHUNK '%c%c%c%c'",
+        ALOGV("%s offset 0x%08llx CHUNK '%c%c%c%c'",
              prefix,
              offset,
              (char)(fourcc >> 24),
@@ -625,7 +625,7 @@ status_t AVIExtractor::parseStreamHeader(off64_t offset, size_t size) {
         }
 
         if (mime == NULL) {
-            LOGW("Unsupported video format '%c%c%c%c'",
+            ALOGW("Unsupported video format '%c%c%c%c'",
                  (char)(handler >> 24),
                  (char)((handler >> 16) & 0xff),
                  (char)((handler >> 8) & 0xff),
@@ -705,7 +705,7 @@ status_t AVIExtractor::parseStreamFormat(off64_t offset, size_t size) {
         if (format == 0x55) {
             track->mMeta->setCString(kKeyMIMEType, MEDIA_MIMETYPE_AUDIO_MPEG);
         } else {
-            LOGW("Unsupported audio format = 0x%04x", format);
+            ALOGW("Unsupported audio format = 0x%04x", format);
         }
 
         uint32_t numChannels = U16LE_AT(&data[2]);
@@ -856,7 +856,7 @@ status_t AVIExtractor::parseIndex(off64_t offset, size_t size) {
             }
         }
 
-        LOGV("Chunk offsets are %s",
+        ALOGV("Chunk offsets are %s",
              mOffsetsAreAbsolute ? "absolute" : "movie-chunk relative");
     }
 
@@ -908,7 +908,7 @@ status_t AVIExtractor::parseIndex(off64_t offset, size_t size) {
         CHECK_EQ((status_t)OK,
                  getSampleTime(i, track->mSamples.size() - 1, &durationUs));
 
-        LOGV("track %d duration = %.2f secs", i, durationUs / 1E6);
+        ALOGV("track %d duration = %.2f secs", i, durationUs / 1E6);
 
         track->mMeta->setInt64(kKeyDuration, durationUs);
         track->mMeta->setInt32(kKeyMaxInputSize, track->mMaxSampleSize);
@@ -1080,7 +1080,7 @@ status_t AVIExtractor::addH264CodecSpecificData(size_t trackIndex) {
     sp<MetaData> meta = MakeAVCCodecSpecificData(buffer);
 
     if (meta == NULL) {
-        LOGE("Unable to extract AVC codec specific data");
+        ALOGE("Unable to extract AVC codec specific data");
         return ERROR_MALFORMED;
     }
 

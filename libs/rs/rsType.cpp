@@ -141,7 +141,7 @@ uint32_t Type::getLODFaceOffset(uint32_t lod, RsAllocationCubemapFace face, uint
 void Type::dumpLOGV(const char *prefix) const {
     char buf[1024];
     ObjectBase::dumpLOGV(prefix);
-    LOGV("%s   Type: x=%zu y=%zu z=%zu mip=%i face=%i", prefix, mDimX, mDimY, mDimZ, mDimLOD, mFaces);
+    ALOGV("%s   Type: x=%zu y=%zu z=%zu mip=%i face=%i", prefix, mDimX, mDimY, mDimZ, mDimLOD, mFaces);
     snprintf(buf, sizeof(buf), "%s element: ", prefix);
     mElement->dumpLOGV(buf);
 }
@@ -167,7 +167,7 @@ Type *Type::createFromStream(Context *rsc, IStream *stream) {
     // First make sure we are reading the correct object
     RsA3DClassID classID = (RsA3DClassID)stream->loadU32();
     if (classID != RS_A3D_CLASS_ID_TYPE) {
-        LOGE("type loading skipped due to invalid class id\n");
+        ALOGE("type loading skipped due to invalid class id\n");
         return NULL;
     }
 

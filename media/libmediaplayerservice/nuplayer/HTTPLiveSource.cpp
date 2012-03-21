@@ -112,9 +112,9 @@ status_t NuPlayer::HTTPLiveSource::feedMoreTSData() {
             break;
         } else if (n < 0) {
             if (n != ERROR_END_OF_STREAM) {
-                LOGI("input data EOS reached, error %ld", n);
+                ALOGI("input data EOS reached, error %ld", n);
             } else {
-                LOGI("input data EOS reached.");
+                ALOGI("input data EOS reached.");
             }
             mTSParser->signalEOS(n);
             mFinalResult = n;
@@ -132,7 +132,7 @@ status_t NuPlayer::HTTPLiveSource::feedMoreTSData() {
                 status_t err = mTSParser->feedTSPacket(buffer, sizeof(buffer));
 
                 if (err != OK) {
-                    LOGE("TS Parser returned error %d", err);
+                    ALOGE("TS Parser returned error %d", err);
                     mTSParser->signalEOS(err);
                     mFinalResult = err;
                     break;

@@ -95,11 +95,11 @@ status_t KeyCharacterMap::load(const String8& filename, KeyCharacterMap** outMap
     Tokenizer* tokenizer;
     status_t status = Tokenizer::open(filename, &tokenizer);
     if (status) {
-        LOGE("Error %d opening key character map file %s.", status, filename.string());
+        ALOGE("Error %d opening key character map file %s.", status, filename.string());
     } else {
         KeyCharacterMap* map = new KeyCharacterMap();
         if (!map) {
-            LOGE("Error allocating key character map.");
+            ALOGE("Error allocating key character map.");
             status = NO_MEMORY;
         } else {
 #if DEBUG_PARSER_PERFORMANCE
@@ -109,7 +109,7 @@ status_t KeyCharacterMap::load(const String8& filename, KeyCharacterMap** outMap
             status = parser.parse();
 #if DEBUG_PARSER_PERFORMANCE
             nsecs_t elapsedTime = systemTime(SYSTEM_TIME_MONOTONIC) - startTime;
-            LOGD("Parsed key character map file '%s' %d lines in %0.3fms.",
+            ALOGD("Parsed key character map file '%s' %d lines in %0.3fms.",
                     tokenizer->getFilename().string(), tokenizer->getLineNumber(),
                     elapsedTime / 1000000.0);
 #endif
@@ -135,7 +135,7 @@ char16_t KeyCharacterMap::getDisplayLabel(int32_t keyCode) const {
         result = key->label;
     }
 #if DEBUG_MAPPING
-    LOGD("getDisplayLabel: keyCode=%d ~ Result %d.", keyCode, result);
+    ALOGD("getDisplayLabel: keyCode=%d ~ Result %d.", keyCode, result);
 #endif
     return result;
 }
@@ -147,7 +147,7 @@ char16_t KeyCharacterMap::getNumber(int32_t keyCode) const {
         result = key->number;
     }
 #if DEBUG_MAPPING
-    LOGD("getNumber: keyCode=%d ~ Result %d.", keyCode, result);
+    ALOGD("getNumber: keyCode=%d ~ Result %d.", keyCode, result);
 #endif
     return result;
 }
@@ -160,7 +160,7 @@ char16_t KeyCharacterMap::getCharacter(int32_t keyCode, int32_t metaState) const
         result = behavior->character;
     }
 #if DEBUG_MAPPING
-    LOGD("getCharacter: keyCode=%d, metaState=0x%08x ~ Result %d.", keyCode, metaState, result);
+    ALOGD("getCharacter: keyCode=%d, metaState=0x%08x ~ Result %d.", keyCode, metaState, result);
 #endif
     return result;
 }
@@ -181,7 +181,7 @@ bool KeyCharacterMap::getFallbackAction(int32_t keyCode, int32_t metaState,
         }
     }
 #if DEBUG_MAPPING
-    LOGD("getFallbackKeyCode: keyCode=%d, metaState=0x%08x ~ Result %s, "
+    ALOGD("getFallbackKeyCode: keyCode=%d, metaState=0x%08x ~ Result %s, "
             "fallback keyCode=%d, fallback metaState=0x%08x.",
             keyCode, metaState, result ? "true" : "false",
             outFallbackAction->keyCode, outFallbackAction->metaState);
@@ -213,7 +213,7 @@ char16_t KeyCharacterMap::getMatch(int32_t keyCode, const char16_t* chars, size_
     ExactMatch: ;
     }
 #if DEBUG_MAPPING
-    LOGD("getMatch: keyCode=%d, chars=[%s], metaState=0x%08x ~ Result %d.",
+    ALOGD("getMatch: keyCode=%d, chars=[%s], metaState=0x%08x ~ Result %d.",
             keyCode, toString(chars, numChars).string(), metaState, result);
 #endif
     return result;
@@ -228,7 +228,7 @@ bool KeyCharacterMap::getEvents(int32_t deviceId, const char16_t* chars, size_t 
         char16_t ch = chars[i];
         if (!findKey(ch, &keyCode, &metaState)) {
 #if DEBUG_MAPPING
-            LOGD("getEvents: deviceId=%d, chars=[%s] ~ Failed to find mapping for character %d.",
+            ALOGD("getEvents: deviceId=%d, chars=[%s] ~ Failed to find mapping for character %d.",
                     deviceId, toString(chars, numChars).string(), ch);
 #endif
             return false;
@@ -241,10 +241,10 @@ bool KeyCharacterMap::getEvents(int32_t deviceId, const char16_t* chars, size_t 
         addMetaKeys(outEvents, deviceId, metaState, false, now, &currentMetaState);
     }
 #if DEBUG_MAPPING
-    LOGD("getEvents: deviceId=%d, chars=[%s] ~ Generated %d events.",
+    ALOGD("getEvents: deviceId=%d, chars=[%s] ~ Generated %d events.",
             deviceId, toString(chars, numChars).string(), int32_t(outEvents.size()));
     for (size_t i = 0; i < outEvents.size(); i++) {
-        LOGD("  Key: keyCode=%d, metaState=0x%08x, %s.",
+        ALOGD("  Key: keyCode=%d, metaState=0x%08x, %s.",
                 outEvents[i].getKeyCode(), outEvents[i].getMetaState(),
                 outEvents[i].getAction() == AKEY_EVENT_ACTION_DOWN ? "down" : "up");
     }
@@ -455,7 +455,7 @@ KeyCharacterMap::Parser::~Parser() {
 status_t KeyCharacterMap::Parser::parse() {
     while (!mTokenizer->isEof()) {
 #if DEBUG_PARSER
-        LOGD("Parsing %s: '%s'.", mTokenizer->getLocation().string(),
+        ALOGD("Parsing %s: '%s'.", mTokenizer->getLocation().string(),
                 mTokenizer->peekRemainderOfLine().string());
 #endif
 
@@ -474,7 +474,7 @@ status_t KeyCharacterMap::Parser::parse() {
                     status_t status = parseKey();
                     if (status) return status;
                 } else {
-                    LOGE("%s: Expected keyword, got '%s'.", mTokenizer->getLocation().string(),
+                    ALOGE("%s: Expected keyword, got '%s'.", mTokenizer->getLocation().string(),
                             keywordToken.string());
                     return BAD_VALUE;
                 }
@@ -490,7 +490,7 @@ status_t KeyCharacterMap::Parser::parse() {
 
             mTokenizer->skipDelimiters(WHITESPACE);
             if (!mTokenizer->isEol()) {
-                LOGE("%s: Expected end of line, got '%s'.",
+                ALOGE("%s: Expected end of line, got '%s'.",
                         mTokenizer->getLocation().string(),
                         mTokenizer->peekRemainderOfLine().string());
                 return BAD_VALUE;
@@ -501,13 +501,13 @@ status_t KeyCharacterMap::Parser::parse() {
     }
 
     if (mState != STATE_TOP) {
-        LOGE("%s: Unterminated key description at end of file.",
+        ALOGE("%s: Unterminated key description at end of file.",
                 mTokenizer->getLocation().string());
         return BAD_VALUE;
     }
 
     if (mMap->mType == KEYBOARD_TYPE_UNKNOWN) {
-        LOGE("%s: Missing required keyboard 'type' declaration.",
+        ALOGE("%s: Missing required keyboard 'type' declaration.",
                 mTokenizer->getLocation().string());
         return BAD_VALUE;
     }
@@ -517,7 +517,7 @@ status_t KeyCharacterMap::Parser::parse() {
 
 status_t KeyCharacterMap::Parser::parseType() {
     if (mMap->mType != KEYBOARD_TYPE_UNKNOWN) {
-        LOGE("%s: Duplicate keyboard 'type' declaration.",
+        ALOGE("%s: Duplicate keyboard 'type' declaration.",
                 mTokenizer->getLocation().string());
         return BAD_VALUE;
     }
@@ -535,13 +535,13 @@ status_t KeyCharacterMap::Parser::parseType() {
     } else if (typeToken == "SPECIAL_FUNCTION") {
         type = KEYBOARD_TYPE_SPECIAL_FUNCTION;
     } else {
-        LOGE("%s: Expected keyboard type label, got '%s'.", mTokenizer->getLocation().string(),
+        ALOGE("%s: Expected keyboard type label, got '%s'.", mTokenizer->getLocation().string(),
                 typeToken.string());
         return BAD_VALUE;
     }
 
 #if DEBUG_PARSER
-    LOGD("Parsed type: type=%d.", type);
+    ALOGD("Parsed type: type=%d.", type);
 #endif
     mMap->mType = type;
     return NO_ERROR;
@@ -551,12 +551,12 @@ status_t KeyCharacterMap::Parser::parseKey() {
     String8 keyCodeToken = mTokenizer->nextToken(WHITESPACE);
     int32_t keyCode = getKeyCodeByLabel(keyCodeToken.string());
     if (!keyCode) {
-        LOGE("%s: Expected key code label, got '%s'.", mTokenizer->getLocation().string(),
+        ALOGE("%s: Expected key code label, got '%s'.", mTokenizer->getLocation().string(),
                 keyCodeToken.string());
         return BAD_VALUE;
     }
     if (mMap->mKeys.indexOfKey(keyCode) >= 0) {
-        LOGE("%s: Duplicate entry for key code '%s'.", mTokenizer->getLocation().string(),
+        ALOGE("%s: Duplicate entry for key code '%s'.", mTokenizer->getLocation().string(),
                 keyCodeToken.string());
         return BAD_VALUE;
     }
@@ -564,13 +564,13 @@ status_t KeyCharacterMap::Parser::parseKey() {
     mTokenizer->skipDelimiters(WHITESPACE);
     String8 openBraceToken = mTokenizer->nextToken(WHITESPACE);
     if (openBraceToken != "{") {
-        LOGE("%s: Expected '{' after key code label, got '%s'.",
+        ALOGE("%s: Expected '{' after key code label, got '%s'.",
                 mTokenizer->getLocation().string(), openBraceToken.string());
         return BAD_VALUE;
     }
 
 #if DEBUG_PARSER
-    LOGD("Parsed beginning of key: keyCode=%d.", keyCode);
+    ALOGD("Parsed beginning of key: keyCode=%d.", keyCode);
 #endif
     mKeyCode = keyCode;
     mMap->mKeys.add(keyCode, new Key());
@@ -597,7 +597,7 @@ status_t KeyCharacterMap::Parser::parseKeyProperty() {
             int32_t metaState;
             status_t status = parseModifier(token, &metaState);
             if (status) {
-                LOGE("%s: Expected a property name or modifier, got '%s'.",
+                ALOGE("%s: Expected a property name or modifier, got '%s'.",
                         mTokenizer->getLocation().string(), token.string());
                 return status;
             }
@@ -616,7 +616,7 @@ status_t KeyCharacterMap::Parser::parseKeyProperty() {
             }
         }
 
-        LOGE("%s: Expected ',' or ':' after property name.",
+        ALOGE("%s: Expected ',' or ':' after property name.",
                 mTokenizer->getLocation().string());
         return BAD_VALUE;
     }
@@ -634,12 +634,12 @@ status_t KeyCharacterMap::Parser::parseKeyProperty() {
             char16_t character;
             status_t status = parseCharacterLiteral(&character);
             if (status || !character) {
-                LOGE("%s: Invalid character literal for key.",
+                ALOGE("%s: Invalid character literal for key.",
                         mTokenizer->getLocation().string());
                 return BAD_VALUE;
             }
             if (haveCharacter) {
-                LOGE("%s: Cannot combine multiple character literals or 'none'.",
+                ALOGE("%s: Cannot combine multiple character literals or 'none'.",
                         mTokenizer->getLocation().string());
                 return BAD_VALUE;
             }
@@ -649,7 +649,7 @@ status_t KeyCharacterMap::Parser::parseKeyProperty() {
             token = mTokenizer->nextToken(WHITESPACE);
             if (token == "none") {
                 if (haveCharacter) {
-                    LOGE("%s: Cannot combine multiple character literals or 'none'.",
+                    ALOGE("%s: Cannot combine multiple character literals or 'none'.",
                             mTokenizer->getLocation().string());
                     return BAD_VALUE;
                 }
@@ -659,20 +659,20 @@ status_t KeyCharacterMap::Parser::parseKeyProperty() {
                 token = mTokenizer->nextToken(WHITESPACE);
                 int32_t keyCode = getKeyCodeByLabel(token.string());
                 if (!keyCode) {
-                    LOGE("%s: Invalid key code label for fallback behavior, got '%s'.",
+                    ALOGE("%s: Invalid key code label for fallback behavior, got '%s'.",
                             mTokenizer->getLocation().string(),
                             token.string());
                     return BAD_VALUE;
                 }
                 if (haveFallback) {
-                    LOGE("%s: Cannot combine multiple fallback key codes.",
+                    ALOGE("%s: Cannot combine multiple fallback key codes.",
                             mTokenizer->getLocation().string());
                     return BAD_VALUE;
                 }
                 behavior.fallbackKeyCode = keyCode;
                 haveFallback = true;
             } else {
-                LOGE("%s: Expected a key behavior after ':'.",
+                ALOGE("%s: Expected a key behavior after ':'.",
                         mTokenizer->getLocation().string());
                 return BAD_VALUE;
             }
@@ -688,30 +688,30 @@ status_t KeyCharacterMap::Parser::parseKeyProperty() {
         switch (property.property) {
         case PROPERTY_LABEL:
             if (key->label) {
-                LOGE("%s: Duplicate label for key.",
+                ALOGE("%s: Duplicate label for key.",
                         mTokenizer->getLocation().string());
                 return BAD_VALUE;
             }
             key->label = behavior.character;
 #if DEBUG_PARSER
-            LOGD("Parsed key label: keyCode=%d, label=%d.", mKeyCode, key->label);
+            ALOGD("Parsed key label: keyCode=%d, label=%d.", mKeyCode, key->label);
 #endif
             break;
         case PROPERTY_NUMBER:
             if (key->number) {
-                LOGE("%s: Duplicate number for key.",
+                ALOGE("%s: Duplicate number for key.",
                         mTokenizer->getLocation().string());
                 return BAD_VALUE;
             }
             key->number = behavior.character;
 #if DEBUG_PARSER
-            LOGD("Parsed key number: keyCode=%d, number=%d.", mKeyCode, key->number);
+            ALOGD("Parsed key number: keyCode=%d, number=%d.", mKeyCode, key->number);
 #endif
             break;
         case PROPERTY_META: {
             for (Behavior* b = key->firstBehavior; b; b = b->next) {
                 if (b->metaState == property.metaState) {
-                    LOGE("%s: Duplicate key behavior for modifier.",
+                    ALOGE("%s: Duplicate key behavior for modifier.",
                             mTokenizer->getLocation().string());
                     return BAD_VALUE;
                 }
@@ -721,7 +721,7 @@ status_t KeyCharacterMap::Parser::parseKeyProperty() {
             newBehavior->next = key->firstBehavior;
             key->firstBehavior = newBehavior;
 #if DEBUG_PARSER
-            LOGD("Parsed key meta: keyCode=%d, meta=0x%x, char=%d, fallback=%d.", mKeyCode,
+            ALOGD("Parsed key meta: keyCode=%d, meta=0x%x, char=%d, fallback=%d.", mKeyCode,
                     newBehavior->metaState, newBehavior->character, newBehavior->fallbackKeyCode);
 #endif
             break;
@@ -757,7 +757,7 @@ status_t KeyCharacterMap::Parser::parseModifier(const String8& token, int32_t* o
                 return BAD_VALUE;
             }
             if (combinedMeta & metaState) {
-                LOGE("%s: Duplicate modifier combination '%s'.",
+                ALOGE("%s: Duplicate modifier combination '%s'.",
                         mTokenizer->getLocation().string(), token.string());
                 return BAD_VALUE;
             }
@@ -831,7 +831,7 @@ status_t KeyCharacterMap::Parser::parseCharacterLiteral(char16_t* outCharacter) 
     }
 
 Error:
-    LOGE("%s: Malformed character literal.", mTokenizer->getLocation().string());
+    ALOGE("%s: Malformed character literal.", mTokenizer->getLocation().string());
     return BAD_VALUE;
 }
 

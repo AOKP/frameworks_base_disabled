@@ -27,7 +27,7 @@ namespace android {
 
 // static
 void *DummyRecorder::threadWrapper(void *pthis) {
-    LOGV("ThreadWrapper: %p", pthis);
+    ALOGV("ThreadWrapper: %p", pthis);
     DummyRecorder *writer = static_cast<DummyRecorder *>(pthis);
     writer->readFromSource();
     return NULL;
@@ -35,7 +35,7 @@ void *DummyRecorder::threadWrapper(void *pthis) {
 
 
 status_t DummyRecorder::start() {
-    LOGV("Start");
+    ALOGV("Start");
     mStarted = true;
 
     mSource->start();
@@ -47,7 +47,7 @@ status_t DummyRecorder::start() {
     pthread_attr_destroy(&attr);
 
     if (err) {
-        LOGE("Error creating thread!");
+        ALOGE("Error creating thread!");
         return -ENODEV;
     }
     return OK;
@@ -55,7 +55,7 @@ status_t DummyRecorder::start() {
 
 
 status_t DummyRecorder::stop() {
-    LOGV("Stop");
+    ALOGV("Stop");
     mStarted = false;
 
     mSource->stop();
@@ -63,20 +63,20 @@ status_t DummyRecorder::stop() {
     pthread_join(mThread, &dummy);
     status_t err = (status_t) dummy;
 
-    LOGV("Ending the reading thread");
+    ALOGV("Ending the reading thread");
     return err;
 }
 
 // pretend to read the source buffers
 void DummyRecorder::readFromSource() {
-    LOGV("ReadFromSource");
+    ALOGV("ReadFromSource");
     if (!mStarted) {
         return;
     }
 
     status_t err = OK;
     MediaBuffer *buffer;
-    LOGV("A fake writer accessing the frames");
+    ALOGV("A fake writer accessing the frames");
     while (mStarted && (err = mSource->read(&buffer)) == OK){
         // if not getting a valid buffer from source, then exit
         if (buffer == NULL) {

@@ -180,7 +180,7 @@ MatroskaSource::MatroskaSource(
         CHECK_GE(avccSize, 5u);
 
         mNALSizeLen = 1 + (avcc[4] & 3);
-        LOGV("mNALSizeLen = %d", mNALSizeLen);
+        ALOGV("mNALSizeLen = %d", mNALSizeLen);
     } else if (!strcasecmp(mime, MEDIA_MIMETYPE_AUDIO_AAC)) {
         mType = AAC;
     }
@@ -230,7 +230,7 @@ void BlockIterator::advance() {
 void BlockIterator::advance_l() {
     for (;;) {
         long res = mCluster->GetEntry(mBlockEntryIndex, mBlockEntry);
-        LOGV("GetEntry returned %ld", res);
+        ALOGV("GetEntry returned %ld", res);
 
         long long pos;
         long len;
@@ -240,12 +240,12 @@ void BlockIterator::advance_l() {
             CHECK_EQ(res, mkvparser::E_BUFFER_NOT_FULL);
 
             res = mCluster->Parse(pos, len);
-            LOGV("Parse returned %ld", res);
+            ALOGV("Parse returned %ld", res);
 
             if (res < 0) {
                 // I/O error
 
-                LOGE("Cluster::Parse returned result %ld", res);
+                ALOGE("Cluster::Parse returned result %ld", res);
 
                 mCluster = NULL;
                 break;
@@ -258,7 +258,7 @@ void BlockIterator::advance_l() {
             const mkvparser::Cluster *nextCluster;
             res = mExtractor->mSegment->ParseNext(
                     mCluster, nextCluster, pos, len);
-            LOGV("ParseNext returned %ld", res);
+            ALOGV("ParseNext returned %ld", res);
 
             if (res > 0) {
                 // EOF
@@ -274,7 +274,7 @@ void BlockIterator::advance_l() {
             mCluster = nextCluster;
 
             res = mCluster->Parse(pos, len);
-            LOGV("Parse (2) returned %ld", res);
+            ALOGV("Parse (2) returned %ld", res);
             CHECK_GE(res, 0);
 
             mBlockEntryIndex = 0;
@@ -585,7 +585,7 @@ MatroskaExtractor::MatroskaExtractor(const sp<DataSource> &source)
 
 #if 0
     const mkvparser::SegmentInfo *info = mSegment->GetInfo();
-    LOGI("muxing app: %s, writing app: %s",
+    ALOGI("muxing app: %s, writing app: %s",
          info->GetMuxingAppAsUTF8(),
          info->GetWritingAppAsUTF8());
 #endif
@@ -709,8 +709,8 @@ void MatroskaExtractor::addTracks() {
         }
 
         const char *const codecID = track->GetCodecId();
-        LOGV("codec id = %s", codecID);
-        LOGV("codec name = %s", track->GetCodecNameAsUTF8());
+        ALOGV("codec id = %s", codecID);
+        ALOGV("codec name = %s", track->GetCodecNameAsUTF8());
 
         size_t codecPrivateSize;
         const unsigned char *codecPrivate =

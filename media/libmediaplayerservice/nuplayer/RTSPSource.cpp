@@ -226,7 +226,7 @@ void NuPlayer::RTSPSource::onMessageReceived(const sp<AMessage> &msg) {
             int32_t damaged;
             if (accessUnit->meta()->findInt32("damaged", &damaged)
                     && damaged) {
-                LOGI("dropping damaged access unit.");
+                ALOGI("dropping damaged access unit.");
                 break;
             }
 
@@ -242,7 +242,7 @@ void NuPlayer::RTSPSource::onMessageReceived(const sp<AMessage> &msg) {
                     // playtime mapping. Assume the first packets correspond
                     // to time 0.
 
-                    LOGV("This is a live stream, assuming time = 0");
+                    ALOGV("This is a live stream, assuming time = 0");
 
                     info->mRTPTime = rtpTime;
                     info->mNormalPlaytimeUs = 0ll;

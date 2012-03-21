@@ -78,7 +78,7 @@ int TextLayout::shapeRtlText(const jchar* context, jsize start, jsize count, jsi
             }
         }
         count = end;
-        // LOG(LOG_INFO, "CSRTL", "start %d count %d ccount %d\n", start, count, contextCount);
+        // ALOG(LOG_INFO, "CSRTL", "start %d count %d ccount %d\n", start, count, contextCount);
         ubidi_writeReverse(buffer, count, shaped, count, UBIDI_DO_MIRRORING | UBIDI_OUTPUT_REVERSE
                            | UBIDI_KEEP_BASE_COMBINING, &status);
         if (U_SUCCESS(status)) {
@@ -125,7 +125,7 @@ jint TextLayout::layoutLine(const jchar* text, jint len, jint flags, int& dir, j
 
             int rc = ubidi_countRuns(bidi, &status);
             if (U_SUCCESS(status)) {
-                // LOG(LOG_INFO, "LAYOUT", "para bidiReq=%d dir=%d rc=%d\n", bidiReq, dir, rc);
+                // ALOG(LOG_INFO, "LAYOUT", "para bidiReq=%d dir=%d rc=%d\n", bidiReq, dir, rc);
 
                 int32_t slen = 0;
                 for (int i = 0; i < rc; ++i) {
@@ -164,7 +164,7 @@ bool TextLayout::prepareText(SkPaint* paint, const jchar* text, jsize len, jint 
         UErrorCode status = U_ZERO_ERROR;
         len = layoutLine(text, len, bidiFlags, dir, buffer, status); // might change len, dir
         if (!U_SUCCESS(status)) {
-            LOG(LOG_WARN, "LAYOUT", "drawText error %d\n", status);
+            ALOG(LOG_WARN, "LAYOUT", "drawText error %d\n", status);
             free(buffer);
             return false; // can't render
         }
@@ -228,7 +228,7 @@ bool TextLayout::prepareRtlTextRun(const jchar* context, jsize start, jsize& cou
     if (U_SUCCESS(status)) {
         return true;
     } else {
-        LOGW("drawTextRun error %d\n", status);
+        ALOGW("drawTextRun error %d\n", status);
     }
     return false;
 }
@@ -350,7 +350,7 @@ void TextLayout::computeAdvancesWithICU(SkPaint* paint, const UChar* chars,
     jfloat totalAdvance = 0;
     if (widths < count) {
 #if DEBUG_ADVANCES
-    LOGD("ICU -- count=%d", widths);
+    ALOGD("ICU -- count=%d", widths);
 #endif
         // Skia operates on code points, not code units, so surrogate pairs return only
         // one value. Expand the result so we have one value per UTF-16 code unit.
@@ -367,17 +367,17 @@ void TextLayout::computeAdvancesWithICU(SkPaint* paint, const UChar* chars,
                 outAdvances[p++] = 0;
             }
 #if DEBUG_ADVANCES
-            LOGD("icu-adv = %f - total = %f", outAdvances[i], totalAdvance);
+            ALOGD("icu-adv = %f - total = %f", outAdvances[i], totalAdvance);
 #endif
         }
     } else {
 #if DEBUG_ADVANCES
-    LOGD("ICU -- count=%d", count);
+    ALOGD("ICU -- count=%d", count);
 #endif
         for (size_t i = 0; i < count; i++) {
             totalAdvance += outAdvances[i] = SkScalarToFloat(scalarArray[i]);
 #if DEBUG_ADVANCES
-            LOGD("icu-adv = %f - total = %f", outAdvances[i], totalAdvance);
+            ALOGD("icu-adv = %f - total = %f", outAdvances[i], totalAdvance);
 #endif
         }
     }

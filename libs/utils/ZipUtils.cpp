@@ -77,10 +77,10 @@ using namespace android;
     zerr = inflateInit2(&zstream, -MAX_WBITS);
     if (zerr != Z_OK) {
         if (zerr == Z_VERSION_ERROR) {
-            LOGE("Installed zlib is not compatible with linked version (%s)\n",
+            ALOGE("Installed zlib is not compatible with linked version (%s)\n",
                 ZLIB_VERSION);
         } else {
-            LOGE("Call to inflateInit2 failed (zerr=%d)\n", zerr);
+            ALOGE("Call to inflateInit2 failed (zerr=%d)\n", zerr);
         }
         goto bail;
     }
@@ -95,12 +95,12 @@ using namespace android;
         if (zstream.avail_in == 0) {
             getSize = (compRemaining > kReadBufSize) ?
                         kReadBufSize : compRemaining;
-            LOGV("+++ reading %ld bytes (%ld left)\n",
+            ALOGV("+++ reading %ld bytes (%ld left)\n",
                 getSize, compRemaining);
 
             int cc = read(fd, readBuf, getSize);
             if (cc != (int) getSize) {
-                LOGD("inflate read failed (%d vs %ld)\n",
+                ALOGD("inflate read failed (%d vs %ld)\n",
                     cc, getSize);
                 goto z_bail;
             }
@@ -114,7 +114,7 @@ using namespace android;
         /* uncompress the data */
         zerr = inflate(&zstream, Z_NO_FLUSH);
         if (zerr != Z_OK && zerr != Z_STREAM_END) {
-            LOGD("zlib inflate call failed (zerr=%d)\n", zerr);
+            ALOGD("zlib inflate call failed (zerr=%d)\n", zerr);
             goto z_bail;
         }
 
@@ -124,7 +124,7 @@ using namespace android;
     assert(zerr == Z_STREAM_END);       /* other errors should've been caught */
 
     if ((long) zstream.total_out != uncompressedLen) {
-        LOGW("Size mismatch on inflated file (%ld vs %ld)\n",
+        ALOGW("Size mismatch on inflated file (%ld vs %ld)\n",
             zstream.total_out, uncompressedLen);
         goto z_bail;
     }
@@ -189,10 +189,10 @@ bail:
     zerr = inflateInit2(&zstream, -MAX_WBITS);
     if (zerr != Z_OK) {
         if (zerr == Z_VERSION_ERROR) {
-            LOGE("Installed zlib is not compatible with linked version (%s)\n",
+            ALOGE("Installed zlib is not compatible with linked version (%s)\n",
                 ZLIB_VERSION);
         } else {
-            LOGE("Call to inflateInit2 failed (zerr=%d)\n", zerr);
+            ALOGE("Call to inflateInit2 failed (zerr=%d)\n", zerr);
         }
         goto bail;
     }
@@ -207,12 +207,12 @@ bail:
         if (zstream.avail_in == 0) {
             getSize = (compRemaining > kReadBufSize) ?
                         kReadBufSize : compRemaining;
-            LOGV("+++ reading %ld bytes (%ld left)\n",
+            ALOGV("+++ reading %ld bytes (%ld left)\n",
                 getSize, compRemaining);
 
             int cc = fread(readBuf, 1, getSize, fp);
             if (cc != (int) getSize) {
-                LOGD("inflate read failed (%d vs %ld)\n",
+                ALOGD("inflate read failed (%d vs %ld)\n",
                     cc, getSize);
                 goto z_bail;
             }
@@ -226,7 +226,7 @@ bail:
         /* uncompress the data */
         zerr = inflate(&zstream, Z_NO_FLUSH);
         if (zerr != Z_OK && zerr != Z_STREAM_END) {
-            LOGD("zlib inflate call failed (zerr=%d)\n", zerr);
+            ALOGD("zlib inflate call failed (zerr=%d)\n", zerr);
             goto z_bail;
         }
 
@@ -236,7 +236,7 @@ bail:
     assert(zerr == Z_STREAM_END);       /* other errors should've been caught */
 
     if ((long) zstream.total_out != uncompressedLen) {
-        LOGW("Size mismatch on inflated file (%ld vs %ld)\n",
+        ALOGW("Size mismatch on inflated file (%ld vs %ld)\n",
             zstream.total_out, uncompressedLen);
         goto z_bail;
     }

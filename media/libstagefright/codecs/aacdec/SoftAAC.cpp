@@ -116,7 +116,7 @@ status_t SoftAAC::initDecoder() {
 
     Int err = PVMP4AudioDecoderInitLibrary(mConfig, mDecoderBuf);
     if (err != MP4AUDEC_SUCCESS) {
-        LOGE("Failed to initialize MP4 audio decoder");
+        ALOGE("Failed to initialize MP4 audio decoder");
         return UNKNOWN_ERROR;
     }
 
@@ -317,16 +317,16 @@ void SoftAAC::onQueueFilled(OMX_U32 portIndex) {
          * AAC+/eAAC+ until the first data frame is decoded.
          */
         if (decoderErr == MP4AUDEC_SUCCESS && mInputBufferCount <= 2) {
-            LOGV("audio/extended audio object type: %d + %d",
+            ALOGV("audio/extended audio object type: %d + %d",
                 mConfig->audioObjectType, mConfig->extendedAudioObjectType);
-            LOGV("aac+ upsampling factor: %d desired channels: %d",
+            ALOGV("aac+ upsampling factor: %d desired channels: %d",
                 mConfig->aacPlusUpsamplingFactor, mConfig->desiredChannels);
 
             if (mInputBufferCount == 1) {
                 mUpsamplingFactor = mConfig->aacPlusUpsamplingFactor;
                 // Check on the sampling rate to see whether it is changed.
                 if (mConfig->samplingRate != prevSamplingRate) {
-                    LOGW("Sample rate was %d Hz, but now is %d Hz",
+                    ALOGW("Sample rate was %d Hz, but now is %d Hz",
                             prevSamplingRate, mConfig->samplingRate);
 
                     // We'll hold onto the input buffer and will decode
@@ -341,7 +341,7 @@ void SoftAAC::onQueueFilled(OMX_U32 portIndex) {
                     mConfig->extendedAudioObjectType == MP4AUDIO_LTP) {
                     if (mUpsamplingFactor == 2) {
                         // The stream turns out to be not aacPlus mode anyway
-                        LOGW("Disable AAC+/eAAC+ since extended audio object "
+                        ALOGW("Disable AAC+/eAAC+ since extended audio object "
                              "type is %d",
                              mConfig->extendedAudioObjectType);
                         mConfig->aacPlusEnabled = 0;
@@ -351,7 +351,7 @@ void SoftAAC::onQueueFilled(OMX_U32 portIndex) {
                         // aacPlus mode does not buy us anything, but to cause
                         // 1. CPU load to increase, and
                         // 2. a half speed of decoding
-                        LOGW("Disable AAC+/eAAC+ since upsampling factor is 1");
+                        ALOGW("Disable AAC+/eAAC+ since upsampling factor is 1");
                         mConfig->aacPlusEnabled = 0;
                     }
                 }
@@ -367,7 +367,7 @@ void SoftAAC::onQueueFilled(OMX_U32 portIndex) {
             inHeader->nFilledLen -= mConfig->inputBufferUsedLength;
             inHeader->nOffset += mConfig->inputBufferUsedLength;
         } else {
-            LOGW("AAC decoder returned error %d, substituting silence",
+            ALOGW("AAC decoder returned error %d, substituting silence",
                  decoderErr);
 
             memset(outHeader->pBuffer + outHeader->nOffset, 0, numOutBytes);

@@ -155,7 +155,7 @@ struct MyHandler : public AHandler {
             mSessionURL.append(StringPrintf("%u", port));
             mSessionURL.append(path);
 
-            LOGI("rewritten session url: '%s'", mSessionURL.c_str());
+            ALOGI("rewritten session url: '%s'", mSessionURL.c_str());
         }
 
         mSessionHost = host;
@@ -264,12 +264,12 @@ struct MyHandler : public AHandler {
         if (!GetAttribute(transport.c_str(),
                           "source",
                           &source)) {
-            LOGW("Missing 'source' field in Transport response. Using "
+            ALOGW("Missing 'source' field in Transport response. Using "
                  "RTSP endpoint address.");
 
             struct hostent *ent = gethostbyname(mSessionHost.c_str());
             if (ent == NULL) {
-                LOGE("Failed to look up address of session host '%s'",
+                ALOGE("Failed to look up address of session host '%s'",
                      mSessionHost.c_str());
 
                 return false;
@@ -283,7 +283,7 @@ struct MyHandler : public AHandler {
         if (!GetAttribute(transport.c_str(),
                                  "server_port",
                                  &server_port)) {
-            LOGI("Missing 'server_port' field in Transport response.");
+            ALOGI("Missing 'server_port' field in Transport response.");
             return false;
         }
 
@@ -292,7 +292,7 @@ struct MyHandler : public AHandler {
                 || rtpPort <= 0 || rtpPort > 65535
                 || rtcpPort <=0 || rtcpPort > 65535
                 || rtcpPort != rtpPort + 1) {
-            LOGE("Server picked invalid RTP/RTCP port pair %s,"
+            ALOGE("Server picked invalid RTP/RTCP port pair %s,"
                  " RTP port must be even, RTCP port must be one higher.",
                  server_port.c_str());
 
@@ -300,7 +300,7 @@ struct MyHandler : public AHandler {
         }
 
         if (rtpPort & 1) {
-            LOGW("Server picked an odd RTP port, it should've picked an "
+            ALOGW("Server picked an odd RTP port, it should've picked an "
                  "even one, we'll let it pass for now, but this may break "
                  "in the future.");
         }
@@ -327,7 +327,7 @@ struct MyHandler : public AHandler {
                 (const sockaddr *)&addr, sizeof(addr));
 
         if (n < (ssize_t)buf->size()) {
-            LOGE("failed to poke a hole for RTP packets");
+            ALOGE("failed to poke a hole for RTP packets");
             return false;
         }
 
@@ -338,11 +338,11 @@ struct MyHandler : public AHandler {
                 (const sockaddr *)&addr, sizeof(addr));
 
         if (n < (ssize_t)buf->size()) {
-            LOGE("failed to poke a hole for RTCP packets");
+            ALOGE("failed to poke a hole for RTCP packets");
             return false;
         }
 
-        LOGV("successfully poked holes.");
+        ALOGV("successfully poked holes.");
 
         return true;
     }
@@ -354,7 +354,7 @@ struct MyHandler : public AHandler {
                 int32_t result;
                 CHECK(msg->findInt32("result", &result));
 
-                LOGI("connection request completed with result %d (%s)",
+                ALOGI("connection request completed with result %d (%s)",
                      result, strerror(-result));
 
                 if (result == OK) {
@@ -392,7 +392,7 @@ struct MyHandler : public AHandler {
                 int32_t result;
                 CHECK(msg->findInt32("result", &result));
 
-                LOGI("DESCRIBE completed with result %d (%s)",
+                ALOGI("DESCRIBE completed with result %d (%s)",
                      result, strerror(-result));
 
                 if (result == OK) {
@@ -429,7 +429,7 @@ struct MyHandler : public AHandler {
                                 response->mContent->size());
 
                         if (!mSessionDesc->isValid()) {
-                            LOGE("Failed to parse session description.");
+                            ALOGE("Failed to parse session description.");
                             result = ERROR_MALFORMED;
                         } else {
                             ssize_t i = response->mHeaders.indexOfKey("content-base");
@@ -450,7 +450,7 @@ struct MyHandler : public AHandler {
                                 // it with the absolute session URL to get
                                 // something usable...
 
-                                LOGW("Server specified a non-absolute base URL"
+                                ALOGW("Server specified a non-absolute base URL"
                                      ", combining it with the session URL to "
                                      "get something usable...");
 
@@ -468,7 +468,7 @@ struct MyHandler : public AHandler {
                                 // The first "track" is merely session meta
                                 // data.
 
-                                LOGW("Session doesn't contain any playable "
+                                ALOGW("Session doesn't contain any playable "
                                      "tracks. Aborting.");
                                 result = ERROR_UNSUPPORTED;
                             } else {
@@ -499,7 +499,7 @@ struct MyHandler : public AHandler {
                 int32_t result;
                 CHECK(msg->findInt32("result", &result));
 
-                LOGI("SETUP(%d) completed with result %d (%s)",
+                ALOGI("SETUP(%d) completed with result %d (%s)",
                      index, result, strerror(-result));
 
                 if (result == OK) {
@@ -527,12 +527,12 @@ struct MyHandler : public AHandler {
                                 strtoul(timeoutStr.c_str(), &end, 10);
 
                             if (end == timeoutStr.c_str() || *end != '\0') {
-                                LOGW("server specified malformed timeout '%s'",
+                                ALOGW("server specified malformed timeout '%s'",
                                      timeoutStr.c_str());
 
                                 mKeepAliveTimeoutUs = kDefaultKeepAliveTimeoutUs;
                             } else if (timeoutSecs < 15) {
-                                LOGW("server specified too short a timeout "
+                                ALOGW("server specified too short a timeout "
                                      "(%lu secs), using default.",
                                      timeoutSecs);
 
@@ -540,7 +540,7 @@ struct MyHandler : public AHandler {
                             } else {
                                 mKeepAliveTimeoutUs = timeoutSecs * 1000000ll;
 
-                                LOGI("server specified timeout of %lu secs.",
+                                ALOGI("server specified timeout of %lu secs.",
                                      timeoutSecs);
                             }
                         }
@@ -625,7 +625,7 @@ struct MyHandler : public AHandler {
                 int32_t result;
                 CHECK(msg->findInt32("result", &result));
 
-                LOGI("PLAY completed with result %d (%s)",
+                ALOGI("PLAY completed with result %d (%s)",
                      result, strerror(-result));
 
                 if (result == OK) {
@@ -682,7 +682,7 @@ struct MyHandler : public AHandler {
                 int32_t result;
                 CHECK(msg->findInt32("result", &result));
 
-                LOGI("OPTIONS completed with result %d (%s)",
+                ALOGI("OPTIONS completed with result %d (%s)",
                      result, strerror(-result));
 
                 int32_t generation;
@@ -759,7 +759,7 @@ struct MyHandler : public AHandler {
                 int32_t result;
                 CHECK(msg->findInt32("result", &result));
 
-                LOGI("TEARDOWN completed with result %d (%s)",
+                ALOGI("TEARDOWN completed with result %d (%s)",
                      result, strerror(-result));
 
                 sp<AMessage> reply = new AMessage('disc', id());
@@ -793,11 +793,11 @@ struct MyHandler : public AHandler {
 
                 if (mNumAccessUnitsReceived == 0) {
 #if 1
-                    LOGI("stream ended? aborting.");
+                    ALOGI("stream ended? aborting.");
                     (new AMessage('abor', id()))->post();
                     break;
 #else
-                    LOGI("haven't seen an AU in a looong time.");
+                    ALOGI("haven't seen an AU in a looong time.");
 #endif
                 }
 
@@ -840,7 +840,7 @@ struct MyHandler : public AHandler {
                 CHECK(msg->findSize("track-index", &trackIndex));
 
                 if (trackIndex >= mTracks.size()) {
-                    LOGV("late packets ignored.");
+                    ALOGV("late packets ignored.");
                     break;
                 }
 
@@ -848,7 +848,7 @@ struct MyHandler : public AHandler {
 
                 int32_t eos;
                 if (msg->findInt32("eos", &eos)) {
-                    LOGI("received BYE on track index %d", trackIndex);
+                    ALOGI("received BYE on track index %d", trackIndex);
 #if 0
                     track->mPacketSource->signalEOS(ERROR_END_OF_STREAM);
 #endif
@@ -863,12 +863,12 @@ struct MyHandler : public AHandler {
                 uint32_t seqNum = (uint32_t)accessUnit->int32Data();
 
                 if (mSeekPending) {
-                    LOGV("we're seeking, dropping stale packet.");
+                    ALOGV("we're seeking, dropping stale packet.");
                     break;
                 }
 
                 if (seqNum < track->mFirstSeqNumInSegment) {
-                    LOGV("dropping stale access-unit (%d < %d)",
+                    ALOGV("dropping stale access-unit (%d < %d)",
                          seqNum, track->mFirstSeqNumInSegment);
                     break;
                 }
@@ -884,7 +884,7 @@ struct MyHandler : public AHandler {
             case 'seek':
             {
                 if (!mSeekable) {
-                    LOGW("This is a live stream, ignoring seek request.");
+                    ALOGW("This is a live stream, ignoring seek request.");
 
                     sp<AMessage> msg = mNotify->dup();
                     msg->setInt32("what", kWhatSeekDone);
@@ -961,7 +961,7 @@ struct MyHandler : public AHandler {
                 int32_t result;
                 CHECK(msg->findInt32("result", &result));
 
-                LOGI("PLAY completed with result %d (%s)",
+                ALOGI("PLAY completed with result %d (%s)",
                      result, strerror(-result));
 
                 mCheckPending = false;
@@ -981,14 +981,14 @@ struct MyHandler : public AHandler {
                         ssize_t i = response->mHeaders.indexOfKey("rtp-info");
                         CHECK_GE(i, 0);
 
-                        LOGV("rtp-info: %s", response->mHeaders.valueAt(i).c_str());
+                        ALOGV("rtp-info: %s", response->mHeaders.valueAt(i).c_str());
 
-                        LOGI("seek completed.");
+                        ALOGI("seek completed.");
                     }
                 }
 
                 if (result != OK) {
-                    LOGE("seek failed, aborting.");
+                    ALOGE("seek failed, aborting.");
                     (new AMessage('abor', id()))->post();
                 }
 
@@ -1017,7 +1017,7 @@ struct MyHandler : public AHandler {
             {
                 if (!mReceivedFirstRTCPPacket) {
                     if (mReceivedFirstRTPPacket && !mTryFakeRTCP) {
-                        LOGW("We received RTP packets but no RTCP packets, "
+                        ALOGW("We received RTP packets but no RTCP packets, "
                              "using fake timestamps.");
 
                         mTryFakeRTCP = true;
@@ -1026,7 +1026,7 @@ struct MyHandler : public AHandler {
 
                         fakeTimestamps();
                     } else if (!mReceivedFirstRTPPacket && !mTryTCPInterleaving) {
-                        LOGW("Never received any data, switching transports.");
+                        ALOGW("Never received any data, switching transports.");
 
                         mTryTCPInterleaving = true;
 
@@ -1034,7 +1034,7 @@ struct MyHandler : public AHandler {
                         msg->setInt32("reconnect", true);
                         msg->post();
                     } else {
-                        LOGW("Never received any data, disconnecting.");
+                        ALOGW("Never received any data, disconnecting.");
                         (new AMessage('abor', id()))->post();
                     }
                 }
@@ -1092,7 +1092,7 @@ struct MyHandler : public AHandler {
         }
 
         AString range = response->mHeaders.valueAt(i);
-        LOGV("Range: %s", range.c_str());
+        ALOGV("Range: %s", range.c_str());
 
         AString val;
         CHECK(GetAttribute(range.c_str(), "npt", &val));
@@ -1101,7 +1101,7 @@ struct MyHandler : public AHandler {
         if (!ASessionDescription::parseNTPRange(val.c_str(), &npt1, &npt2)) {
             // This is a live stream and therefore not seekable.
 
-            LOGI("This is a live stream");
+            ALOGI("This is a live stream");
             return;
         }
 
@@ -1116,7 +1116,7 @@ struct MyHandler : public AHandler {
         for (List<AString>::iterator it = streamInfos.begin();
              it != streamInfos.end(); ++it) {
             (*it).trim();
-            LOGV("streamInfo[%d] = %s", n, (*it).c_str());
+            ALOGV("streamInfo[%d] = %s", n, (*it).c_str());
 
             CHECK(GetAttribute((*it).c_str(), "url", &val));
 
@@ -1140,7 +1140,7 @@ struct MyHandler : public AHandler {
 
             uint32_t rtpTime = strtoul(val.c_str(), &end, 10);
 
-            LOGV("track #%d: rtpTime=%u <=> npt=%.2f", n, rtpTime, npt1);
+            ALOGV("track #%d: rtpTime=%u <=> npt=%.2f", n, rtpTime, npt1);
 
             info->mNormalPlayTimeRTP = rtpTime;
             info->mNormalPlayTimeUs = (int64_t)(npt1 * 1E6);
@@ -1233,7 +1233,7 @@ private:
             new APacketSource(mSessionDesc, index);
 
         if (source->initCheck() != OK) {
-            LOGW("Unsupported format. Ignoring track #%d.", index);
+            ALOGW("Unsupported format. Ignoring track #%d.", index);
 
             sp<AMessage> reply = new AMessage('setu', id());
             reply->setSize("index", index);
@@ -1272,7 +1272,7 @@ private:
 
         info->mTimeScale = timescale;
 
-        LOGV("track #%d URL=%s", mTracks.size(), trackURL.c_str());
+        ALOGV("track #%d URL=%s", mTracks.size(), trackURL.c_str());
 
         AString request = "SETUP ";
         request.append(trackURL);
@@ -1363,7 +1363,7 @@ private:
     }
 
     void onTimeUpdate(int32_t trackIndex, uint32_t rtpTime, uint64_t ntpTime) {
-        LOGV("onTimeUpdate track %d, rtpTime = 0x%08x, ntpTime = 0x%016llx",
+        ALOGV("onTimeUpdate track %d, rtpTime = 0x%08x, ntpTime = 0x%016llx",
              trackIndex, rtpTime, ntpTime);
 
         int64_t ntpTimeUs = (int64_t)(ntpTime * 1E6 / (1ll << 32));
@@ -1381,7 +1381,7 @@ private:
 
     void onAccessUnitComplete(
             int32_t trackIndex, const sp<ABuffer> &accessUnit) {
-        LOGV("onAccessUnitComplete track %d", trackIndex);
+        ALOGV("onAccessUnitComplete track %d", trackIndex);
 
         if (mFirstAccessUnit) {
             sp<AMessage> msg = mNotify->dup();
@@ -1404,7 +1404,7 @@ private:
         TrackInfo *track = &mTracks.editItemAt(trackIndex);
 
         if (mNTPAnchorUs < 0 || mMediaAnchorUs < 0 || track->mNTPAnchorUs < 0) {
-            LOGV("storing accessUnit, no time established yet");
+            ALOGV("storing accessUnit, no time established yet");
             track->mPackets.push_back(accessUnit);
             return;
         }
@@ -1443,11 +1443,11 @@ private:
         }
 
         if (mediaTimeUs < 0) {
-            LOGV("dropping early accessUnit.");
+            ALOGV("dropping early accessUnit.");
             return false;
         }
 
-        LOGV("track %d rtpTime=%d mediaTimeUs = %lld us (%.2f secs)",
+        ALOGV("track %d rtpTime=%d mediaTimeUs = %lld us (%.2f secs)",
              trackIndex, rtpTime, mediaTimeUs, mediaTimeUs / 1E6);
 
         accessUnit->meta()->setInt64("timeUs", mediaTimeUs);

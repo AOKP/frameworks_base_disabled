@@ -57,7 +57,7 @@ void CameraHardwareStub::initDefaultParameters()
     p.setPictureFormat(CameraParameters::PIXEL_FORMAT_JPEG);
 
     if (setParameters(p) != NO_ERROR) {
-        LOGE("Failed to set default parameters?!");
+        ALOGE("Failed to set default parameters?!");
     }
 }
 
@@ -70,7 +70,7 @@ void CameraHardwareStub::initHeapLocked()
 
     int preview_width, preview_height;
     mParameters.getPreviewSize(&preview_width, &preview_height);
-    LOGD("initHeapLocked: preview size=%dx%d", preview_width, preview_height);
+    ALOGD("initHeapLocked: preview size=%dx%d", preview_width, preview_height);
 
     // Note that we enforce yuv420sp in setParameters().
     int how_big = preview_width * preview_height * 3 / 2;
@@ -176,7 +176,7 @@ int CameraHardwareStub::previewThread()
         uint8_t *frame = ((uint8_t *)base) + offset;
         fakeCamera->getNextFrameAsYuv420(frame);
 
-        //LOGV("previewThread: generated frame to buffer %d", mCurrentPreviewFrame);
+        //ALOGV("previewThread: generated frame to buffer %d", mCurrentPreviewFrame);
 
         // Notify the client of a new frame.
         if (mMsgEnabled & CAMERA_MSG_PREVIEW_FRAME)
@@ -340,20 +340,20 @@ status_t CameraHardwareStub::setParameters(const CameraParameters& params)
 
     if (strcmp(params.getPreviewFormat(),
         CameraParameters::PIXEL_FORMAT_YUV420SP) != 0) {
-        LOGE("Only yuv420sp preview is supported");
+        ALOGE("Only yuv420sp preview is supported");
         return -1;
     }
 
     if (strcmp(params.getPictureFormat(),
         CameraParameters::PIXEL_FORMAT_JPEG) != 0) {
-        LOGE("Only jpeg still pictures are supported");
+        ALOGE("Only jpeg still pictures are supported");
         return -1;
     }
 
     int w, h;
     params.getPictureSize(&w, &h);
     if (w != kCannedJpegWidth && h != kCannedJpegHeight) {
-        LOGE("Still picture size must be size of canned JPEG (%dx%d)",
+        ALOGE("Still picture size must be size of canned JPEG (%dx%d)",
              kCannedJpegWidth, kCannedJpegHeight);
         return -1;
     }

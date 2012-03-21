@@ -53,7 +53,7 @@ void checkGLErrors()
         GLenum error = glGetError();
         if (error == GL_NO_ERROR)
             break;
-        LOGE("GL error 0x%04x", int(error));
+        ALOGE("GL error 0x%04x", int(error));
     } while(true);
 }
 
@@ -62,7 +62,7 @@ void checkEGLErrors(const char* token)
 {
     EGLint error = eglGetError();
     if (error && error != EGL_SUCCESS) {
-        LOGE("%s: EGL error 0x%04x (%s)",
+        ALOGE("%s: EGL error 0x%04x (%s)",
                 token, int(error), EGLUtils::strerror(error));
     }
 }
@@ -130,7 +130,7 @@ void DisplayHardware::init(uint32_t dpy)
     mNativeWindow = new FramebufferNativeWindow();
     framebuffer_device_t const * fbDev = mNativeWindow->getDevice();
     if (!fbDev) {
-        LOGE("Display subsystem failed to initialize. check logs. exiting...");
+        ALOGE("Display subsystem failed to initialize. check logs. exiting...");
         exit(0);
     }
 
@@ -170,7 +170,7 @@ void DisplayHardware::init(uint32_t dpy)
     char property[PROPERTY_VALUE_MAX];
     if (property_get("debug.sf.hw", property, NULL) > 0) {
         if (atoi(property) == 0) {
-            LOGW("H/W composition disabled");
+            ALOGW("H/W composition disabled");
             attribs[2] = EGL_CONFIG_CAVEAT;
             attribs[3] = EGL_SLOW_CONFIG;
 #ifdef QCOM_HARDWARE
@@ -198,7 +198,7 @@ void DisplayHardware::init(uint32_t dpy)
     config = (EGLConfig)FORCE_EGL_CONFIG;
 #else
     err = selectConfigForPixelFormat(display, attribs, format, &config);
-    LOGE_IF(err, "couldn't find an EGLConfig matching the screen format");
+    ALOGE_IF(err, "couldn't find an EGLConfig matching the screen format");
 #endif
     
     EGLint r,g,b,a;
@@ -242,7 +242,7 @@ void DisplayHardware::init(uint32_t dpy)
      */
     if (property_get("qemu.sf.lcd_density", property, NULL) <= 0) {
         if (property_get("ro.sf.lcd_density", property, NULL) <= 0) {
-            LOGW("ro.sf.lcd_density not defined, using 160 dpi by default.");
+            ALOGW("ro.sf.lcd_density not defined, using 160 dpi by default.");
             strcpy(property, "160");
         }
     } else {
@@ -281,7 +281,7 @@ void DisplayHardware::init(uint32_t dpy)
 
     result = eglMakeCurrent(display, surface, surface, context);
     if (!result) {
-        LOGE("Couldn't create a working GLES context. check logs. exiting...");
+        ALOGE("Couldn't create a working GLES context. check logs. exiting...");
         exit(0);
     }
 
@@ -298,22 +298,22 @@ void DisplayHardware::init(uint32_t dpy)
     glGetIntegerv(GL_MAX_TEXTURE_SIZE, &mMaxTextureSize);
     glGetIntegerv(GL_MAX_VIEWPORT_DIMS, mMaxViewportDims);
 
-    LOGI("EGL informations:");
-    LOGI("# of configs : %d", numConfigs);
-    LOGI("vendor    : %s", extensions.getEglVendor());
-    LOGI("version   : %s", extensions.getEglVersion());
-    LOGI("extensions: %s", extensions.getEglExtension());
-    LOGI("Client API: %s", eglQueryString(display, EGL_CLIENT_APIS)?:"Not Supported");
-    LOGI("EGLSurface: %d-%d-%d-%d, config=%p", r, g, b, a, config);
+    ALOGI("EGL informations:");
+    ALOGI("# of configs : %d", numConfigs);
+    ALOGI("vendor    : %s", extensions.getEglVendor());
+    ALOGI("version   : %s", extensions.getEglVersion());
+    ALOGI("extensions: %s", extensions.getEglExtension());
+    ALOGI("Client API: %s", eglQueryString(display, EGL_CLIENT_APIS)?:"Not Supported");
+    ALOGI("EGLSurface: %d-%d-%d-%d, config=%p", r, g, b, a, config);
 
-    LOGI("OpenGL informations:");
-    LOGI("vendor    : %s", extensions.getVendor());
-    LOGI("renderer  : %s", extensions.getRenderer());
-    LOGI("version   : %s", extensions.getVersion());
-    LOGI("extensions: %s", extensions.getExtension());
-    LOGI("GL_MAX_TEXTURE_SIZE = %d", mMaxTextureSize);
-    LOGI("GL_MAX_VIEWPORT_DIMS = %d x %d", mMaxViewportDims[0], mMaxViewportDims[1]);
-    LOGI("flags = %08x", mFlags);
+    ALOGI("OpenGL informations:");
+    ALOGI("vendor    : %s", extensions.getVendor());
+    ALOGI("renderer  : %s", extensions.getRenderer());
+    ALOGI("version   : %s", extensions.getVersion());
+    ALOGI("extensions: %s", extensions.getExtension());
+    ALOGI("GL_MAX_TEXTURE_SIZE = %d", mMaxTextureSize);
+    ALOGI("GL_MAX_VIEWPORT_DIMS = %d x %d", mMaxViewportDims[0], mMaxViewportDims[1]);
+    ALOGI("flags = %08x", mFlags);
 
     // Unbind the context from this thread
     eglMakeCurrent(display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);

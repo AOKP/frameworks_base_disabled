@@ -85,10 +85,10 @@ FramebufferNativeWindow::FramebufferNativeWindow()
         int err;
         int i;
         err = framebuffer_open(module, &fbDev);
-        LOGE_IF(err, "couldn't open framebuffer HAL (%s)", strerror(-err));
+        ALOGE_IF(err, "couldn't open framebuffer HAL (%s)", strerror(-err));
         
         err = gralloc_open(module, &grDev);
-        LOGE_IF(err, "couldn't open gralloc HAL (%s)", strerror(-err));
+        ALOGE_IF(err, "couldn't open gralloc HAL (%s)", strerror(-err));
 
         // bail out if we can't initialize the modules
         if (!fbDev || !grDev)
@@ -121,7 +121,7 @@ FramebufferNativeWindow::FramebufferNativeWindow()
                         fbDev->width, fbDev->height, fbDev->format,
                         GRALLOC_USAGE_HW_FB, &buffers[i]->handle, &buffers[i]->stride);
 
-                LOGE_IF(err, "fb buffer %d allocation failed w=%d, h=%d, err=%s",
+                ALOGE_IF(err, "fb buffer %d allocation failed w=%d, h=%d, err=%s",
                         i, fbDev->width, fbDev->height, strerror(-err));
 
                 if (err)
@@ -141,7 +141,7 @@ FramebufferNativeWindow::FramebufferNativeWindow()
         const_cast<int&>(ANativeWindow::maxSwapInterval) = 
             fbDev->maxSwapInterval;
     } else {
-        LOGE("Couldn't get gralloc module");
+        ALOGE("Couldn't get gralloc module");
     }
 
     ANativeWindow::setSwapInterval = setSwapInterval;

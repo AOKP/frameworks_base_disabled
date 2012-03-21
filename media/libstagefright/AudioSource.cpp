@@ -37,7 +37,7 @@ static void AudioRecordCallbackFunction(int event, void *user, void *info) {
             break;
         }
         case AudioRecord::EVENT_OVERRUN: {
-            LOGW("AudioRecord reported overrun!");
+            ALOGW("AudioRecord reported overrun!");
             break;
         }
         default:
@@ -54,7 +54,7 @@ AudioSource::AudioSource(
       mNumFramesReceived(0),
       mNumClientOwnedBuffers(0) {
 
-    LOGV("sampleRate: %d, channels: %d", sampleRate, channels);
+    ALOGV("sampleRate: %d, channels: %d", sampleRate, channels);
     CHECK(channels == 1 || channels == 2);
     uint32_t flags = AudioRecord::RECORD_AGC_ENABLE |
                      AudioRecord::RECORD_NS_ENABLE  |
@@ -114,7 +114,7 @@ status_t AudioSource::start(MetaData *params) {
 }
 
 void AudioSource::releaseQueuedFrames_l() {
-    LOGV("releaseQueuedFrames_l");
+    ALOGV("releaseQueuedFrames_l");
     List<MediaBuffer *>::iterator it;
     while (!mBuffersReceived.empty()) {
         it = mBuffersReceived.begin();
@@ -124,7 +124,7 @@ void AudioSource::releaseQueuedFrames_l() {
 }
 
 void AudioSource::waitOutstandingEncodingFrames_l() {
-    LOGV("waitOutstandingEncodingFrames_l: %lld", mNumClientOwnedBuffers);
+    ALOGV("waitOutstandingEncodingFrames_l: %lld", mNumClientOwnedBuffers);
     while (mNumClientOwnedBuffers > 0) {
         mFrameEncodingCompletionCondition.wait(mLock);
     }
@@ -245,7 +245,7 @@ status_t AudioSource::read(
 }
 
 void AudioSource::signalBufferReturned(MediaBuffer *buffer) {
-    LOGV("signalBufferReturned: %p", buffer->data());
+    ALOGV("signalBufferReturned: %p", buffer->data());
     Mutex::Autolock autoLock(mLock);
     --mNumClientOwnedBuffers;
     buffer->setObserver(0);
@@ -256,17 +256,17 @@ void AudioSource::signalBufferReturned(MediaBuffer *buffer) {
 
 status_t AudioSource::dataCallbackTimestamp(
         const AudioRecord::Buffer& audioBuffer, int64_t timeUs) {
-    LOGV("dataCallbackTimestamp: %lld us", timeUs);
+    ALOGV("dataCallbackTimestamp: %lld us", timeUs);
     Mutex::Autolock autoLock(mLock);
     if (!mStarted) {
-        LOGW("Spurious callback from AudioRecord. Drop the audio data.");
+        ALOGW("Spurious callback from AudioRecord. Drop the audio data.");
         return OK;
     }
 
     // Drop retrieved and previously lost audio data.
     if (mNumFramesReceived == 0 && timeUs < mStartTimeUs) {
         mRecord->getInputFramesLost();
-        LOGV("Drop audio data at %lld/%lld us", timeUs, mStartTimeUs);
+        ALOGV("Drop audio data at %lld/%lld us", timeUs, mStartTimeUs);
         return OK;
     }
 
@@ -301,7 +301,7 @@ status_t AudioSource::dataCallbackTimestamp(
                     audioBuffer.i16, audioBuffer.size);
     } else {
         if (audioBuffer.size == 0) {
-            LOGW("Nothing is available from AudioRecord callback buffer");
+            ALOGW("Nothing is available from AudioRecord callback buffer");
             buffer->release();
             return OK;
         }
@@ -345,7 +345,7 @@ int16_t AudioSource::getMaxAmplitude() {
     }
     int16_t value = mMaxAmplitude;
     mMaxAmplitude = 0;
-    LOGV("max amplitude since last call: %d", value);
+    ALOGV("max amplitude since last call: %d", value);
     return value;
 }
 

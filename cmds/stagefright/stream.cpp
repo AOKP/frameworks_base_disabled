@@ -90,7 +90,7 @@ void MyStreamSource::onBufferAvailable(size_t index) {
 
 #if 0
     if (mNumPacketsSent >= 20000) {
-        LOGI("signalling discontinuity now");
+        ALOGI("signalling discontinuity now");
 
         off64_t offset = 0;
         CHECK((offset % 188) == 0);
@@ -308,7 +308,7 @@ int main(int argc, char **argv) {
     ssize_t displayWidth = composerClient->getDisplayWidth(0);
     ssize_t displayHeight = composerClient->getDisplayHeight(0);
 
-    LOGV("display is %d x %d\n", displayWidth, displayHeight);
+    ALOGV("display is %d x %d\n", displayWidth, displayHeight);
 
     sp<SurfaceControl> control =
         composerClient->createSurface(

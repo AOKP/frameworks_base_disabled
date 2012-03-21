@@ -45,14 +45,14 @@
 
 #include <android_runtime/AndroidRuntime.h>
 
-//#undef LOGV
-//#define LOGV(...) fprintf(stderr, __VA_ARGS__)
+//#undef ALOGV
+//#define ALOGV(...) fprintf(stderr, __VA_ARGS__)
 
 #define DEBUG_DEATH 0
 #if DEBUG_DEATH
-#define LOGDEATH LOGD
+#define LOGDEATH ALOGD
 #else
-#define LOGDEATH LOGV
+#define LOGDEATH ALOGV
 #endif
 
 using namespace android;
@@ -169,7 +169,7 @@ static void incRefsCreated(JNIEnv* env)
         env->CallStaticVoidMethod(gBinderInternalOffsets.mClass,
                 gBinderInternalOffsets.mForceGc);
     } else {
-        LOGV("Now have %d binder ops", old);
+        ALOGV("Now have %d binder ops", old);
     }
 }
 
@@ -194,8 +194,8 @@ static void report_exception(JNIEnv* env, jthrowable excep, const char* msg)
 
     if ((tagstr == NULL) || (msgstr == NULL)) {
         env->ExceptionClear();      /* assume exception (OOM?) was thrown */
-        LOGE("Unable to call Log.e()\n");
-        LOGE("%s", msg);
+        ALOGE("Unable to call Log.e()\n");
+        ALOGE("%s", msg);
         goto bail;
     }
 
@@ -203,7 +203,7 @@ static void report_exception(JNIEnv* env, jthrowable excep, const char* msg)
         gLogOffsets.mClass, gLogOffsets.mLogE, tagstr, msgstr, excep);
     if (env->ExceptionCheck()) {
         /* attempting to log the failure has failed */
-        LOGW("Failed trying to log exception, msg='%s'\n", msg);
+        ALOGW("Failed trying to log exception, msg='%s'\n", msg);
         env->ExceptionClear();
     }
 
@@ -221,7 +221,7 @@ static void report_exception(JNIEnv* env, jthrowable excep, const char* msg)
         env->Throw(excep);
         vm->DetachCurrentThread();
         sleep(60);
-        LOGE("Forcefully exiting");
+        ALOGE("Forcefully exiting");
         exit(1);
         *((int *) 1) = 1;
     }
@@ -249,7 +249,7 @@ public:
     JavaBBinder(JNIEnv* env, jobject object)
         : mVM(jnienv_to_javavm(env)), mObject(env->NewGlobalRef(object))
     {
-        LOGV("Creating JavaBBinder %p\n", this);
+        ALOGV("Creating JavaBBinder %p\n", this);
         android_atomic_inc(&gNumLocalRefs);
         incRefsCreated(env);
     }
@@ -267,7 +267,7 @@ public:
 protected:
     virtual ~JavaBBinder()
     {
-        LOGV("Destroying JavaBBinder %p\n", this);
+        ALOGV("Destroying JavaBBinder %p\n", this);
         android_atomic_dec(&gNumLocalRefs);
         JNIEnv* env = javavm_to_jnienv(mVM);
         env->DeleteGlobalRef(mObject);
@@ -278,7 +278,7 @@ protected:
     {
         JNIEnv* env = javavm_to_jnienv(mVM);
 
-        LOGV("onTransact() on %p calling object %p in env %p vm %p\n", this, mObject, env, mVM);
+        ALOGV("onTransact() on %p calling object %p in env %p vm %p\n", this, mObject, env, mVM);
 
         IPCThreadState* thread_state = IPCThreadState::self();
         const int strict_policy_before = thread_state->getStrictModePolicy();
@@ -349,7 +349,7 @@ public:
         if (b == NULL) {
             b = new JavaBBinder(env, obj);
             mBinder = b;
-            LOGV("Creating JavaBinder %p (refs %p) for Object %p, weakCount=%d\n",
+            ALOGV("Creating JavaBinder %p (refs %p) for Object %p, weakCount=%d\n",
                  b.get(), b->getWeakRefs(), obj, b->getWeakRefs()->getWeakCount());
         }
 
@@ -463,11 +463,11 @@ public:
                     (jstring) env->CallObjectMethod(objClassRef.get(), gClassOffsets.mGetName));
             ScopedUtfChars nameUtf(env, nameRef.get());
             if (nameUtf.c_str() != NULL) {
-                LOGW("BinderProxy is being destroyed but the application did not call "
+                ALOGW("BinderProxy is being destroyed but the application did not call "
                         "unlinkToDeath to unlink all of its death recipients beforehand.  "
                         "Releasing leaked death recipient: %s", nameUtf.c_str());
             } else {
-                LOGW("BinderProxy being destroyed; unable to get DR object name");
+                ALOGW("BinderProxy being destroyed; unable to get DR object name");
                 env->ExceptionClear();
             }
         }
@@ -476,7 +476,7 @@ public:
 protected:
     virtual ~JavaDeathRecipient()
     {
-        //LOGI("Removing death ref: recipient=%p\n", mObject);
+        //ALOGI("Removing death ref: recipient=%p\n", mObject);
         android_atomic_dec(&gNumDeathRefs);
         JNIEnv* env = javavm_to_jnienv(mVM);
         if (mObject != NULL) {
@@ -579,7 +579,7 @@ jobject javaObjectForIBinder(JNIEnv* env, const sp<IBinder>& val)
     if (object != NULL) {
         jobject res = env->CallObjectMethod(object, gWeakReferenceOffsets.mGet);
         if (res != NULL) {
-            LOGV("objectForBinder %p: found existing %p!\n", val.get(), res);
+            ALOGV("objectForBinder %p: found existing %p!\n", val.get(), res);
             return res;
         }
         LOGDEATH("Proxy object %p of IBinder %p no longer in working set!!!", object, val.get());
@@ -630,7 +630,7 @@ sp<IBinder> ibinderForJavaObject(JNIEnv* env, jobject obj)
             env->GetIntField(obj, gBinderProxyOffsets.mObject);
     }
 
-    LOGW("ibinderForJavaObject: %p is not a Binder object", obj);
+    ALOGW("ibinderForJavaObject: %p is not a Binder object", obj);
     return NULL;
 }
 
@@ -699,7 +699,7 @@ static void signalExceptionForError(JNIEnv* env, jobject obj, status_t err,
             jniThrowException(env, "java/lang/RuntimeException", "Unknown transaction code");
             break;
         case FAILED_TRANSACTION:
-            LOGE("!!! FAILED BINDER TRANSACTION !!!");
+            ALOGE("!!! FAILED BINDER TRANSACTION !!!");
             // TransactionTooLargeException is a checked exception, only throw from certain methods.
             // FIXME: Transaction too large is the most common reason for FAILED_TRANSACTION
             //        but it is not the only one.  The Binder driver can return BR_FAILED_REPLY
@@ -715,7 +715,7 @@ static void signalExceptionForError(JNIEnv* env, jobject obj, status_t err,
                     "Not allowed to write file descriptors here");
             break;
         default:
-            LOGE("Unknown binder error code. 0x%x", err);
+            ALOGE("Unknown binder error code. 0x%x", err);
             String8 msg;
             msg.appendFormat("Unknown binder error code. 0x%x", err);
             // RemoteException is a checked exception, only throw from certain methods.
@@ -780,7 +780,7 @@ static void android_os_Binder_init(JNIEnv* env, jobject obj)
         jniThrowException(env, "java/lang/OutOfMemoryError", NULL);
         return;
     }
-    LOGV("Java Binder %p: acquiring first ref on holder %p", obj, jbh);
+    ALOGV("Java Binder %p: acquiring first ref on holder %p", obj, jbh);
     jbh->incStrong((void*)android_os_Binder_init);
     env->SetIntField(obj, gBinderOffsets.mObject, (int)jbh);
 }
@@ -791,7 +791,7 @@ static void android_os_Binder_destroy(JNIEnv* env, jobject obj)
         env->GetIntField(obj, gBinderOffsets.mObject);
     if (jbh != NULL) {
         env->SetIntField(obj, gBinderOffsets.mObject, 0);
-        LOGV("Java Binder %p: removing ref on holder %p", obj, jbh);
+        ALOGV("Java Binder %p: removing ref on holder %p", obj, jbh);
         jbh->decStrong((void*)android_os_Binder_init);
     } else {
         // Encountering an uninitialized binder is harmless.  All it means is that
@@ -800,7 +800,7 @@ static void android_os_Binder_destroy(JNIEnv* env, jobject obj)
         // For example, a Binder subclass constructor might have thrown an exception before
         // it could delegate to its superclass's constructor.  Consequently init() would
         // not have been called and the holder pointer would remain NULL.
-        LOGV("Java Binder %p: ignoring uninitialized binder", obj);
+        ALOGV("Java Binder %p: ignoring uninitialized binder", obj);
     }
 }
 
@@ -889,7 +889,7 @@ static void android_os_BinderInternal_disableBackgroundScheduling(JNIEnv* env,
 
 static void android_os_BinderInternal_handleGc(JNIEnv* env, jobject clazz)
 {
-    LOGV("Gc has executed, clearing binder ops");
+    ALOGV("Gc has executed, clearing binder ops");
     android_atomic_and(0, &gNumRefsCreated);
 }
 
@@ -976,7 +976,7 @@ static bool push_eventlog_string(char** pos, const char* end, const char* str) {
     jint len = strlen(str);
     int space_needed = 1 + sizeof(len) + len;
     if (end - *pos < space_needed) {
-        LOGW("not enough space for string. remain=%d; needed=%d",
+        ALOGW("not enough space for string. remain=%d; needed=%d",
              (end - *pos), space_needed);
         return false;
     }
@@ -992,7 +992,7 @@ static bool push_eventlog_string(char** pos, const char* end, const char* str) {
 static bool push_eventlog_int(char** pos, const char* end, jint val) {
     int space_needed = 1 + sizeof(val);
     if (end - *pos < space_needed) {
-        LOGW("not enough space for int.  remain=%d; needed=%d",
+        ALOGW("not enough space for int.  remain=%d; needed=%d",
              (end - *pos), space_needed);
         return false;
     }
@@ -1078,7 +1078,7 @@ static jboolean android_os_BinderProxy_transact(JNIEnv* env, jobject obj,
         return JNI_FALSE;
     }
 
-    LOGV("Java code calling transact on %p in Java object %p with code %d\n",
+    ALOGV("Java code calling transact on %p in Java object %p with code %d\n",
             target, obj, code);
 
     // Only log the binder call duration for things on the Java-level main thread.
@@ -1117,7 +1117,7 @@ static void android_os_BinderProxy_linkToDeath(JNIEnv* env, jobject obj,
     IBinder* target = (IBinder*)
         env->GetIntField(obj, gBinderProxyOffsets.mObject);
     if (target == NULL) {
-        LOGW("Binder has been finalized when calling linkToDeath() with recip=%p)\n", recipient);
+        ALOGW("Binder has been finalized when calling linkToDeath() with recip=%p)\n", recipient);
         assert(false);
     }
 
@@ -1149,7 +1149,7 @@ static jboolean android_os_BinderProxy_unlinkToDeath(JNIEnv* env, jobject obj,
     IBinder* target = (IBinder*)
         env->GetIntField(obj, gBinderProxyOffsets.mObject);
     if (target == NULL) {
-        LOGW("Binder has been finalized when calling linkToDeath() with recip=%p)\n", recipient);
+        ALOGW("Binder has been finalized when calling linkToDeath() with recip=%p)\n", recipient);
         return JNI_FALSE;
     }
 
@@ -1635,7 +1635,7 @@ static void android_os_Parcel_closeFileDescriptor(JNIEnv* env, jobject clazz, jo
     int fd = jniGetFDFromFileDescriptor(env, object);
     if (fd >= 0) {
         jniSetFileDescriptorOfFD(env, object, -1);
-        //LOGI("Closing ParcelFileDescriptor %d\n", fd);
+        //ALOGI("Closing ParcelFileDescriptor %d\n", fd);
         close(fd);
     }
 }
@@ -1658,7 +1658,7 @@ static void android_os_Parcel_freeBuffer(JNIEnv* env, jobject clazz)
     if (own) {
         Parcel* parcel = parcelForJavaObject(env, clazz);
         if (parcel != NULL) {
-            //LOGI("Parcel.freeBuffer() called for C++ Parcel %p\n", parcel);
+            //ALOGI("Parcel.freeBuffer() called for C++ Parcel %p\n", parcel);
             parcel->freeData();
         }
     }
@@ -1669,17 +1669,17 @@ static void android_os_Parcel_init(JNIEnv* env, jobject clazz, jint parcelInt)
     Parcel* parcel = (Parcel*)parcelInt;
     int own = 0;
     if (!parcel) {
-        //LOGI("Initializing obj %p: creating new Parcel\n", clazz);
+        //ALOGI("Initializing obj %p: creating new Parcel\n", clazz);
         own = 1;
         parcel = new Parcel;
     } else {
-        //LOGI("Initializing obj %p: given existing Parcel %p\n", clazz, parcel);
+        //ALOGI("Initializing obj %p: given existing Parcel %p\n", clazz, parcel);
     }
     if (parcel == NULL) {
         jniThrowException(env, "java/lang/OutOfMemoryError", NULL);
         return;
     }
-    //LOGI("Initializing obj %p from C++ Parcel %p, own=%d\n", clazz, parcel, own);
+    //ALOGI("Initializing obj %p from C++ Parcel %p, own=%d\n", clazz, parcel, own);
     env->SetIntField(clazz, gParcelOffsets.mOwnObject, own);
     env->SetIntField(clazz, gParcelOffsets.mObject, (int)parcel);
 }
@@ -1690,11 +1690,11 @@ static void android_os_Parcel_destroy(JNIEnv* env, jobject clazz)
     if (own) {
         Parcel* parcel = parcelForJavaObject(env, clazz);
         env->SetIntField(clazz, gParcelOffsets.mObject, 0);
-        //LOGI("Destroying obj %p: deleting C++ Parcel %p\n", clazz, parcel);
+        //ALOGI("Destroying obj %p: deleting C++ Parcel %p\n", clazz, parcel);
         delete parcel;
     } else {
         env->SetIntField(clazz, gParcelOffsets.mObject, 0);
-        //LOGI("Destroying obj %p: leaving C++ Parcel %p\n", clazz);
+        //ALOGI("Destroying obj %p: leaving C++ Parcel %p\n", clazz);
     }
 }
 

@@ -109,7 +109,7 @@ sp<IBinder> ProcessState::getContextObject(const String16& name, const sp<IBinde
 
     // Don't attempt to retrieve contexts if we manage them
     if (mManagesContexts) {
-        LOGE("getContextObject(%s) failed, but we manage the contexts!\n",
+        ALOGE("getContextObject(%s) failed, but we manage the contexts!\n",
             String8(name).string());
         return NULL;
     }
@@ -160,7 +160,7 @@ bool ProcessState::becomeContextManager(context_check_func checkFunc, void* user
         } else if (result == -1) {
             mBinderContextCheckFunc = NULL;
             mBinderContextUserData = NULL;
-            LOGE("Binder ioctl to become context manager failed: %s\n", strerror(errno));
+            ALOGE("Binder ioctl to become context manager failed: %s\n", strerror(errno));
         }
     }
     return mManagesContexts;
@@ -288,7 +288,7 @@ void ProcessState::spawnPooledThread(bool isMain)
         int32_t s = android_atomic_add(1, &mThreadPoolSeq);
         char buf[32];
         sprintf(buf, "Binder Thread #%d", s);
-        LOGV("Spawning new pooled thread, name=%s\n", buf);
+        ALOGV("Spawning new pooled thread, name=%s\n", buf);
         sp<Thread> t = new PoolThread(isMain);
         t->run(buf);
     }
@@ -302,22 +302,22 @@ static int open_driver()
         int vers;
         status_t result = ioctl(fd, BINDER_VERSION, &vers);
         if (result == -1) {
-            LOGE("Binder ioctl to obtain version failed: %s", strerror(errno));
+            ALOGE("Binder ioctl to obtain version failed: %s", strerror(errno));
             close(fd);
             fd = -1;
         }
         if (result != 0 || vers != BINDER_CURRENT_PROTOCOL_VERSION) {
-            LOGE("Binder driver protocol does not match user space protocol!");
+            ALOGE("Binder driver protocol does not match user space protocol!");
             close(fd);
             fd = -1;
         }
         size_t maxThreads = 15;
         result = ioctl(fd, BINDER_SET_MAX_THREADS, &maxThreads);
         if (result == -1) {
-            LOGE("Binder ioctl to set max threads failed: %s", strerror(errno));
+            ALOGE("Binder ioctl to set max threads failed: %s", strerror(errno));
         }
     } else {
-        LOGW("Opening '/dev/binder' failed: %s\n", strerror(errno));
+        ALOGW("Opening '/dev/binder' failed: %s\n", strerror(errno));
     }
     return fd;
 }
@@ -340,7 +340,7 @@ ProcessState::ProcessState()
         mVMStart = mmap(0, BINDER_VM_SIZE, PROT_READ, MAP_PRIVATE | MAP_NORESERVE, mDriverFD, 0);
         if (mVMStart == MAP_FAILED) {
             // *sigh*
-            LOGE("Using /dev/binder failed: unable to mmap transaction memory.\n");
+            ALOGE("Using /dev/binder failed: unable to mmap transaction memory.\n");
             close(mDriverFD);
             mDriverFD = -1;
         }

@@ -207,7 +207,7 @@ OMX_ERRORTYPE SoftMPEG4::internalGetParameter(
                     (OMX_VIDEO_PARAM_PROFILELEVELTYPE *) params;
 
             if (profileLevel->nPortIndex != 0) {  // Input port only
-                LOGE("Invalid port index: %ld", profileLevel->nPortIndex);
+                ALOGE("Invalid port index: %ld", profileLevel->nPortIndex);
                 return OMX_ErrorUnsupportedIndex;
             }
 
@@ -371,7 +371,7 @@ void SoftMPEG4::onQueueFilled(OMX_U32 portIndex) {
                     mHandle, vol_data, &vol_size, 1, mWidth, mHeight, mode);
 
             if (!success) {
-                LOGW("PVInitVideoDecoder failed. Unsupported content?");
+                ALOGW("PVInitVideoDecoder failed. Unsupported content?");
 
                 notify(OMX_EventError, OMX_ErrorUndefined, 0, NULL);
                 mSignalledError = true;
@@ -425,7 +425,7 @@ void SoftMPEG4::onQueueFilled(OMX_U32 portIndex) {
                     mHandle, &bitstream, &timestamp, &bufferSize,
                     &useExtTimestamp,
                     outHeader->pBuffer) != PV_TRUE) {
-            LOGE("failed to decode video frame.");
+            ALOGE("failed to decode video frame.");
 
             notify(OMX_EventError, OMX_ErrorUndefined, 0, NULL);
             mSignalledError = true;
@@ -484,7 +484,7 @@ bool SoftMPEG4::portSettingsChanged() {
     CHECK_LE(disp_width, buf_width);
     CHECK_LE(disp_height, buf_height);
 
-    LOGV("disp_width = %d, disp_height = %d, buf_width = %d, buf_height = %d",
+    ALOGV("disp_width = %d, disp_height = %d, buf_width = %d, buf_height = %d",
             disp_width, disp_height, buf_width, buf_height);
 
     if (mCropRight != disp_width - 1

@@ -47,7 +47,7 @@
 #include <gui/SurfaceTextureClient.h>
 #include <android_runtime/android_graphics_SurfaceTexture.h>
 
-//#define LOG_API LOGE
+//#define LOG_API ALOGE
 #define LOG_API(...)
 
 using namespace android;
@@ -262,7 +262,7 @@ nContextGetErrorMessage(JNIEnv *_env, jobject _this, RsContext con)
                                  &receiveLen, sizeof(receiveLen),
                                  &subID, sizeof(subID));
     if (!id && receiveLen) {
-        LOGV("message receive buffer too small.  %i", receiveLen);
+        ALOGV("message receive buffer too small.  %i", receiveLen);
     }
     return _env->NewStringUTF(buf);
 }
@@ -280,7 +280,7 @@ nContextGetUserMessage(JNIEnv *_env, jobject _this, RsContext con, jintArray dat
                                  &receiveLen, sizeof(receiveLen),
                                  &subID, sizeof(subID));
     if (!id && receiveLen) {
-        LOGV("message receive buffer too small.  %i", receiveLen);
+        ALOGV("message receive buffer too small.  %i", receiveLen);
     }
     _env->ReleaseIntArrayElements(data, ptr, 0);
     return id;
@@ -709,7 +709,7 @@ nAllocationResize2D(JNIEnv *_env, jobject _this, RsContext con, jint alloc, jint
 static int
 nFileA3DCreateFromAssetStream(JNIEnv *_env, jobject _this, RsContext con, jint native_asset)
 {
-    LOGV("______nFileA3D %u", (uint32_t) native_asset);
+    ALOGV("______nFileA3D %u", (uint32_t) native_asset);
 
     Asset* asset = reinterpret_cast<Asset*>(native_asset);
 
@@ -755,7 +755,7 @@ nFileA3DGetNumIndexEntries(JNIEnv *_env, jobject _this, RsContext con, jint file
 static void
 nFileA3DGetIndexEntries(JNIEnv *_env, jobject _this, RsContext con, jint fileA3D, jint numEntries, jintArray _ids, jobjectArray _entries)
 {
-    LOGV("______nFileA3D %u", (uint32_t) fileA3D);
+    ALOGV("______nFileA3D %u", (uint32_t) fileA3D);
     RsFileIndexEntry *fileEntries = (RsFileIndexEntry*)malloc((uint32_t)numEntries * sizeof(RsFileIndexEntry));
 
     rsaFileA3DGetIndexEntries(con, fileEntries, (uint32_t)numEntries, (RsFile)fileA3D);
@@ -771,7 +771,7 @@ nFileA3DGetIndexEntries(JNIEnv *_env, jobject _this, RsContext con, jint fileA3D
 static int
 nFileA3DGetEntryByIndex(JNIEnv *_env, jobject _this, RsContext con, jint fileA3D, jint index)
 {
-    LOGV("______nFileA3D %u", (uint32_t) fileA3D);
+    ALOGV("______nFileA3D %u", (uint32_t) fileA3D);
     jint id = (jint)rsaFileA3DGetEntryByIndex(con, (uint32_t)index, (RsFile)fileA3D);
     return id;
 }
@@ -1333,13 +1333,13 @@ jint JNI_OnLoad(JavaVM* vm, void* reserved)
     jint result = -1;
 
     if (vm->GetEnv((void**) &env, JNI_VERSION_1_4) != JNI_OK) {
-        LOGE("ERROR: GetEnv failed\n");
+        ALOGE("ERROR: GetEnv failed\n");
         goto bail;
     }
     assert(env != NULL);
 
     if (registerFuncs(env) < 0) {
-        LOGE("ERROR: MediaPlayer native registration failed\n");
+        ALOGE("ERROR: MediaPlayer native registration failed\n");
         goto bail;
     }
 

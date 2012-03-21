@@ -36,7 +36,7 @@
 #include "android_view_KeyEvent.h"
 
 #define LOG_TRACE(...)
-//#define LOG_TRACE(...) LOG(LOG_DEBUG, LOG_TAG, __VA_ARGS__)
+//#define LOG_TRACE(...) ALOG(LOG_DEBUG, LOG_TAG, __VA_ARGS__)
 
 namespace android
 {
@@ -84,8 +84,8 @@ restart:
     
     if (res == sizeof(work)) return;
     
-    if (res < 0) LOGW("Failed writing to work fd: %s", strerror(errno));
-    else LOGW("Truncated writing to work fd: %d", res);
+    if (res < 0) ALOGW("Failed writing to work fd: %s", strerror(errno));
+    else ALOGW("Truncated writing to work fd: %d", res);
 }
 
 static bool read_work(int fd, ActivityWork* outWork) {
@@ -93,8 +93,8 @@ static bool read_work(int fd, ActivityWork* outWork) {
     // no need to worry about EINTR, poll loop will just come back again.
     if (res == sizeof(ActivityWork)) return true;
     
-    if (res < 0) LOGW("Failed reading work fd: %s", strerror(errno));
-    else LOGW("Truncated reading work fd: %d", res);
+    if (res < 0) ALOGW("Failed reading work fd: %s", strerror(errno));
+    else ALOGW("Truncated reading work fd: %d", res);
     return false;
 }
 
@@ -108,7 +108,7 @@ AInputQueue::AInputQueue(const sp<InputChannel>& channel, int workWrite) :
         mWorkWrite(workWrite), mConsumer(channel), mSeq(0) {
     int msgpipe[2];
     if (pipe(msgpipe)) {
-        LOGW("could not create pipe: %s", strerror(errno));
+        ALOGW("could not create pipe: %s", strerror(errno));
         mDispatchKeyRead = mDispatchKeyWrite = -1;
     } else {
         mDispatchKeyRead = msgpipe[0];
@@ -187,7 +187,7 @@ int32_t AInputQueue::getEvent(AInputEvent** outEvent) {
                 }
             }
             if (*outEvent == NULL) {
-                LOGW("getEvent couldn't find inflight for seq %d", finish.seq);
+                ALOGW("getEvent couldn't find inflight for seq %d", finish.seq);
             }
         }
         mLock.unlock();
@@ -203,7 +203,7 @@ int32_t AInputQueue::getEvent(AInputEvent** outEvent) {
     
     int32_t res = mConsumer.receiveDispatchSignal();
     if (res != android::OK) {
-        LOGE("channel '%s' ~ Failed to receive dispatch signal.  status=%d",
+        ALOGE("channel '%s' ~ Failed to receive dispatch signal.  status=%d",
                 mConsumer.getChannel()->getName().string(), res);
         return -1;
     }
@@ -211,7 +211,7 @@ int32_t AInputQueue::getEvent(AInputEvent** outEvent) {
     InputEvent* myEvent = NULL;
     res = mConsumer.consume(this, &myEvent);
     if (res != android::OK) {
-        LOGW("channel '%s' ~ Failed to consume input event.  status=%d",
+        ALOGW("channel '%s' ~ Failed to consume input event.  status=%d",
                 mConsumer.getChannel()->getName().string(), res);
         mConsumer.sendFinishedSignal(false);
         return -1;
@@ -265,7 +265,7 @@ void AInputQueue::finishEvent(AInputEvent* event, bool handled, bool didDefaultH
             if (inflight.doFinish) {
                 int32_t res = mConsumer.sendFinishedSignal(handled);
                 if (res != android::OK) {
-                    LOGW("Failed to send finished signal on channel '%s'.  status=%d",
+                    ALOGW("Failed to send finished signal on channel '%s'.  status=%d",
                             mConsumer.getChannel()->getName().string(), res);
                 }
             }
@@ -281,7 +281,7 @@ void AInputQueue::finishEvent(AInputEvent* event, bool handled, bool didDefaultH
     }
     mLock.unlock();
     
-    LOGW("finishEvent called for unknown event: %p", event);
+    ALOGW("finishEvent called for unknown event: %p", event);
 }
 
 void AInputQueue::dispatchEvent(android::KeyEvent* event) {
@@ -398,7 +398,7 @@ bool AInputQueue::preDispatchKey(KeyEvent* keyEvent) {
         }
     }
 
-    LOGW("preDispatchKey called for unknown event: %p", keyEvent);
+    ALOGW("preDispatchKey called for unknown event: %p", keyEvent);
     return false;
 }
 
@@ -412,8 +412,8 @@ restart:
 
     if (res == sizeof(dummy)) return;
 
-    if (res < 0) LOGW("Failed writing to dispatch fd: %s", strerror(errno));
-    else LOGW("Truncated writing to dispatch fd: %d", res);
+    if (res < 0) ALOGW("Failed writing to dispatch fd: %s", strerror(errno));
+    else ALOGW("Truncated writing to dispatch fd: %d", res);
 }
 
 namespace android {
@@ -548,7 +548,7 @@ void android_NativeActivity_hideSoftInput(
 
 static bool checkAndClearExceptionFromCallback(JNIEnv* env, const char* methodName) {
    if (env->ExceptionCheck()) {
-       LOGE("An exception was thrown by callback '%s'.", methodName);
+       ALOGE("An exception was thrown by callback '%s'.", methodName);
        LOGE_EX(env);
        env->ExceptionClear();
        return true;
@@ -585,7 +585,7 @@ static int mainWorkCallback(int fd, int events, void* data) {
                     checkAndClearExceptionFromCallback(code->env, "dispatchUnhandledKeyEvent");
                     code->env->DeleteLocalRef(inputEventObj);
                 } else {
-                    LOGE("Failed to obtain key event for dispatchUnhandledKeyEvent.");
+                    ALOGE("Failed to obtain key event for dispatchUnhandledKeyEvent.");
                     handled = false;
                 }
                 code->nativeInputQueue->finishEvent(keyEvent, handled, true);
@@ -600,7 +600,7 @@ static int mainWorkCallback(int fd, int events, void* data) {
                     checkAndClearExceptionFromCallback(code->env, "preDispatchKeyEvent");
                     code->env->DeleteLocalRef(inputEventObj);
                 } else {
-                    LOGE("Failed to obtain key event for preDispatchKeyEvent.");
+                    ALOGE("Failed to obtain key event for preDispatchKeyEvent.");
                 }
             }
         } break;
@@ -629,7 +629,7 @@ static int mainWorkCallback(int fd, int events, void* data) {
             checkAndClearExceptionFromCallback(code->env, "hideIme");
         } break;
         default:
-            LOGW("Unknown work command: %d", work.cmd);
+            ALOGW("Unknown work command: %d", work.cmd);
             break;
     }
     
@@ -660,21 +660,21 @@ loadNativeCode_native(JNIEnv* env, jobject clazz, jstring path, jstring funcName
         env->ReleaseStringUTFChars(funcName, funcStr);
         
         if (code->createActivityFunc == NULL) {
-            LOGW("ANativeActivity_onCreate not found");
+            ALOGW("ANativeActivity_onCreate not found");
             delete code;
             return 0;
         }
         
         code->looper = android_os_MessageQueue_getLooper(env, messageQueue);
         if (code->looper == NULL) {
-            LOGW("Unable to retrieve MessageQueue's Looper");
+            ALOGW("Unable to retrieve MessageQueue's Looper");
             delete code;
             return 0;
         }
         
         int msgpipe[2];
         if (pipe(msgpipe)) {
-            LOGW("could not create pipe: %s", strerror(errno));
+            ALOGW("could not create pipe: %s", strerror(errno));
             delete code;
             return 0;
         }
@@ -690,7 +690,7 @@ loadNativeCode_native(JNIEnv* env, jobject clazz, jstring path, jstring funcName
         
         code->ANativeActivity::callbacks = &code->callbacks;
         if (env->GetJavaVM(&code->vm) < 0) {
-            LOGW("NativeActivity GetJavaVM failed");
+            ALOGW("NativeActivity GetJavaVM failed");
             delete code;
             return 0;
         }
@@ -1060,7 +1060,7 @@ static const char* const kNativeActivityPathName = "android/app/NativeActivity";
         
 int register_android_app_NativeActivity(JNIEnv* env)
 {
-    //LOGD("register_android_app_NativeActivity");
+    //ALOGD("register_android_app_NativeActivity");
     jclass clazz;
     FIND_CLASS(clazz, kNativeActivityPathName);
 

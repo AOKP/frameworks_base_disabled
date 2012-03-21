@@ -112,7 +112,7 @@ JNIEnv* JNISurfaceTextureContext::getJNIEnv(bool* needsDetach) {
         JavaVM* vm = AndroidRuntime::getJavaVM();
         int result = vm->AttachCurrentThread(&env, (void*) &args);
         if (result != JNI_OK) {
-            LOGE("thread attach failed: %#x", result);
+            ALOGE("thread attach failed: %#x", result);
             return NULL;
         }
         *needsDetach = true;
@@ -124,7 +124,7 @@ void JNISurfaceTextureContext::detachJNI() {
     JavaVM* vm = AndroidRuntime::getJavaVM();
     int result = vm->DetachCurrentThread();
     if (result != JNI_OK) {
-        LOGE("thread detach failed: %#x", result);
+        ALOGE("thread detach failed: %#x", result);
     }
 }
 
@@ -136,7 +136,7 @@ JNISurfaceTextureContext::~JNISurfaceTextureContext()
         env->DeleteGlobalRef(mWeakThiz);
         env->DeleteGlobalRef(mClazz);
     } else {
-        LOGW("leaking JNI object references");
+        ALOGW("leaking JNI object references");
     }
     if (needsDetach) {
         detachJNI();
@@ -150,7 +150,7 @@ void JNISurfaceTextureContext::onFrameAvailable()
     if (env != NULL) {
         env->CallStaticVoidMethod(mClazz, fields.postEvent, mWeakThiz);
     } else {
-        LOGW("onFrameAvailable event will not posted");
+        ALOGW("onFrameAvailable event will not posted");
     }
     if (needsDetach) {
         detachJNI();
@@ -164,14 +164,14 @@ static void SurfaceTexture_classInit(JNIEnv* env, jclass clazz)
     fields.surfaceTexture = env->GetFieldID(clazz,
             ANDROID_GRAPHICS_SURFACETEXTURE_JNI_ID, "I");
     if (fields.surfaceTexture == NULL) {
-        LOGE("can't find android/graphics/SurfaceTexture.%s",
+        ALOGE("can't find android/graphics/SurfaceTexture.%s",
                 ANDROID_GRAPHICS_SURFACETEXTURE_JNI_ID);
     }
 
     fields.postEvent = env->GetStaticMethodID(clazz, "postEventFromNative",
             "(Ljava/lang/Object;)V");
     if (fields.postEvent == NULL) {
-        LOGE("can't find android/graphics/SurfaceTexture.postEventFromNative");
+        ALOGE("can't find android/graphics/SurfaceTexture.postEventFromNative");
     }
 }
 

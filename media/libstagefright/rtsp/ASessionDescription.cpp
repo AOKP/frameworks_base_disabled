@@ -80,7 +80,7 @@ bool ASessionDescription::parse(const void *data, size_t size) {
             return false;
         }
 
-        LOGI("%s", line.c_str());
+        ALOGI("%s", line.c_str());
 
         switch (line.c_str()[0]) {
             case 'v':
@@ -120,7 +120,7 @@ bool ASessionDescription::parse(const void *data, size_t size) {
                 key.trim();
                 value.trim();
 
-                LOGV("adding '%s' => '%s'", key.c_str(), value.c_str());
+                ALOGV("adding '%s' => '%s'", key.c_str(), value.c_str());
 
                 mTracks.editItemAt(mTracks.size() - 1).add(key, value);
                 break;
@@ -128,7 +128,7 @@ bool ASessionDescription::parse(const void *data, size_t size) {
 
             case 'm':
             {
-                LOGV("new section '%s'",
+                ALOGV("new section '%s'",
                      AString(line, 2, line.size() - 2).c_str());
 
                 mTracks.push(Attribs());
@@ -148,7 +148,7 @@ bool ASessionDescription::parse(const void *data, size_t size) {
                 key.trim();
                 value.trim();
 
-                LOGV("adding '%s' => '%s'", key.c_str(), value.c_str());
+                ALOGV("adding '%s' => '%s'", key.c_str(), value.c_str());
 
                 mTracks.editItemAt(mTracks.size() - 1).add(key, value);
                 break;

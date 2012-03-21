@@ -61,11 +61,11 @@ static Properties sink_properties[] = {
  * Return false if dbus is down, or another serious error (out of memory)
 */
 static bool initNative(JNIEnv* env, jobject object) {
-    LOGV("%s", __FUNCTION__);
+    ALOGV("%s", __FUNCTION__);
 #ifdef HAVE_BLUETOOTH
     nat = (native_data_t *)calloc(1, sizeof(native_data_t));
     if (NULL == nat) {
-        LOGE("%s: out of memory!", __FUNCTION__);
+        ALOGE("%s: out of memory!", __FUNCTION__);
         return false;
     }
     env->GetJavaVM( &(nat->vm) );
@@ -77,7 +77,7 @@ static bool initNative(JNIEnv* env, jobject object) {
     dbus_threads_init_default();
     nat->conn = dbus_bus_get(DBUS_BUS_SYSTEM, &err);
     if (dbus_error_is_set(&err)) {
-        LOGE("Could not get onto the system bus: %s", err.message);
+        ALOGE("Could not get onto the system bus: %s", err.message);
         dbus_error_free(&err);
         return false;
     }
@@ -88,7 +88,7 @@ static bool initNative(JNIEnv* env, jobject object) {
 
 static void cleanupNative(JNIEnv* env, jobject object) {
 #ifdef HAVE_BLUETOOTH
-    LOGV("%s", __FUNCTION__);
+    ALOGV("%s", __FUNCTION__);
     if (nat) {
         dbus_connection_close(nat->conn);
         env->DeleteGlobalRef(nat->me);
@@ -101,7 +101,7 @@ static void cleanupNative(JNIEnv* env, jobject object) {
 static jobjectArray getSinkPropertiesNative(JNIEnv *env, jobject object,
                                             jstring path) {
 #ifdef HAVE_BLUETOOTH
-    LOGV("%s", __FUNCTION__);
+    ALOGV("%s", __FUNCTION__);
     if (nat) {
         DBusMessage *msg, *reply;
         DBusError err;
@@ -117,7 +117,7 @@ static jobjectArray getSinkPropertiesNative(JNIEnv *env, jobject object,
             LOG_AND_FREE_DBUS_ERROR_WITH_MSG(&err, reply);
             return NULL;
         } else if (!reply) {
-            LOGE("DBus reply is NULL in function %s", __FUNCTION__);
+            ALOGE("DBus reply is NULL in function %s", __FUNCTION__);
             return NULL;
         }
         DBusMessageIter iter;
@@ -132,7 +132,7 @@ static jobjectArray getSinkPropertiesNative(JNIEnv *env, jobject object,
 
 static jboolean connectSinkNative(JNIEnv *env, jobject object, jstring path) {
 #ifdef HAVE_BLUETOOTH
-    LOGV("%s", __FUNCTION__);
+    ALOGV("%s", __FUNCTION__);
     if (nat) {
         const char *c_path = env->GetStringUTFChars(path, NULL);
         int len = env->GetStringLength(path) + 1;
@@ -153,7 +153,7 @@ static jboolean connectSinkNative(JNIEnv *env, jobject object, jstring path) {
 static jboolean disconnectSinkNative(JNIEnv *env, jobject object,
                                      jstring path) {
 #ifdef HAVE_BLUETOOTH
-    LOGV("%s", __FUNCTION__);
+    ALOGV("%s", __FUNCTION__);
     if (nat) {
         const char *c_path = env->GetStringUTFChars(path, NULL);
 
@@ -171,7 +171,7 @@ static jboolean disconnectSinkNative(JNIEnv *env, jobject object,
 static jboolean suspendSinkNative(JNIEnv *env, jobject object,
                                      jstring path) {
 #ifdef HAVE_BLUETOOTH
-    LOGV("%s", __FUNCTION__);
+    ALOGV("%s", __FUNCTION__);
     if (nat) {
         const char *c_path = env->GetStringUTFChars(path, NULL);
         bool ret = dbus_func_args_async(env, nat->conn, -1, NULL, NULL, nat,
@@ -187,7 +187,7 @@ static jboolean suspendSinkNative(JNIEnv *env, jobject object,
 static jboolean resumeSinkNative(JNIEnv *env, jobject object,
                                      jstring path) {
 #ifdef HAVE_BLUETOOTH
-    LOGV("%s", __FUNCTION__);
+    ALOGV("%s", __FUNCTION__);
     if (nat) {
         const char *c_path = env->GetStringUTFChars(path, NULL);
         bool ret = dbus_func_args_async(env, nat->conn, -1, NULL, NULL, nat,
@@ -203,7 +203,7 @@ static jboolean resumeSinkNative(JNIEnv *env, jobject object,
 static jboolean avrcpVolumeUpNative(JNIEnv *env, jobject object,
                                      jstring path) {
 #ifdef HAVE_BLUETOOTH
-    LOGV("%s", __FUNCTION__);
+    ALOGV("%s", __FUNCTION__);
     if (nat) {
         const char *c_path = env->GetStringUTFChars(path, NULL);
         bool ret = dbus_func_args_async(env, nat->conn, -1, NULL, NULL, nat,
@@ -219,7 +219,7 @@ static jboolean avrcpVolumeUpNative(JNIEnv *env, jobject object,
 static jboolean avrcpVolumeDownNative(JNIEnv *env, jobject object,
                                      jstring path) {
 #ifdef HAVE_BLUETOOTH
-    LOGV("%s", __FUNCTION__);
+    ALOGV("%s", __FUNCTION__);
     if (nat) {
         const char *c_path = env->GetStringUTFChars(path, NULL);
         bool ret = dbus_func_args_async(env, nat->conn, -1, NULL, NULL, nat,
@@ -237,8 +237,8 @@ DBusHandlerResult a2dp_event_filter(DBusMessage *msg, JNIEnv *env) {
     DBusError err;
 
     if (!nat) {
-        LOGV("... skipping %s\n", __FUNCTION__);
-        LOGV("... ignored\n");
+        ALOGV("... skipping %s\n", __FUNCTION__);
+        ALOGV("... ignored\n");
         return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
     }
 
@@ -265,10 +265,10 @@ DBusHandlerResult a2dp_event_filter(DBusMessage *msg, JNIEnv *env) {
         result = DBUS_HANDLER_RESULT_HANDLED;
         return result;
     } else {
-        LOGV("... ignored");
+        ALOGV("... ignored");
     }
     if (env->ExceptionCheck()) {
-        LOGE("VM Exception occurred while handling %s.%s (%s) in %s,"
+        ALOGE("VM Exception occurred while handling %s.%s (%s) in %s,"
              " leaving for VM",
              dbus_message_get_interface(msg), dbus_message_get_member(msg),
              dbus_message_get_path(msg), __FUNCTION__);
@@ -278,7 +278,7 @@ DBusHandlerResult a2dp_event_filter(DBusMessage *msg, JNIEnv *env) {
 }
 
 void onConnectSinkResult(DBusMessage *msg, void *user, void *n) {
-    LOGV("%s", __FUNCTION__);
+    ALOGV("%s", __FUNCTION__);
 
     native_data_t *nat = (native_data_t *)n;
     const char *path = (const char *)user;
@@ -293,7 +293,7 @@ void onConnectSinkResult(DBusMessage *msg, void *user, void *n) {
         LOG_AND_FREE_DBUS_ERROR(&err);
         result = JNI_FALSE;
     }
-    LOGV("... Device Path = %s, result = %d", path, result);
+    ALOGV("... Device Path = %s, result = %d", path, result);
 
     jstring jPath = env->NewStringUTF(path);
     env->CallVoidMethod(nat->me,
@@ -326,7 +326,7 @@ static JNINativeMethod sMethods[] = {
 int register_android_server_BluetoothA2dpService(JNIEnv *env) {
     jclass clazz = env->FindClass("android/server/BluetoothA2dpService");
     if (clazz == NULL) {
-        LOGE("Can't find android/server/BluetoothA2dpService");
+        ALOGE("Can't find android/server/BluetoothA2dpService");
         return -1;
     }
 

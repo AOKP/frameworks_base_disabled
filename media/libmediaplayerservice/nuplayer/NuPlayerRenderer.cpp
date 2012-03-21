@@ -230,9 +230,9 @@ bool NuPlayer::Renderer::onDrainAudioQueue() {
 
 #if 0
     if (numFramesAvailableToWrite == mAudioSink->frameCount()) {
-        LOGI("audio sink underrun");
+        ALOGI("audio sink underrun");
     } else {
-        LOGV("audio queue has %d frames left to play",
+        ALOGV("audio queue has %d frames left to play",
              mAudioSink->frameCount() - numFramesAvailableToWrite);
     }
 #endif
@@ -257,7 +257,7 @@ bool NuPlayer::Renderer::onDrainAudioQueue() {
             int64_t mediaTimeUs;
             CHECK(entry->mBuffer->meta()->findInt64("timeUs", &mediaTimeUs));
 
-            LOGV("rendering audio at media time %.2f secs", mediaTimeUs / 1E6);
+            ALOGV("rendering audio at media time %.2f secs", mediaTimeUs / 1E6);
 
             mAnchorTimeMediaUs = mediaTimeUs;
 
@@ -272,7 +272,7 @@ bool NuPlayer::Renderer::onDrainAudioQueue() {
                     + numFramesPendingPlayout
                         * mAudioSink->msecsPerFrame()) * 1000ll;
 
-            // LOGI("realTimeOffsetUs = %lld us", realTimeOffsetUs);
+            // ALOGI("realTimeOffsetUs = %lld us", realTimeOffsetUs);
 
             mAnchorTimeRealUs =
                 ALooper::GetNowUs() + realTimeOffsetUs;
@@ -385,9 +385,9 @@ void NuPlayer::Renderer::onDrainVideoQueue() {
     bool tooLate = (mVideoLateByUs > 40000);
 
     if (tooLate) {
-        LOGV("video late by %lld us (%.2f secs)", lateByUs, lateByUs / 1E6);
+        ALOGV("video late by %lld us (%.2f secs)", lateByUs, lateByUs / 1E6);
     } else {
-        LOGV("rendering video at media time %.2f secs", mediaTimeUs / 1E6);
+        ALOGV("rendering video at media time %.2f secs", mediaTimeUs / 1E6);
     }
 
     entry->mNotifyConsumed->setInt32("render", !tooLate);
@@ -463,7 +463,7 @@ void NuPlayer::Renderer::onQueueBuffer(const sp<AMessage> &msg) {
 
     int64_t diff = firstVideoTimeUs - firstAudioTimeUs;
 
-    LOGV("queueDiff = %.2f secs", diff / 1E6);
+    ALOGV("queueDiff = %.2f secs", diff / 1E6);
 
     if (diff > 100000ll) {
         // Audio data starts More than 0.1 secs before video.
@@ -637,7 +637,7 @@ void NuPlayer::Renderer::onPause() {
         mAudioSink->pause();
     }
 
-    LOGV("now paused audio queue has %d entries, video has %d entries",
+    ALOGV("now paused audio queue has %d entries, video has %d entries",
          mAudioQueue.size(), mVideoQueue.size());
 
     mPaused = true;

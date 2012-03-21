@@ -312,7 +312,7 @@ void NativeInputManager::dump(String8& dump) {
 
 bool NativeInputManager::checkAndClearExceptionFromCallback(JNIEnv* env, const char* methodName) {
     if (env->ExceptionCheck()) {
-        LOGE("An exception was thrown by callback '%s'.", methodName);
+        ALOGE("An exception was thrown by callback '%s'.", methodName);
         LOGE_EX(env);
         env->ExceptionClear();
         return true;
@@ -502,7 +502,7 @@ void NativeInputManager::ensureSpriteControllerLocked() {
 void NativeInputManager::notifySwitch(nsecs_t when, int32_t switchCode,
         int32_t switchValue, uint32_t policyFlags) {
 #if DEBUG_INPUT_DISPATCHER_POLICY
-    LOGD("notifySwitch - when=%lld, switchCode=%d, switchValue=%d, policyFlags=0x%x",
+    ALOGD("notifySwitch - when=%lld, switchCode=%d, switchValue=%d, policyFlags=0x%x",
             when, switchCode, switchValue, policyFlags);
 #endif
 
@@ -519,7 +519,7 @@ void NativeInputManager::notifySwitch(nsecs_t when, int32_t switchCode,
 
 void NativeInputManager::notifyConfigurationChanged(nsecs_t when) {
 #if DEBUG_INPUT_DISPATCHER_POLICY
-    LOGD("notifyConfigurationChanged - when=%lld", when);
+    ALOGD("notifyConfigurationChanged - when=%lld", when);
 #endif
 
     JNIEnv* env = jniEnv();
@@ -531,7 +531,7 @@ void NativeInputManager::notifyConfigurationChanged(nsecs_t when) {
 nsecs_t NativeInputManager::notifyANR(const sp<InputApplicationHandle>& inputApplicationHandle,
         const sp<InputWindowHandle>& inputWindowHandle) {
 #if DEBUG_INPUT_DISPATCHER_POLICY
-    LOGD("notifyANR");
+    ALOGD("notifyANR");
 #endif
 
     JNIEnv* env = jniEnv();
@@ -556,7 +556,7 @@ nsecs_t NativeInputManager::notifyANR(const sp<InputApplicationHandle>& inputApp
 
 void NativeInputManager::notifyInputChannelBroken(const sp<InputWindowHandle>& inputWindowHandle) {
 #if DEBUG_INPUT_DISPATCHER_POLICY
-    LOGD("notifyInputChannelBroken");
+    ALOGD("notifyInputChannelBroken");
 #endif
 
     JNIEnv* env = jniEnv();
@@ -686,7 +686,7 @@ void NativeInputManager::setPointerSpeed(int32_t speed) {
             return;
         }
 
-        LOGI("Setting pointer speed to %d.", speed);
+        ALOGI("Setting pointer speed to %d.", speed);
         mLocked.pointerSpeed = speed;
     } // release lock
 
@@ -702,7 +702,7 @@ void NativeInputManager::setShowTouches(bool enabled) {
             return;
         }
 
-        LOGI("Setting show touches feature to %s.", enabled ? "enabled" : "disabled");
+        ALOGI("Setting show touches feature to %s.", enabled ? "enabled" : "disabled");
         mLocked.showTouches = enabled;
     } // release lock
 
@@ -736,7 +736,7 @@ bool NativeInputManager::filterInputEvent(const InputEvent* inputEvent, uint32_t
     }
 
     if (!inputEventObj) {
-        LOGE("Failed to obtain input event object for filterInputEvent.");
+        ALOGE("Failed to obtain input event object for filterInputEvent.");
         return true; // dispatch the event normally
     }
 
@@ -774,7 +774,7 @@ void NativeInputManager::interceptKeyBeforeQueueing(const KeyEvent* keyEvent,
             android_view_KeyEvent_recycle(env, keyEventObj);
             env->DeleteLocalRef(keyEventObj);
         } else {
-            LOGE("Failed to obtain key event object for interceptKeyBeforeQueueing.");
+            ALOGE("Failed to obtain key event object for interceptKeyBeforeQueueing.");
             wmActions = 0;
         }
 
@@ -829,14 +829,14 @@ void NativeInputManager::handleInterceptActions(jint wmActions, nsecs_t when,
         uint32_t& policyFlags) {
     if (wmActions & WM_ACTION_GO_TO_SLEEP) {
 #if DEBUG_INPUT_DISPATCHER_POLICY
-        LOGD("handleInterceptActions: Going to sleep.");
+        ALOGD("handleInterceptActions: Going to sleep.");
 #endif
         android_server_PowerManagerService_goToSleep(when);
     }
 
     if (wmActions & WM_ACTION_POKE_USER_ACTIVITY) {
 #if DEBUG_INPUT_DISPATCHER_POLICY
-        LOGD("handleInterceptActions: Poking user activity.");
+        ALOGD("handleInterceptActions: Poking user activity.");
 #endif
         android_server_PowerManagerService_userActivity(when, POWER_MANAGER_BUTTON_EVENT);
     }
@@ -845,7 +845,7 @@ void NativeInputManager::handleInterceptActions(jint wmActions, nsecs_t when,
         policyFlags |= POLICY_FLAG_PASS_TO_USER;
     } else {
 #if DEBUG_INPUT_DISPATCHER_POLICY
-        LOGD("handleInterceptActions: Not passing key to user.");
+        ALOGD("handleInterceptActions: Not passing key to user.");
 #endif
     }
 }
@@ -879,7 +879,7 @@ nsecs_t NativeInputManager::interceptKeyBeforeDispatching(
                 }
             }
         } else {
-            LOGE("Failed to obtain key event object for interceptKeyBeforeDispatching.");
+            ALOGE("Failed to obtain key event object for interceptKeyBeforeDispatching.");
         }
         env->DeleteLocalRef(inputWindowHandleObj);
     }
@@ -917,7 +917,7 @@ bool NativeInputManager::dispatchUnhandledKey(const sp<InputWindowHandle>& input
                 env->DeleteLocalRef(fallbackKeyEventObj);
             }
         } else {
-            LOGE("Failed to obtain key event object for dispatchUnhandledKey.");
+            ALOGE("Failed to obtain key event object for dispatchUnhandledKey.");
         }
         env->DeleteLocalRef(inputWindowHandleObj);
     }
@@ -958,7 +958,7 @@ static sp<NativeInputManager> gNativeInputManager;
 
 static bool checkInputManagerUnitialized(JNIEnv* env) {
     if (gNativeInputManager == NULL) {
-        LOGE("Input manager not initialized.");
+        ALOGE("Input manager not initialized.");
         jniThrowRuntimeException(env, "Input manager not initialized.");
         return true;
     }
@@ -971,7 +971,7 @@ static void android_server_InputManager_nativeInit(JNIEnv* env, jclass clazz,
         sp<Looper> looper = android_os_MessageQueue_getLooper(env, messageQueueObj);
         gNativeInputManager = new NativeInputManager(contextObj, callbacksObj, looper);
     } else {
-        LOGE("Input manager already initialized.");
+        ALOGE("Input manager already initialized.");
         jniThrowRuntimeException(env, "Input manager already initialized.");
     }
 }
@@ -1068,7 +1068,7 @@ static void throwInputChannelNotInitialized(JNIEnv* env) {
 
 static void android_server_InputManager_handleInputChannelDisposed(JNIEnv* env,
         jobject inputChannelObj, const sp<InputChannel>& inputChannel, void* data) {
-    LOGW("Input channel object '%s' was disposed without first being unregistered with "
+    ALOGW("Input channel object '%s' was disposed without first being unregistered with "
             "the input manager!", inputChannel->getName().string());
 
     if (gNativeInputManager != NULL) {

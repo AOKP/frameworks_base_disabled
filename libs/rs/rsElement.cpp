@@ -62,11 +62,11 @@ size_t Element::getSizeBits() const {
 
 void Element::dumpLOGV(const char *prefix) const {
     ObjectBase::dumpLOGV(prefix);
-    LOGV("%s Element: fieldCount: %zu,  size bytes: %zu", prefix, mFieldCount, getSizeBytes());
+    ALOGV("%s Element: fieldCount: %zu,  size bytes: %zu", prefix, mFieldCount, getSizeBytes());
     mComponent.dumpLOGV(prefix);
     for (uint32_t ct = 0; ct < mFieldCount; ct++) {
-        LOGV("%s Element field index: %u ------------------", prefix, ct);
-        LOGV("%s name: %s, offsetBits: %u, arraySize: %u",
+        ALOGV("%s Element field index: %u ------------------", prefix, ct);
+        ALOGV("%s name: %s, offsetBits: %u, arraySize: %u",
              prefix, mFields[ct].name.string(), mFields[ct].offsetBits, mFields[ct].arraySize);
         mFields[ct].e->dumpLOGV(prefix);
     }
@@ -94,7 +94,7 @@ Element *Element::createFromStream(Context *rsc, IStream *stream) {
     // First make sure we are reading the correct object
     RsA3DClassID classID = (RsA3DClassID)stream->loadU32();
     if (classID != RS_A3D_CLASS_ID_ELEMENT) {
-        LOGE("element loading skipped due to invalid class id\n");
+        ALOGE("element loading skipped due to invalid class id\n");
         return NULL;
     }
 

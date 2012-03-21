@@ -91,7 +91,7 @@ status_t ESDS::skipDescriptorHeader(
     }
     while (more);
 
-    LOGV("tag=0x%02x data_size=%d", *tag, *data_size);
+    ALOGV("tag=0x%02x data_size=%d", *tag, *data_size);
 
     if (*data_size > size) {
         return ERROR_MALFORMED;
@@ -162,7 +162,7 @@ status_t ESDS::parseESDescriptor(size_t offset, size_t size) {
             offset -= 2;
             size += 2;
 
-            LOGW("Found malformed 'esds' atom, ignoring missing OCR_ES_Id.");
+            ALOGW("Found malformed 'esds' atom, ignoring missing OCR_ES_Id.");
         }
     }
 

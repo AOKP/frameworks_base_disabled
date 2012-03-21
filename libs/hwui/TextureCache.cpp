@@ -109,7 +109,7 @@ void TextureCache::operator()(SkBitmap*& bitmap, Texture*& texture) {
         TEXTURE_LOGD("TextureCache::callback: name, removed size, mSize = %d, %d, %d",
                 texture->id, texture->bitmapSize, mSize);
         if (mDebugEnabled) {
-            LOGD("Texture deleted, size = %d", texture->bitmapSize);
+            ALOGD("Texture deleted, size = %d", texture->bitmapSize);
         }
         glDeleteTextures(1, &texture->id);
         delete texture;
@@ -125,7 +125,7 @@ Texture* TextureCache::get(SkBitmap* bitmap) {
 
     if (!texture) {
         if (bitmap->width() > mMaxTextureSize || bitmap->height() > mMaxTextureSize) {
-            LOGW("Bitmap too large to be uploaded into a texture");
+            ALOGW("Bitmap too large to be uploaded into a texture");
             return NULL;
         }
 
@@ -146,7 +146,7 @@ Texture* TextureCache::get(SkBitmap* bitmap) {
             TEXTURE_LOGD("TextureCache::get: create texture(%p): name, size, mSize = %d, %d, %d",
                      bitmap, texture->id, size, mSize);
             if (mDebugEnabled) {
-                LOGD("Texture created, size = %d", size);
+                ALOGD("Texture created, size = %d", size);
             }
             mCache.put(bitmap, texture);
         } else {
@@ -201,7 +201,7 @@ void TextureCache::generateTexture(SkBitmap* bitmap, Texture* texture, bool rege
     SkAutoLockPixels alp(*bitmap);
 
     if (!bitmap->readyToDraw()) {
-        LOGE("Cannot generate texture from bitmap");
+        ALOGE("Cannot generate texture from bitmap");
         return;
     }
 
@@ -244,7 +244,7 @@ void TextureCache::generateTexture(SkBitmap* bitmap, Texture* texture, bool rege
         texture->blend = !bitmap->isOpaque();
         break;
     default:
-        LOGW("Unsupported bitmap config: %d", bitmap->getConfig());
+        ALOGW("Unsupported bitmap config: %d", bitmap->getConfig());
         break;
     }
 

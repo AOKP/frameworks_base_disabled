@@ -40,7 +40,7 @@ bool Context::initGLThread() {
 
     if (!mHal.funcs.initGraphics(this)) {
         pthread_mutex_unlock(&gInitMutex);
-        LOGE("%p initGraphics failed", this);
+        ALOGE("%p initGraphics failed", this);
         return false;
     }
 
@@ -152,7 +152,7 @@ void Context::timerPrint() {
 
 
     if (props.mLogTimes) {
-        LOGV("RS: Frame (%i),   Script %2.1f%% (%i),  Swap %2.1f%% (%i),  Idle %2.1f%% (%lli),  Internal %2.1f%% (%lli), Avg fps: %u",
+        ALOGV("RS: Frame (%i),   Script %2.1f%% (%i),  Swap %2.1f%% (%i),  Idle %2.1f%% (%lli),  Internal %2.1f%% (%lli), Avg fps: %u",
              mTimeMSLastFrame,
              100.0 * mTimers[RS_TIMER_SCRIPT] / total, mTimeMSLastScript,
              100.0 * mTimers[RS_TIMER_CLEAR_SWAP] / total, mTimeMSLastSwap,
@@ -219,7 +219,7 @@ void * Context::threadProc(void *vrsc) {
 
     if (!rsdHalInit(rsc, 0, 0)) {
         rsc->setError(RS_ERROR_FATAL_DRIVER, "Failed initializing GL");
-        LOGE("Hal init failed");
+        ALOGE("Hal init failed");
         return NULL;
     }
     rsc->mHal.funcs.setPriority(rsc, rsc->mThreadPriority);
@@ -284,7 +284,7 @@ void * Context::threadProc(void *vrsc) {
         }
     }
 
-    LOGV("%p RS Thread exiting", rsc);
+    ALOGV("%p RS Thread exiting", rsc);
 
     if (rsc->mIsGraphicsContext) {
         pthread_mutex_lock(&gInitMutex);
@@ -292,12 +292,12 @@ void * Context::threadProc(void *vrsc) {
         pthread_mutex_unlock(&gInitMutex);
     }
 
-    LOGV("%p RS Thread exited", rsc);
+    ALOGV("%p RS Thread exited", rsc);
     return NULL;
 }
 
 void Context::destroyWorkerThreadResources() {
-    //LOGV("destroyWorkerThreadResources 1");
+    //ALOGV("destroyWorkerThreadResources 1");
     ObjectBase::zeroAllUserRef(this);
     if (mIsGraphicsContext) {
          mRaster.clear();
@@ -315,17 +315,17 @@ void Context::destroyWorkerThreadResources() {
          mFBOCache.deinit(this);
     }
     ObjectBase::freeAllChildren(this);
-    //LOGV("destroyWorkerThreadResources 2");
+    //ALOGV("destroyWorkerThreadResources 2");
     mExit = true;
 }
 
 void Context::printWatchdogInfo(void *ctx) {
     Context *rsc = (Context *)ctx;
     if (rsc->watchdog.command && rsc->watchdog.file) {
-        LOGE("RS watchdog timeout: %i  %s  line %i %s", rsc->watchdog.inRoot,
+        ALOGE("RS watchdog timeout: %i  %s  line %i %s", rsc->watchdog.inRoot,
              rsc->watchdog.command, rsc->watchdog.line, rsc->watchdog.file);
     } else {
-        LOGE("RS watchdog timeout: %i", rsc->watchdog.inRoot);
+        ALOGE("RS watchdog timeout: %i", rsc->watchdog.inRoot);
     }
 }
 
@@ -403,7 +403,7 @@ bool Context::initContext(Device *dev, const RsSurfaceConfig *sc) {
 
     status = pthread_attr_init(&threadAttr);
     if (status) {
-        LOGE("Failed to init thread attribute.");
+        ALOGE("Failed to init thread attribute.");
         return false;
     }
 
@@ -414,7 +414,7 @@ bool Context::initContext(Device *dev, const RsSurfaceConfig *sc) {
 
     status = pthread_create(&mThreadId, &threadAttr, threadProc, this);
     if (status) {
-        LOGE("Failed to start rs context thread.");
+        ALOGE("Failed to start rs context thread.");
         return false;
     }
     while (!mRunning && (mError == RS_ERROR_NONE)) {
@@ -422,7 +422,7 @@ bool Context::initContext(Device *dev, const RsSurfaceConfig *sc) {
     }
 
     if (mError != RS_ERROR_NONE) {
-        LOGE("Errors during thread init");
+        ALOGE("Errors during thread init");
         return false;
     }
 
@@ -431,7 +431,7 @@ bool Context::initContext(Device *dev, const RsSurfaceConfig *sc) {
 }
 
 Context::~Context() {
-    LOGV("%p Context::~Context", this);
+    ALOGV("%p Context::~Context", this);
 
     if (!mIsContextLite) {
         mIO.coreFlush();
@@ -455,7 +455,7 @@ Context::~Context() {
         }
         pthread_mutex_unlock(&gInitMutex);
     }
-    LOGV("%p Context::~Context done", this);
+    ALOGV("%p Context::~Context done", this);
 }
 
 void Context::setSurface(uint32_t w, uint32_t h, RsNativeWindow sur) {
@@ -578,12 +578,12 @@ void Context::setError(RsError e, const char *msg) const {
 
 
 void Context::dumpDebug() const {
-    LOGE("RS Context debug %p", this);
-    LOGE("RS Context debug");
+    ALOGE("RS Context debug %p", this);
+    ALOGE("RS Context debug");
 
-    LOGE(" RS width %i, height %i", mWidth, mHeight);
-    LOGE(" RS running %i, exit %i, paused %i", mRunning, mExit, mPaused);
-    LOGE(" RS pThreadID %li, nativeThreadID %i", (long int)mThreadId, mNativeThreadId);
+    ALOGE(" RS width %i, height %i", mWidth, mHeight);
+    ALOGE(" RS running %i, exit %i, paused %i", mRunning, mExit, mPaused);
+    ALOGE(" RS pThreadID %li, nativeThreadID %i", (long int)mThreadId, mNativeThreadId);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -604,7 +604,7 @@ void rsi_ContextBindSampler(Context *rsc, uint32_t slot, RsSampler vs) {
     Sampler *s = static_cast<Sampler *>(vs);
 
     if (slot > RS_MAX_SAMPLER_SLOT) {
-        LOGE("Invalid sampler slot");
+        ALOGE("Invalid sampler slot");
         return;
     }
 
@@ -672,10 +672,10 @@ void rsi_ContextDestroyWorker(Context *rsc) {
 }
 
 void rsi_ContextDestroy(Context *rsc) {
-    LOGV("%p rsContextDestroy", rsc);
+    ALOGV("%p rsContextDestroy", rsc);
     rsContextDestroyWorker(rsc);
     delete rsc;
-    LOGV("%p rsContextDestroy done", rsc);
+    ALOGV("%p rsContextDestroy done", rsc);
 }
 
 
@@ -706,7 +706,7 @@ void rsi_ContextDeinitToClient(Context *rsc) {
 
 RsContext rsContextCreate(RsDevice vdev, uint32_t version,
                           uint32_t sdkVersion) {
-    LOGV("rsContextCreate dev=%p", vdev);
+    ALOGV("rsContextCreate dev=%p", vdev);
     Device * dev = static_cast<Device *>(vdev);
     Context *rsc = Context::createContext(dev, NULL);
     if (rsc) {
@@ -718,14 +718,14 @@ RsContext rsContextCreate(RsDevice vdev, uint32_t version,
 RsContext rsContextCreateGL(RsDevice vdev, uint32_t version,
                             uint32_t sdkVersion, RsSurfaceConfig sc,
                             uint32_t dpi) {
-    LOGV("rsContextCreateGL dev=%p", vdev);
+    ALOGV("rsContextCreateGL dev=%p", vdev);
     Device * dev = static_cast<Device *>(vdev);
     Context *rsc = Context::createContext(dev, &sc);
     if (rsc) {
         rsc->setTargetSdkVersion(sdkVersion);
         rsc->setDPI(dpi);
     }
-    LOGV("%p rsContextCreateGL ret", rsc);
+    ALOGV("%p rsContextCreateGL ret", rsc);
     return rsc;
 }
 

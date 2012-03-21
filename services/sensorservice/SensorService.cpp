@@ -65,7 +65,7 @@ SensorService::SensorService()
 
 void SensorService::onFirstRef()
 {
-    LOGD("nuSensorService starting...");
+    ALOGD("nuSensorService starting...");
 
     SensorDevice& dev(SensorDevice::getInstance());
 
@@ -222,7 +222,7 @@ status_t SensorService::dump(int fd, const Vector<String16>& args)
 
 bool SensorService::threadLoop()
 {
-    LOGD("nuSensorService thread starting...");
+    ALOGD("nuSensorService thread starting...");
 
     const size_t numEventMax = 16 * (1 + mVirtualSensorList.size());
     sensors_event_t buffer[numEventMax];
@@ -234,7 +234,7 @@ bool SensorService::threadLoop()
     do {
         count = device.poll(buffer, numEventMax);
         if (count<0) {
-            LOGE("sensor poll failed (%s)", strerror(-count));
+            ALOGE("sensor poll failed (%s)", strerror(-count));
             break;
         }
 
@@ -286,7 +286,7 @@ bool SensorService::threadLoop()
         }
     } while (count >= 0 || Thread::exitPending());
 
-    LOGW("Exiting SensorService::threadLoop => aborting...");
+    ALOGW("Exiting SensorService::threadLoop => aborting...");
     abort();
     return false;
 }
@@ -363,25 +363,25 @@ void SensorService::cleanupConnection(SensorEventConnection* c)
     Mutex::Autolock _l(mLock);
     const wp<SensorEventConnection> connection(c);
     size_t size = mActiveSensors.size();
-    LOGD_IF(DEBUG_CONNECTIONS, "%d active sensors", size);
+    ALOGD_IF(DEBUG_CONNECTIONS, "%d active sensors", size);
     for (size_t i=0 ; i<size ; ) {
         int handle = mActiveSensors.keyAt(i);
         if (c->hasSensor(handle)) {
-            LOGD_IF(DEBUG_CONNECTIONS, "%i: disabling handle=0x%08x", i, handle);
+            ALOGD_IF(DEBUG_CONNECTIONS, "%i: disabling handle=0x%08x", i, handle);
             SensorInterface* sensor = mSensorMap.valueFor( handle );
-            LOGE_IF(!sensor, "mSensorMap[handle=0x%08x] is null!", handle);
+            ALOGE_IF(!sensor, "mSensorMap[handle=0x%08x] is null!", handle);
             if (sensor) {
                 sensor->activate(c, false);
             }
         }
         SensorRecord* rec = mActiveSensors.valueAt(i);
-        LOGE_IF(!rec, "mActiveSensors[%d] is null (handle=0x%08x)!", i, handle);
-        LOGD_IF(DEBUG_CONNECTIONS,
+        ALOGE_IF(!rec, "mActiveSensors[%d] is null (handle=0x%08x)!", i, handle);
+        ALOGD_IF(DEBUG_CONNECTIONS,
                 "removing connection %p for sensor[%d].handle=0x%08x",
                 c, i, handle);
 
         if (rec && rec->removeConnection(connection)) {
-            LOGD_IF(DEBUG_CONNECTIONS, "... and it was the last connection");
+            ALOGD_IF(DEBUG_CONNECTIONS, "... and it was the last connection");
             mActiveSensors.removeItemsAt(i, 1);
             mActiveVirtualSensors.removeItem(handle);
             delete rec;
@@ -528,7 +528,7 @@ SensorService::SensorEventConnection::SensorEventConnection(
 
 SensorService::SensorEventConnection::~SensorEventConnection()
 {
-    LOGD_IF(DEBUG_CONNECTIONS, "~SensorEventConnection(%p)", this);
+    ALOGD_IF(DEBUG_CONNECTIONS, "~SensorEventConnection(%p)", this);
     mService->cleanupConnection(this);
 }
 
@@ -594,11 +594,11 @@ status_t SensorService::SensorEventConnection::sendEvents(
     if (size == -EAGAIN) {
         // the destination doesn't accept events anymore, it's probably
         // full. For now, we just drop the events on the floor.
-        //LOGW("dropping %d events on the floor", count);
+        //ALOGW("dropping %d events on the floor", count);
         return size;
     }
 
-    //LOGE_IF(size<0, "dropping %d events on the floor (%s)",
+    //ALOGE_IF(size<0, "dropping %d events on the floor (%s)",
     //        count, strerror(-size));
 
     return size < 0 ? status_t(size) : status_t(NO_ERROR);

@@ -163,7 +163,7 @@ sp<Looper> Looper::prepare(int opts) {
         Looper::setForThread(looper);
     }
     if (looper->getAllowNonCallbacks() != allowNonCallbacks) {
-        LOGW("Looper already prepared for this thread with a different value for the "
+        ALOGW("Looper already prepared for this thread with a different value for the "
                 "ALOOPER_PREPARE_ALLOW_NON_CALLBACKS option.");
     }
     return looper;
@@ -185,7 +185,7 @@ int Looper::pollOnce(int timeoutMillis, int* outFd, int* outEvents, void** outDa
                 int events = response.events;
                 void* data = response.request.data;
 #if DEBUG_POLL_AND_WAKE
-                LOGD("%p ~ pollOnce - returning signalled identifier %d: "
+                ALOGD("%p ~ pollOnce - returning signalled identifier %d: "
                         "fd=%d, events=0x%x, data=%p",
                         this, ident, fd, events, data);
 #endif
@@ -198,7 +198,7 @@ int Looper::pollOnce(int timeoutMillis, int* outFd, int* outEvents, void** outDa
 
         if (result != 0) {
 #if DEBUG_POLL_AND_WAKE
-            LOGD("%p ~ pollOnce - returning result %d", this, result);
+            ALOGD("%p ~ pollOnce - returning result %d", this, result);
 #endif
             if (outFd != NULL) *outFd = 0;
             if (outEvents != NULL) *outEvents = NULL;
@@ -212,7 +212,7 @@ int Looper::pollOnce(int timeoutMillis, int* outFd, int* outEvents, void** outDa
 
 int Looper::pollInner(int timeoutMillis) {
 #if DEBUG_POLL_AND_WAKE
-    LOGD("%p ~ pollOnce - waiting: timeoutMillis=%d", this, timeoutMillis);
+    ALOGD("%p ~ pollOnce - waiting: timeoutMillis=%d", this, timeoutMillis);
 #endif
 
     // Adjust the timeout based on when the next message is due.
@@ -224,7 +224,7 @@ int Looper::pollInner(int timeoutMillis) {
             timeoutMillis = messageTimeoutMillis;
         }
 #if DEBUG_POLL_AND_WAKE
-        LOGD("%p ~ pollOnce - next message in %lldns, adjusted timeout: timeoutMillis=%d",
+        ALOGD("%p ~ pollOnce - next message in %lldns, adjusted timeout: timeoutMillis=%d",
                 this, mNextMessageUptime - now, timeoutMillis);
 #endif
     }
@@ -262,7 +262,7 @@ int Looper::pollInner(int timeoutMillis) {
         if (errno == EINTR) {
             goto Done;
         }
-        LOGW("Poll failed with an unexpected error, errno=%d", errno);
+        ALOGW("Poll failed with an unexpected error, errno=%d", errno);
         result = ALOOPER_POLL_ERROR;
         goto Done;
     }
@@ -270,7 +270,7 @@ int Looper::pollInner(int timeoutMillis) {
     // Check for poll timeout.
     if (eventCount == 0) {
 #if DEBUG_POLL_AND_WAKE
-        LOGD("%p ~ pollOnce - timeout", this);
+        ALOGD("%p ~ pollOnce - timeout", this);
 #endif
         result = ALOOPER_POLL_TIMEOUT;
         goto Done;
@@ -278,7 +278,7 @@ int Looper::pollInner(int timeoutMillis) {
 
     // Handle all events.
 #if DEBUG_POLL_AND_WAKE
-    LOGD("%p ~ pollOnce - handling events from %d fds", this, eventCount);
+    ALOGD("%p ~ pollOnce - handling events from %d fds", this, eventCount);
 #endif
 
 #ifdef LOOPER_USES_EPOLL
@@ -289,7 +289,7 @@ int Looper::pollInner(int timeoutMillis) {
             if (epollEvents & EPOLLIN) {
                 awoken();
             } else {
-                LOGW("Ignoring unexpected epoll events 0x%x on wake read pipe.", epollEvents);
+                ALOGW("Ignoring unexpected epoll events 0x%x on wake read pipe.", epollEvents);
             }
         } else {
             ssize_t requestIndex = mRequests.indexOfKey(fd);
@@ -301,7 +301,7 @@ int Looper::pollInner(int timeoutMillis) {
                 if (epollEvents & EPOLLHUP) events |= ALOOPER_EVENT_HANGUP;
                 pushResponse(events, mRequests.valueAt(requestIndex));
             } else {
-                LOGW("Ignoring unexpected epoll events 0x%x on fd %d that is "
+                ALOGW("Ignoring unexpected epoll events 0x%x on fd %d that is "
                         "no longer registered.", epollEvents, fd);
             }
         }
@@ -317,7 +317,7 @@ Done: ;
                 if (pollEvents & POLLIN) {
                     awoken();
                 } else {
-                    LOGW("Ignoring unexpected poll events 0x%x on wake read pipe.", pollEvents);
+                    ALOGW("Ignoring unexpected poll events 0x%x on wake read pipe.", pollEvents);
                 }
             } else {
                 int events = 0;
@@ -353,7 +353,7 @@ Done:
                 - milliseconds_to_nanoseconds(timeoutMillis);
     }
     if (mSampledPolls == SAMPLED_POLLS_TO_AGGREGATE) {
-        LOGD("%p ~ poll latency statistics: %0.3fms zero timeout, %0.3fms non-zero timeout", this,
+        ALOGD("%p ~ poll latency statistics: %0.3fms zero timeout, %0.3fms non-zero timeout", this,
                 0.000001f * float(mSampledZeroPollLatencySum) / mSampledZeroPollCount,
                 0.000001f * float(mSampledTimeoutPollLatencySum) / mSampledTimeoutPollCount);
         mSampledPolls = 0;
@@ -382,7 +382,7 @@ Done:
                 mLock.unlock();
 
 #if DEBUG_POLL_AND_WAKE || DEBUG_CALLBACKS
-                LOGD("%p ~ pollOnce - sending message: handler=%p, what=%d",
+                ALOGD("%p ~ pollOnce - sending message: handler=%p, what=%d",
                         this, handler.get(), message.what);
 #endif
                 handler->handleMessage(message);
@@ -410,7 +410,7 @@ Done:
             int events = response.events;
             void* data = response.request.data;
 #if DEBUG_POLL_AND_WAKE || DEBUG_CALLBACKS
-            LOGD("%p ~ pollOnce - invoking fd event callback %p: fd=%d, events=0x%x, data=%p",
+            ALOGD("%p ~ pollOnce - invoking fd event callback %p: fd=%d, events=0x%x, data=%p",
                     this, callback, fd, events, data);
 #endif
             int callbackResult = callback(fd, events, data);
@@ -451,7 +451,7 @@ int Looper::pollAll(int timeoutMillis, int* outFd, int* outEvents, void** outDat
 
 void Looper::wake() {
 #if DEBUG_POLL_AND_WAKE
-    LOGD("%p ~ wake", this);
+    ALOGD("%p ~ wake", this);
 #endif
 
 #ifdef LOOPER_STATISTICS
@@ -468,19 +468,19 @@ void Looper::wake() {
 
     if (nWrite != 1) {
         if (errno != EAGAIN) {
-            LOGW("Could not write wake signal, errno=%d", errno);
+            ALOGW("Could not write wake signal, errno=%d", errno);
         }
     }
 }
 
 void Looper::awoken() {
 #if DEBUG_POLL_AND_WAKE
-    LOGD("%p ~ awoken", this);
+    ALOGD("%p ~ awoken", this);
 #endif
 
 #ifdef LOOPER_STATISTICS
     if (mPendingWakeCount == 0) {
-        LOGD("%p ~ awoken: spurious!", this);
+        ALOGD("%p ~ awoken: spurious!", this);
     } else {
         mSampledWakeCycles += 1;
         mSampledWakeCountSum += mPendingWakeCount;
@@ -488,7 +488,7 @@ void Looper::awoken() {
         mPendingWakeCount = 0;
         mPendingWakeTime = -1;
         if (mSampledWakeCycles == SAMPLED_WAKE_CYCLES_TO_AGGREGATE) {
-            LOGD("%p ~ wake statistics: %0.3fms wake latency, %0.3f wakes per cycle", this,
+            ALOGD("%p ~ wake statistics: %0.3fms wake latency, %0.3f wakes per cycle", this,
                     0.000001f * float(mSampledWakeLatencySum) / mSampledWakeCycles,
                     float(mSampledWakeCountSum) / mSampledWakeCycles);
             mSampledWakeCycles = 0;
@@ -514,18 +514,18 @@ void Looper::pushResponse(int events, const Request& request) {
 
 int Looper::addFd(int fd, int ident, int events, ALooper_callbackFunc callback, void* data) {
 #if DEBUG_CALLBACKS
-    LOGD("%p ~ addFd - fd=%d, ident=%d, events=0x%x, callback=%p, data=%p", this, fd, ident,
+    ALOGD("%p ~ addFd - fd=%d, ident=%d, events=0x%x, callback=%p, data=%p", this, fd, ident,
             events, callback, data);
 #endif
 
     if (! callback) {
         if (! mAllowNonCallbacks) {
-            LOGE("Invalid attempt to set NULL callback but not allowed for this looper.");
+            ALOGE("Invalid attempt to set NULL callback but not allowed for this looper.");
             return -1;
         }
 
         if (ident < 0) {
-            LOGE("Invalid attempt to set NULL callback with ident <= 0.");
+            ALOGE("Invalid attempt to set NULL callback with ident <= 0.");
             return -1;
         }
     }
@@ -553,14 +553,14 @@ int Looper::addFd(int fd, int ident, int events, ALooper_callbackFunc callback, 
         if (requestIndex < 0) {
             int epollResult = epoll_ctl(mEpollFd, EPOLL_CTL_ADD, fd, & eventItem);
             if (epollResult < 0) {
-                LOGE("Error adding epoll events for fd %d, errno=%d", fd, errno);
+                ALOGE("Error adding epoll events for fd %d, errno=%d", fd, errno);
                 return -1;
             }
             mRequests.add(fd, request);
         } else {
             int epollResult = epoll_ctl(mEpollFd, EPOLL_CTL_MOD, fd, & eventItem);
             if (epollResult < 0) {
-                LOGE("Error modifying epoll events for fd %d, errno=%d", fd, errno);
+                ALOGE("Error modifying epoll events for fd %d, errno=%d", fd, errno);
                 return -1;
             }
             mRequests.replaceValueAt(requestIndex, request);
@@ -598,7 +598,7 @@ int Looper::addFd(int fd, int ident, int events, ALooper_callbackFunc callback, 
 
 int Looper::removeFd(int fd) {
 #if DEBUG_CALLBACKS
-    LOGD("%p ~ removeFd - fd=%d", this, fd);
+    ALOGD("%p ~ removeFd - fd=%d", this, fd);
 #endif
 
 #ifdef LOOPER_USES_EPOLL
@@ -611,7 +611,7 @@ int Looper::removeFd(int fd) {
 
         int epollResult = epoll_ctl(mEpollFd, EPOLL_CTL_DEL, fd, NULL);
         if (epollResult < 0) {
-            LOGE("Error removing epoll events for fd %d, errno=%d", fd, errno);
+            ALOGE("Error removing epoll events for fd %d, errno=%d", fd, errno);
             return -1;
         }
 
@@ -675,7 +675,7 @@ void Looper::sendMessageDelayed(nsecs_t uptimeDelay, const sp<MessageHandler>& h
 void Looper::sendMessageAtTime(nsecs_t uptime, const sp<MessageHandler>& handler,
         const Message& message) {
 #if DEBUG_CALLBACKS
-    LOGD("%p ~ sendMessageAtTime - uptime=%lld, handler=%p, what=%d",
+    ALOGD("%p ~ sendMessageAtTime - uptime=%lld, handler=%p, what=%d",
             this, uptime, handler.get(), message.what);
 #endif
 
@@ -708,7 +708,7 @@ void Looper::sendMessageAtTime(nsecs_t uptime, const sp<MessageHandler>& handler
 
 void Looper::removeMessages(const sp<MessageHandler>& handler) {
 #if DEBUG_CALLBACKS
-    LOGD("%p ~ removeMessages - handler=%p", this, handler.get());
+    ALOGD("%p ~ removeMessages - handler=%p", this, handler.get());
 #endif
 
     { // acquire lock
@@ -725,7 +725,7 @@ void Looper::removeMessages(const sp<MessageHandler>& handler) {
 
 void Looper::removeMessages(const sp<MessageHandler>& handler, int what) {
 #if DEBUG_CALLBACKS
-    LOGD("%p ~ removeMessages - handler=%p, what=%d", this, handler.get(), what);
+    ALOGD("%p ~ removeMessages - handler=%p, what=%d", this, handler.get(), what);
 #endif
 
     { // acquire lock

@@ -101,27 +101,27 @@ static void printEGLConfiguration(EGLDisplay dpy, EGLConfig config) {
         EGLint value = -1;
         EGLBoolean returnVal = eglGetConfigAttrib(dpy, config, names[j].attribute, &value);
         if (returnVal) {
-            LOGV(" %s: %d (0x%x)", names[j].name, value, value);
+            ALOGV(" %s: %d (0x%x)", names[j].name, value, value);
         }
     }
 }
 
 static void DumpDebug(RsdHal *dc) {
-    LOGE(" EGL ver %i %i", dc->gl.egl.majorVersion, dc->gl.egl.minorVersion);
-    LOGE(" EGL context %p  surface %p,  Display=%p", dc->gl.egl.context, dc->gl.egl.surface,
+    ALOGE(" EGL ver %i %i", dc->gl.egl.majorVersion, dc->gl.egl.minorVersion);
+    ALOGE(" EGL context %p  surface %p,  Display=%p", dc->gl.egl.context, dc->gl.egl.surface,
          dc->gl.egl.display);
-    LOGE(" GL vendor: %s", dc->gl.gl.vendor);
-    LOGE(" GL renderer: %s", dc->gl.gl.renderer);
-    LOGE(" GL Version: %s", dc->gl.gl.version);
-    LOGE(" GL Extensions: %s", dc->gl.gl.extensions);
-    LOGE(" GL int Versions %i %i", dc->gl.gl.majorVersion, dc->gl.gl.minorVersion);
+    ALOGE(" GL vendor: %s", dc->gl.gl.vendor);
+    ALOGE(" GL renderer: %s", dc->gl.gl.renderer);
+    ALOGE(" GL Version: %s", dc->gl.gl.version);
+    ALOGE(" GL Extensions: %s", dc->gl.gl.extensions);
+    ALOGE(" GL int Versions %i %i", dc->gl.gl.majorVersion, dc->gl.gl.minorVersion);
 
-    LOGV("MAX Textures %i, %i  %i", dc->gl.gl.maxVertexTextureUnits,
+    ALOGV("MAX Textures %i, %i  %i", dc->gl.gl.maxVertexTextureUnits,
          dc->gl.gl.maxFragmentTextureImageUnits, dc->gl.gl.maxTextureImageUnits);
-    LOGV("MAX Attribs %i", dc->gl.gl.maxVertexAttribs);
-    LOGV("MAX Uniforms %i, %i", dc->gl.gl.maxVertexUniformVectors,
+    ALOGV("MAX Attribs %i", dc->gl.gl.maxVertexAttribs);
+    ALOGV("MAX Uniforms %i, %i", dc->gl.gl.maxVertexUniformVectors,
          dc->gl.gl.maxFragmentUniformVectors);
-    LOGV("MAX Varyings %i", dc->gl.gl.maxVaryingVectors);
+    ALOGV("MAX Varyings %i", dc->gl.gl.maxVaryingVectors);
 }
 
 void rsdGLShutdown(const Context *rsc) {
@@ -203,7 +203,7 @@ bool rsdGLInit(const Context *rsc) {
     configAttribsPtr[0] = EGL_NONE;
     rsAssert(configAttribsPtr < (configAttribs + (sizeof(configAttribs) / sizeof(EGLint))));
 
-    LOGV("%p initEGL start", rsc);
+    ALOGV("%p initEGL start", rsc);
     rsc->setWatchdogGL("eglGetDisplay", __LINE__, __FILE__);
     dc->gl.egl.display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
     checkEglError("eglGetDisplay");
@@ -227,7 +227,7 @@ bool rsdGLInit(const Context *rsc) {
                 configAttribs, configs, numConfigs, &n);
         if (!ret || !n) {
             checkEglError("eglChooseConfig", ret);
-            LOGE("%p, couldn't find an EGLConfig matching the screen format\n", rsc);
+            ALOGE("%p, couldn't find an EGLConfig matching the screen format\n", rsc);
         }
 
         // The first config is guaranteed to over-satisfy the constraints
@@ -272,7 +272,7 @@ bool rsdGLInit(const Context *rsc) {
                                           EGL_NO_CONTEXT, context_attribs2);
     checkEglError("eglCreateContext");
     if (dc->gl.egl.context == EGL_NO_CONTEXT) {
-        LOGE("%p, eglCreateContext returned EGL_NO_CONTEXT", rsc);
+        ALOGE("%p, eglCreateContext returned EGL_NO_CONTEXT", rsc);
         rsc->setWatchdogGL(NULL, 0, NULL);
         return false;
     }
@@ -285,7 +285,7 @@ bool rsdGLInit(const Context *rsc) {
                                                         pbuffer_attribs);
     checkEglError("eglCreatePbufferSurface");
     if (dc->gl.egl.surfaceDefault == EGL_NO_SURFACE) {
-        LOGE("eglCreatePbufferSurface returned EGL_NO_SURFACE");
+        ALOGE("eglCreatePbufferSurface returned EGL_NO_SURFACE");
         rsdGLShutdown(rsc);
         rsc->setWatchdogGL(NULL, 0, NULL);
         return false;
@@ -295,7 +295,7 @@ bool rsdGLInit(const Context *rsc) {
     ret = eglMakeCurrent(dc->gl.egl.display, dc->gl.egl.surfaceDefault,
                          dc->gl.egl.surfaceDefault, dc->gl.egl.context);
     if (ret == EGL_FALSE) {
-        LOGE("eglMakeCurrent returned EGL_FALSE");
+        ALOGE("eglMakeCurrent returned EGL_FALSE");
         checkEglError("eglMakeCurrent", ret);
         rsdGLShutdown(rsc);
         rsc->setWatchdogGL(NULL, 0, NULL);
@@ -307,11 +307,11 @@ bool rsdGLInit(const Context *rsc) {
     dc->gl.gl.renderer = glGetString(GL_RENDERER);
     dc->gl.gl.extensions = glGetString(GL_EXTENSIONS);
 
-    //LOGV("EGL Version %i %i", mEGL.mMajorVersion, mEGL.mMinorVersion);
-    //LOGV("GL Version %s", mGL.mVersion);
-    //LOGV("GL Vendor %s", mGL.mVendor);
-    //LOGV("GL Renderer %s", mGL.mRenderer);
-    //LOGV("GL Extensions %s", mGL.mExtensions);
+    //ALOGV("EGL Version %i %i", mEGL.mMajorVersion, mEGL.mMinorVersion);
+    //ALOGV("GL Version %s", mGL.mVersion);
+    //ALOGV("GL Vendor %s", mGL.mVendor);
+    //ALOGV("GL Renderer %s", mGL.mRenderer);
+    //ALOGV("GL Extensions %s", mGL.mExtensions);
 
     const char *verptr = NULL;
     if (strlen((const char *)dc->gl.gl.version) > 9) {
@@ -324,7 +324,7 @@ bool rsdGLInit(const Context *rsc) {
     }
 
     if (!verptr) {
-        LOGE("Error, OpenGL ES Lite not supported");
+        ALOGE("Error, OpenGL ES Lite not supported");
         rsdGLShutdown(rsc);
         rsc->setWatchdogGL(NULL, 0, NULL);
         return false;
@@ -364,7 +364,7 @@ bool rsdGLInit(const Context *rsc) {
     dc->gl.vertexArrayState->init(dc->gl.gl.maxVertexAttribs);
     dc->gl.currentFrameBuffer = NULL;
 
-    LOGV("%p initGLThread end", rsc);
+    ALOGV("%p initGLThread end", rsc);
     rsc->setWatchdogGL(NULL, 0, NULL);
     return true;
 }
@@ -406,7 +406,7 @@ bool rsdGLSetSurface(const Context *rsc, uint32_t w, uint32_t h, RsNativeWindow 
                                                     dc->gl.wndSurface, NULL);
         checkEglError("eglCreateWindowSurface");
         if (dc->gl.egl.surface == EGL_NO_SURFACE) {
-            LOGE("eglCreateWindowSurface returned EGL_NO_SURFACE");
+            ALOGE("eglCreateWindowSurface returned EGL_NO_SURFACE");
         }
 
         rsc->setWatchdogGL("eglMakeCurrent", __LINE__, __FILE__);
@@ -443,7 +443,7 @@ void rsdGLCheckError(const android::renderscript::Context *rsc,
             }
         }
 
-        LOGE("%p, %s", rsc, buf);
+        ALOGE("%p, %s", rsc, buf);
     }
 
 }

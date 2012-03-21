@@ -686,7 +686,7 @@ status_t MPEG4Extractor::parseChunk(off64_t *offset, int depth) {
         case FOURCC('i', 'l', 's', 't'):
         {
             if (chunk_type == FOURCC('s', 't', 'b', 'l')) {
-                LOGV("sampleTable chunk is %d bytes long.", (size_t)chunk_size);
+                ALOGV("sampleTable chunk is %d bytes long.", (size_t)chunk_size);
 
                 if (mDataSource->flags()
                         & (DataSource::kWantsPrefetching
@@ -1258,7 +1258,7 @@ status_t MPEG4Extractor::parseChunk(off64_t *offset, int depth) {
             char buffer[23];
             if (chunk_data_size != 7 &&
                 chunk_data_size != 23) {
-                LOGE("Incorrect D263 box size %lld", chunk_data_size);
+                ALOGE("Incorrect D263 box size %lld", chunk_data_size);
                 return ERROR_MALFORMED;
             }
 
@@ -1425,7 +1425,7 @@ status_t MPEG4Extractor::parseChunk(off64_t *offset, int depth) {
         case FOURCC('c', 'o', 'v', 'r'):
         {
             if (mFileMetaData != NULL) {
-                LOGV("chunk_data_size = %lld and data_offset = %lld",
+                ALOGV("chunk_data_size = %lld and data_offset = %lld",
                         chunk_data_size, data_offset);
                 uint8_t *buffer = new uint8_t[chunk_data_size + 1];
                 if (mDataSource->readAt(
@@ -1507,9 +1507,9 @@ status_t MPEG4Extractor::parseTrackHeader(
     int32_t dy = U32_AT(&buffer[matrixOffset + 20]);
 
 #if 0
-    LOGI("x' = %.2f * x + %.2f * y + %.2f",
+    ALOGI("x' = %.2f * x + %.2f * y + %.2f",
          a00 / 65536.0f, a01 / 65536.0f, dx / 65536.0f);
-    LOGI("y' = %.2f * x + %.2f * y + %.2f",
+    ALOGI("y' = %.2f * x + %.2f * y + %.2f",
          a10 / 65536.0f, a11 / 65536.0f, dy / 65536.0f);
 #endif
 
@@ -1526,7 +1526,7 @@ status_t MPEG4Extractor::parseTrackHeader(
     } else if (a00 == -kFixedOne && a01 == 0 && a10 == 0 && a11 == -kFixedOne) {
         rotationDegrees = 180;
     } else {
-        LOGW("We only support 0,90,180,270 degree rotation matrices");
+        ALOGW("We only support 0,90,180,270 degree rotation matrices");
         rotationDegrees = 0;
     }
 
@@ -1758,7 +1758,7 @@ status_t MPEG4Extractor::updateAudioTrackInfoFromESDS_MPEG4Audio(
         // The media subtype is MP3 audio
         // Our software MP3 audio decoder may not be able to handle
         // packetized MP3 audio; for now, lets just return ERROR_UNSUPPORTED
-        LOGE("MP3 track in MP4/3GPP file is not supported");
+        ALOGE("MP3 track in MP4/3GPP file is not supported");
         return ERROR_UNSUPPORTED;
     }
 
@@ -1824,7 +1824,7 @@ status_t MPEG4Extractor::updateAudioTrackInfoFromESDS_MPEG4Audio(
     CHECK(mLastTrack->meta->findInt32(kKeySampleRate, &prevSampleRate));
 
     if (prevSampleRate != sampleRate) {
-        LOGV("mpeg4 audio sample rate different from previous setting. "
+        ALOGV("mpeg4 audio sample rate different from previous setting. "
              "was: %d, now: %d", prevSampleRate, sampleRate);
     }
 
@@ -1834,7 +1834,7 @@ status_t MPEG4Extractor::updateAudioTrackInfoFromESDS_MPEG4Audio(
     CHECK(mLastTrack->meta->findInt32(kKeyChannelCount, &prevChannelCount));
 
     if (prevChannelCount != numChannels) {
-        LOGV("mpeg4 audio channel count different from previous setting. "
+        ALOGV("mpeg4 audio channel count different from previous setting. "
              "was: %d, now: %d", prevChannelCount, numChannels);
     }
 
@@ -2039,7 +2039,7 @@ status_t MPEG4Source::read(
         CHECK_EQ(OK, mSampleTable->getMetaDataForSample(
                     syncSampleIndex, NULL, NULL, &syncSampleTime));
 
-        LOGI("seek to time %lld us => sample at time %lld us, "
+        ALOGI("seek to time %lld us => sample at time %lld us, "
              "sync sample at time %lld us",
              seekTimeUs,
              sampleTime * 1000000ll / mTimescale,
@@ -2126,7 +2126,7 @@ status_t MPEG4Source::read(
 
         size_t nal_size = parseNALSize(src);
         if (mBuffer->range_length() < mNALLengthSize + nal_size) {
-            LOGE("incomplete NAL unit.");
+            ALOGE("incomplete NAL unit.");
 
             mBuffer->release();
             mBuffer = NULL;
@@ -2190,7 +2190,7 @@ status_t MPEG4Source::read(
                 }
 
                 if (isMalFormed) {
-                    LOGE("Video is malformed");
+                    ALOGE("Video is malformed");
                     mBuffer->release();
                     mBuffer = NULL;
                     return ERROR_MALFORMED;
@@ -2414,7 +2414,7 @@ static bool BetterSniffMPEG4(
         *meta = new AMessage;
         (*meta)->setInt64("meta-data-size", moovAtomEndOffset);
 
-        LOGV("found metadata size: %lld", moovAtomEndOffset);
+        ALOGV("found metadata size: %lld", moovAtomEndOffset);
     }
 
     return true;
@@ -2428,7 +2428,7 @@ bool SniffMPEG4(
     }
 
     if (LegacySniffMPEG4(source, mimeType, confidence)) {
-        LOGW("Identified supported mpeg4 through LegacySniffMPEG4.");
+        ALOGW("Identified supported mpeg4 through LegacySniffMPEG4.");
         return true;
     }
 

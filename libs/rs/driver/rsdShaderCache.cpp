@@ -54,7 +54,7 @@ void RsdShaderCache::updateUniformArrayData(const Context *rsc, RsdShader *prog,
         }
 
         if (rsc->props.mLogShaders) {
-             LOGV("%s U, %s = %d, arraySize = %d\n", logTag,
+             ALOGV("%s U, %s = %d, arraySize = %d\n", logTag,
                   prog->getUniformName(ct).string(), data[ct].slot, data[ct].arraySize);
         }
     }
@@ -119,23 +119,23 @@ bool RsdShaderCache::link(const Context *rsc) {
     if (!vtx->getShaderID() || !frag->getShaderID()) {
         return false;
     }
-    //LOGV("rsdShaderCache lookup  vtx %i, frag %i", vtx->getShaderID(), frag->getShaderID());
+    //ALOGV("rsdShaderCache lookup  vtx %i, frag %i", vtx->getShaderID(), frag->getShaderID());
     uint32_t entryCount = mEntries.size();
     for (uint32_t ct = 0; ct < entryCount; ct ++) {
         if ((mEntries[ct]->vtx == vtx->getShaderID()) &&
             (mEntries[ct]->frag == frag->getShaderID())) {
 
-            //LOGV("SC using program %i", mEntries[ct]->program);
+            //ALOGV("SC using program %i", mEntries[ct]->program);
             glUseProgram(mEntries[ct]->program);
             mCurrent = mEntries[ct];
-            //LOGV("RsdShaderCache hit, using %i", ct);
+            //ALOGV("RsdShaderCache hit, using %i", ct);
             rsdGLCheckError(rsc, "RsdShaderCache::link (hit)");
             return true;
         }
     }
 
-    //LOGV("RsdShaderCache miss");
-    //LOGE("e0 %x", glGetError());
+    //ALOGV("RsdShaderCache miss");
+    //ALOGE("e0 %x", glGetError());
     ProgramEntry *e = new ProgramEntry(vtx->getAttribCount(),
                                        vtx->getUniformCount(),
                                        frag->getUniformCount());
@@ -147,7 +147,7 @@ bool RsdShaderCache::link(const Context *rsc) {
     if (e->program) {
         GLuint pgm = e->program;
         glAttachShader(pgm, vtx->getShaderID());
-        //LOGE("e1 %x", glGetError());
+        //ALOGE("e1 %x", glGetError());
         glAttachShader(pgm, frag->getShaderID());
 
         glBindAttribLocation(pgm, 0, "ATTRIB_position");
@@ -155,9 +155,9 @@ bool RsdShaderCache::link(const Context *rsc) {
         glBindAttribLocation(pgm, 2, "ATTRIB_normal");
         glBindAttribLocation(pgm, 3, "ATTRIB_texture0");
 
-        //LOGE("e2 %x", glGetError());
+        //ALOGE("e2 %x", glGetError());
         glLinkProgram(pgm);
-        //LOGE("e3 %x", glGetError());
+        //ALOGE("e3 %x", glGetError());
         GLint linkStatus = GL_FALSE;
         glGetProgramiv(pgm, GL_LINK_STATUS, &linkStatus);
         if (linkStatus != GL_TRUE) {
@@ -167,7 +167,7 @@ bool RsdShaderCache::link(const Context *rsc) {
                 char* buf = (char*) malloc(bufLength);
                 if (buf) {
                     glGetProgramInfoLog(pgm, bufLength, NULL, buf);
-                    LOGE("Could not link program:\n%s\n", buf);
+                    ALOGE("Could not link program:\n%s\n", buf);
                     free(buf);
                 }
             }
@@ -180,7 +180,7 @@ bool RsdShaderCache::link(const Context *rsc) {
             e->vtxAttrs[ct].slot = glGetAttribLocation(pgm, vtx->getAttribName(ct));
             e->vtxAttrs[ct].name = vtx->getAttribName(ct).string();
             if (rsc->props.mLogShaders) {
-                LOGV("vtx A %i, %s = %d\n", ct, vtx->getAttribName(ct).string(), e->vtxAttrs[ct].slot);
+                ALOGV("vtx A %i, %s = %d\n", ct, vtx->getAttribName(ct).string(), e->vtxAttrs[ct].slot);
             }
         }
 
@@ -205,7 +205,7 @@ bool RsdShaderCache::link(const Context *rsc) {
                     glGetActiveUniform(pgm, ct, maxNameLength, &uniformList[ct]->writtenLength,
                                        &uniformList[ct]->arraySize, &uniformList[ct]->type,
                                        uniformList[ct]->name);
-                    //LOGE("GL UNI idx=%u, arraySize=%u, name=%s", ct,
+                    //ALOGE("GL UNI idx=%u, arraySize=%u, name=%s", ct,
                     //     uniformList[ct]->arraySize, uniformList[ct]->name);
                 }
             }
@@ -229,7 +229,7 @@ bool RsdShaderCache::link(const Context *rsc) {
         }
     }
 
-    //LOGV("SC made program %i", e->program);
+    //ALOGV("SC made program %i", e->program);
     glUseProgram(e->program);
     rsdGLCheckError(rsc, "RsdShaderCache::link (miss)");
 

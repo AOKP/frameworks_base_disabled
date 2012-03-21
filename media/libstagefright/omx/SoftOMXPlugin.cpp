@@ -58,7 +58,7 @@ OMX_ERRORTYPE SoftOMXPlugin::makeComponentInstance(
         const OMX_CALLBACKTYPE *callbacks,
         OMX_PTR appData,
         OMX_COMPONENTTYPE **component) {
-    LOGV("makeComponentInstance '%s'", name);
+    ALOGV("makeComponentInstance '%s'", name);
 
     for (size_t i = 0; i < kNumComponents; ++i) {
         if (strcmp(name, kComponents[i].mName)) {
@@ -72,7 +72,7 @@ OMX_ERRORTYPE SoftOMXPlugin::makeComponentInstance(
         void *libHandle = dlopen(libName.c_str(), RTLD_NOW);
 
         if (libHandle == NULL) {
-            LOGE("unable to dlopen %s", libName.c_str());
+            ALOGE("unable to dlopen %s", libName.c_str());
 
             return OMX_ErrorComponentNotFound;
         }

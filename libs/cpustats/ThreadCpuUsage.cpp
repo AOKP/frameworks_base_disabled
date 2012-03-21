@@ -31,7 +31,7 @@ bool ThreadCpuUsage::setEnabled(bool isEnabled)
         if (isEnabled) {
             rc = clock_gettime(CLOCK_THREAD_CPUTIME_ID, &mPreviousTs);
             if (rc) {
-                LOGE("clock_gettime(CLOCK_THREAD_CPUTIME_ID) errno=%d", errno);
+                ALOGE("clock_gettime(CLOCK_THREAD_CPUTIME_ID) errno=%d", errno);
                 isEnabled = false;
             } else {
                 mWasEverEnabled = true;
@@ -39,7 +39,7 @@ bool ThreadCpuUsage::setEnabled(bool isEnabled)
                 if (!mMonotonicKnown) {
                     rc = clock_gettime(CLOCK_MONOTONIC, &mMonotonicTs);
                     if (rc) {
-                        LOGE("clock_gettime(CLOCK_MONOTONIC) errno=%d", errno);
+                        ALOGE("clock_gettime(CLOCK_MONOTONIC) errno=%d", errno);
                     } else {
                         mMonotonicKnown = true;
                     }
@@ -50,7 +50,7 @@ bool ThreadCpuUsage::setEnabled(bool isEnabled)
             struct timespec ts;
             rc = clock_gettime(CLOCK_THREAD_CPUTIME_ID, &ts);
             if (rc) {
-                LOGE("clock_gettime(CLOCK_THREAD_CPUTIME_ID) errno=%d", errno);
+                ALOGE("clock_gettime(CLOCK_THREAD_CPUTIME_ID) errno=%d", errno);
             } else {
                 long long delta = (ts.tv_sec - mPreviousTs.tv_sec) * 1000000000LL +
                         (ts.tv_nsec - mPreviousTs.tv_nsec);
@@ -86,7 +86,7 @@ void ThreadCpuUsage::sample()
             int rc;
             rc = clock_gettime(CLOCK_THREAD_CPUTIME_ID, &ts);
             if (rc) {
-                LOGE("clock_gettime(CLOCK_THREAD_CPUTIME_ID) errno=%d", errno);
+                ALOGE("clock_gettime(CLOCK_THREAD_CPUTIME_ID) errno=%d", errno);
             } else {
                 long long delta = (ts.tv_sec - mPreviousTs.tv_sec) * 1000000000LL +
                         (ts.tv_nsec - mPreviousTs.tv_nsec);
@@ -99,7 +99,7 @@ void ThreadCpuUsage::sample()
         mStatistics.sample((double) mAccumulator);
         mAccumulator = 0;
     } else {
-        LOGW("Can't add sample because measurements have never been enabled");
+        ALOGW("Can't add sample because measurements have never been enabled");
     }
 }
 
@@ -111,7 +111,7 @@ long long ThreadCpuUsage::elapsed() const
         int rc;
         rc = clock_gettime(CLOCK_MONOTONIC, &ts);
         if (rc) {
-            LOGE("clock_gettime(CLOCK_MONOTONIC) errno=%d", errno);
+            ALOGE("clock_gettime(CLOCK_MONOTONIC) errno=%d", errno);
             elapsed = 0;
         } else {
             // mMonotonicTs is updated only at first enable and resetStatistics
@@ -119,7 +119,7 @@ long long ThreadCpuUsage::elapsed() const
                     (ts.tv_nsec - mMonotonicTs.tv_nsec);
         }
     } else {
-        LOGW("Can't compute elapsed time because measurements have never been enabled");
+        ALOGW("Can't compute elapsed time because measurements have never been enabled");
         elapsed = 0;
     }
     return elapsed;
@@ -132,7 +132,7 @@ void ThreadCpuUsage::resetStatistics()
         int rc;
         rc = clock_gettime(CLOCK_MONOTONIC, &mMonotonicTs);
         if (rc) {
-            LOGE("clock_gettime(CLOCK_MONOTONIC) errno=%d", errno);
+            ALOGE("clock_gettime(CLOCK_MONOTONIC) errno=%d", errno);
             mMonotonicKnown = false;
         }
     }

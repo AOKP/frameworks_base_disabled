@@ -91,7 +91,7 @@ MtpProperty::MtpProperty(MtpPropertyCode propCode,
                 mDefaultValue.u.u64 = defaultValue;
                 break;
             default:
-                LOGE("unknown type %04X in MtpProperty::MtpProperty", type);
+                ALOGE("unknown type %04X in MtpProperty::MtpProperty", type);
         }
     }
 }
@@ -267,7 +267,7 @@ void MtpProperty::setFormRange(int min, int max, int step) {
             mStepSize.u.u64 = step;
             break;
         default:
-            LOGE("unsupported type for MtpProperty::setRange");
+            ALOGE("unsupported type for MtpProperty::setRange");
             break;
     }
 }
@@ -306,7 +306,7 @@ void MtpProperty::setFormEnum(const int* values, int count) {
                     mEnumValues[i].u.u64 = value;
                     break;
                 default:
-                    LOGE("unsupported type for MtpProperty::setEnum");
+                    ALOGE("unsupported type for MtpProperty::setEnum");
                     break;
         }
     }
@@ -320,18 +320,18 @@ void MtpProperty::print() {
     MtpString buffer;
     bool deviceProp = isDeviceProperty();
     if (deviceProp)
-        LOGI("    %s (%04X)", MtpDebug::getDevicePropCodeName(mCode), mCode);
+        ALOGI("    %s (%04X)", MtpDebug::getDevicePropCodeName(mCode), mCode);
     else
-        LOGI("    %s (%04X)", MtpDebug::getObjectPropCodeName(mCode), mCode);
-    LOGI("    type %04X", mType);
-    LOGI("    writeable %s", (mWriteable ? "true" : "false"));
+        ALOGI("    %s (%04X)", MtpDebug::getObjectPropCodeName(mCode), mCode);
+    ALOGI("    type %04X", mType);
+    ALOGI("    writeable %s", (mWriteable ? "true" : "false"));
     buffer = "    default value: ";
     print(mDefaultValue, buffer);
-    LOGI("%s", (const char *)buffer);
+    ALOGI("%s", (const char *)buffer);
     if (deviceProp) {
         buffer = "    current value: ";
         print(mCurrentValue, buffer);
-        LOGI("%s", (const char *)buffer);
+        ALOGI("%s", (const char *)buffer);
     }
     switch (mFormFlag) {
         case kFormNone:
@@ -344,7 +344,7 @@ void MtpProperty::print() {
             buffer += ", ";
             print(mStepSize, buffer);
             buffer += ")";
-            LOGI("%s", (const char *)buffer);
+            ALOGI("%s", (const char *)buffer);
             break;
         case kFormEnum:
             buffer = "    Enum { ";
@@ -353,13 +353,13 @@ void MtpProperty::print() {
                 buffer += " ";
             }
             buffer += "}";
-            LOGI("%s", (const char *)buffer);
+            ALOGI("%s", (const char *)buffer);
             break;
         case kFormDateTime:
-            LOGI("    DateTime\n");
+            ALOGI("    DateTime\n");
             break;
         default:
-            LOGI("    form %d\n", mFormFlag);
+            ALOGI("    form %d\n", mFormFlag);
             break;
     }
 }
@@ -402,7 +402,7 @@ void MtpProperty::print(MtpPropertyValue& value, MtpString& buffer) {
             buffer.appendFormat("%s", value.str);
             break;
         default:
-            LOGE("unsupported type for MtpProperty::print\n");
+            ALOGE("unsupported type for MtpProperty::print\n");
             break;
     }
 }
@@ -456,7 +456,7 @@ void MtpProperty::readValue(MtpDataPacket& packet, MtpPropertyValue& value) {
             value.str = strdup(stringBuffer);
             break;
         default:
-            LOGE("unknown type %04X in MtpProperty::readValue", mType);
+            ALOGE("unknown type %04X in MtpProperty::readValue", mType);
     }
 }
 
@@ -511,7 +511,7 @@ void MtpProperty::writeValue(MtpDataPacket& packet, MtpPropertyValue& value) {
                 packet.putEmptyString();
             break;
         default:
-            LOGE("unknown type %04X in MtpProperty::writeValue", mType);
+            ALOGE("unknown type %04X in MtpProperty::writeValue", mType);
     }
 }
 

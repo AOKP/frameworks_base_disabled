@@ -78,7 +78,7 @@ status_t SensorManager::assertStateLocked() const {
         class DeathObserver : public IBinder::DeathRecipient {
             SensorManager& mSensorManger;
             virtual void binderDied(const wp<IBinder>& who) {
-                LOGW("sensorservice died [%p]", who.unsafe_get());
+                ALOGW("sensorservice died [%p]", who.unsafe_get());
                 mSensorManger.sensorManagerDied();
             }
         public:
@@ -137,7 +137,7 @@ sp<SensorEventQueue> SensorManager::createEventQueue()
                 mSensorServer->createSensorEventConnection();
         if (connection == NULL) {
             // SensorService just died.
-            LOGE("createEventQueue: connection is NULL. SensorService died.");
+            ALOGE("createEventQueue: connection is NULL. SensorService died.");
             continue;
         }
         queue = new SensorEventQueue(connection);

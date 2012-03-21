@@ -38,14 +38,14 @@ namespace android {
 StagefrightMetadataRetriever::StagefrightMetadataRetriever()
     : mParsedMetaData(false),
       mAlbumArt(NULL) {
-    LOGV("StagefrightMetadataRetriever()");
+    ALOGV("StagefrightMetadataRetriever()");
 
     DataSource::RegisterDefaultSniffers();
     CHECK_EQ(mClient.connect(), OK);
 }
 
 StagefrightMetadataRetriever::~StagefrightMetadataRetriever() {
-    LOGV("~StagefrightMetadataRetriever()");
+    ALOGV("~StagefrightMetadataRetriever()");
 
     delete mAlbumArt;
     mAlbumArt = NULL;
@@ -55,7 +55,7 @@ StagefrightMetadataRetriever::~StagefrightMetadataRetriever() {
 
 status_t StagefrightMetadataRetriever::setDataSource(
         const char *uri, const KeyedVector<String8, String8> *headers) {
-    LOGV("setDataSource(%s)", uri);
+    ALOGV("setDataSource(%s)", uri);
 
     mParsedMetaData = false;
     mMetaData.clear();
@@ -84,7 +84,7 @@ status_t StagefrightMetadataRetriever::setDataSource(
         int fd, int64_t offset, int64_t length) {
     fd = dup(fd);
 
-    LOGV("setDataSource(%d, %lld, %lld)", fd, offset, length);
+    ALOGV("setDataSource(%d, %lld, %lld)", fd, offset, length);
 
     mParsedMetaData = false;
     mMetaData.clear();
@@ -124,14 +124,14 @@ static VideoFrame *extractVideoFrameWithCodecFlags(
                 NULL, flags | OMXCodec::kClientNeedsFramebuffer);
 
     if (decoder.get() == NULL) {
-        LOGV("unable to instantiate video decoder.");
+        ALOGV("unable to instantiate video decoder.");
 
         return NULL;
     }
 
     status_t err = decoder->start();
     if (err != OK) {
-        LOGW("OMXCodec::start returned error %d (0x%08x)\n", err, err);
+        ALOGW("OMXCodec::start returned error %d (0x%08x)\n", err, err);
         return NULL;
     }
 
@@ -142,7 +142,7 @@ static VideoFrame *extractVideoFrameWithCodecFlags(
     if (seekMode < MediaSource::ReadOptions::SEEK_PREVIOUS_SYNC ||
         seekMode > MediaSource::ReadOptions::SEEK_CLOSEST) {
 
-        LOGE("Unknown seek mode: %d", seekMode);
+        ALOGE("Unknown seek mode: %d", seekMode);
         return NULL;
     }
 
@@ -175,18 +175,18 @@ static VideoFrame *extractVideoFrameWithCodecFlags(
     if (err != OK) {
         CHECK_EQ(buffer, NULL);
 
-        LOGV("decoding frame failed.");
+        ALOGV("decoding frame failed.");
         decoder->stop();
 
         return NULL;
     }
 
-    LOGV("successfully decoded video frame.");
+    ALOGV("successfully decoded video frame.");
 
     int32_t unreadable;
     if (buffer->meta_data()->findInt32(kKeyIsUnreadable, &unreadable)
             && unreadable != 0) {
-        LOGV("video frame is unreadable, decoder does not give us access "
+        ALOGV("video frame is unreadable, decoder does not give us access "
              "to the video data.");
 
         buffer->release();
@@ -204,7 +204,7 @@ static VideoFrame *extractVideoFrameWithCodecFlags(
             const char *mime;
             CHECK(trackMeta->findCString(kKeyMIMEType, &mime));
 
-            LOGV("thumbNailTime = %lld us, timeUs = %lld us, mime = %s",
+            ALOGV("thumbNailTime = %lld us, timeUs = %lld us, mime = %s",
                  thumbNailTime, timeUs, mime);
         }
     }
@@ -294,7 +294,7 @@ static VideoFrame *extractVideoFrameWithCodecFlags(
     decoder->stop();
 
     if (err != OK) {
-        LOGE("Colorconverter failed to convert frame.");
+        ALOGE("Colorconverter failed to convert frame.");
 
         delete frame;
         frame = NULL;
@@ -306,23 +306,23 @@ static VideoFrame *extractVideoFrameWithCodecFlags(
 VideoFrame *StagefrightMetadataRetriever::getFrameAtTime(
         int64_t timeUs, int option) {
 
-    LOGV("getFrameAtTime: %lld us option: %d", timeUs, option);
+    ALOGV("getFrameAtTime: %lld us option: %d", timeUs, option);
 
     if (mExtractor.get() == NULL) {
-        LOGV("no extractor.");
+        ALOGV("no extractor.");
         return NULL;
     }
 
     sp<MetaData> fileMeta = mExtractor->getMetaData();
 
     if (fileMeta == NULL) {
-        LOGV("extractor doesn't publish metadata, failed to initialize?");
+        ALOGV("extractor doesn't publish metadata, failed to initialize?");
         return NULL;
     }
 
     int32_t drm = 0;
     if (fileMeta->findInt32(kKeyIsDRM, &drm) && drm != 0) {
-        LOGE("frame grab not allowed.");
+        ALOGE("frame grab not allowed.");
         return NULL;
     }
 
@@ -340,7 +340,7 @@ VideoFrame *StagefrightMetadataRetriever::getFrameAtTime(
     }
 
     if (i == n) {
-        LOGV("no video track found.");
+        ALOGV("no video track found.");
         return NULL;
     }
 
@@ -350,7 +350,7 @@ VideoFrame *StagefrightMetadataRetriever::getFrameAtTime(
     sp<MediaSource> source = mExtractor->getTrack(i);
 
     if (source.get() == NULL) {
-        LOGV("unable to instantiate video track.");
+        ALOGV("unable to instantiate video track.");
         return NULL;
     }
 
@@ -407,7 +407,7 @@ VideoFrame *StagefrightMetadataRetriever::getFrameAtTime(
 #endif
 
     if (frame == NULL) {
-        LOGV("Software decoder failed to extract thumbnail, "
+        ALOGV("Software decoder failed to extract thumbnail, "
              "trying hardware decoder.");
 
 #ifdef QCOM_HARDWARE
@@ -432,7 +432,7 @@ VideoFrame *StagefrightMetadataRetriever::getFrameAtTime(
 }
 
 MediaAlbumArt *StagefrightMetadataRetriever::extractAlbumArt() {
-    LOGV("extractAlbumArt (extractor: %s)", mExtractor.get() != NULL ? "YES" : "NO");
+    ALOGV("extractAlbumArt (extractor: %s)", mExtractor.get() != NULL ? "YES" : "NO");
 
     if (mExtractor == NULL) {
         return NULL;
@@ -475,7 +475,7 @@ void StagefrightMetadataRetriever::parseMetaData() {
     sp<MetaData> meta = mExtractor->getMetaData();
 
     if (meta == NULL) {
-        LOGV("extractor doesn't publish metadata, failed to initialize?");
+        ALOGV("extractor doesn't publish metadata, failed to initialize?");
         return;
     }
 

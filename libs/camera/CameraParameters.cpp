@@ -231,12 +231,12 @@ void CameraParameters::set(const char *key, const char *value)
 {
     // XXX i think i can do this with strspn()
     if (strchr(key, '=') || strchr(key, ';')) {
-        //XXX LOGE("Key \"%s\"contains invalid character (= or ;)", key);
+        //XXX ALOGE("Key \"%s\"contains invalid character (= or ;)", key);
         return;
     }
 
     if (strchr(value, '=') || strchr(key, ';')) {
-        //XXX LOGE("Value \"%s\"contains invalid character (= or ;)", value);
+        //XXX ALOGE("Value \"%s\"contains invalid character (= or ;)", value);
         return;
     }
 
@@ -294,7 +294,7 @@ static int parse_pair(const char *str, int *first, int *second, char delim,
     int w = (int)strtol(str, &end, 10);
     // If a delimeter does not immediately follow, give up.
     if (*end != delim) {
-        LOGE("Cannot find delimeter (%c) in str=%s", delim, str);
+        ALOGE("Cannot find delimeter (%c) in str=%s", delim, str);
         return -1;
     }
 
@@ -324,7 +324,7 @@ static void parseSizesList(const char *sizesStr, Vector<Size> &sizes)
         int success = parse_pair(sizeStartPtr, &width, &height, 'x',
                                  &sizeStartPtr);
         if (success == -1 || (*sizeStartPtr != ',' && *sizeStartPtr != '\0')) {
-            LOGE("Picture sizes string \"%s\" contains invalid character.", sizesStr);
+            ALOGE("Picture sizes string \"%s\" contains invalid character.", sizesStr);
             return;
         }
         sizes.push(Size(width, height));
@@ -449,12 +449,12 @@ const char *CameraParameters::getPictureFormat() const
 
 void CameraParameters::dump() const
 {
-    LOGD("dump: mMap.size = %d", mMap.size());
+    ALOGD("dump: mMap.size = %d", mMap.size());
     for (size_t i = 0; i < mMap.size(); i++) {
         String8 k, v;
         k = mMap.keyAt(i);
         v = mMap.valueAt(i);
-        LOGD("%s: %s\n", k.string(), v.string());
+        ALOGD("%s: %s\n", k.string(), v.string());
     }
 }
 

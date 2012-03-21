@@ -211,7 +211,7 @@ Allocation::~Allocation()
 #ifdef MADV_REMOVE
             if (size) {
                 int err = madvise(start_ptr, size, MADV_REMOVE);
-                LOGW_IF(err, "madvise(%p, %u, MADV_REMOVE) returned %s",
+                ALOGW_IF(err, "madvise(%p, %u, MADV_REMOVE) returned %s",
                         start_ptr, size, err<0 ? strerror(errno) : "Ok");
             }
 #endif
@@ -344,7 +344,7 @@ ssize_t SimpleBestFitAllocator::alloc(size_t size, uint32_t flags)
                 mList.insertBefore(free_chunk, split);
             }
 
-            LOGE_IF((flags&PAGE_ALIGNED) && 
+            ALOGE_IF((flags&PAGE_ALIGNED) && 
                     ((free_chunk->start*kMemoryAlign)&(pagesize-1)),
                     "PAGE_ALIGNED requested, but page is not aligned!!!");
 
@@ -411,7 +411,7 @@ void SimpleBestFitAllocator::dump_l(const char* what) const
 {
     String8 result;
     dump_l(result, what);
-    LOGD("%s", result.string());
+    ALOGD("%s", result.string());
 }
 
 void SimpleBestFitAllocator::dump(String8& result,

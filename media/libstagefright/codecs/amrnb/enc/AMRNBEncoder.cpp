@@ -71,7 +71,7 @@ static Mode PickModeFromBitrate(int32_t bps) {
 
 status_t AMRNBEncoder::start(MetaData *params) {
     if (mStarted) {
-        LOGW("Call start() when encoder already started");
+        ALOGW("Call start() when encoder already started");
         return OK;
     }
 
@@ -84,7 +84,7 @@ status_t AMRNBEncoder::start(MetaData *params) {
 
     status_t err = mSource->start(params);
     if (err != OK) {
-        LOGE("AudioSource is not available");
+        ALOGE("AudioSource is not available");
         return err;
     }
 
@@ -105,7 +105,7 @@ status_t AMRNBEncoder::start(MetaData *params) {
 
 status_t AMRNBEncoder::stop() {
     if (!mStarted) {
-        LOGW("Call stop() when encoder has not started.");
+        ALOGW("Call stop() when encoder has not started.");
         return OK;
     }
 

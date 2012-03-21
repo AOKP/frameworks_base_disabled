@@ -97,15 +97,26 @@
             android:textSize="16sp"/>
 
     </LinearLayout>
-    
+
     <com.android.internal.policy.impl.WeatherText
-		android:id="@+id/weather"
-	    android:layout_gravity="right"
-	    android:layout_width="wrap_content"
+	android:id="@+id/weather"
+	android:layout_gravity="fill_horizontal"
+	android:layout_width="0dip"
         android:layout_height="wrap_content"
-		android:layout_marginTop="10dip"
+	android:layout_marginTop="10dip"
+	android:gravity="right"
+        android:singleLine="true"
+        android:ellipsize="end"
         android:textSize="16sp"
         android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <ViewFlipper
+        android:id="@+id/calendar"
+        android:inAnimation="@anim/calendar_fadein"
+        android:outAnimation="@anim/calendar_fadeout"
+	android:layout_marginTop="10dip"
+        android:layout_gravity="right"
+	android:drawablePadding="4dip" />
 
     <!-- Status1 is generally battery status and informational messages -->
     <TextView

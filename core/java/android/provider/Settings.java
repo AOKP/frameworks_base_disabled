@@ -2927,7 +2927,13 @@ public final class Settings {
          * @hide
          */
         public static final String LOCKSCREEN_BATTERY = "lockscreen_battery";
-        
+
+        /**
+         * Setting to allow % on lockscreen at low battery.
+         * @hide
+         */
+        public static final String LOCKSCREEN_LOW_BATTERY = "lockscreen_low_battery";
+
         /**
          * Setting to use lockscreen alongside secure lock
          * @hide
@@ -2947,7 +2953,7 @@ public final class Settings {
          * @hide
          */
         public static final String STATUSBAR_BATTERY_BAR = "statusbar_battery_bar";
-        
+
         /**
          * Style of the battery icon
          * 

@@ -66,12 +66,6 @@ LOCAL_SHARED_LIBRARIES := \
 LOCAL_C_INCLUDES := \
     external/skia/include/core
 
-ifeq ($(BOARD_USES_7X30_OVERLAY),true)
-    LOCAL_SRC_FILES+= 7x30/Overlay.cpp
-else
-    LOCAL_SRC_FILES+= Overlay.cpp
-endif
-
 ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
     LOCAL_CFLAGS += -DQCOM_HARDWARE
 endif

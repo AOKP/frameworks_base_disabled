@@ -233,25 +233,6 @@ static jint android_drm_DrmManagerClient_initialize(
     drmManager->addClient(uniqueId);
 
     setDrmManagerClientImpl(env, thiz, drmManager);
-    LOGV("initialize - Exit");
-
-    return uniqueId;
-}
-
-static void android_drm_DrmManagerClient_setListeners(
-        JNIEnv* env, jobject thiz, jint uniqueId, jobject weak_thiz) {
-    LOGV("setListeners - Enter");
-
-    // Set the listener to DrmManager
-    sp<DrmManagerClient::OnInfoListener> listener = new JNIOnInfoListener(env, thiz, weak_thiz);
-    getDrmManagerClientImpl(env, thiz)->setOnInfoListener(uniqueId, listener);
-
-    LOGV("setListeners - Exit");
-}
-
-static void android_drm_DrmManagerClient_release(
-        JNIEnv* env, jobject thiz, jint uniqueId) {
-    LOGV("release - Enter");
     ALOGV("initialize - Exit");
     return uniqueId;
 }

@@ -44,7 +44,6 @@ struct NuPlayer::HTTPLiveSource : public NuPlayer::Source {
     virtual status_t seekTo(int64_t seekTimeUs);
 
     virtual bool isSeekable();
-    virtual status_t getNewSeekTime(int64_t *newSeek);
 
 protected:
     virtual ~HTTPLiveSource();

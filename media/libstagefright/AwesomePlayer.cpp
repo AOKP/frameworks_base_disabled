@@ -686,7 +686,6 @@ void AwesomePlayer::onBufferingUpdate() {
     if (!mBufferingEventPending) {
         return;
     }
-    mBufferingEventPending = false;
     bool cacheFull = false;
 
     if (mCachedSource != NULL) {
@@ -799,6 +798,7 @@ void AwesomePlayer::onBufferingUpdate() {
         }
     }
 
+    mBufferingEventPending = false;
     postBufferingEvent_l();
 }
 

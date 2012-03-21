@@ -164,7 +164,7 @@ bool TextLayout::prepareText(SkPaint* paint, const jchar* text, jsize len, jint 
         UErrorCode status = U_ZERO_ERROR;
         len = layoutLine(text, len, bidiFlags, dir, buffer, status); // might change len, dir
         if (!U_SUCCESS(status)) {
-            ALOG(LOG_WARN, "LAYOUT", "drawText error %d\n", status);
+            LOG(LOG_WARN, "LAYOUT", "drawText error %d\n", status);
             free(buffer);
             return false; // can't render
         }

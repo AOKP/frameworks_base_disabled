@@ -226,18 +226,13 @@ static sp<DrmManagerClientImpl> getDrmManagerClientImpl(JNIEnv* env, jobject thi
 
 static jint android_drm_DrmManagerClient_initialize(
         JNIEnv* env, jobject thiz) {
-<<<<<<< .merge_file_Xljt9R
-    LOGV("initialize - Enter");
-=======
     ALOGV("initialize - Enter");
->>>>>>> .merge_file_Lg7NKR
 
     int uniqueId = 0;
     sp<DrmManagerClientImpl> drmManager = DrmManagerClientImpl::create(&uniqueId, false);
     drmManager->addClient(uniqueId);
 
     setDrmManagerClientImpl(env, thiz, drmManager);
-<<<<<<< .merge_file_Xljt9R
     LOGV("initialize - Exit");
 
     return uniqueId;
@@ -257,7 +252,6 @@ static void android_drm_DrmManagerClient_setListeners(
 static void android_drm_DrmManagerClient_release(
         JNIEnv* env, jobject thiz, jint uniqueId) {
     LOGV("release - Enter");
-=======
     ALOGV("initialize - Exit");
     return uniqueId;
 }
@@ -276,7 +270,6 @@ static void android_drm_DrmManagerClient_setListeners(
 static void android_drm_DrmManagerClient_release(
         JNIEnv* env, jobject thiz, jint uniqueId) {
     ALOGV("release - Enter");
->>>>>>> .merge_file_Lg7NKR
     DrmManagerClientImpl::remove(uniqueId);
     getDrmManagerClientImpl(env, thiz)->setOnInfoListener(uniqueId, NULL);
 
@@ -285,11 +278,7 @@ static void android_drm_DrmManagerClient_release(
         oldClient->setOnInfoListener(uniqueId, NULL);
         oldClient->removeClient(uniqueId);
     }
-<<<<<<< .merge_file_Xljt9R
-    LOGV("release - Exit");
-=======
     ALOGV("release - Exit");
->>>>>>> .merge_file_Lg7NKR
 }
 
 static jobject android_drm_DrmManagerClient_getConstraintsFromContent(

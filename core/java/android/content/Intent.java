@@ -2318,11 +2318,8 @@ public class Intent implements Parcelable, Cloneable {
      * <p>NOTE: This should not be used as the primary key of an Intent,
      * since it will not result in the app launching with the correct
      * action and category.  Instead, use this with
-<<<<<<< .merge_file_vAO42L
-     * {@link #makeMainSelectorActivity(String, String) to generate a main
-=======
      * {@link #makeMainSelectorActivity(String, String)} to generate a main
->>>>>>> .merge_file_gYI8RN
+
      * Intent with this category in the selector.</p>
      */
     @SdkConstant(SdkConstantType.INTENT_CATEGORY)
@@ -2334,11 +2331,7 @@ public class Intent implements Parcelable, Cloneable {
      * <p>NOTE: This should not be used as the primary key of an Intent,
      * since it will not result in the app launching with the correct
      * action and category.  Instead, use this with
-<<<<<<< .merge_file_vAO42L
-     * {@link #makeMainSelectorActivity(String, String) to generate a main
-=======
      * {@link #makeMainSelectorActivity(String, String)} to generate a main
->>>>>>> .merge_file_gYI8RN
      * Intent with this category in the selector.</p>
      */
     @SdkConstant(SdkConstantType.INTENT_CATEGORY)
@@ -2350,11 +2343,7 @@ public class Intent implements Parcelable, Cloneable {
      * <p>NOTE: This should not be used as the primary key of an Intent,
      * since it will not result in the app launching with the correct
      * action and category.  Instead, use this with
-<<<<<<< .merge_file_vAO42L
-     * {@link #makeMainSelectorActivity(String, String) to generate a main
-=======
      * {@link #makeMainSelectorActivity(String, String)} to generate a main
->>>>>>> .merge_file_gYI8RN
      * Intent with this category in the selector.</p>
      */
     @SdkConstant(SdkConstantType.INTENT_CATEGORY)
@@ -2366,11 +2355,8 @@ public class Intent implements Parcelable, Cloneable {
      * <p>NOTE: This should not be used as the primary key of an Intent,
      * since it will not result in the app launching with the correct
      * action and category.  Instead, use this with
-<<<<<<< .merge_file_vAO42L
-     * {@link #makeMainSelectorActivity(String, String) to generate a main
-=======
      * {@link #makeMainSelectorActivity(String, String)} to generate a main
->>>>>>> .merge_file_gYI8RN
+
      * Intent with this category in the selector.</p>
      */
     @SdkConstant(SdkConstantType.INTENT_CATEGORY)
@@ -2382,11 +2368,7 @@ public class Intent implements Parcelable, Cloneable {
      * <p>NOTE: This should not be used as the primary key of an Intent,
      * since it will not result in the app launching with the correct
      * action and category.  Instead, use this with
-<<<<<<< .merge_file_vAO42L
-     * {@link #makeMainSelectorActivity(String, String) to generate a main
-=======
      * {@link #makeMainSelectorActivity(String, String)} to generate a main
->>>>>>> .merge_file_gYI8RN
      * Intent with this category in the selector.</p>
      */
     @SdkConstant(SdkConstantType.INTENT_CATEGORY)
@@ -2399,11 +2381,7 @@ public class Intent implements Parcelable, Cloneable {
      * <p>NOTE: This should not be used as the primary key of an Intent,
      * since it will not result in the app launching with the correct
      * action and category.  Instead, use this with
-<<<<<<< .merge_file_vAO42L
-     * {@link #makeMainSelectorActivity(String, String) to generate a main
-=======
      * {@link #makeMainSelectorActivity(String, String)} to generate a main
->>>>>>> .merge_file_gYI8RN
      * Intent with this category in the selector.</p>
      */
     @SdkConstant(SdkConstantType.INTENT_CATEGORY)
@@ -2415,11 +2393,7 @@ public class Intent implements Parcelable, Cloneable {
      * <p>NOTE: This should not be used as the primary key of an Intent,
      * since it will not result in the app launching with the correct
      * action and category.  Instead, use this with
-<<<<<<< .merge_file_vAO42L
-     * {@link #makeMainSelectorActivity(String, String) to generate a main
-=======
      * {@link #makeMainSelectorActivity(String, String)} to generate a main
->>>>>>> .merge_file_gYI8RN
      * Intent with this category in the selector.</p>
      */
     @SdkConstant(SdkConstantType.INTENT_CATEGORY)
@@ -2431,11 +2405,7 @@ public class Intent implements Parcelable, Cloneable {
      * <p>NOTE: This should not be used as the primary key of an Intent,
      * since it will not result in the app launching with the correct
      * action and category.  Instead, use this with
-<<<<<<< .merge_file_vAO42L
-     * {@link #makeMainSelectorActivity(String, String) to generate a main
-=======
      * {@link #makeMainSelectorActivity(String, String)} to generate a main
->>>>>>> .merge_file_gYI8RN
      * Intent with this category in the selector.</p>
      */
     @SdkConstant(SdkConstantType.INTENT_CATEGORY)
@@ -2448,11 +2418,7 @@ public class Intent implements Parcelable, Cloneable {
      * <p>NOTE: This should not be used as the primary key of an Intent,
      * since it will not result in the app launching with the correct
      * action and category.  Instead, use this with
-<<<<<<< .merge_file_vAO42L
-     * {@link #makeMainSelectorActivity(String, String) to generate a main
-=======
      * {@link #makeMainSelectorActivity(String, String)} to generate a main
->>>>>>> .merge_file_gYI8RN
      * Intent with this category in the selector.</p>
      */
     @SdkConstant(SdkConstantType.INTENT_CATEGORY)

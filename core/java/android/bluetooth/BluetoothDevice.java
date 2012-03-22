@@ -622,9 +622,9 @@ public final class BluetoothDevice implements Parcelable {
      * @hide
      */
     public String getAliasName() {
-        String name = getAlias();
+        String name = getName();
         if (name == null) {
-            name = getName();
+            name = getAlias();
         }
         return name;
     }

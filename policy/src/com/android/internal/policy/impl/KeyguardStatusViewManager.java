@@ -71,6 +71,7 @@ class KeyguardStatusViewManager implements OnClickListener {
     private static final int HELP_MESSAGE_TEXT = 13;
     private static final int OWNER_INFO = 14;
     private static final int BATTERY_INFO = 15;
+    private static final int WEATHER_INFO = 16;
     private static final int COLOR_WHITE = 0xFFFFFFFF;
 
     public static final String EXTRA_CITY = "city";
@@ -242,7 +243,6 @@ class KeyguardStatusViewManager implements OnClickListener {
         updateWeatherInfo();
         updateCalendar();
         updateColors();
-        Log.d(TAG, "running in constructor");
 
         // Required to get Marquee to work.
         final View scrollableViews[] = {
@@ -323,7 +323,26 @@ class KeyguardStatusViewManager implements OnClickListener {
                         Log.w(TAG, "Not showing message id " + what + ", str=" + string);
             }
         } else {
-            updateStatusLines(mShowingStatus);
+            // dont update everything 7 times, filter based on "what"
+            switch (what) {
+                case INSTRUCTION_TEXT:
+                case CARRIER_HELP_TEXT:
+                case HELP_MESSAGE_TEXT:
+                case BATTERY_INFO:
+                    updateStatus1();
+                    break;
+                case OWNER_INFO:
+                    updateOwnerInfo();
+                    break;
+                case CARRIER_TEXT:
+                    updateCarrierText();
+                    break;
+                case WEATHER_INFO:
+                    updateWeatherInfo();
+                    break;
+                default:
+                    ;
+            }
         }
     }
 
@@ -370,7 +389,6 @@ class KeyguardStatusViewManager implements OnClickListener {
         updateCarrierText();
         updateCalendar();
         updateColors();
-        Log.d(TAG, "running in updateStatusLines");
     }
 
     private void updateAlarmInfo() {
@@ -440,10 +458,9 @@ class KeyguardStatusViewManager implements OnClickListener {
             if (calendarEventsEnabled) {
                 ArrayList<EventBundle> events = getCalendarEvents(resolver, calendarSources, multipleEventsEnabled);
                 mCalendarView.removeAllViews();
-                Log.d(TAG, "we have " + String.valueOf(events.size()) + " events");
+                Log.d(TAG, "we have " + String.valueOf(events.size()) + " event(s)");
                 
                 for (EventBundle e : events) {
-                    Log.d(TAG, "eventloop, adding title: " + e.title);
                     TextView tv = new TextView(getContext());
                     tv.setText(e.title + (e.isTomorrow ? ", Tomorrow " : " ")
                             + ((e.allDay) ? "all-day" : "at " 
@@ -456,19 +473,17 @@ class KeyguardStatusViewManager implements OnClickListener {
                     tv.setGravity(android.view.Gravity.RIGHT);
                     mCalendarView.addView(tv);
                 }
-                Log.d(TAG, "successfully added " + String.valueOf(mCalendarView.getChildCount()) + " textviews");
                 mCalendarView.setFlipInterval(interval);
                 mCalendarView.setVisibility(View.VISIBLE);
                 mCalendarView.bringChildToFront(mCalendarView.getChildAt(0));
                 if (!multipleEventsEnabled || events.size() <= 1) {
-                    Log.d(TAG, "single event");
                     mCalendarView.stopFlipping();
                 } else {
                     Log.d(TAG, "multiple events, flip that shit");
                     mCalendarView.startFlipping();
                 }
             } else {
-                Log.d(TAG, "we dont need this shit");
+                Log.d(TAG, "hide calendar");
                 mCalendarView.setVisibility(View.GONE);
             }
         } catch (Exception e) {
@@ -796,7 +811,7 @@ class KeyguardStatusViewManager implements OnClickListener {
 
         public void onRefreshWeatherInfo(Intent weatherIntent) {
             mWeatherInfo = weatherIntent;
-            updateWeatherInfo();
+            update(WEATHER_INFO, null);
         }
 
         public void onTimeChanged() {
@@ -958,7 +973,7 @@ class KeyguardStatusViewManager implements OnClickListener {
                         now, (eventCur.getInt(3) != 0)));
             }
         }
-        
+        eventCur.close();
         return events;
     }
     
@@ -969,12 +984,12 @@ class KeyguardStatusViewManager implements OnClickListener {
         public boolean isTomorrow;
         public boolean allDay;
         
-        EventBundle(String s, long b, String l, Date now, boolean t) {
+        EventBundle(String s, long b, String l, Date now, boolean a) {
             title = s;
             begin = new Date(b);
-            location = l;
+            location = (l == null) ? "" : l;
             isTomorrow = (begin.getDay() > now.getDay() ? true : false);
-            allDay = t;
+            allDay = a;
         }
     }
 }

@@ -672,6 +672,7 @@ public:
     static const char FLASH_MODE_TORCH[];
 
     // Values for scene mode settings.
+    static const char SCENE_MODE_OFF[];
     static const char SCENE_MODE_AUTO[];
     static const char SCENE_MODE_ASD[];
     static const char SCENE_MODE_ACTION[];

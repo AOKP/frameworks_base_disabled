@@ -46,6 +46,8 @@ struct CameraInfo {
      * right of the screen, the value should be 270.
      */
     int orientation;
+
+    int mode;
 };
 
 class ICameraService;

@@ -1,6 +1,7 @@
 /*
  * Copyright (C) 2009 The Android Open Source Project
- * Copyright (c) 2010-2011, Code Aurora Forum. All rights reserved.
+ * Copyright (c) 2011-2012, Code Aurora Forum. All rights reserved.
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,7 +15,7 @@
  * limitations under the License.
  */
 /*--------------------------------------------------------------------------
-Copyright (c) 2011, Code Aurora Forum. All rights reserved.
+Copyright (c) 2012, Code Aurora Forum. All rights reserved.
 --------------------------------------------------------------------------*/
 
 #ifndef OMX_CODEC_H_
@@ -269,10 +270,10 @@ private:
     status_t setAACFormat(int32_t numChannels, int32_t sampleRate, int32_t bitRate);
 #ifdef QCOM_HARDWARE
     void setEVRCFormat( int32_t sampleRate, int32_t numChannels, int32_t bitRate);
-#endif
-    void setG711Format(int32_t numChannels);
-#ifdef QCOM_HARDWARE
+    void setG711Format(int32_t numChannels, int32_t sampleRate);
     void setQCELPFormat( int32_t sampleRate, int32_t numChannels, int32_t bitRate);
+#else
+    void setG711Format(int32_t numChannels);
 #endif
 
     status_t setVideoPortFormatType(
@@ -403,6 +404,10 @@ private:
 #ifdef QCOM_HARDWARE
     status_t setWMAFormat(const sp<MetaData> &inputFormat);
     void setAC3Format(int32_t numChannels, int32_t sampleRate);
+
+    int64_t latenessUs;
+    uint32_t LC_level; // LOW_COMPLEXITY level
+    int32_t mInterlaceFrame;
 #endif
 };
 
@@ -438,3 +443,4 @@ status_t QueryCodecs(
 }  // namespace android
 
 #endif  // OMX_CODEC_H_
+

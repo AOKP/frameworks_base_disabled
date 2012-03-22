@@ -88,7 +88,7 @@
         android:inAnimation="@anim/calendar_fadein"
         android:outAnimation="@anim/calendar_fadeout"
         android:layout_gravity="right"
-		android:drawablePadding="4dip" />
+	android:drawablePadding="4dip" />
         
     <com.android.internal.policy.impl.WeatherText
         android:id="@+id/weather"

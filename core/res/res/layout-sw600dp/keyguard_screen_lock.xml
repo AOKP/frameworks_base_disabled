@@ -111,6 +111,21 @@
             android:background="@android:drawable/divider_horizontal_dark"
                 />
 
+ 	<ViewFlipper
+	        android:id="@+id/calendar"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:gravity="center" />
+	        
+	    <!-- spacer after calendar -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dip"
+            android:layout_marginBottom="8dip"
+            android:background="@android:drawable/divider_horizontal_dark"
+                />
+
+
         <!-- battery info -->
         <LinearLayout android:id="@+id/batteryInfo"
                 android:orientation="horizontal"

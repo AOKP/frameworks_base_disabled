@@ -107,6 +107,7 @@ class KeyguardStatusViewManager implements OnClickListener {
     private Intent mWeatherInfo = null; // being tricky
 
     private boolean mLockAlwaysBattery;
+    private boolean mLockLowBattery;
 
     // last known plugged in state
     private boolean mPluggedIn = false;
@@ -241,6 +242,7 @@ class KeyguardStatusViewManager implements OnClickListener {
         updateWeatherInfo();
         updateCalendar();
         updateColors();
+        Log.d(TAG, "running in constructor");
 
         // Required to get Marquee to work.
         final View scrollableViews[] = {
@@ -368,6 +370,7 @@ class KeyguardStatusViewManager implements OnClickListener {
         updateCarrierText();
         updateCalendar();
         updateColors();
+        Log.d(TAG, "running in updateStatusLines");
     }
 
     private void updateAlarmInfo() {
@@ -437,8 +440,10 @@ class KeyguardStatusViewManager implements OnClickListener {
             if (calendarEventsEnabled) {
                 ArrayList<EventBundle> events = getCalendarEvents(resolver, calendarSources, multipleEventsEnabled);
                 mCalendarView.removeAllViews();
+                Log.d(TAG, "we have " + String.valueOf(events.size()) + " events");
                 
                 for (EventBundle e : events) {
+                    Log.d(TAG, "eventloop, adding title: " + e.title);
                     TextView tv = new TextView(getContext());
                     tv.setText(e.title + (e.isTomorrow ? ", Tomorrow " : " ")
                             + ((e.allDay) ? "all-day" : "at " 
@@ -451,18 +456,23 @@ class KeyguardStatusViewManager implements OnClickListener {
                     tv.setGravity(android.view.Gravity.RIGHT);
                     mCalendarView.addView(tv);
                 }
+                Log.d(TAG, "successfully added " + String.valueOf(mCalendarView.getChildCount()) + " textviews");
                 mCalendarView.setFlipInterval(interval);
                 mCalendarView.setVisibility(View.VISIBLE);
+                mCalendarView.bringChildToFront(mCalendarView.getChildAt(0));
                 if (!multipleEventsEnabled || events.size() <= 1) {
+                    Log.d(TAG, "single event");
                     mCalendarView.stopFlipping();
                 } else {
+                    Log.d(TAG, "multiple events, flip that shit");
                     mCalendarView.startFlipping();
                 }
             } else {
+                Log.d(TAG, "we dont need this shit");
                 mCalendarView.setVisibility(View.GONE);
             }
-        } catch (Exception e ) {
-            Log.e(TAG, "NOOooooo");
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -490,6 +500,8 @@ class KeyguardStatusViewManager implements OnClickListener {
         CharSequence string = null;
         mLockAlwaysBattery = Settings.System.getInt(getContext().getContentResolver(),
                 Settings.System.LOCKSCREEN_BATTERY, 0) == 1;
+        mLockLowBattery = Settings.System.getInt(getContext().getContentResolver(),
+                Settings.System.LOCKSCREEN_LOW_BATTERY, 0) == 1;
         if (mShowingBatteryInfo || mLockAlwaysBattery) {
             // Battery status
             if (mPluggedIn) {
@@ -505,6 +517,12 @@ class KeyguardStatusViewManager implements OnClickListener {
                     // Battery is low
                     string = getContext().getString(R.string.lockscreen_low_battery);
                     icon.value = BATTERY_LOW_ICON;
+                    if (mLockLowBattery) {
+                        // Show battery at low percent
+                    	string = getContext().getString(R.string.lockscreen_always_battery,
+                                mBatteryLevel);
+                        icon.value = BATTERY_ICON;
+                    }
                 } else {
                     // Always show battery
                     string = getContext().getString(R.string.lockscreen_always_battery,
@@ -522,6 +540,8 @@ class KeyguardStatusViewManager implements OnClickListener {
         CharSequence string = null;
         mLockAlwaysBattery = Settings.System.getInt(getContext().getContentResolver(),
                 Settings.System.LOCKSCREEN_BATTERY, 0) == 1;
+        mLockLowBattery = Settings.System.getInt(getContext().getContentResolver(),
+                Settings.System.LOCKSCREEN_LOW_BATTERY, 0) == 1;
         if (!TextUtils.isEmpty(mInstructionText)) {
             // Instructions only
             string = mInstructionText;
@@ -541,6 +561,12 @@ class KeyguardStatusViewManager implements OnClickListener {
                     // Battery is low
                     string = getContext().getString(R.string.lockscreen_low_battery);
                     icon.value = BATTERY_LOW_ICON;
+                    if (mLockLowBattery) {
+                        // Show battery at low percent
+                    	string = getContext().getString(R.string.lockscreen_always_battery,
+                                mBatteryLevel);
+                        icon.value = BATTERY_ICON;
+                    }
                 } else {
                     // Always show battery
                     string = getContext().getString(R.string.lockscreen_always_battery,

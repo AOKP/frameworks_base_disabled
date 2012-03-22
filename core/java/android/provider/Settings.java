@@ -2630,6 +2630,12 @@ public final class Settings {
         public static final String LOCKSCREEN_BATTERY = "lockscreen_battery";
         
         /**
+         * Setting to allow % on lockscreen at low battery.
+         * @hide
+         */
+        public static final String LOCKSCREEN_LOW_BATTERY = "lockscreen_low_battery";
+        
+        /**
          * 
          * @hide
          */

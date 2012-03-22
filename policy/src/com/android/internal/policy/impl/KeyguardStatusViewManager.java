@@ -241,6 +241,7 @@ class KeyguardStatusViewManager implements OnClickListener {
         updateWeatherInfo();
         updateCalendar();
         updateColors();
+        Log.d(TAG, "running in constructor");
 
         // Required to get Marquee to work.
         final View scrollableViews[] = {
@@ -368,6 +369,7 @@ class KeyguardStatusViewManager implements OnClickListener {
         updateCarrierText();
         updateCalendar();
         updateColors();
+        Log.d(TAG, "running in updateStatusLines");
     }
 
     private void updateAlarmInfo() {
@@ -437,8 +439,10 @@ class KeyguardStatusViewManager implements OnClickListener {
             if (calendarEventsEnabled) {
                 ArrayList<EventBundle> events = getCalendarEvents(resolver, calendarSources, multipleEventsEnabled);
                 mCalendarView.removeAllViews();
+                Log.d(TAG, "we have " + String.valueOf(events.size()) + " events");
                 
                 for (EventBundle e : events) {
+                    Log.d(TAG, "eventloop, adding title: " + e.title);
                     TextView tv = new TextView(getContext());
                     tv.setText(e.title + (e.isTomorrow ? ", Tomorrow " : " ")
                             + ((e.allDay) ? "all-day" : "at " 
@@ -451,18 +455,23 @@ class KeyguardStatusViewManager implements OnClickListener {
                     tv.setGravity(android.view.Gravity.RIGHT);
                     mCalendarView.addView(tv);
                 }
+                Log.d(TAG, "successfully added " + String.valueOf(mCalendarView.getChildCount()) + " textviews");
                 mCalendarView.setFlipInterval(interval);
                 mCalendarView.setVisibility(View.VISIBLE);
+                mCalendarView.bringChildToFront(mCalendarView.getChildAt(0));
                 if (!multipleEventsEnabled || events.size() <= 1) {
+                    Log.d(TAG, "single event");
                     mCalendarView.stopFlipping();
                 } else {
+                    Log.d(TAG, "multiple events, flip that shit");
                     mCalendarView.startFlipping();
                 }
             } else {
+                Log.d(TAG, "we dont need this shit");
                 mCalendarView.setVisibility(View.GONE);
             }
-        } catch (Exception e ) {
-            Log.e(TAG, "NOOooooo");
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

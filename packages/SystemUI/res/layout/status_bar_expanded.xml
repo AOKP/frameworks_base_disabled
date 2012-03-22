@@ -61,7 +61,7 @@
                         android:id="@+id/high_temp"
                         android:textSize="10.0sp"
                         android:textStyle="normal"
-                        android:textColor="#ff2789af"
+                        android:textColor="@android:color/holo_blue_dark"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
 
@@ -79,7 +79,7 @@
                         android:id="@+id/low_temp"
                         android:textSize="10.0sp"
                         android:textStyle="normal"
-                        android:textColor="#ff2789af"
+                        android:textColor="@android:color/holo_blue_dark"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
 
@@ -130,7 +130,7 @@
                         <TextView
                             android:id="@+id/city"
                             android:textAppearance="@style/TextAppearance.StatusBar.Date"
-                            android:textColor="#ffffffff"
+                            android:textColor="@android:color/white"
                             android:paddingRight="3dip"
                             android:singleLine="true"
                             android:layout_width="wrap_content"
@@ -139,7 +139,7 @@
                         <TextView
                             android:id="@+id/current_temp"
                             android:textAppearance="@style/TextAppearance.StatusBar.Date"
-                            android:textColor="#ffffffff"
+                            android:textColor="@android:color/white"
                             android:paddingLeft="3dip"
                             android:singleLine="true"
                             android:layout_width="wrap_content"
@@ -151,7 +151,7 @@
                         android:id="@+id/condition"
                         android:textSize="14.0sp"
                         android:textStyle="normal"
-                        android:textColor="#ff2789af"
+                        android:textColor="@android:color/holo_blue_dark"
                         android:singleLine="true"
                         android:paddingTop="4dp"
                         android:paddingBottom="4dp"

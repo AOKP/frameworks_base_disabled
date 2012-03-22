@@ -50,6 +50,9 @@ extern "C" {
 #include <linux/msm_audio.h>
 
 #include "include/AwesomePlayer.h"
+#include <powermanager/PowerManager.h>
+
+static const char   mName[] = "LPAPlayer";
 
 #define PMEM_BUFFER_SIZE 524288
 //#define PMEM_BUFFER_SIZE (4800 * 4)
@@ -112,6 +115,61 @@ AudioPlayer(audioSink,observer) {
 
     bEffectConfigChanged = false;
     initCheck = true;
+
+    mDeathRecipient = new PMDeathRecipient(this);
+}
+
+void LPAPlayer::acquireWakeLock()
+{
+    Mutex::Autolock _l(pmLock);
+
+    if (mPowerManager == 0) {
+        // use checkService() to avoid blocking if power service is not up yet
+        sp<IBinder> binder =
+            defaultServiceManager()->checkService(String16("power"));
+        if (binder == 0) {
+            LOGW("Thread %s cannot connect to the power manager service", mName);
+        } else {
+            mPowerManager = interface_cast<IPowerManager>(binder);
+            binder->linkToDeath(mDeathRecipient);
+        }
+    }
+    if (mPowerManager != 0 && mWakeLockToken == 0) {
+        sp<IBinder> binder = new BBinder();
+        status_t status = mPowerManager->acquireWakeLock(POWERMANAGER_PARTIAL_WAKE_LOCK,
+                                                         binder,
+                                                         String16(mName));
+        if (status == NO_ERROR) {
+            mWakeLockToken = binder;
+        }
+        LOGV("acquireWakeLock() %s status %d", mName, status);
+    }
+}
+
+void LPAPlayer::releaseWakeLock()
+{
+    Mutex::Autolock _l(pmLock);
+
+    if (mWakeLockToken != 0) {
+        LOGV("releaseWakeLock() %s", mName);
+        if (mPowerManager != 0) {
+            mPowerManager->releaseWakeLock(mWakeLockToken, 0);
+        }
+        mWakeLockToken.clear();
+    }
+}
+
+void LPAPlayer::clearPowerManager()
+{
+    Mutex::Autolock _l(pmLock);
+    releaseWakeLock();
+    mPowerManager.clear();
+}
+
+void LPAPlayer::PMDeathRecipient::binderDied(const wp<IBinder>& who)
+{
+    parentClass->clearPowerManager();
+    LOGW("power manager service died !!!");
 }
 
 LPAPlayer::~LPAPlayer() {
@@ -124,6 +182,12 @@ LPAPlayer::~LPAPlayer() {
 
     mAudioFlinger->deregisterClient(AudioFlingerClient);
     objectsAlive--;
+
+    releaseWakeLock();
+    if (mPowerManager != 0) {
+        sp<IBinder> binder = mPowerManager->asBinder();
+        binder->unlinkToDeath(mDeathRecipient);
+    }
 }
 
 void LPAPlayer::getAudioFlinger() {
@@ -482,7 +546,7 @@ void LPAPlayer::pause(bool playPendingSamples) {
             }
             if (!mPauseEventPending) {
                 LOGV("Posting an event for Pause timeout");
-                acquire_wake_lock(PARTIAL_WAKE_LOCK, "LPA_LOCK");
+                acquireWakeLock();
                 mQueue.postEventWithDelay(mPauseEvent, LPA_PAUSE_TIMEOUT_USEC);
                 mPauseEventPending = true;
             }
@@ -509,7 +573,7 @@ void LPAPlayer::pause(bool playPendingSamples) {
 
                 if(!mPauseEventPending) {
                     LOGV("Posting an event for Pause timeout");
-                    acquire_wake_lock(PARTIAL_WAKE_LOCK, "LPA_LOCK");
+                    acquireWakeLock();
                     mQueue.postEventWithDelay(mPauseEvent, LPA_PAUSE_TIMEOUT_USEC);
                     mPauseEventPending = true;
                 }
@@ -1617,7 +1681,7 @@ void LPAPlayer::onPauseTimeOut() {
         mIsAudioRouted = false;
 
         // 4.) Release Wake Lock
-        release_wake_lock("LPA_LOCK");
+        releaseWakeLock();
     }
 }
 

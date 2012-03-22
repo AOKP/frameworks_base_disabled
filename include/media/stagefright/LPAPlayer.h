@@ -20,18 +20,19 @@
 #define LPA_PLAYER_H_
 
 #include "AudioPlayer.h"
-
 #include <media/IAudioFlinger.h>
 #include <utils/threads.h>
 #include <utils/List.h>
 #include <utils/Vector.h>
 #include <pthread.h>
 #include <binder/IServiceManager.h>
-
 #include <linux/unistd.h>
 #include <include/linux/msm_audio.h>
-
+#include <include/linux/ion.h>
 #include <include/TimedEventQueue.h>
+#include <binder/BinderService.h>
+#include <binder/MemoryDealer.h>
+#include <powermanager/IPowerManager.h>
 
 // Pause timeout = 3sec
 #define LPA_PAUSE_TIMEOUT_USEC 3000000
@@ -88,7 +89,37 @@ private:
     bool a2dpThreadStarted;
     volatile bool asyncReset;
     bool eventThreadCreated;
-    //Structure to hold pmem buffer information
+    int mBuffSize;
+    int mBuffNumber;
+
+    void clearPowerManager();
+
+    class PMDeathRecipient : public IBinder::DeathRecipient {
+        public:
+                        PMDeathRecipient(void *obj){parentClass = (LPAPlayer *)obj;}
+            virtual     ~PMDeathRecipient() {}
+
+            // IBinder::DeathRecipient
+            virtual     void        binderDied(const wp<IBinder>& who);
+
+        private:
+                        LPAPlayer *parentClass;
+                        PMDeathRecipient(const PMDeathRecipient&);
+                        PMDeathRecipient& operator = (const PMDeathRecipient&);
+
+        friend class LPAPlayer;
+    };
+
+    friend class PMDeathRecipient;
+
+    void        acquireWakeLock();
+    void        releaseWakeLock();
+
+    sp<IPowerManager>       mPowerManager;
+    sp<IBinder>             mWakeLockToken;
+    sp<PMDeathRecipient>    mDeathRecipient;
+
+    //Structure to hold ion buffer information
     class BuffersAllocated {
     public:
         BuffersAllocated(void *buf1, void *buf2, int32_t nSize, int32_t fd) :
@@ -215,6 +246,7 @@ private:
     int64_t mLatencyUs;
     size_t mFrameSize;
 
+    Mutex pmLock;
     Mutex mLock;
     Mutex mSeekLock;
     Mutex a2dpSwitchLock;

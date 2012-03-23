@@ -5726,6 +5726,168 @@ void MultiTouchInputMapper::configureRawPointerAxes() {
     }
 }
 
+/* Special hack for devices that have bad screen data: drop points where
+ * the coordinate value for one axis has jumped to the other pointer's location.
+ */
+bool MultiTouchInputMapper::applyJumpyTouchFilter() {
+    // This hack requires valid axis parameters.
+    if (! mRawPointerAxes.y.valid) {
+        return false;
+    }
+
+    uint32_t pointerCount = mCurrentRawPointerData.pointerCount;
+    if (mLastRawPointerData.pointerCount != pointerCount) {
+#if DEBUG_HACKS
+        LOGD("JumpyTouchFilter: Different pointer count %d -> %d",
+                mLastRawPointerData.pointerCount, pointerCount);
+        for (uint32_t i = 0; i < pointerCount; i++) {
+            LOGD("  Pointer %d (%d, %d)", i,
+                    mCurrentRawPointerData.pointers[i].x, mCurrentRawPointerData.pointers[i].y);
+        }
+#endif
+
+        if (mJumpyTouchFilter.jumpyPointsDropped < JUMPY_TRANSITION_DROPS) {
+            if (mLastRawPointerData.pointerCount == 1 && pointerCount == 2) {
+                // Just drop the first few events going from 1 to 2 pointers.
+                // They're bad often enough that they're not worth considering.
+                mCurrentRawPointerData.pointerCount = 1;
+                mJumpyTouchFilter.jumpyPointsDropped += 1;
+
+#if DEBUG_HACKS
+                LOGD("JumpyTouchFilter: Pointer 2 dropped");
+#endif
+                return true;
+            } else if (mLastRawPointerData.pointerCount == 2 && pointerCount == 1) {
+                // The event when we go from 2 -> 1 tends to be messed up too
+                mCurrentRawPointerData.pointerCount = 2;
+                mCurrentRawPointerData.pointers[0] = mLastRawPointerData.pointers[0];
+                mCurrentRawPointerData.pointers[1] = mLastRawPointerData.pointers[1];
+                mJumpyTouchFilter.jumpyPointsDropped += 1;
+
+#if DEBUG_HACKS
+                for (int32_t i = 0; i < 2; i++) {
+                    LOGD("JumpyTouchFilter: Pointer %d replaced (%d, %d)", i,
+                            mCurrentRawPointerData.pointers[i].x, mCurrentRawPointerData.pointers[i].y);
+                }
+#endif
+                return true;
+            }
+        }
+        // Reset jumpy points dropped on other transitions or if limit exceeded.
+        mJumpyTouchFilter.jumpyPointsDropped = 0;
+
+#if DEBUG_HACKS
+        LOGD("JumpyTouchFilter: Transition - drop limit reset");
+#endif
+        return false;
+    }
+
+    // We have the same number of pointers as last time.
+    // A 'jumpy' point is one where the coordinate value for one axis
+    // has jumped to the other pointer's location. No need to do anything
+    // else if we only have one pointer.
+    if (pointerCount < 2) {
+        return false;
+    }
+
+    if (mJumpyTouchFilter.jumpyPointsDropped < JUMPY_DROP_LIMIT) {
+        int jumpyEpsilon = mRawPointerAxes.y.maxValue / JUMPY_EPSILON_DIVISOR;
+
+        // We only replace the single worst jumpy point as characterized by pointer distance
+        // in a single axis.
+        int32_t badPointerIndex = -1;
+        int32_t badPointerReplacementIndex = -1;
+        int32_t badPointerDistance = INT_MIN; // distance to be corrected
+
+        for (uint32_t i = pointerCount; i-- > 0; ) {
+            int32_t x = mCurrentRawPointerData.pointers[i].x;
+            int32_t y = mCurrentRawPointerData.pointers[i].y;
+
+#if DEBUG_HACKS
+            LOGD("JumpyTouchFilter: Point %d (%d, %d)", i, x, y);
+#endif
+
+            // Check if a touch point is too close to another's coordinates
+            bool dropX = false, dropY = false;
+            for (uint32_t j = 0; j < pointerCount; j++) {
+                if (i == j) {
+                    continue;
+                }
+
+                if (abs(x - mCurrentRawPointerData.pointers[j].x) <= jumpyEpsilon) {
+                    dropX = true;
+                    break;
+                }
+
+                if (abs(y - mCurrentRawPointerData.pointers[j].y) <= jumpyEpsilon) {
+                    dropY = true;
+                    break;
+                }
+            }
+            if (! dropX && ! dropY) {
+                continue; // not jumpy
+            }
+
+            // Find a replacement candidate by comparing with older points on the
+            // complementary (non-jumpy) axis.
+            int32_t distance = INT_MIN; // distance to be corrected
+            int32_t replacementIndex = -1;
+
+            if (dropX) {
+                // X looks too close.  Find an older replacement point with a close Y.
+                int32_t smallestDeltaY = INT_MAX;
+                for (uint32_t j = 0; j < pointerCount; j++) {
+                    int32_t deltaY = abs(y - mLastRawPointerData.pointers[j].y);
+                    if (deltaY < smallestDeltaY) {
+                        smallestDeltaY = deltaY;
+                        replacementIndex = j;
+                    }
+                }
+                distance = abs(x - mLastRawPointerData.pointers[replacementIndex].x);
+            } else {
+                // Y looks too close.  Find an older replacement point with a close X.
+                int32_t smallestDeltaX = INT_MAX;
+                for (uint32_t j = 0; j < pointerCount; j++) {
+                    int32_t deltaX = abs(x - mLastRawPointerData.pointers[j].x);
+                    if (deltaX < smallestDeltaX) {
+                        smallestDeltaX = deltaX;
+                        replacementIndex = j;
+                    }
+                }
+                distance = abs(y - mLastRawPointerData.pointers[replacementIndex].y);
+            }
+
+            // If replacing this pointer would correct a worse error than the previous ones
+            // considered, then use this replacement instead.
+            if (distance > badPointerDistance) {
+                badPointerIndex = i;
+                badPointerReplacementIndex = replacementIndex;
+                badPointerDistance = distance;
+            }
+        }
+
+        // Correct the jumpy pointer if one was found.
+        if (badPointerIndex >= 0) {
+#if DEBUG_HACKS
+            LOGD("JumpyTouchFilter: Replacing bad pointer %d with (%d, %d)",
+                    badPointerIndex,
+                    mLastRawPointerData.pointers[badPointerReplacementIndex].x,
+                    mLastRawPointerData.pointers[badPointerReplacementIndex].y);
+#endif
+
+            mCurrentRawPointerData.pointers[badPointerIndex].x =
+                    mLastRawPointerData.pointers[badPointerReplacementIndex].x;
+            mCurrentRawPointerData.pointers[badPointerIndex].y =
+                    mLastRawPointerData.pointers[badPointerReplacementIndex].y;
+            mJumpyTouchFilter.jumpyPointsDropped += 1;
+            return true;
+        }
+    }
+
+    mJumpyTouchFilter.jumpyPointsDropped = 0;
+    return false;
+}
+
 
 // --- JoystickInputMapper ---
 

@@ -1550,6 +1550,7 @@ public:
 protected:
     virtual void syncTouch(nsecs_t when, bool* outHavePointerIds);
     virtual void configureRawPointerAxes();
+    virtual bool applyJumpyTouchFilter();
 
 private:
     MultiTouchMotionAccumulator mMultiTouchMotionAccumulator;
@@ -1557,6 +1558,18 @@ private:
     // Specifies the pointer id bits that are in use, and their associated tracking id.
     BitSet32 mPointerIdBits;
     int32_t mPointerTrackingIdMap[MAX_POINTER_ID + 1];
+
+    /* Slop distance for jumpy pointer detection.
+     * The vertical range of the screen divided by this is our epsilon value. */
+    static const uint32_t JUMPY_EPSILON_DIVISOR = 212;
+
+    /* Number of jumpy points to drop for touchscreens that need it. */
+    static const uint32_t JUMPY_TRANSITION_DROPS = 3;
+    static const uint32_t JUMPY_DROP_LIMIT = 3;
+
+    struct JumpyTouchFilterState {
+        uint32_t jumpyPointsDropped;
+    } mJumpyTouchFilter;
 };
 
 

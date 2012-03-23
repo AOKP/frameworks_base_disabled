@@ -1616,7 +1616,7 @@ uint32_t SurfaceFlinger::setClientStateLocked(
 
 void SurfaceFlinger::screenReleased(int dpy)
 {
-#ifdef SURFACEFLINGER_FORCE_SCREEN_RELEASE
+#ifdef SCREEN_RELEASE
     const DisplayHardware& hw = graphicPlane(0).displayHardware();
     hw.releaseScreen();
 #endif
@@ -2141,7 +2141,7 @@ status_t SurfaceFlinger::electronBeamOffAnimationImplLocked()
     glDisable(GL_TEXTURE_2D);
     glDisable(GL_BLEND);
 
-#ifdef SURFACEFLINGER_FORCE_SCREEN_RELEASE
+#ifdef SCREEN_RELEASE
     hw.releaseScreen();
 #endif
 

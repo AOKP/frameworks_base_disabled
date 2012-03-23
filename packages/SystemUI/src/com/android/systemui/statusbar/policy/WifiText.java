@@ -38,6 +38,16 @@ public class WifiText extends TextView {
     private Context mContext;
     private WifiManager mWifiManager;
     protected int mSignalColor = com.android.internal.R.color.holo_blue_light;
+    
+    /** pulled the below values directly from the WifiManager.Java.  I don't like the idea of 
+     *  this, as it could change and we may not know about it.
+     *  I've also noticed that Rssi is sometimes > -55 which is a little odd.
+     */
+    /** Anything worse than or equal to this will show 0 bars. */
+    private static final int MIN_RSSI = -100;
+
+    /** Anything better than or equal to this will show the max bars. */
+    private static final int MAX_RSSI = -55;
 
     
     
@@ -57,10 +67,9 @@ public class WifiText extends TextView {
     public BroadcastReceiver rssiReceiver = new BroadcastReceiver() {
 
         @Override
-        public void onReceive(Context context, Intent intent) {
-        	mRssi = mWifiManager.getConnectionInfo().getRssi();
-            Log.d(TAG, "RSSI changed");
-            updateSignalText();
+        public void onReceive(Context context, Intent intent) {      	
+        	mRssi = intent.getIntExtra(WifiManager.EXTRA_NEW_RSSI,MIN_RSSI); 
+        	updateSignalText();
         }
     };
 
@@ -123,14 +132,21 @@ public class WifiText extends TextView {
         updateSignalText();
     }
 
-    private void updateSignalText() {
+    private void updateSignalText() { 	
         style = Settings.System.getInt(getContext().getContentResolver(),
                 Settings.System.STATUSBAR_WIFI_SIGNAL_TEXT, STYLE_HIDE);
 
         if (style == STYLE_SHOW) {
+        	// Rssi signals are from -100 to -55.  need to normalize this
+        	float max = Math.abs(MAX_RSSI);
+        	float min = Math.abs(MIN_RSSI);
+        	float signal = 0f;
+        	signal = min - Math.abs(mRssi);
+        	signal = ((signal / (min - max)) * 100f);
+        	mRssi = (signal > 100f ? 100 : Math.round(signal));
             String result = Integer.toString(mRssi);
 
-            setText(result + " ");
+            setText(result + "% ");
         } 
     }
 }

@@ -628,16 +628,6 @@ status_t ACodec::allocateOutputBuffersFromNativeWindow() {
     }
 #endif
 
-    err = mNativeWindow.get()->perform(mNativeWindow.get(),
-                              NATIVE_WINDOW_SET_BUFFERS_SIZE,
-                              def.nBufferSize);
-
-    if (err != 0) {
-        LOGE("native_window_set_buffer_size failed: %s (%d)", strerror(-err),
-                -err);
-        return err;
-    }
-
     LOGV("[%s] Allocating %lu buffers from a native window of size %lu on "
          "output port",
          mComponentName.c_str(), def.nBufferCountActual, def.nBufferSize);

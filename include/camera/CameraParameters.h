@@ -123,6 +123,8 @@ public:
     void getTouchIndexAf(int *x, int *y) const;
 #endif
 
+    void getMeteringAreaCenter(int * x, int *y) const;
+
     void dump() const;
     status_t dump(int fd, const Vector<String16>& args) const;
 
@@ -595,6 +597,11 @@ public:
     // has no effect on still image capture.
     static const char KEY_VIDEO_STABILIZATION[];
 
+    static const char KEY_ZSL[];
+    static const char KEY_SUPPORTED_ZSL_MODES[];
+
+    static const char KEY_CAMERA_MODE[];
+
 #ifdef QCOM_HARDWARE
     static const char KEY_MEMORY_COLOR_ENHANCEMENT[];
     static const char KEY_SUPPORTED_MEM_COLOR_ENHANCE_MODES[];
@@ -686,6 +693,7 @@ public:
     static const char FLASH_MODE_TORCH[];
 
     // Values for scene mode settings.
+    static const char SCENE_MODE_OFF[];
     static const char SCENE_MODE_AUTO[];
     static const char SCENE_MODE_ACTION[];
     static const char SCENE_MODE_PORTRAIT[];
@@ -839,6 +847,10 @@ public:
     // Values for MCE settings.
     static const char MCE_ENABLE[];
     static const char MCE_DISABLE[];
+
+    // Values for ZSL settings.
+    static const char ZSL_OFF[];
+    static const char ZSL_ON[];
 
     // Values for HFR settings.
     static const char VIDEO_HFR_OFF[];

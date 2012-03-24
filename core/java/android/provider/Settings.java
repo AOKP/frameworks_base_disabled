@@ -2578,6 +2578,12 @@ public final class Settings {
         public static final String STATUSBAR_WINDOWSHADE_HANDLE_IMAGE = "statusbar_windowshade_handle_image";
 
         /**
+         * Statusbar handle alpha in float value
+         * @hide
+         */
+        public static final String STATUSBAR_HANDLE_ALPHA = "statusbar_handle_alpha";
+
+        /**
          * @hide
          */
         public static final String NOTIFICATION_LIGHT_COLOR = "notification_light_color";

@@ -34,6 +34,7 @@ import android.text.format.DateFormat;
 import android.text.style.CharacterStyle;
 import android.text.style.RelativeSizeSpan;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.TextView;
@@ -65,6 +66,9 @@ public class Clock extends TextView {
     public static final int WEEKDAY_STYLE_NORMAL = 2;
 
     protected int mWeekday = WEEKDAY_STYLE_GONE;
+
+    private final boolean DEBUG = true;
+    private static final String TAG = "Statusbar :Clock";
 
     protected boolean mShowClockDuringLockscreen = false;
     protected int mClockColor = com.android.internal.R.color.holo_blue_light;
@@ -193,6 +197,10 @@ public class Clock extends TextView {
                     format = format.substring(0, a) + MAGIC1 + format.substring(a, b)
                             + "a" + MAGIC2 + format.substring(b + 1);
                 }
+            }
+            if (DEBUG) {
+                Log.d(TAG, "mClockFormat: {" + format + "}");
+                Log.d(TAG, String.format("MAGIC1: {%s}	MAGIC2: {%s}	MAGIC3: {%s}	MAGIC4: {%s}", MAGIC1, MAGIC2, MAGIC3, MAGIC4));
             }
             mClockFormat = new SimpleDateFormat(format);
         }

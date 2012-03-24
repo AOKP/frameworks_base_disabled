@@ -2578,6 +2578,8 @@ public class PhoneStatusBar extends StatusBar {
                     Settings.System.STATUSBAR_WINDOWSHADE_HANDLE_IMAGE), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.NAVIGATION_BAR_BACKGROUND_COLOR), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.STATUSBAR_HANDLE_ALPHA), false, this);
         }
 
         @Override
@@ -2777,6 +2779,15 @@ public class PhoneStatusBar extends StatusBar {
             case 0:
             default:
                 mStatusbarHandle.setImageResource(R.drawable.status_bar_close_on); //TODO: update with drawables from ExiledThemer
+        }
+
+        // give statusbar handle alpha quality
+        try {
+            float statusbarAlpha = Settings.System.getFloat(cr, Settings.System.STATUSBAR_HANDLE_ALPHA);
+            mCloseView.setAlpha(statusbarAlpha);
+            if (DEBUG) Log.d(TAG, String.format("Statusbar handle alpha preference detected: %f", statusbarAlpha));
+        } catch (SettingNotFoundException snfe) {
+            if (DEBUG) Log.d(TAG, "Statusbar handle alpha preference not detected");
         }
     }
 

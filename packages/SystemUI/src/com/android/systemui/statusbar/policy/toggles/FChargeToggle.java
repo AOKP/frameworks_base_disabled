@@ -32,7 +32,7 @@ public class FChargeToggle extends Toggle {
         else
         	setIcon(R.drawable.toggle_fcharge_off);
         IntentFilter f = new IntentFilter();
-        f.addAction("com.liquid.control.F_CHARGE_CHANGED");
+        f.addAction("com.roman.romcontrol.F_CHARGE_CHANGED");
         context.registerReceiver(mIntentReceiver, f);
         
     }
@@ -88,7 +88,7 @@ public class FChargeToggle extends Toggle {
     	@Override
     	public void onReceive(Context context, Intent intent) {
     		String action = intent.getAction();
-    		if (action.equals("com.liquid.control.FCHARGE_CHANGED")) {
+    		if (action.equals("com.roman.romcontrol.FCHARGE_CHANGED")) {
     			updateState();
     		}
     }

@@ -3720,10 +3720,12 @@ AudioFlinger::RecordThread::RecordTrack::RecordTrack(
         LOGV("RecordTrack constructor, size %d", (int)mBufferEnd - (int)mBuffer);
         if (format == AUDIO_FORMAT_AMR_NB) {
             mCblk->frameSize = channelCount * 32;
+#ifdef QCOM_HARDWARE
         } else if (format == AUDIO_FORMAT_EVRC) {
             mCblk->frameSize = channelCount * 23;
         } else if (format == AUDIO_FORMAT_QCELP) {
             mCblk->frameSize = channelCount * 35;
+#endif
         } else if (format == AUDIO_FORMAT_AAC) {
             mCblk->frameSize = 2048;
         } else if (format == AUDIO_FORMAT_PCM_16_BIT) {
@@ -4233,6 +4235,7 @@ sp<IAudioRecord> AudioFlinger::openRecord(
         {
           inFrameCount = inputBufferSize/channelCount/32;
         }
+#ifdef QCOM_HARDWARE
         else if (format == AUDIO_FORMAT_EVRC)
         {
           inFrameCount = inputBufferSize/channelCount/23;
@@ -4241,6 +4244,7 @@ sp<IAudioRecord> AudioFlinger::openRecord(
         {
           inFrameCount = inputBufferSize/channelCount/35;
         }
+#endif
         else if (format == AUDIO_FORMAT_AAC)
         {
           inFrameCount = inputBufferSize/2048;

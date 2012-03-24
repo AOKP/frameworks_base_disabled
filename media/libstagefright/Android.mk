@@ -57,7 +57,7 @@ LOCAL_C_INCLUDES:= \
         $(TOP)/frameworks/base/include/media/stagefright/openmax \
         $(TOP)/external/flac/include \
         $(TOP)/external/tremolo \
-        $(TOP)/external/openssl/include \
+        $(TOP)/external/openssl/include
 
 LOCAL_SHARED_LIBRARIES := \
         libbinder         \
@@ -217,6 +217,7 @@ LOCAL_CFLAGS += -Wno-multichar
 
 ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
         LOCAL_C_INCLUDES += $(TOP)/hardware/qcom/display/libgralloc
+        LOCAL_C_INCLUDES += $(TOP)/hardware/qcom/display/libqcomui \
         LOCAL_C_INCLUDES += $(TOP)/vendor/qcom/opensource/omx/mm-core/omxcore/inc
         LOCAL_C_INCLUDES += $(TOP)/system/core/include
         LOCAL_C_INCLUDES += $(TOP)/hardware/libhardware_legacy/include

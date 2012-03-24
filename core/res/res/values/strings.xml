@@ -2014,6 +2014,10 @@
     <string name="lockscreen_sound_on_label">Sound on</string>
     <!-- Displayed on lock screen's right tab - turn sound off -->
     <string name="lockscreen_sound_off_label">Sound off</string>
+    <!-- Displayed on lock screen's top left tab - phone shortcut -->
+    <string name="lockscreen_phone_label">Phone</string>
+    <!-- Displayed on lock screen's top right tab - custom text -->
+    <string name="lockscreen_custom_label">Unicorn</string>
 
     <!-- Accessibility description sent when user starts drawing a lock pattern. [CHAR LIMIT=NONE] -->
     <string name="lockscreen_access_pattern_start">Pattern started</string>

@@ -2582,6 +2582,12 @@ public final class Settings {
          */
         public static final String LOCKSCREEN_STYLE_MULTIWAVEVIEW_SILENTMODE =
                 "lockscreen_style_multiwaveview_silentmode";
+        
+        /**
+         * App to launch with custom app toggle enabled
+         * @hide
+         */
+        public static final String LOCKSCREEN_CUSTOM_APP_ACTIVITY = "lockscreen_custom_app_activity";
 
         /**
          * Lockscreen custom app array 1 [0] - Left 2 [1] - Right 3 [2] - Top
@@ -2708,12 +2714,19 @@ public final class Settings {
          * 1 = quad
          * 2 = octo
          * 3 = aosp
-         * 4 = rotary
-         * 5 = ring
+         * 4 = 4tab
+         * 5 = rotary
+         * 6 = ring
          * 
          * @hide
          */
 		public static final String LOCKSCREEN_LAYOUT = "lockscreen_layout";
+		
+		/**        
+         * 
+         * @hide
+         */
+		public static final String LOCKSCREEN_4TAB = "lockscreen_4tab";
 
 		/**
 		 * whether to hide the navigation bar on the lockscreen

@@ -208,7 +208,9 @@ private:
 
     void getMoreInputDataIfPossible();
 
+#ifdef QCOM_HARDWARE
     void HandleExtraData(IOMX::buffer_id omxBuffer);
+#endif
 
     DISALLOW_EVIL_CONSTRUCTORS(BaseState);
 };
@@ -359,6 +361,7 @@ private:
 
 ////////////////////////////////////////////////////////////////////////////////
 
+#ifdef QCOM_HARDWARE
 struct ACodec::FlushingOutputState : public ACodec::BaseState {
     FlushingOutputState(ACodec *codec);
 
@@ -380,11 +383,16 @@ private:
 };
 
 ////////////////////////////////////////////////////////////////////////////////
+#endif
 
 ACodec::ACodec()
     : mNode(NULL),
+#ifdef QCOM_HARDWARE
       mSentFormat(false),
       mSmoothStreaming(false) {
+#else
+      mSentFormat(false) {
+#endif
     mUninitializedState = new UninitializedState(this);
     mLoadedToIdleState = new LoadedToIdleState(this);
     mIdleToExecutingState = new IdleToExecutingState(this);
@@ -396,8 +404,9 @@ ACodec::ACodec()
     mExecutingToIdleState = new ExecutingToIdleState(this);
     mIdleToLoadedState = new IdleToLoadedState(this);
     mFlushingState = new FlushingState(this);
+#ifdef QCOM_HARDWARE
     mFlushingOutputState = new FlushingOutputState(this);
-
+#endif
     mPortEOS[kPortIndexInput] = mPortEOS[kPortIndexOutput] = false;
     mInputEOSResult = OK;
 
@@ -574,10 +583,12 @@ status_t ACodec::allocateOutputBuffersFromNativeWindow() {
         OMX_U32 newBufferCount = def.nBufferCountMin + minUndequeuedBufs;
         def.nBufferCountActual = newBufferCount;
 
+#ifdef QCOM_HARDWARE
         //Keep an extra buffer for smooth streaming
         if (mSmoothStreaming) {
             def.nBufferCountActual += 1;
         }
+#endif
 
         err = mOMX->setParameter(
                 mNode, OMX_IndexParamPortDefinition, &def, sizeof(def));
@@ -588,10 +599,12 @@ status_t ACodec::allocateOutputBuffersFromNativeWindow() {
             return err;
         }
 
+#ifdef QCOM_HARDWARE
         if (mSmoothStreaming) {
             //Copy the final port definitio
              memcpy(&mOutputPortDef, &def, sizeof(def));
         }
+#endif
     }
 
     err = native_window_set_buffer_count(
@@ -615,7 +628,7 @@ status_t ACodec::allocateOutputBuffersFromNativeWindow() {
     }
 #endif
 
-    ALOGV("[%s] Allocating %lu buffers from a native window of size %lu on "
+    LOGV("[%s] Allocating %lu buffers from a native window of size %lu on "
          "output port",
          mComponentName.c_str(), def.nBufferCountActual, def.nBufferSize);
 
@@ -1192,7 +1205,11 @@ status_t ACodec::setVideoFormatOnPort(
 
     CHECK_EQ(err, (status_t)OK);
 
-    if (portIndex == kPortIndexInput && !mSmoothStreaming) {
+    if (portIndex == kPortIndexInput
+#ifdef QCOM_HARDWARE
+            && !mSmoothStreaming
+#endif
+            ) {
         // XXX Need a (much) better heuristic to compute input buffer sizes.
         const size_t X = 64 * 1024;
         if (def.nBufferSize < X) {
@@ -1202,10 +1219,14 @@ status_t ACodec::setVideoFormatOnPort(
 
     CHECK_EQ((int)def.eDomain, (int)OMX_PortDomainVideo);
 
+#ifdef QCOM_HARDWARE
     if (!mSmoothStreaming) {
+#endif
         video_def->nFrameWidth = width;
         video_def->nFrameHeight = height;
+#ifdef QCOM_HARDWARE
     }
+#endif
 
     if (portIndex == kPortIndexInput) {
         video_def->eCompressionFormat = compressionFormat;
@@ -1248,7 +1269,7 @@ bool ACodec::allYourBuffersAreBelongToUs(
 
         if (info->mStatus != BufferInfo::OWNED_BY_US
                 && info->mStatus != BufferInfo::OWNED_BY_NATIVE_WINDOW) {
-            ALOGV("[%s] Buffer %p on port %ld still has status %d",
+            LOGE("[%s] Buffer %p on port %ld still has status %d",
                     mComponentName.c_str(),
                     info->mBufferID, portIndex, info->mStatus);
             return false;
@@ -1936,8 +1957,10 @@ bool ACodec::BaseState::onOMXFillBufferDone(
                     new AMessage(kWhatOutputBufferDrained, mCodec->id());
 
                 reply->setPointer("buffer-id", info->mBufferID);
-                reply->setInt32("flags", flags);
 
+#ifdef QCOM_HARDWARE
+                reply->setInt32("flags", flags);
+#endif
                 notify->setMessage("reply", reply);
 
                 notify->post();
@@ -2434,11 +2457,20 @@ bool ACodec::ExecutingState::onOMXEvent(
             if (data2 == 0 || data2 == OMX_IndexParamPortDefinition) {
                 LOGV("Flush output port before disable");
                 CHECK_EQ(mCodec->mOMX->sendCommand(
+#ifdef QCOM_HARDWARE
                         mCodec->mNode, OMX_CommandFlush, kPortIndexOutput),
+#else
+                            mCodec->mNode,
+                            OMX_CommandPortDisable, kPortIndexOutput),
+#endif
                      (status_t)OK);
 
+#ifdef QCOM_HARDWARE
                 mCodec->changeState(mCodec->mFlushingOutputState);
-
+#else
+                mCodec->freeOutputBuffersNotOwnedByComponent();
+                mCodec->changeState(mCodec->mOutputPortSettingsChangedState);
+#endif
             } else if (data2 == OMX_IndexConfigCommonOutputCrop) {
                 mCodec->mSentFormat = false;
             } else {
@@ -2855,6 +2887,7 @@ void ACodec::FlushingState::changeStateIfWeOwnAllBuffers() {
     }
 }
 
+#ifdef QCOM_HARDWARE
 ////////////////////////////////////////////////////////////////////////////////
 
 ACodec::FlushingOutputState::FlushingOutputState(ACodec *codec)
@@ -2975,5 +3008,6 @@ void ACodec::FlushingOutputState::changeStateIfWeOwnAllBuffers() {
         mCodec->changeState(mCodec->mOutputPortSettingsChangedState);
     }
 }
+#endif
 
 }  // namespace android

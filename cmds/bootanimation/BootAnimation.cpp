@@ -471,22 +471,13 @@ bool BootAnimation::movie()
     for (int i=0 ; i<pcount && !exitPending() ; i++) {
         const Animation::Part& part(animation.parts[i]);
         const size_t fcount = part.frames.size();
-#ifndef CACHE_BOOTANIM
-        const int noTextureCache = ((animation.width * animation.height * fcount) >
-                                 48 * 1024 * 1024) ? 1 : 0;
-#endif
-
         glBindTexture(GL_TEXTURE_2D, 0);
 
         for (int r=0 ; !part.count || r<part.count ; r++) {
             for (int j=0 ; j<fcount && !exitPending(); j++) {
                 const Animation::Frame& frame(part.frames[j]);
 
-#ifndef CACHE_BOOTANIM
-                if (r > 0 && !noTextureCache) {
-#else
-		if (r > 0) {
-#endif
+                if (r > 0) {
                     glBindTexture(GL_TEXTURE_2D, frame.tid);
                 } else {
                     if (part.count != 1) {
@@ -521,20 +512,12 @@ bool BootAnimation::movie()
                 long wait = ns2us(frameDuration);
                 if (wait > 0)
                     usleep(wait);
-#ifndef CACHE_BOOTANIM
-                if (noTextureCache)
-                    glDeleteTextures(1, &frame.tid);
-#endif
             }
             usleep(part.pause * ns2us(frameDuration));
         }
 
         // free the textures for this part
-#ifndef CACHE_BOOTANIM
-        if (part.count != 1 && !noTextureCache) {
-#else
-	if (part.count != 1) {
-#endif
+        if (part.count != 1) {
             for (int j=0 ; j<fcount ; j++) {
                 const Animation::Frame& frame(part.frames[j]);
                 glDeleteTextures(1, &frame.tid);

@@ -1010,6 +1010,16 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             if      (navBarOverride.equals("1")) mHasNavigationBar = false;
             else if (navBarOverride.equals("0")) mHasNavigationBar = true;
         }
+        
+        if (mNavBarFirstBootFlag){
+        	mHasNavigationBar = (showByDefault == 1);
+        	mNavBarFirstBootFlag = false;
+        	// at first boot up, we need to make sure navbar gets created (or obey framework setting).  
+        	// this should quickly get over-ridden by the settings observer if it was
+        	// disabled by the user.
+        }
+        if(!mStatusBarCanHide)
+            mHasNavigationBar = false;
 
         if (mHasNavigationBar) {
             mNavigationBarHeight = Settings.System.getInt(

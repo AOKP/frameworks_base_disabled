@@ -34,7 +34,9 @@
 #include <media/stagefright/MetaData.h>
 #include <media/IStreamSource.h>
 #include <utils/KeyedVector.h>
+#ifdef QCOM_HARDWARE
 #include <cutils/properties.h>
+#endif
 
 namespace android {
 
@@ -309,6 +311,7 @@ status_t ATSParser::Program::parseProgramMap(ABitReader *br) {
         // The only case we can recover from is if we have two streams
         // and they switched PIDs.
         bool success = false;
+#ifdef QCOM_HARDWARE
         bool bDiscontinuityOn = false;
         char value[PROPERTY_VALUE_MAX];
         if (property_get("httplive.enable.discontinuity", value, NULL) &&
@@ -338,8 +341,13 @@ status_t ATSParser::Program::parseProgramMap(ABitReader *br) {
             }
             success = true;
         }
+#endif
 
-        if (!success && mStreams.size() == 2 && infos.size() == 2) {
+        if (
+#ifdef QCOM_HARDWARE
+                !success &&
+#endif
+                mStreams.size() == 2 && infos.size() == 2) {
             const StreamInfo &info1 = infos.itemAt(0);
             const StreamInfo &info2 = infos.itemAt(1);
 

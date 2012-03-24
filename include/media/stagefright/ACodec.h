@@ -22,7 +22,9 @@
 #include <android/native_window.h>
 #include <media/IOMX.h>
 #include <media/stagefright/foundation/AHierarchicalStateMachine.h>
+#ifdef QCOM_HARDWARE
 #include <OMX_Component.h>
+#endif
 
 namespace android {
 
@@ -61,7 +63,9 @@ private:
     struct ExecutingToIdleState;
     struct IdleToLoadedState;
     struct FlushingState;
+#ifdef QCOM_HARDWARE
     struct FlushingOutputState;
+#endif
 
     enum {
         kWhatSetup                   = 'setu',
@@ -105,7 +109,9 @@ private:
     sp<ExecutingToIdleState> mExecutingToIdleState;
     sp<IdleToLoadedState> mIdleToLoadedState;
     sp<FlushingState> mFlushingState;
+#ifdef QCOM_HARDWARE
     sp<FlushingOutputState> mFlushingOutputState;
+#endif
 
     AString mComponentName;
     sp<IOMX> mOMX;
@@ -178,10 +184,12 @@ private:
 
     void signalError(OMX_ERRORTYPE error = OMX_ErrorUndefined);
 
+#ifdef QCOM_HARDWARE
     //Smooth streaming related
     status_t InitSmoothStreaming();
     OMX_PARAM_PORTDEFINITIONTYPE mOutputPortDef;
     bool mSmoothStreaming;
+#endif
 
     DISALLOW_EVIL_CONSTRUCTORS(ACodec);
 };

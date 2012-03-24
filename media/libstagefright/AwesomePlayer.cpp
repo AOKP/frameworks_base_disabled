@@ -1473,7 +1473,14 @@ status_t AwesomePlayer::initVideoDecoder(uint32_t flags) {
         flags |= OMXCodec::kEnableGrallocUsageProtected;
     }
 #endif
-    ALOGV("initVideoDecoder flags=0x%x", flags);
+
+    property_get("sys.media.vdec.sw", value, "0");
+    if (atoi(value)) {
+        LOGW("Software Codec is preferred for Video");
+        flags |= OMXCodec::kPreferSoftwareCodecs;
+    }
+
+    LOGV("initVideoDecoder flags=0x%x", flags);
     mVideoSource = OMXCodec::Create(
             mClient.interface(), mVideoTrack->getFormat(),
             false, // createEncoder

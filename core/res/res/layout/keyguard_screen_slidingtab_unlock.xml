@@ -165,12 +165,21 @@
         android:layout_height="302dip">
 
         <com.android.internal.widget.SlidingTab
+            android:id="@+id/unlock_widget2"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="155dip"
+            />
+
+        <com.android.internal.widget.SlidingTab
             android:id="@+id/unlock_widget"
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_alignParentBottom="true"
-            android:layout_marginBottom="80dip"
+            android:layout_marginBottom="60dip"
             />
 
         <TextView

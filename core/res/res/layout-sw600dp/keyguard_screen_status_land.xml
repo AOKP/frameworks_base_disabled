@@ -112,6 +112,8 @@
 
     <ViewFlipper
         android:id="@+id/calendar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:inAnimation="@anim/calendar_fadein"
         android:outAnimation="@anim/calendar_fadeout"
 	android:layout_marginTop="10dip"

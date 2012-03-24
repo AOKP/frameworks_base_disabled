@@ -202,10 +202,12 @@ status_t AudioRecord::set(
     int frameSizeInBytes = 0;
     if (format ==AUDIO_FORMAT_AMR_NB) {
         frameSizeInBytes = channelCount * 32; // Full rate framesize
+#ifdef QCOM_HARDWARE
     } else if (format ==AUDIO_FORMAT_EVRC) {
         frameSizeInBytes = channelCount * 23; // Full rate framesize
     } else if (format ==AUDIO_FORMAT_QCELP) {
         frameSizeInBytes = channelCount * 35; // Full rate framesize
+#endif
     } else if (format ==AUDIO_FORMAT_AAC) {
         frameSizeInBytes = 2048;
     } else if ((format ==AUDIO_FORMAT_PCM_16_BIT) || (format ==AUDIO_FORMAT_PCM_8_BIT)) {
@@ -303,11 +305,12 @@ int AudioRecord::frameSize() const
 
     if (format() ==AUDIO_FORMAT_AMR_NB) {
         return channelCount() * 32; // Full rate framesize
+#ifdef QCOM_HARDWARE
     } else if (format() == AUDIO_FORMAT_EVRC) {
         return channelCount() * 23; // Full rate framesize
     } else if (format() == AUDIO_FORMAT_QCELP) {
         return channelCount() * 35; // Full rate framesize
-
+#endif
     } else if (format() == AUDIO_FORMAT_AAC) {
         // Not actual framsize but for variable frame rate AAC encoding,
         // buffer size is treated as a frame size

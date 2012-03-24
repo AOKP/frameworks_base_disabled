@@ -559,13 +559,10 @@ public class PhoneStatusBar extends StatusBar {
     }
 
     private int checkMinMax(int brightness) {
-        int min = 0;
-        int max = 255;
-
-        if (min > brightness) // brightness < 0x1E
-            return min;
-        else if (max < brightness) { // brightness > 0xFF
-            return max;
+        if (0x1E > brightness) // brightness < 0x1E
+            return 0x1E;
+        else if (0xFF < brightness) { // brightness > 0xFF
+            return 0xFF;
         }
 
         return brightness;

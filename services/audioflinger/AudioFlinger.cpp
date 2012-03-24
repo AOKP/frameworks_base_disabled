@@ -3221,6 +3221,7 @@ AudioFlinger::ThreadBase::TrackBase::TrackBase(
    {
        bufferSize = frameCount*channelCount*32; // full rate frame size
    }
+#ifdef QCOM_HARDWARE
    else if (format == AUDIO_FORMAT_EVRC)
    {
        bufferSize = frameCount*channelCount*23; // full rate frame size
@@ -3229,6 +3230,7 @@ AudioFlinger::ThreadBase::TrackBase::TrackBase(
    {
        bufferSize = frameCount*channelCount*35; // full rate frame size
    }
+#endif
    else if (format == AUDIO_FORMAT_AAC)
    {
        bufferSize = frameCount*2048; // full rate frame size
@@ -3261,6 +3263,7 @@ AudioFlinger::ThreadBase::TrackBase::TrackBase(
                     {
                       memset(mBuffer, 0, frameCount*channelCount*32); // full rate frame size
                     }
+#ifdef QCOM_HARDWARE
                     else if (format == AUDIO_FORMAT_EVRC)
                     {
                       memset(mBuffer, 0, frameCount*channelCount*23); // full rate frame size
@@ -3269,6 +3272,7 @@ AudioFlinger::ThreadBase::TrackBase::TrackBase(
                     {
                       memset(mBuffer, 0, frameCount*channelCount*35); // full rate frame size
                     }
+#endif
                     else if (format == AUDIO_FORMAT_AAC)
                     {
                       memset(mBuffer, 0, frameCount*2048); // full rate frame size

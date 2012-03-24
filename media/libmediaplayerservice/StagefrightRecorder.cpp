@@ -868,6 +868,7 @@ sp<MediaSource> StagefrightRecorder::createAudioSource() {
             tunneledSource = true;
             tunnelMime = MEDIA_MIMETYPE_AUDIO_AMR_NB;
         }
+#ifdef QCOM_HARDWARE
         else if ( mAudioEncoder == AUDIO_ENCODER_QCELP &&
             result.getInt(String8("QCELP"),value) == NO_ERROR ) {
             tunneledSource = true;
@@ -878,6 +879,7 @@ sp<MediaSource> StagefrightRecorder::createAudioSource() {
             tunneledSource = true;
             tunnelMime = MEDIA_MIMETYPE_AUDIO_EVRC;
         }
+#endif
     }
 
     if ( tunneledSource ) {

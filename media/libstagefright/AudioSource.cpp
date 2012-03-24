@@ -99,6 +99,7 @@ AudioSource::AudioSource( int inputSource, const sp<MetaData>& meta )
         frameSize = AMR_FRAMESIZE;
         mMaxBufferSize = AMR_FRAMESIZE*10;
     }
+#ifdef QCOM_HARDWARE
     else if ( !strcasecmp( mime, MEDIA_MIMETYPE_AUDIO_QCELP ) ) {
         mFormat = AUDIO_FORMAT_QCELP;
         frameSize = QCELP_FRAMESIZE;
@@ -109,6 +110,7 @@ AudioSource::AudioSource( int inputSource, const sp<MetaData>& meta )
         frameSize = EVRC_FRAMESIZE;
         mMaxBufferSize = EVRC_FRAMESIZE*10;
     }
+#endif
     else {
         CHECK(0);
     }
@@ -428,14 +430,17 @@ int64_t AudioSource::bufferDurationUs( ssize_t n ) {
     if (mFormat == AUDIO_FORMAT_AMR_NB) {
         dataDurationMs = (n/AMR_FRAMESIZE) * 20; //ms
     }
+#ifdef QCOM_HARDWARE
     else if (mFormat == AUDIO_FORMAT_EVRC) {
        dataDurationMs = (n/EVRC_FRAMESIZE) * 20; //ms
     }
     else if (mFormat == AUDIO_FORMAT_QCELP) {
         dataDurationMs = (n/QCELP_FRAMESIZE) * 20; //ms
     }
-    else
+#endif
+    else {
         CHECK(0);
+    }
 
     return dataDurationMs*1000LL;
 }

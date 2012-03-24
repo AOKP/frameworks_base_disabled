@@ -2657,6 +2657,24 @@ public final class Settings {
          * 
          * @hide
          */
+        public static final String LOCKSCREEN_CALENDAR_RANGE = "lockscreen_calendar_range";
+        
+        /**
+         * 
+         * @hide
+         */
+        public static final String LOCKSCREEN_CALENDAR_HIDE_ONGOING = "lockscreen_calendar_hide_ongoing";
+        
+        /**
+         * 
+         * @hide
+         */
+        public static final String LOCKSCREEN_CALENDAR_USE_COLORS = "lockscreen_calendar_use_colors";
+        
+        /**
+         * 
+         * @hide
+         */
         public static final String LOCKSCREEN_CALENDAR_INTERVAL = "lockscreen_calendar_interval";
         
         /**

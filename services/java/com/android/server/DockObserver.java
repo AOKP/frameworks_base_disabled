@@ -139,7 +139,7 @@ class DockObserver extends UEventObserver {
 
                         if ((Settings.Secure.getInt(cr,
                                 Settings.Secure.DEVICE_PROVISIONED, 0) == 0)
-                                && (mDockState != Intent.EXTRA_DOCK_STATE_EOS_KB)) {
+                                && (mDockState != Intent.EXTRA_DOCK_STATE_TF101_KB)) {
                             Slog.i(TAG, "Device not provisioned, skipping dock broadcast");
                             return;
                         }

@@ -587,8 +587,6 @@ public class KeyguardUpdateMonitor {
             // Notify listener of the current state
             callback.onRefreshBatteryInfo(shouldShowBatteryInfo(),isPluggedIn(mBatteryStatus),
                     mBatteryStatus.level);
-            callback.onRefreshWeatherInfo(mWeather);
-            callback.onRefreshCalendarInfo();
             callback.onTimeChanged();
             callback.onRingerModeChanged(mRingMode);
             callback.onPhoneStateChanged(mPhoneState);

@@ -248,7 +248,7 @@ class KeyguardStatusViewManager implements OnClickListener {
         // Required to get Marquee to work.
         final View scrollableViews[] = {
                 mCarrierView, mDateView, mStatus1View, mOwnerInfoView,
-                mAlarmStatusView
+                mAlarmStatusView, mWeatherView, mCalendarView
         };
         for (View v : scrollableViews) {
             if (v != null) {
@@ -1041,7 +1041,6 @@ class KeyguardStatusViewManager implements OnClickListener {
             if (beginDay == today) { // today
                 dayString = "";
             } else if (today + 1 == beginDay || (today >= 365 && beginDay == 1)) { // tomorrow
-
                 dayString = ", Tomorrow";
             } else { // another day of week
                 dayString = ", "

@@ -20,7 +20,6 @@ import static android.telephony.SmsMessage.ENCODING_16BIT;
 import static android.telephony.SmsMessage.MAX_USER_DATA_BYTES;
 import static android.telephony.SmsMessage.MAX_USER_DATA_BYTES_WITH_HEADER;
 
-import android.os.SystemProperties;
 import android.util.Log;
 
 import android.telephony.SmsMessage;
@@ -879,7 +878,11 @@ public final class BearerData {
             paramBits -= EXPECTED_PARAM_SIZE;
             decodeSuccess = true;
             bData.messageType = inStream.read(4);
-            if ((SystemProperties.get("ro.ril.samsung_cdma").equals("true")) && !("epic".equals(SystemProperties.get("ro.product.device")))) {
+            // Some Samsung CDMAphones parses messageId differently than other devices
+            // fix it here so that incoming sms works correctly
+            boolean hasSamsungCDMAAlternateMessageIDEncoding = Resources.getSystem()
+                    .getBoolean(com.android.internal.R.bool.config_smsSamsungCdmaAlternateMessageIDEncoding);
+            if (hasSamsungCDMAAlternateMessageIDEncoding) {
                 inStream.skip(4);
                 bData.messageId = inStream.read(8) << 8;
                 bData.messageId |= inStream.read(8);

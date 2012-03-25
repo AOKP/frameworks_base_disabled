@@ -550,6 +550,11 @@ class KeyguardStatusViewManager implements OnClickListener {
                     // Battery is low
                     string = getContext().getString(R.string.lockscreen_low_battery);
                     icon.value = BATTERY_LOW_ICON;
+                    if (mLockAlwaysBattery) {
+                        // Show battery at low percent	
+                        string = getContext().getString(R.string.lockscreen_always_battery,
+                        icon.value = BATTERY_LOW_ICON);
+                    }
                 } else {
                     // Always show battery
                     string = getContext().getString(R.string.lockscreen_always_battery,
@@ -586,6 +591,11 @@ class KeyguardStatusViewManager implements OnClickListener {
                     // Battery is low
                     string = getContext().getString(R.string.lockscreen_low_battery);
                     icon.value = BATTERY_LOW_ICON;
+                    if (mLockAlwaysBattery) {
+                        // Show battery at low percent	
+                        string = getContext().getString(R.string.lockscreen_always_battery,
+                        icon.value = BATTERY_LOW_ICON);
+                    }
                 } else {
                     // Always show battery
                     string = getContext().getString(R.string.lockscreen_always_battery,

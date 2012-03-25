@@ -244,10 +244,6 @@ class KeyguardStatusViewManager implements OnClickListener {
 
         resetStatusInfo();
         refreshDate();
-        updateOwnerInfo();
-        updateWeatherInfo();
-        updateCalendar();
-        updateColors();
 
         // Required to get Marquee to work.
         final View scrollableViews[] = {
@@ -347,11 +343,11 @@ class KeyguardStatusViewManager implements OnClickListener {
                     break;
                 case CALENDAR_INFO:
                     updateCalendar();
+                    updateColors();
                     break;
                 default:
                     ;
             }
-            updateColors();
         }
     }
 

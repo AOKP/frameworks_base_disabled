@@ -73,8 +73,8 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
     public static final int LAYOUT_STOCK = 2;
     public static final int LAYOUT_QUAD = 6;
     public static final int LAYOUT_OCTO = 8;
-    public static final int LAYOUT_AOSP = 0;
-    public static final int LAYOUT_HONEY = 1;
+    public static final int LAYOUT_AOSP = 1;
+    public static final int LAYOUT_HONEY = 0;
     
     private boolean mLockscreen4Tab = false || (Settings.System.getInt(
 			mContext.getContentResolver(),

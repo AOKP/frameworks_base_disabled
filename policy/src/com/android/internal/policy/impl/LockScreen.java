@@ -74,6 +74,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
     public static final int LAYOUT_QUAD = 6;
     public static final int LAYOUT_OCTO = 8;
     public static final int LAYOUT_AOSP = 0;
+    public static final int LAYOUT_HONEY = 1;
     
     private boolean mLockscreen4Tab = false || (Settings.System.getInt(
 			mContext.getContentResolver(),
@@ -204,6 +205,13 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 				getContext().startActivity(callIntent);
 				mCallback.goToUnlockScreen();
 			} else if (whichHandle == SlidingTab.OnTriggerListener.RIGHT_HANDLE) {
+				Intent intent = new Intent(Intent.ACTION_MAIN);
+                intent.addCategory(Intent.CATEGORY_LAUNCHER);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                        | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+                intent.setClassName("com.android.mms", "com.android.mms.ui.ConversationList");
+                mContext.startActivity(intent);
+                mCallback.goToUnlockScreen();
 				if (mCustomAppActivity != null) {
 					runActivity(mCustomAppActivity);
 				}
@@ -652,6 +660,14 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
                             true);
                 else 
                     inflater.inflate(R.layout.keyguard_screen_slidingtab_unlock, this,
+                            true);
+                break;
+            case LAYOUT_HONEY:
+            	if (landscape)
+                    inflater.inflate(R.layout.keyguard_screen_honeycomb_unlock_land, this,
+                            true);
+                else 
+                    inflater.inflate(R.layout.keyguard_screen_honeycomb_unlock, this,
                             true);
                 break;
                 

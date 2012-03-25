@@ -84,8 +84,8 @@ public class WaveView extends View implements ValueAnimator.AnimatorUpdateListen
     private ArrayList<DrawableHolder> mDrawables = new ArrayList<DrawableHolder>(3);
     private ArrayList<DrawableHolder> mLightWaves = new ArrayList<DrawableHolder>(WAVE_COUNT);
     private boolean mFingerDown = false;
-    private float mRingRadius = 182.0f; // Radius of bitmap ring. Used to snap halo to it
-    private int mSnapRadius = 136; // minimum threshold for drag unlock
+    private float mRingRadius = 290.0f; // Radius of bitmap ring. Used to snap halo to it
+    private int mSnapRadius = 244; // minimum threshold for drag unlock
     private int mWaveCount = WAVE_COUNT;  // number of waves
     private long mWaveTimerDelay = WAVE_DELAY;
     private int mCurrentWave = 0;
@@ -268,7 +268,7 @@ public class WaveView extends View implements ValueAnimator.AnimatorUpdateListen
                 mUnlockDefault.removeAnimationFor("scaleX");
                 mUnlockDefault.removeAnimationFor("scaleY");
                 mUnlockDefault.removeAnimationFor("alpha");
-                mUnlockDefault.setX(mLockCenterX + 182);
+                mUnlockDefault.setX(mLockCenterX + 290);
                 mUnlockDefault.setY(mLockCenterY);
                 mUnlockDefault.setScaleX(0.1f);
                 mUnlockDefault.setScaleY(0.1f);

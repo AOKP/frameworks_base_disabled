@@ -109,7 +109,7 @@
 	    android:layout_marginRight="@dimen/keyguard_lockscreen_status_line_font_right_margin"
 	    android:singleLine="true"
 	    android:gravity="right"
-	    android:ellipsize="marquee"
+	    android:ellipsize="end"
 	    android:textAppearance="?android:attr/textAppearanceMedium"
 	    android:textSize="@dimen/keyguard_lockscreen_status_line_font_size"
 	    android:drawablePadding="4dip" />
@@ -215,7 +215,7 @@
         layout="@layout/keyguard_transport_control"
         android:layout_row="0"
         android:layout_column="0"
-        android:layout_rowSpan="7"
+        android:layout_rowSpan="6"
         android:layout_columnSpan="1"
         android:layout_gravity="fill"
         android:layout_width="0dip"
@@ -225,7 +225,7 @@
     <!-- Area to overlay FaceLock -->
     <TextView android:id="@+id/faceLockAreaView"
         android:visibility="invisible"
-        android:layout_row="8"
+        android:layout_row="7"
         android:layout_column="0"
         android:layout_rowSpan="2"
         android:layout_columnSpan="1"

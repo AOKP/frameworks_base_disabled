@@ -109,7 +109,7 @@
 	    android:layout_marginRight="@dimen/keyguard_lockscreen_status_line_font_right_margin"
 	    android:singleLine="true"
 	    android:gravity="right"
-	    android:ellipsize="marquee"
+	    android:ellipsize="end"
 	    android:textAppearance="?android:attr/textAppearanceMedium"
 	    android:textSize="@dimen/keyguard_lockscreen_status_line_font_size"
 	    android:drawablePadding="4dip" />

@@ -170,7 +170,7 @@
         />
 
     <!-- Column 1 -->
-    <Space android:layout_width="64dip" android:gravity="fill_vertical" android:layout_rowSpan="10" />
+    <Space android:layout_width="16dip" android:gravity="fill_vertical" android:layout_rowSpan="10" />
 
     <!-- Column 2 -->
     <com.android.internal.widget.SlidingTab

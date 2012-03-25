@@ -1366,6 +1366,11 @@ public class KeyguardViewMediator implements KeyguardViewCallback,
     public void onRefreshWeatherInfo(Intent weatherIntent) {
         // ignored
     }
+    
+    /** {@inheritDoc} */
+    public void onRefreshCalendarInfo() {
+        // ignored
+    }
 
     /** {@inheritDoc} */
     public void onRefreshCarrierInfo(CharSequence plmn, CharSequence spn) {

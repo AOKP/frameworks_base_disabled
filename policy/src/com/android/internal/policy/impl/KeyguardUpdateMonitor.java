@@ -104,6 +104,7 @@ public class KeyguardUpdateMonitor {
     private static final int MSG_CLOCK_VISIBILITY_CHANGED = 307;
     private static final int MSG_DEVICE_PROVISIONED = 308;
     private static final int MSG_WEATHER_CHANGED = 309;
+    private static final int MSG_CALENDAR_CHANGED = 310;
 
     /**
      * When we receive a
@@ -208,6 +209,8 @@ public class KeyguardUpdateMonitor {
                     case MSG_WEATHER_CHANGED:
                         handleWeatherChanged((Intent)msg.obj);
                         break;
+                    case MSG_CALENDAR_CHANGED:
+                        handleCalendarChanged();
                 }
             }
         };
@@ -304,6 +307,17 @@ public class KeyguardUpdateMonitor {
                 }
             }
         }, filter);
+
+        // we need another filter & receiver, to handle calendar changes
+        // it can't be done in the above one because of the data attribute
+        IntentFilter calendarFilter = new IntentFilter(Intent.ACTION_PROVIDER_CHANGED);
+        calendarFilter.addDataScheme("content");
+        calendarFilter.addDataAuthority("com.android.calendar", null);
+        context.registerReceiver(new BroadcastReceiver() {
+            public void onReceive(Context context, Intent intent) {
+                mHandler.sendMessage(mHandler.obtainMessage(MSG_CALENDAR_CHANGED));
+            }
+        }, calendarFilter);
     }
 
     protected void handleDeviceProvisioned() {
@@ -374,6 +388,16 @@ public class KeyguardUpdateMonitor {
         mWeather = weatherIntent;
         for (int i = 0; i < mInfoCallbacks.size(); i++) {
             mInfoCallbacks.get(i).onRefreshWeatherInfo(weatherIntent);
+        }
+    }
+
+    /**
+     * Handle {@link #MSG_CALENDAR_CHANGED}
+     */
+    private void handleCalendarChanged() {
+        if (DEBUG) Log.d(TAG, "handleCalendarChanged");
+        for (int i = 0; i < mInfoCallbacks.size(); i++) {
+            mInfoCallbacks.get(i).onRefreshCalendarInfo();
         }
     }
 
@@ -508,6 +532,7 @@ public class KeyguardUpdateMonitor {
     interface InfoCallback {
         void onRefreshBatteryInfo(boolean showBatteryInfo, boolean pluggedIn, int batteryLevel);
         void onRefreshWeatherInfo(Intent weatherIntent);
+        void onRefreshCalendarInfo();
         void onTimeChanged();
 
         /**
@@ -563,6 +588,7 @@ public class KeyguardUpdateMonitor {
             callback.onRefreshBatteryInfo(shouldShowBatteryInfo(),isPluggedIn(mBatteryStatus),
                     mBatteryStatus.level);
             callback.onRefreshWeatherInfo(mWeather);
+            callback.onRefreshCalendarInfo();
             callback.onTimeChanged();
             callback.onRingerModeChanged(mRingMode);
             callback.onPhoneStateChanged(mPhoneState);

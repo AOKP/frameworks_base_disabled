@@ -74,6 +74,7 @@ class KeyguardStatusViewManager implements OnClickListener {
     private static final int OWNER_INFO = 14;
     private static final int BATTERY_INFO = 15;
     private static final int WEATHER_INFO = 16;
+    private static final int CALENDAR_INFO = 17;
     private static final int COLOR_WHITE = 0xFFFFFFFF;
 
     public static final String EXTRA_CITY = "city";
@@ -247,7 +248,7 @@ class KeyguardStatusViewManager implements OnClickListener {
         updateWeatherInfo();
         updateCalendar();
         updateColors();
-        
+
         // Required to get Marquee to work.
         final View scrollableViews[] = {
                 mCarrierView, mDateView, mStatus1View, mOwnerInfoView,
@@ -344,9 +345,13 @@ class KeyguardStatusViewManager implements OnClickListener {
                 case WEATHER_INFO:
                     updateWeatherInfo();
                     break;
+                case CALENDAR_INFO:
+                    updateCalendar();
+                    break;
                 default:
                     ;
             }
+            updateColors();
         }
     }
 
@@ -467,44 +472,44 @@ class KeyguardStatusViewManager implements OnClickListener {
         if (calendarSources == null)
             calendarSources = "";
         try {
-            if (mCalendarEvents == null)
-                getCalendarEvents(resolver, calendarSources,
-                        multipleEventsEnabled, hideOnGoing, range);
-            
-            if (calendarEventsEnabled && mCalendarView != null) {
-                mCalendarView.removeAllViews();
-                Log.d(TAG, "we have " + String.valueOf(mCalendarEvents.size()) + " event(s)");
+            getCalendarEvents(resolver, calendarSources, multipleEventsEnabled, hideOnGoing, range);
 
-                for (EventBundle e : mCalendarEvents) {
-                    TextView tv = new TextView(getContext());
-                    tv.setText(e.title
-                            + (!e.dayString.isEmpty() ? e.dayString : "")
-                            + ((e.allDay) ? " all-day " : " at "
-                                    + DateFormat.format(
-                                            DateFormat.is24HourFormat(getContext()) ? "kk:mm"
-                                                    : "hh:mm a", e.begin).toString())
-                            + (!e.location.isEmpty() ? " (" + e.location + ")" : ""));
-                    tv.setTextAppearance(getContext(), android.R.attr.textAppearanceMedium);
-                    tv.setWidth((int) (findViewById(R.id.time).getWidth() * 1.2));
-                    tv.setSingleLine(true);
-                    tv.setEllipsize(android.text.TextUtils.TruncateAt.MIDDLE);
-                    tv.setGravity(android.view.Gravity.RIGHT);
-                    if (mCalendarUsingColors)
-                        tv.setTextColor(e.color);
-                    mCalendarView.addView(tv);
-                }
-                mCalendarView.setFlipInterval(interval);
-                mCalendarView.setVisibility(View.VISIBLE);
-                mCalendarView.bringChildToFront(mCalendarView.getChildAt(0));
-                if (!multipleEventsEnabled || mCalendarEvents.size() <= 1) {
-                    mCalendarView.stopFlipping();
+            if (mCalendarView != null) {
+                if (calendarEventsEnabled) {
+                    mCalendarView.removeAllViews();
+                    Log.d(TAG, "we have " + String.valueOf(mCalendarEvents.size()) + " event(s)");
+
+                    for (EventBundle e : mCalendarEvents) {
+                        TextView tv = new TextView(getContext());
+                        tv.setText(e.title
+                                + (!e.dayString.isEmpty() ? e.dayString : "")
+                                + ((e.allDay) ? " all-day " : " at "
+                                        + DateFormat.format(
+                                                DateFormat.is24HourFormat(getContext()) ? "kk:mm"
+                                                        : "hh:mm a", e.begin).toString())
+                                + (!e.location.isEmpty() ? " (" + e.location + ")" : ""));
+                        tv.setTextAppearance(getContext(), android.R.attr.textAppearanceMedium);
+                        tv.setWidth((int) (findViewById(R.id.time).getWidth() * 1.2));
+                        tv.setSingleLine(true);
+                        tv.setEllipsize(android.text.TextUtils.TruncateAt.MIDDLE);
+                        tv.setGravity(android.view.Gravity.RIGHT);
+                        if (mCalendarUsingColors)
+                            tv.setTextColor(e.color);
+                        mCalendarView.addView(tv);
+                    }
+                    mCalendarView.setFlipInterval(interval);
+                    mCalendarView.setVisibility(View.VISIBLE);
+                    mCalendarView.bringChildToFront(mCalendarView.getChildAt(0));
+                    if (!multipleEventsEnabled || mCalendarEvents.size() <= 1) {
+                        mCalendarView.stopFlipping();
+                    } else {
+                        Log.d(TAG, "multiple events, flip that shit");
+                        mCalendarView.startFlipping();
+                    }
                 } else {
-                    Log.d(TAG, "multiple events, flip that shit");
-                    mCalendarView.startFlipping();
+                    Log.d(TAG, "hide calendar");
+                    mCalendarView.setVisibility(View.GONE);
                 }
-            } else {
-                Log.d(TAG, "hide calendar");
-                mCalendarView.setVisibility(View.GONE);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -832,6 +837,10 @@ class KeyguardStatusViewManager implements OnClickListener {
         public void onRefreshWeatherInfo(Intent weatherIntent) {
             mWeatherInfo = weatherIntent;
             update(WEATHER_INFO, null);
+        }
+
+        public void onRefreshCalendarInfo() {
+            update(CALENDAR_INFO, null);
         }
 
         public void onTimeChanged() {

@@ -51,6 +51,11 @@ public:
     static AudioResampler* create(int bitDepth, int inChannelCount,
             int32_t sampleRate, int quality=DEFAULT);
 
+#ifdef OMAP_ENHANCEMENT
+    static int32_t checkRate(int32_t outRate, int32_t inRate);
+    virtual int32_t checkCRate(int32_t outRate, int32_t inRate) const;
+#endif
+
     virtual ~AudioResampler();
 
     virtual void init() = 0;

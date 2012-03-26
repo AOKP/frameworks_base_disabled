@@ -44,6 +44,10 @@ public:
             AudioBufferProvider* provider);
     virtual void reset();
 
+    virtual int32_t checkCRate(int32_t outRate, int32_t inRate) const {
+        return 0;
+    }
+
 private:
     void init();
     void resampleMono16(int32_t* out, size_t outFrameCount,

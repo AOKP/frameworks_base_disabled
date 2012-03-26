@@ -1841,7 +1841,11 @@ sp<AudioFlinger::PlaybackThread::Track>  AudioFlinger::PlaybackThread::createTra
         }
     } else {
         // Resampler implementation limits input sampling rate to 2 x output sampling rate.
+#ifdef OMAP_ENHANCEMENT
+        if (AudioResampler::checkRate(mSampleRate, sampleRate)) {
+#else
         if (sampleRate > mSampleRate*2) {
+#endif
             LOGE("Sample rate out of range: %d mSampleRate %d", sampleRate, mSampleRate);
             lStatus = BAD_VALUE;
             goto Exit;
@@ -2778,10 +2782,19 @@ bool AudioFlinger::MixerThread::checkForNewParameters_l()
                     int name = getTrackName_l();
                     if (name < 0) break;
                     mTracks[i]->mName = name;
+#ifdef OMAP_ENHANCEMENT
+                    if (AudioResampler::checkRate(sampleRate(),
+                            mTracks[i]->mCblk->sampleRate)) {
+                        mTracks[i]->mCblk->sampleRate =
+                            AudioResampler::checkRate(sampleRate(),
+                                mTracks[i]->mCblk->sampleRate);
+                    }
+#else
                     // limit track sample rate to 2 x new output sample rate
                     if (mTracks[i]->mCblk->sampleRate > 2 * sampleRate()) {
                         mTracks[i]->mCblk->sampleRate = 2 * sampleRate();
                     }
+#endif
                 }
                 sendConfigEvent_l(AudioSystem::OUTPUT_CONFIG_CHANGED);
             }
@@ -5107,7 +5120,12 @@ bool AudioFlinger::RecordThread::checkForNewParameters_l()
                 if (status == BAD_VALUE &&
                     reqFormat == mInput->stream->common.get_format(&mInput->stream->common) &&
                     reqFormat == AUDIO_FORMAT_PCM_16_BIT &&
+#ifdef OMAP_ENHANCEMENT
+                    !AudioResampler::checkRate(reqSamplingRate,
+                        (int)mInput->stream->common.get_sample_rate(&mInput->stream->common)) &&
+#else
                     ((int)mInput->stream->common.get_sample_rate(&mInput->stream->common) <= (2 * reqSamplingRate)) &&
+#endif
                     (popcount(mInput->stream->common.get_channels(&mInput->stream->common)) < 3) &&
                     (reqChannelCount < 3)) {
                     status = NO_ERROR;
@@ -5574,7 +5592,11 @@ int AudioFlinger::openInput(uint32_t *pDevices,
     // or stereo to mono conversions on 16 bit PCM inputs.
     if (inStream == NULL && status == BAD_VALUE &&
         reqFormat == format && format == AUDIO_FORMAT_PCM_16_BIT &&
+#ifdef OMAP_ENHANCEMENT
+        !AudioResampler::checkRate(reqSamplingRate, samplingRate) &&
+#else
         (samplingRate <= 2 * reqSamplingRate) &&
+#endif
         (popcount(channels) < 3) && (popcount(reqChannels) < 3)) {
         LOGV("openInput() reopening with proposed sampling rate and channels");
         status = inHwDev->open_input_stream(inHwDev, *pDevices, (int *)&format,

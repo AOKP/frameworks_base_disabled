@@ -150,14 +150,14 @@
         />
 
     <!-- Column 1 -->
-    <Space android:layout_width="64dip" android:layout_rowSpan="9" />
+    <Space android:layout_width="16dip" android:gravity="fill_vertical" android:layout_rowSpan="10" />
 
     <!-- Column 2 -->
     <com.android.internal.widget.WaveView
         android:id="@+id/unlock_widget"
         android:layout_width="312dip"
         android:layout_height="match_parent"
-        android:layout_rowSpan="9"
+        android:layout_rowSpan="10"
         />
 
     <!-- Music transport control -->

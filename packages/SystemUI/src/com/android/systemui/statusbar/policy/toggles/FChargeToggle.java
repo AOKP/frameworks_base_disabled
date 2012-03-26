@@ -32,7 +32,7 @@ public class FChargeToggle extends Toggle {
         else
         	setIcon(R.drawable.toggle_fcharge_off);
         IntentFilter f = new IntentFilter();
-        f.addAction("com.liquid.control.F_CHARGE_CHANGED");
+        f.addAction("com.liquid.control.FCHARGE_CHANGED");
         context.registerReceiver(mIntentReceiver, f);
         
     }

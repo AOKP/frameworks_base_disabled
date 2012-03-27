@@ -93,11 +93,7 @@ void Layer::onFirstRef()
     mSurfaceTexture = new SurfaceTextureLayer(mTextureName, this);
     mSurfaceTexture->setFrameAvailableListener(new FrameQueuedListener(this));
     mSurfaceTexture->setSynchronousMode(true);
-#ifdef QCOM_HARDWARE
     mSurfaceTexture->setBufferCountServer(BUFFER_COUNT_SERVER);
-#else
-    mSurfaceTexture->setBufferCountServer(2);
-#endif
 }
 
 Layer::~Layer()
@@ -342,12 +338,11 @@ void Layer::onDraw(const Region& clip) const
         glDisable(GL_TEXTURE_2D);
         glEnable(GL_TEXTURE_EXTERNAL_OES);
     } else {
-        glBindTexture(GL_TEXTURE_2D, mFlinger->getProtectedTexName());
+        glBindTexture(GL_TEXTURE_EXTERNAL_OES, mFlinger->getProtectedTexName());
         glMatrixMode(GL_TEXTURE);
         glLoadIdentity();
         glMatrixMode(GL_MODELVIEW);
-        glDisable(GL_TEXTURE_EXTERNAL_OES);
-        glEnable(GL_TEXTURE_2D);
+        glEnable(GL_TEXTURE_EXTERNAL_OES);
     }
 
 #ifdef QCOM_HARDWARE
@@ -470,17 +465,7 @@ void Layer::lockPageFlip(bool& recomputeVisibleRegions)
             mFlinger->signalEvent();
         }
 
-#ifdef QCOM_HARDWARE
-        // While calling updateTexImage() from SurfaceFlinger, let it know
-        // by passing an extra parameter
-        // This will be true always.
-
-        bool isComposition = true;
-
-        if (mSurfaceTexture->updateTexImage(isComposition) < NO_ERROR) {
-#else
         if (mSurfaceTexture->updateTexImage() < NO_ERROR) {
-#endif
             // something happened!
             recomputeVisibleRegions = true;
             return;

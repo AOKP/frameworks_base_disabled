@@ -70,12 +70,12 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
     private static final int WAIT_FOR_ANIMATION_TIMEOUT = 0;
     private static final int STAY_ON_WHILE_GRABBED_TIMEOUT = 30000;
     
-    public static final int LAYOUT_STOCK = 2;
+    public static final int LAYOUT_STOCK = 0;
+    public static final int LAYOUT_AOSP = 1;
+    public static final int LAYOUT_HONEY = 2;
     public static final int LAYOUT_QUAD = 6;
     public static final int LAYOUT_OCTO = 8;
-    public static final int LAYOUT_AOSP = 1;
-    public static final int LAYOUT_HONEY = 0;
-    
+
     private boolean mLockscreen4Tab = false || (Settings.System.getInt(
 			mContext.getContentResolver(),
 			Settings.System.LOCKSCREEN_4TAB, 0) == 1);
@@ -637,22 +637,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
         switch (mLockscreenTargets) {
             default:
             case LAYOUT_STOCK:
-            case LAYOUT_QUAD:
-                if (landscape)
-                    inflater.inflate(R.layout.keyguard_screen_tab_unlock_land, this,
-                            true);
-                else
-                    inflater.inflate(R.layout.keyguard_screen_tab_unlock, this,
-                            true);
-                break;
-            case LAYOUT_OCTO:
-                if (landscape)
-                    inflater.inflate(R.layout.keyguard_screen_tab_octounlock_land, this,
-                            true);
-                else
-                    inflater.inflate(R.layout.keyguard_screen_tab_octounlock, this,
-                            true);
-                break;
+
             case LAYOUT_AOSP:
             	if (landscape)
                     inflater.inflate(R.layout.keyguard_screen_slidingtab_unlock_land, this,
@@ -669,7 +654,22 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
                     inflater.inflate(R.layout.keyguard_screen_honeycomb_unlock, this,
                             true);
                 break;
-                
+            case LAYOUT_QUAD:
+                if (landscape)
+                    inflater.inflate(R.layout.keyguard_screen_tab_unlock_land, this,
+                            true);
+                else
+                    inflater.inflate(R.layout.keyguard_screen_tab_unlock, this,
+                            true);
+                break;
+            case LAYOUT_OCTO:
+                if (landscape)
+                    inflater.inflate(R.layout.keyguard_screen_tab_octounlock_land, this,
+                            true);
+                else
+                    inflater.inflate(R.layout.keyguard_screen_tab_octounlock, this,
+                            true);
+                break;
         }
 
         mStatusViewManager = new KeyguardStatusViewManager(this, mUpdateMonitor, mLockPatternUtils,

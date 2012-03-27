@@ -26,7 +26,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:rowCount="9">
+    android:rowCount="7">
 
     <!-- Column 0: Time, date and status -->
     <com.android.internal.widget.DigitalClock android:id="@+id/time"
@@ -94,6 +94,19 @@
         android:textSize="@dimen/keyguard_lockscreen_status_line_font_size"
         />
 
+    <TextView
+        android:id="@+id/status2"
+        android:layout_width="0dip"
+        android:layout_gravity="fill_horizontal"
+        android:gravity="right"
+        android:layout_marginTop="4dip"
+        android:singleLine="true"
+        android:ellipsize="marquee"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textSize="@dimen/keyguard_lockscreen_status_line_font_size"
+        android:drawablePadding="4dip"
+        />
+
     <Space android:layout_gravity="fill" />
 
     <TextView android:id="@+id/carrier"
@@ -137,7 +150,6 @@
     </LinearLayout>
 
     <!-- Column 1: lock pattern -->
-
     <com.android.internal.widget.LockPatternView android:id="@+id/lockPattern"
          android:layout_width="match_parent"
          android:layout_height="match_parent"
@@ -145,15 +157,14 @@
          android:layout_marginRight="8dip"
          android:layout_marginBottom="8dip"
          android:layout_marginLeft="8dip"
-         android:layout_rowSpan="9"/>
-
+         android:layout_rowSpan="7"/>
 
     <!-- Music transport control -->
     <include android:id="@+id/transport"
         layout="@layout/keyguard_transport_control"
         android:layout_row="0"
         android:layout_column="0"
-        android:layout_rowSpan="7"
+        android:layout_rowSpan="5"
         android:layout_columnSpan="1"
         android:layout_gravity="fill"
         android:layout_width="0dip"
@@ -165,7 +176,7 @@
         android:visibility="invisible"
         android:layout_row="0"
         android:layout_column="1"
-        android:layout_rowSpan="9"
+        android:layout_rowSpan="7"
         android:layout_columnSpan="1"
         android:layout_gravity="fill"
         android:layout_marginLeft="8dip"

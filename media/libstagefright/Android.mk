@@ -1,27 +1,6 @@
 LOCAL_PATH:= $(call my-dir)
 include $(CLEAR_VARS)
 
-ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
-ifeq ($(TARGET_BOARD_PLATFORM),msm7x27a)
-    LOCAL_CFLAGS += -DUSE_AAC_HW_DEC
-endif
-
-ifeq ($(TARGET_BOARD_PLATFORM),msm7k)
-    LOCAL_CFLAGS += -DTARGET7x27
-endif
-ifeq ($(TARGET_BOARD_PLATFORM),msm7x27a)
-    LOCAL_CFLAGS += -DTARGET7x27A
-endif
-ifeq ($(TARGET_BOARD_PLATFORM),msm7x30)
-    LOCAL_CFLAGS += -DTARGET7x30
-endif
-ifeq ($(TARGET_BOARD_PLATFORM),qsd8k)
-    LOCAL_CFLAGS += -DTARGET8x50
-endif
-ifeq ($(TARGET_BOARD_PLATFORM),msm8660)
-    LOCAL_CFLAGS += -DTARGET8x60
-endif
-endif
 include frameworks/base/media/libstagefright/codecs/common/Config.mk
 
 LOCAL_SRC_FILES:=                         \
@@ -73,12 +52,6 @@ LOCAL_SRC_FILES:=                         \
         XINGSeeker.cpp                    \
         avc_utils.cpp                     \
 
-ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
-        LOCAL_SRC_FILES += ExtendedExtractor.cpp
-        LOCAL_SRC_FILES += ExtendedWriter.cpp
-	    LOCAL_C_INCLUDES += $(TOP)/hardware/qcom/display/libqcomui
-endif
-
 LOCAL_C_INCLUDES+= \
 	    $(JNI_H_INCLUDE) \
         $(TOP)/frameworks/base/include/media/stagefright/openmax \
@@ -116,12 +89,29 @@ LOCAL_STATIC_LIBRARIES := \
         libstagefright_id3 \
         libFLAC \
 
+ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
+LOCAL_SRC_FILES += \
+        ExtendedExtractor.cpp \
+        ExtendedWriter.cpp \
+        FMA2DPWriter.cpp
+
+LOCAL_C_INCLUDES += \
+        $(TOP)/external/alsa-lib/include/sound \
+        $(TOP)/hardware/qcom/display/libgralloc \
+        $(TOP)/hardware/qcom/display/libqcomui \
+        $(TOP)/vendor/qcom/opensource/omx/mm-core/omxcore/inc \
+        $(TOP)/system/core/include \
+        $(TOP)/hardware/libhardware_legacy/include
+
+LOCAL_SHARED_LIBRARIES += \
+        libhardware_legacy
+
 ifeq ($(BOARD_HAVE_CODEC_SUPPORT),SAMSUNG_CODEC_SUPPORT)
-LOCAL_CFLAGS     += -DSAMSUNG_CODEC_SUPPORT
+    LOCAL_CFLAGS += -DSAMSUNG_CODEC_SUPPORT
 endif
 
 ifeq ($(BOARD_USES_PROPRIETARY_OMX),SAMSUNG)
-LOCAL_CFLAGS     += -DSAMSUNG_OMX
+    LOCAL_CFLAGS += -DSAMSUNG_OMX
 endif
 
 ################################################################################
@@ -140,6 +130,32 @@ LOCAL_CFLAGS += -DQCOM_HARDWARE
 #else
 #        LOCAL_SRC_FILES += LPAPlayer.cpp
 #endif
+
+ifeq ($(TARGET_BOARD_PLATFORM),msm7627a)
+    LOCAL_CFLAGS += -DUSE_AAC_HW_DEC
+endif
+ifeq ($(TARGET_BOARD_PLATFORM),msm7627_surf)
+    LOCAL_CFLAGS += -DUSE_AAC_HW_DEC
+endif
+ifeq ($(TARGET_BOARD_PLATFORM),msm7627)
+    LOCAL_CFLAGS += -DTARGET7x27
+endif
+ifeq ($(TARGET_BOARD_PLATFORM),msm7627a)
+    LOCAL_CFLAGS += -DTARGET7x27A
+endif
+ifeq ($(TARGET_BOARD_PLATFORM),msm7x30)
+    LOCAL_CFLAGS += -DTARGET7x30
+endif
+ifeq ($(TARGET_BOARD_PLATFORM),qsd8k)
+    LOCAL_CFLAGS += -DTARGET8x50
+endif
+ifeq ($(TARGET_BOARD_PLATFORM),msm8660)
+    LOCAL_CFLAGS += -DTARGET8x60
+endif
+ifeq ($(TARGET_BOARD_PLATFORM),msm8960)
+    LOCAL_CFLAGS += -DTARGET8x60
+endif
+endif
 
 ################################################################################
 # The following was shamelessly copied from external/webkit/Android.mk and
@@ -201,6 +217,7 @@ LOCAL_CFLAGS += -Wno-multichar
 
 ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
         LOCAL_C_INCLUDES += $(TOP)/hardware/qcom/display/libgralloc
+        LOCAL_C_INCLUDES += $(TOP)/hardware/qcom/display/libqcomui \
         LOCAL_C_INCLUDES += $(TOP)/vendor/qcom/opensource/omx/mm-core/omxcore/inc
         LOCAL_C_INCLUDES += $(TOP)/system/core/include
         LOCAL_C_INCLUDES += $(TOP)/hardware/libhardware_legacy/include

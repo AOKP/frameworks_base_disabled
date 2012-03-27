@@ -3365,6 +3365,8 @@
     <string name="description_target_silent">Silent</string>
     <!-- Description of the mms target in the Slide unlock screen. [CHAR_LIMIT=NONE] -->
     <string name="description_target_sms">MMS</string>
+    <!-- Description of the torch target in the Slide unlock screen. [CHAR_LIMIT=NONE] -->
+    <string name="description_target_torch">Torch</string>
     <!-- Description of the phone target in the Slide unlock screen. [CHAR_LIMIT=NONE] -->
     <string name="description_target_phone">Phone</string>
     <!-- Description of the sound on target in the Slide unlock screen. [CHAR LIMIT=NONE] -->

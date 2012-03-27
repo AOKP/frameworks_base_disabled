@@ -1063,14 +1063,10 @@ status_t OMXCodec::configureCodec(const sp<MetaData> &meta) {
 #endif
     }
 
-#ifndef QCOM_HARDWARE
-    if (!strcasecmp(MEDIA_MIMETYPE_VIDEO_DIVX, mMIME) || 
-        !strcasecmp(MEDIA_MIMETYPE_VIDEO_DIVX4, mMIME)) {
-#else
+#ifdef QCOM_HARDWARE
     if (!strcasecmp(MEDIA_MIMETYPE_VIDEO_DIVX, mMIME) ||
         !strcasecmp(MEDIA_MIMETYPE_VIDEO_DIVX4, mMIME) ||
         !strcasecmp(MEDIA_MIMETYPE_VIDEO_DIVX311, mMIME)) {
-#endif
         LOGV("Setting the QOMX_VIDEO_PARAM_DIVXTYPE params ");
         QOMX_VIDEO_PARAM_DIVXTYPE paramDivX;
         InitOMXParams(&paramDivX);
@@ -1097,9 +1093,9 @@ status_t OMXCodec::configureCodec(const sp<MetaData> &meta) {
                          &paramDivX, sizeof(paramDivX));
         if (err!=OK) {
             return err;
-#endif
         }
     }
+#endif
 
     int32_t bitRate = 0;
     if (mIsEncoder) {
@@ -1130,7 +1126,6 @@ status_t OMXCodec::configureCodec(const sp<MetaData> &meta) {
             addCodecSpecificData(data, size);
         }
 #endif
-
         if (err != OK) {
             CODEC_LOGE("setAACFormat() failed (err = %d)", err);
             return err;

@@ -23,6 +23,10 @@ import android.os.Message;
 import android.os.SystemProperties;
 import android.util.Log;
 import android.view.Surface;
+import android.app.Application;
+import android.app.ActivityThread;
+import android.content.Context;
+import android.content.Intent;
 
 import java.io.FileDescriptor;
 import java.io.FileOutputStream;
@@ -664,7 +668,7 @@ public class MediaRecorder
      * @throws IllegalStateException if it is called before
      * prepare().
      */
-    public native void start() throws IllegalStateException;
+    public native void native_start() throws IllegalStateException;
 
     /**
      * Stops recording. Call this after start(). Once recording is stopped,

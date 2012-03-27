@@ -94,19 +94,6 @@
         android:textSize="@dimen/keyguard_lockscreen_status_line_font_size"
         />
 
-    <TextView
-        android:id="@+id/status2"
-        android:layout_width="0dip"
-        android:layout_gravity="fill_horizontal"
-        android:gravity="right"
-        android:layout_marginTop="4dip"
-        android:singleLine="true"
-        android:ellipsize="marquee"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textSize="@dimen/keyguard_lockscreen_status_line_font_size"
-        android:drawablePadding="4dip"
-        />
-
     <Space android:layout_gravity="fill" />
 
     <TextView android:id="@+id/carrier"
@@ -150,6 +137,7 @@
     </LinearLayout>
 
     <!-- Column 1: lock pattern -->
+
     <com.android.internal.widget.LockPatternView android:id="@+id/lockPattern"
          android:layout_width="match_parent"
          android:layout_height="match_parent"

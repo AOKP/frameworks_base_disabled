@@ -368,7 +368,7 @@ int64_t MPEG4Writer::estimateMoovBoxSize(int32_t bitRate) {
 
     // If the estimation is wrong, we will pay the price of wasting
     // some reserved space. This should not happen so often statistically.
-    static const int32_t factor = mUse32BitOffset? 1: 2;
+    const int32_t factor = mUse32BitOffset? 1: 2;
     static const int64_t MIN_MOOV_BOX_SIZE = 3 * 1024;  // 3 KB
     static const int64_t MAX_MOOV_BOX_SIZE = (180 * 3000000 * 6LL / 8000);
     int64_t size = MIN_MOOV_BOX_SIZE;

@@ -23,8 +23,7 @@
 <RelativeLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:gravity="center_horizontal">
+	android:layout_height="match_parent">
 
 	<com.android.internal.policy.impl.LockscreenWallpaper
 		android:id="@+id/lockscreen_wallpaper"
@@ -142,13 +141,11 @@
     <!-- Column 2 -->
     <com.android.internal.widget.WaveView
         android:id="@+id/unlock_widget"
-	    android:layout_width="300dip"
-		android:layout_height="match_parent"
-		android:layout_rowSpan="7"
-		android:feedbackCount="3"
-		android:vibrationDuration="20"
-		android:horizontalOffset="0dip"
-		android:verticalOffset="0dip" />
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"
+        />
 
     <!-- Music transport control -->
     <include android:id="@+id/transport"

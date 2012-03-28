@@ -1934,9 +1934,6 @@ status_t OMXCodec::setVideoOutputFormat(
     const size_t X = 64 * 8 * 1024;  // const size_t X = 64 * 1024;
 #else
     const size_t X = 64 * 1024;
-    if (def.nBufferSize < X) {
-        def.nBufferSize = X;
-    }
 #endif
 
     CHECK_EQ((int)def.eDomain, (int)OMX_PortDomainVideo);

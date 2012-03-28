@@ -37,6 +37,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 import android.content.Intent;
@@ -47,7 +48,6 @@ import com.android.internal.telephony.IccCard;
 import com.android.internal.telephony.IccCard.State;
 import com.android.internal.widget.LockPatternUtils;
 import com.android.internal.widget.TransportControlView;
-import com.android.internal.policy.impl.WeatherText;
 
 /***
  * Manages a number of views inside of LockScreen layouts. See below for a list
@@ -473,24 +473,20 @@ class KeyguardStatusViewManager implements OnClickListener {
                 if (calendarEventsEnabled) {
                     mCalendarView.removeAllViews();
                     Log.d(TAG, "we have " + String.valueOf(mCalendarEvents.size()) + " event(s)");
+                    int dateWidth = (int) (findViewById(R.id.time).getWidth() * 1.2);
 
                     for (EventBundle e : mCalendarEvents) {
-                        TextView tv = new TextView(getContext());
-                        tv.setText(e.title
-                                + (!e.dayString.isEmpty() ? e.dayString : "")
-                                + ((e.allDay) ? " all-day " : " at "
-                                        + DateFormat.format(
-                                                DateFormat.is24HourFormat(getContext()) ? "kk:mm"
-                                                        : "hh:mm a", e.begin).toString())
-                                + (!e.location.isEmpty() ? " (" + e.location + ")" : ""));
-                        tv.setTextAppearance(getContext(), android.R.attr.textAppearanceMedium);
-                        tv.setWidth((int) (findViewById(R.id.time).getWidth() * 1.2));
-                        tv.setSingleLine(true);
-                        tv.setEllipsize(android.text.TextUtils.TruncateAt.MIDDLE);
-                        tv.setGravity(android.view.Gravity.RIGHT);
+                        String title = e.title + (e.dayString.isEmpty() ? "" : ",");
+                        String details = e.dayString
+                                + ((e.allDay) ? " all-day " : " at " + DateFormat.format(
+                                        DateFormat.is24HourFormat(getContext()) ? "kk:mm"
+                                                : "hh:mm a", e.begin).toString())
+                                + (!e.location.isEmpty() ? " (" + e.location + ")" : "");
+                        CalendarEntry cEntry = new CalendarEntry(getContext(), title, details, dateWidth);
+                        cEntry.setLayoutParams(new LinearLayout.LayoutParams(dateWidth, -2));
                         if (mCalendarUsingColors)
-                            tv.setTextColor(e.color);
-                        mCalendarView.addView(tv);
+                            cEntry.setColor(e.color);
+                        mCalendarView.addView(cEntry);
                     }
                     mCalendarView.setFlipInterval(interval);
                     mCalendarView.setVisibility(View.VISIBLE);
@@ -498,7 +494,7 @@ class KeyguardStatusViewManager implements OnClickListener {
                     if (!multipleEventsEnabled || mCalendarEvents.size() <= 1) {
                         mCalendarView.stopFlipping();
                     } else {
-                        Log.d(TAG, "multiple events, flip that shit");
+                        Log.d(TAG, "multiple events, flipping");
                         mCalendarView.startFlipping();
                     }
                 } else {
@@ -551,7 +547,7 @@ class KeyguardStatusViewManager implements OnClickListener {
                     string = getContext().getString(R.string.lockscreen_low_battery);
                     icon.value = BATTERY_LOW_ICON;
                     if (mLockAlwaysBattery) {
-                        // Show battery at low percent	
+                        // Show battery at low percent
                         string = getContext().getString(R.string.lockscreen_always_battery,
                                 mBatteryLevel);
                         icon.value = BATTERY_LOW_ICON;
@@ -593,7 +589,7 @@ class KeyguardStatusViewManager implements OnClickListener {
                     string = getContext().getString(R.string.lockscreen_low_battery);
                     icon.value = BATTERY_LOW_ICON;
                     if (mLockAlwaysBattery) {
-                        // Show battery at low percent	
+                        // Show battery at low percent
                         string = getContext().getString(R.string.lockscreen_always_battery,
                                 mBatteryLevel);
                         icon.value = BATTERY_LOW_ICON;
@@ -938,10 +934,10 @@ class KeyguardStatusViewManager implements OnClickListener {
         try {
             if (!mCalendarUsingColors) {
                 for (int i = 0; i < mCalendarView.getChildCount(); i++) {
-                    ((TextView) mCalendarView.getChildAt(i)).setTextColor(color);
+                    ((CalendarEntry) mCalendarView.getChildAt(i)).setColor(color);
                 }
                 if (DEBUG)
-                    Log.d(TAG, String.format("Setting mWeatherView DATE text color to %d", color));
+                    Log.d(TAG, String.format("Setting mCalendarView DATE text color to %d", color));
             }
         } catch (NullPointerException ne) {
             if (DEBUG)
@@ -1040,11 +1036,10 @@ class KeyguardStatusViewManager implements OnClickListener {
             if (beginDay == today) { // today
                 dayString = "";
             } else if (today + 1 == beginDay || (today >= 365 && beginDay == 1)) { // tomorrow
-                dayString = ", Tomorrow";
+                dayString = "Tomorrow";
             } else { // another day of week
-                dayString = ", "
-                        + begin.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG,
-                                Locale.getDefault());
+                dayString = begin.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT,
+                        Locale.getDefault());
             }
             allDay = a;
             color = c;

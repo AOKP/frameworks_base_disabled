@@ -1548,7 +1548,6 @@ void OMXCodec::setVideoInputFormat(
     }
 #endif
 
-#endif
     bool success = meta->findInt32(kKeyWidth, &width);
     success = success && meta->findInt32(kKeyHeight, &height);
     success = success && meta->findInt32(kKeyFrameRate, &frameRate);

@@ -271,7 +271,11 @@ private:
 #ifdef QCOM_HARDWARE
     void setEVRCFormat( int32_t sampleRate, int32_t numChannels, int32_t bitRate);
 #endif
+#ifdef QCOM_HARDWARE
+    void setG711Format(int32_t numChannels, int32_t sampleRate);
+#else
     void setG711Format(int32_t numChannels);
+#endif
 #ifdef QCOM_HARDWARE
     void setQCELPFormat( int32_t sampleRate, int32_t numChannels, int32_t bitRate);
 #endif

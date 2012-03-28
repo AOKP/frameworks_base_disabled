@@ -2321,12 +2321,6 @@ OMXCodec::OMXCodec(
       mThumbnailMode(false),
       m3DVideoDetected(false),
 #endif
-#ifdef QCOM_HARDWARE
-      bInvalidState(false),
-      mInterlaceFormatDetected(false),
-      mSPSParsed(false),
-      mThumbnailMode(false),
-#endif
       mNativeWindow(
               (!strncmp(componentName, "OMX.google.", 11)
               || !strcmp(componentName, "OMX.Nvidia.mpeg2v.decode"))

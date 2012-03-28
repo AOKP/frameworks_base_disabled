@@ -43,6 +43,8 @@ public class WeatherText extends TextView {
     public WeatherText(Context context, AttributeSet attrs) {
         super(context, attrs);
         setText("");
+        ContentResolver resolver = mContext.getContentResolver();
+        showLocation = Settings.System.getInt(resolver, Settings.System.WEATHER_SHOW_LOCATION, 0) == 1;
     }
 
     @Override
@@ -52,8 +54,6 @@ public class WeatherText extends TextView {
             mAttached = true;
             IntentFilter filter = new IntentFilter("com.aokp.romcontrol.INTENT_WEATHER_UPDATE");
             getContext().registerReceiver(weatherReceiver, filter, null, getHandler());
-
-            SettingsObserver so = new SettingsObserver(getHandler());
         }
     }
 
@@ -65,36 +65,4 @@ public class WeatherText extends TextView {
             mAttached = false;
         }
     }
-
-    class SettingsObserver extends ContentObserver {
-        SettingsObserver(Handler handler) {
-            super(handler);
-            observe();
-        }
-
-        void observe() {
-            ContentResolver resolver = mContext.getContentResolver();
-            resolver.registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.USE_WEATHER), false,
-                    this);
-            resolver.registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.WEATHER_SHOW_LOCATION), false,
-                    this);
-            updateSettings();
-        }
-
-        @Override
-        public void onChange(boolean selfChange) {
-            updateSettings();
-        }
-    }
-
-    protected void updateSettings() {
-        ContentResolver resolver = mContext.getContentResolver();
-        
-        boolean useWeather = Settings.System.getInt(resolver, Settings.System.USE_WEATHER, 0) == 1;
-        showLocation = Settings.System.getInt(resolver, Settings.System.WEATHER_SHOW_LOCATION, 0) == 1;
-        setVisibility(useWeather ? View.VISIBLE : View.GONE);
-    }
-
 }

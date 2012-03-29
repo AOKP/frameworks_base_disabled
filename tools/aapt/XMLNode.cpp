@@ -21,7 +21,7 @@
 
 const char* const RESOURCES_ROOT_NAMESPACE = "http://schemas.android.com/apk/res/";
 const char* const RESOURCES_ANDROID_NAMESPACE = "http://schemas.android.com/apk/res/android";
-const char* const RESOURCES_AUTO_PACKAGE_NAMESPACE = "http://schemas.android.com/apk/res/auto";
+const char* const RESOURCES_AUTO_PACKAGE_NAMESPACE = "http://schemas.android.com/apk/res-auto";
 const char* const RESOURCES_ROOT_PRV_NAMESPACE = "http://schemas.android.com/apk/prv/res/";
 
 const char* const XLIFF_XMLNS = "urn:oasis:names:tc:xliff:document:1.2";
@@ -47,6 +47,7 @@ bool isWhitespace(const char16_t* str)
 static const String16 RESOURCES_PREFIX(RESOURCES_ROOT_NAMESPACE);
 static const String16 RESOURCES_PREFIX_AUTO_PACKAGE(RESOURCES_AUTO_PACKAGE_NAMESPACE);
 static const String16 RESOURCES_PRV_PREFIX(RESOURCES_ROOT_PRV_NAMESPACE);
+static const String16 RESOURCES_TOOLS_NAMESPACE("http://schemas.android.com/tools");
 
 String16 getNamespaceResourcePackage(String16 appPackage, String16 namespaceUri, bool* outIsPublic)
 {
@@ -767,13 +768,16 @@ status_t XMLNode::addAttribute(const String16& ns, const String16& name,
         SourcePos(mFilename, getStartLineNumber()).error("Child to CDATA node.");
         return UNKNOWN_ERROR;
     }
-    attribute_entry e;
-    e.index = mNextAttributeIndex++;
-    e.ns = ns;
-    e.name = name;
-    e.string = value;
-    mAttributes.add(e);
-    mAttributeOrder.add(e.index, mAttributes.size()-1);
+
+    if (ns != RESOURCES_TOOLS_NAMESPACE) {
+        attribute_entry e;
+        e.index = mNextAttributeIndex++;
+        e.ns = ns;
+        e.name = name;
+        e.string = value;
+        mAttributes.add(e);
+        mAttributeOrder.add(e.index, mAttributes.size()-1);
+    }
     return NO_ERROR;
 }
 
@@ -1221,11 +1225,13 @@ status_t XMLNode::collect_strings(StringPool* dest, Vector<uint32_t>* outResIds,
     collect_attr_strings(dest, outResIds, true);
     
     int i;
-    if (mNamespacePrefix.size() > 0) {
-        dest->add(mNamespacePrefix, true);
-    }
-    if (mNamespaceUri.size() > 0) {
-        dest->add(mNamespaceUri, true);
+    if (RESOURCES_TOOLS_NAMESPACE != mNamespaceUri) {
+        if (mNamespacePrefix.size() > 0) {
+            dest->add(mNamespacePrefix, true);
+        }
+        if (mNamespaceUri.size() > 0) {
+            dest->add(mNamespaceUri, true);
+        }
     }
     if (mElementName.size() > 0) {
         dest->add(mElementName, true);
@@ -1344,6 +1350,7 @@ status_t XMLNode::flatten_node(const StringPool& strings, const sp<AaptFile>& de
     const void* extData = NULL;
     size_t extSize = 0;
     ResXMLTree_attribute attr;
+    bool writeCurrentNode = true;
 
     const size_t NA = mAttributes.size();
     const size_t NC = mChildren.size();
@@ -1356,7 +1363,7 @@ status_t XMLNode::flatten_node(const StringPool& strings, const sp<AaptFile>& de
     const String16 style16("style");
 
     const type type = getType();
-    
+
     memset(&node, 0, sizeof(node));
     memset(&attr, 0, sizeof(attr));
     node.header.headerSize = htods(sizeof(node));
@@ -1401,17 +1408,21 @@ status_t XMLNode::flatten_node(const StringPool& strings, const sp<AaptFile>& de
             }
         }
     } else if (type == TYPE_NAMESPACE) {
-        node.header.type = htods(RES_XML_START_NAMESPACE_TYPE);
-        extData = &namespaceExt;
-        extSize = sizeof(namespaceExt);
-        memset(&namespaceExt, 0, sizeof(namespaceExt));
-        if (mNamespacePrefix.size() > 0) {
-            namespaceExt.prefix.index = htodl(strings.offsetForString(mNamespacePrefix));
+        if (mNamespaceUri == RESOURCES_TOOLS_NAMESPACE) {
+            writeCurrentNode = false;
         } else {
-            namespaceExt.prefix.index = htodl((uint32_t)-1);
+            node.header.type = htods(RES_XML_START_NAMESPACE_TYPE);
+            extData = &namespaceExt;
+            extSize = sizeof(namespaceExt);
+            memset(&namespaceExt, 0, sizeof(namespaceExt));
+            if (mNamespacePrefix.size() > 0) {
+                namespaceExt.prefix.index = htodl(strings.offsetForString(mNamespacePrefix));
+            } else {
+                namespaceExt.prefix.index = htodl((uint32_t)-1);
+            }
+            namespaceExt.prefix.index = htodl(strings.offsetForString(mNamespacePrefix));
+            namespaceExt.uri.index = htodl(strings.offsetForString(mNamespaceUri));
         }
-        namespaceExt.prefix.index = htodl(strings.offsetForString(mNamespacePrefix));
-        namespaceExt.uri.index = htodl(strings.offsetForString(mNamespaceUri));
         LOG_ALWAYS_FATAL_IF(NA != 0, "Namespace nodes can't have attributes!");
     } else if (type == TYPE_CDATA) {
         node.header.type = htods(RES_XML_CDATA_TYPE);
@@ -1428,9 +1439,11 @@ status_t XMLNode::flatten_node(const StringPool& strings, const sp<AaptFile>& de
 
     node.header.size = htodl(sizeof(node) + extSize + (sizeof(attr)*NA));
 
-    dest->writeData(&node, sizeof(node));
-    if (extSize > 0) {
-        dest->writeData(extData, extSize);
+    if (writeCurrentNode) {
+        dest->writeData(&node, sizeof(node));
+        if (extSize > 0) {
+            dest->writeData(extData, extSize);
+        }
     }
 
     for (i=0; i<NA; i++) {
@@ -1482,12 +1495,14 @@ status_t XMLNode::flatten_node(const StringPool& strings, const sp<AaptFile>& de
         dest->writeData(&node, sizeof(node));
         dest->writeData(&endElementExt, sizeof(endElementExt));
     } else if (type == TYPE_NAMESPACE) {
-        node.header.type = htods(RES_XML_END_NAMESPACE_TYPE);
-        node.lineNumber = htodl(getEndLineNumber());
-        node.comment.index = htodl((uint32_t)-1);
-        node.header.size = htodl(sizeof(node)+extSize);
-        dest->writeData(&node, sizeof(node));
-        dest->writeData(extData, extSize);
+        if (writeCurrentNode) {
+            node.header.type = htods(RES_XML_END_NAMESPACE_TYPE);
+            node.lineNumber = htodl(getEndLineNumber());
+            node.comment.index = htodl((uint32_t)-1);
+            node.header.size = htodl(sizeof(node)+extSize);
+            dest->writeData(&node, sizeof(node));
+            dest->writeData(extData, extSize);
+        }
     }
 
     return NO_ERROR;

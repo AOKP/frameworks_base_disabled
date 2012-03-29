@@ -867,6 +867,10 @@ public class NotificationManagerService extends INotificationManager.Stub
                         r.statusBarKey = mStatusBar.addNotification(n);
                         mAttentionLight.pulse();
                     } finally {
+                        if ((n.notification.flags & Notification.FLAG_SHOW_LIGHTS) != 0) {
+                            mAttentionLight.pulse();
+                        }
+                    } finally {
                         Binder.restoreCallingIdentity(identity);
                     }
                 }

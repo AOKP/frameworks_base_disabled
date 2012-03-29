@@ -233,8 +233,10 @@ public abstract class WindowOrientationListener {
         //
         // The basic idea is to ignore intermediate poses of the device while the
         // user is picking up, putting down or turning the device.
+        private long mProposalTime;
         private int mProposalRotation;
         private long mProposalAgeMS;
+        private boolean mProposalSettled;
 
         // A historical trace of tilt and orientation angles.  Used to determine whether
         // the device posture has settled down.
@@ -310,10 +312,10 @@ public abstract class WindowOrientationListener {
         // The ideal tilt angle is 0 (when the device is vertical) so the limits establish
         // how close to vertical the device must be in order to change orientation.
         private static final int[][] TILT_TOLERANCE = new int[][] {
-            /* ROTATION_0   */ { -20, 70 },
-            /* ROTATION_90  */ { -20, 60 },
-            /* ROTATION_180 */ { -20, 50 },
-            /* ROTATION_270 */ { -20, 60 }
+            /* ROTATION_0   */ { -25, 70 },
+            /* ROTATION_90  */ { -25, 65 },
+            /* ROTATION_180 */ { -25, 60 },
+            /* ROTATION_270 */ { -25, 65 }
         };
 
         // The gap angle in degrees between adjacent orientation angles for hysteresis.
@@ -326,7 +328,11 @@ public abstract class WindowOrientationListener {
         // The number of milliseconds for which the device posture must be stable
         // before we perform an orientation change.  If the device appears to be rotating
         // (being picked up, put down) then we keep waiting until it settles.
-        private static final int SETTLE_TIME_MS = 200;
+        private static final int SETTLE_TIME_MIN_MS = 200;
+
+        // The maximum number of milliseconds to wait for the posture to settle before
+        // accepting the current proposal regardless.
+        private static final int SETTLE_TIME_MAX_MS = 500;
 
         // The maximum change in magnitude that can occur during the settle time.
         // Tuning this constant particularly helps to filter out situations where the
@@ -335,10 +341,10 @@ public abstract class WindowOrientationListener {
                 SensorManager.STANDARD_GRAVITY * 0.2f;
 
         // The maximum change in tilt angle that can occur during the settle time.
-        private static final int SETTLE_TILT_ANGLE_MAX_DELTA = 5;
+        private static final int SETTLE_TILT_ANGLE_MAX_DELTA = 8;
 
         // The maximum change in orientation angle that can occur during the settle time.
-        private static final int SETTLE_ORIENTATION_ANGLE_MAX_DELTA = 5;
+        private static final int SETTLE_ORIENTATION_ANGLE_MAX_DELTA = 8;
         
         protected Context mContext;
         
@@ -451,9 +457,6 @@ public abstract class WindowOrientationListener {
                         }
 
                         // Determine the proposed orientation.
-                        // The confidence of the proposal is 1.0 when it is ideal and it
-                        // decays exponentially as the proposal moves further from the ideal
-                        // angle, tilt and magnitude of the proposed orientation.
                         if (!isTiltAngleAcceptable(nearestRotation, tiltAngle)
                                 || !isOrientationAngleAcceptable(nearestRotation,
                                         orientationAngle)) {
@@ -568,11 +571,13 @@ public abstract class WindowOrientationListener {
         private void clearProposal() {
             mProposalRotation = -1;
             mProposalAgeMS = 0;
+            mProposalSettled = false;
         }
 
         private void updateProposal(int rotation, long timestampMS,
                 float magnitude, int tiltAngle, int orientationAngle) {
             if (mProposalRotation != rotation) {
+                mProposalTime = timestampMS;
                 mProposalRotation = rotation;
                 mHistoryIndex = 0;
                 mHistoryLength = 0;
@@ -609,6 +614,12 @@ public abstract class WindowOrientationListener {
                 }
             }
             mProposalAgeMS = age;
+            if (age >= SETTLE_TIME_MIN_MS
+                    || timestampMS - mProposalTime >= SETTLE_TIME_MAX_MS) {
+                mProposalSettled = true;
+            } else {
+                mProposalSettled = false;
+            }
         }
 
         private static int angleAbsoluteDelta(int a, int b) {

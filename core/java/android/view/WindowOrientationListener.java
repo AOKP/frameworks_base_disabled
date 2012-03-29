@@ -348,7 +348,7 @@ public abstract class WindowOrientationListener {
         
         protected Context mContext;
         
-        private int mSettleTimeMs = SETTLE_TIME_MS;
+        private int mSettleTimeMs = SETTLE_TIME_MIN_MS;
 
         public SensorEventListenerImpl(WindowOrientationListener orientationListener, Context context) {
             mOrientationListener = orientationListener;
@@ -653,7 +653,7 @@ public abstract class WindowOrientationListener {
             ContentResolver resolver = mContext.getContentResolver();
 
             mSettleTimeMs = Settings.System.getInt(resolver,
-                    Settings.System.ACCELEROMETER_ROTATION_SETTLE_TIME, SETTLE_TIME_MS);
+                    Settings.System.ACCELEROMETER_ROTATION_SETTLE_TIME, SETTLE_TIME_MIN_MS);
         }
     }
 }

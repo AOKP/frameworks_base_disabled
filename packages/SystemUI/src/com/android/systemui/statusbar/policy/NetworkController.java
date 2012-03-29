@@ -926,32 +926,58 @@ public class NetworkController extends BroadcastReceiver {
 
         int combinedSignalIconId = 0;
         int combinedActivityIconId = 0;
-        String label = "";
+        String combinedLabel = "";
+        String wifiLabel = "";
+        String mobileLabel = "";
         int N;
 
-        if (mDataConnected) {
-            label = mNetworkName;
-            combinedSignalIconId = mDataSignalIconId;
-            switch (mDataActivity) {
-                case TelephonyManager.DATA_ACTIVITY_IN:
-                    mMobileActivityIconId = R.drawable.stat_sys_signal_in;
-                    break;
-                case TelephonyManager.DATA_ACTIVITY_OUT:
-                    mMobileActivityIconId = R.drawable.stat_sys_signal_out;
-                    break;
-                case TelephonyManager.DATA_ACTIVITY_INOUT:
-                    mMobileActivityIconId = R.drawable.stat_sys_signal_inout;
-                    break;
-                default:
-                    mMobileActivityIconId = 0;
-                    break;
+        if (!mHasMobileDataFeature) {
+            mDataSignalIconId = mPhoneSignalIconId = 0;
+            mobileLabel = "";
+        } else {
+            // We want to show the carrier name if in service and either:
+            //   - We are connected to mobile data, or
+            //   - We are not connected to mobile data, as long as the *reason* packets are not
+            //     being routed over that link is that we have better connectivity via wifi.
+            // If data is disconnected for some other reason but wifi is connected, we show nothing.
+            // Otherwise (nothing connected) we show "No internet connection".
+
+            if (mDataConnected) {
+                mobileLabel = mNetworkName;
+            } else if (mWifiConnected) {
+                if (hasService()) {
+                    mobileLabel = mNetworkName;
+                } else {
+                    mobileLabel = "";
+                }
+            } else {
+                mobileLabel
+                    = context.getString(R.string.status_bar_settings_signal_meter_disconnected);
             }
 
-            combinedActivityIconId = mMobileActivityIconId;
-            combinedSignalIconId = mDataSignalIconId; // set by updateDataIcon()
-            mContentDescriptionCombinedSignal = mContentDescriptionDataType;
-        } else {
-            mMobileActivityIconId = 0;
+            // Now for things that should only be shown when actually using mobile data.
+            if (mDataConnected) {
+                combinedSignalIconId = mDataSignalIconId;
+                switch (mDataActivity) {
+                    case TelephonyManager.DATA_ACTIVITY_IN:
+                        mMobileActivityIconId = R.drawable.stat_sys_signal_in;
+                        break;
+                    case TelephonyManager.DATA_ACTIVITY_OUT:
+                        mMobileActivityIconId = R.drawable.stat_sys_signal_out;
+                        break;
+                    case TelephonyManager.DATA_ACTIVITY_INOUT:
+                        mMobileActivityIconId = R.drawable.stat_sys_signal_inout;
+                        break;
+                    default:
+                        mMobileActivityIconId = 0;
+                        break;
+                }
+
+                combinedLabel = mobileLabel;
+                combinedActivityIconId = mMobileActivityIconId;
+                combinedSignalIconId = mDataSignalIconId; // set by updateDataIcon()
+                mContentDescriptionCombinedSignal = mContentDescriptionDataType;
+            }
         }
 
         if (mWifiConnected) {
@@ -979,7 +1005,6 @@ public class NetworkController extends BroadcastReceiver {
                 }
             }
 
-            mDataTypeIconId = 0;
             combinedActivityIconId = mWifiActivityIconId;
             combinedLabel = wifiLabel;
             combinedSignalIconId = mWifiIconId; // set by updateWifiIcons()

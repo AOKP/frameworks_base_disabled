@@ -151,38 +151,6 @@
                 android:text="@string/status_bar_settings_settings_button"
                 />
 
-        <ImageView
-            android:id="@+id/battery"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:scaleType="centerInside"
-            android:layout_toRightOf="@id/network_text"
-            android:layout_alignBaseline="@id/network_signal"
-            android:baseline="18dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:contentDescription="@null"
-            android:visibility="gone"
-            />
-
-        <TextView
-            android:id="@+id/battery_text"
-            style="@style/StatusBarNotificationText"
-            android:layout_width="56dp"
-            android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/battery"
-            android:layout_alignBaseline="@id/battery"
-            android:layout_marginRight="8dp"
-            android:singleLine="true"
-            android:text="@string/status_bar_settings_settings_button"
-            android:visibility="gone"
-            />
-         <include layout="@layout/battery_cluster_view"
-                android:id="@+id/battery_cluster"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                />
-    </LinearLayout>
             <!-- this will stretch to eat up available space -->
             <View
                 android:layout_width="0dp"

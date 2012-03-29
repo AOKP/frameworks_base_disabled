@@ -137,6 +137,12 @@
             android:excludeFromRecents="true">
         </activity>
 
+        <activity 
+            android:name="com.android.systemui.statusbar.powerwidget.Torch"
+            android:theme="@android:style/Theme.Holo.Panel"
+            android:excludeFromRecents="true">
+        </activity>
+
         <!-- started from PhoneStatusBar -->
         <activity android:name="com.liquid.control.LiquidActivity">
             <intent-filter>
@@ -167,9 +173,6 @@
                 <action android:name="com.android.calendar" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-
-        <activity
-            android:name="com.android.systemui.statusbar.powerwidget.Torch">
         </activity>
     </application>
 </manifest>

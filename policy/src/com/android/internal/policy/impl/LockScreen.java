@@ -492,15 +492,18 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
                 mContext.startActivity(intent);
                 mCallback.goToUnlockScreen();
             } else if (action.equals(ACTION_APP_TORCH)) {
-                boolean mTorchEnabled = Settings.System.getInt(mContext
+                Intent intent = new Intent(Intent.ACTION_MAIN);
+                boolean mTorchEnabled = Settings.System.getInt(getContext()
                         .getContentResolver(), Settings.System.TORCH_STATE, 0) == 1;
 
                 if (mTorchEnabled) {
-                    Settings.System.putInt(context.getContentResolver(), Settings.System.TORCH_STATE, 0);
-                    Intent intent = new Intent("com.android.systemui.INTENT_TORCH_OFF");
+                    Settings.System.putInt(getContext()
+                            .getContentResolver(), Settings.System.TORCH_STATE, 0);
+                    intent = new Intent("com.android.systemui.INTENT_TORCH_OFF");
                 } else {
-                    Settings.System.putInt(context.getContentResolver(), Settings.System.TORCH_STATE, 1);
-                    Intent intent = new Intent("com.android.systemui.INTENT_TORCH_ON");
+                    Settings.System.putInt(getContext()
+                            .getContentResolver(), Settings.System.TORCH_STATE, 1);
+                    intent = new Intent("com.android.systemui.INTENT_TORCH_ON");
                 }
                 
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

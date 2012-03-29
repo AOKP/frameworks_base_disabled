@@ -1138,7 +1138,7 @@ public class Intent implements Parcelable, Cloneable {
     /**
      * Activity Action: The user pressed the "Report" button in the crash/ANR dialog.
      * This intent is delivered to the package which installed the application, usually
-     * the Market.
+     * Google Play.
      * <p>Input: No data is specified. The bug report is passed in using
      * an {@link #EXTRA_BUG_REPORT} field.
      * <p>Output: Nothing.
@@ -2328,7 +2328,7 @@ public class Intent implements Parcelable, Cloneable {
      * <p>NOTE: This should not be used as the primary key of an Intent,
      * since it will not result in the app launching with the correct
      * action and category.  Instead, use this with
-     * {@link #makeMainSelectorActivity(String, String) to generate a main
+     * {@link #makeMainSelectorActivity(String, String)} to generate a main
      * Intent with this category in the selector.</p>
      */
     @SdkConstant(SdkConstantType.INTENT_CATEGORY)
@@ -2340,7 +2340,7 @@ public class Intent implements Parcelable, Cloneable {
      * <p>NOTE: This should not be used as the primary key of an Intent,
      * since it will not result in the app launching with the correct
      * action and category.  Instead, use this with
-     * {@link #makeMainSelectorActivity(String, String) to generate a main
+     * {@link #makeMainSelectorActivity(String, String)} to generate a main
      * Intent with this category in the selector.</p>
      */
     @SdkConstant(SdkConstantType.INTENT_CATEGORY)
@@ -2352,7 +2352,7 @@ public class Intent implements Parcelable, Cloneable {
      * <p>NOTE: This should not be used as the primary key of an Intent,
      * since it will not result in the app launching with the correct
      * action and category.  Instead, use this with
-     * {@link #makeMainSelectorActivity(String, String) to generate a main
+     * {@link #makeMainSelectorActivity(String, String)} to generate a main
      * Intent with this category in the selector.</p>
      */
     @SdkConstant(SdkConstantType.INTENT_CATEGORY)
@@ -2364,7 +2364,7 @@ public class Intent implements Parcelable, Cloneable {
      * <p>NOTE: This should not be used as the primary key of an Intent,
      * since it will not result in the app launching with the correct
      * action and category.  Instead, use this with
-     * {@link #makeMainSelectorActivity(String, String) to generate a main
+     * {@link #makeMainSelectorActivity(String, String)} to generate a main
      * Intent with this category in the selector.</p>
      */
     @SdkConstant(SdkConstantType.INTENT_CATEGORY)
@@ -2376,7 +2376,7 @@ public class Intent implements Parcelable, Cloneable {
      * <p>NOTE: This should not be used as the primary key of an Intent,
      * since it will not result in the app launching with the correct
      * action and category.  Instead, use this with
-     * {@link #makeMainSelectorActivity(String, String) to generate a main
+     * {@link #makeMainSelectorActivity(String, String)} to generate a main
      * Intent with this category in the selector.</p>
      */
     @SdkConstant(SdkConstantType.INTENT_CATEGORY)
@@ -2389,7 +2389,7 @@ public class Intent implements Parcelable, Cloneable {
      * <p>NOTE: This should not be used as the primary key of an Intent,
      * since it will not result in the app launching with the correct
      * action and category.  Instead, use this with
-     * {@link #makeMainSelectorActivity(String, String) to generate a main
+     * {@link #makeMainSelectorActivity(String, String)} to generate a main
      * Intent with this category in the selector.</p>
      */
     @SdkConstant(SdkConstantType.INTENT_CATEGORY)
@@ -2401,7 +2401,7 @@ public class Intent implements Parcelable, Cloneable {
      * <p>NOTE: This should not be used as the primary key of an Intent,
      * since it will not result in the app launching with the correct
      * action and category.  Instead, use this with
-     * {@link #makeMainSelectorActivity(String, String) to generate a main
+     * {@link #makeMainSelectorActivity(String, String)} to generate a main
      * Intent with this category in the selector.</p>
      */
     @SdkConstant(SdkConstantType.INTENT_CATEGORY)
@@ -2413,7 +2413,7 @@ public class Intent implements Parcelable, Cloneable {
      * <p>NOTE: This should not be used as the primary key of an Intent,
      * since it will not result in the app launching with the correct
      * action and category.  Instead, use this with
-     * {@link #makeMainSelectorActivity(String, String) to generate a main
+     * {@link #makeMainSelectorActivity(String, String)} to generate a main
      * Intent with this category in the selector.</p>
      */
     @SdkConstant(SdkConstantType.INTENT_CATEGORY)
@@ -2426,7 +2426,7 @@ public class Intent implements Parcelable, Cloneable {
      * <p>NOTE: This should not be used as the primary key of an Intent,
      * since it will not result in the app launching with the correct
      * action and category.  Instead, use this with
-     * {@link #makeMainSelectorActivity(String, String) to generate a main
+     * {@link #makeMainSelectorActivity(String, String)} to generate a main
      * Intent with this category in the selector.</p>
      */
     @SdkConstant(SdkConstantType.INTENT_CATEGORY)

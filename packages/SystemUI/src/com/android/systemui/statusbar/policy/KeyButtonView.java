@@ -45,7 +45,6 @@ import android.view.accessibility.AccessibilityEvent;
 import android.widget.ImageView;
 
 import com.android.systemui.R;
-import com.android.systemui.statusbar.policy.Clock.SettingsObserver;
 
 public class KeyButtonView extends ImageView {
     protected static final String TAG = "StatusBar.KeyButtonView";

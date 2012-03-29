@@ -78,14 +78,15 @@ public class BatteryBarController extends LinearLayout {
         super.onAttachedToWindow();
         if (!isAttached) {
             isVertical = (getLayoutParams().height == LayoutParams.MATCH_PARENT);
-            SettingsObserver observer = new SettingsObserver(new Handler());
-            observer.observer();
-            updateSettings();
 
             isAttached = true;
             IntentFilter filter = new IntentFilter();
             filter.addAction(Intent.ACTION_BATTERY_CHANGED);
             getContext().registerReceiver(mIntentReceiver, filter);
+
+            SettingsObserver observer = new SettingsObserver(new Handler());
+            observer.observer();
+            updateSettings();
         }
     }
 

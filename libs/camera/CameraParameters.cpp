@@ -521,11 +521,6 @@ static void parseSizesList(const char *sizesStr, Vector<Size> &sizes)
     }
 }
 
-void CameraParameters::setPostviewSize(int width, int height)
-{
-    // dummy
-}
-
 void CameraParameters::setPreviewSize(int width, int height)
 {
     char str[32];
@@ -568,6 +563,11 @@ void CameraParameters::setPreviewFpsRange(int minFPS, int maxFPS)
     char str[32];
     snprintf(str, sizeof(str), "%d,%d",minFPS,maxFPS);
     set(KEY_PREVIEW_FPS_RANGE,str);
+}
+
+void CameraParameters::setPostviewSize(int width, int height)
+{
+    // dummy
 }
 #endif
 

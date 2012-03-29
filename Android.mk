@@ -399,6 +399,7 @@ framework_docs_LOCAL_DROIDDOC_OPTIONS := \
     -since ./frameworks/base/api/12.xml 12 \
     -since ./frameworks/base/api/13.xml 13 \
     -since ./frameworks/base/api/14.txt 14 \
+    -since ./frameworks/base/api/15.txt 15 \
 		-werror -hide 113 \
 		-overview $(LOCAL_PATH)/core/java/overview.html
 
@@ -445,6 +446,8 @@ web_docs_sample_code_flags := \
 		            resources/samples/JetBoy "JetBoy" \
 		-samplecode $(sample_dir)/LunarLander \
 		            resources/samples/LunarLander "Lunar Lander" \
+		-samplecode $(sample_dir)/training/ads-and-ux \
+		            resources/samples/training/ads-and-ux "Mobile Advertisement Integration" \
 		-samplecode $(sample_dir)/MultiResolution \
 		            resources/samples/MultiResolution "Multiple Resolutions" \
 		-samplecode $(sample_dir)/NFCDemo \
@@ -500,7 +503,10 @@ web_docs_sample_code_flags := \
 		-samplecode $(sample_dir)/XmlAdapters \
 		            resources/samples/XmlAdapters "XML Adapters" \
 		-samplecode $(sample_dir)/TtsEngine \
-		            resources/samples/TtsEngine "Text To Speech Engine"
+		            resources/samples/TtsEngine "Text To Speech Engine" \
+		-samplecode $(sample_dir)/training/device-management-policy \
+		            resources/samples/training/device-management-policy "Device Management Policy"
+
 
 ## SDK version identifiers used in the published docs
   # major[.minor] version for current SDK. (full releases only)

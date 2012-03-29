@@ -3364,21 +3364,15 @@
     <!-- Description of the silent target in the Slide unlock screen. [CHAR LIMIT=NONE] -->
     <string name="description_target_silent">Silent</string>
     <!-- Description of the mms target in the Slide unlock screen. [CHAR_LIMIT=NONE] -->
-    <string name="description_target_sms">MMS</string>
-    <!-- Description of the torch target in the Slide unlock screen. [CHAR_LIMIT=NONE] -->
-    <string name="description_target_torch">Torch</string>
+    <string name="description_target_sms">Messaging</string>
+    <!-- Description of the flashlight target in the Slide unlock screen. [CHAR_LIMIT=NONE] -->
+    <string name="description_target_flashlight">Flashlight</string>
     <!-- Description of the phone target in the Slide unlock screen. [CHAR_LIMIT=NONE] -->
     <string name="description_target_phone">Phone</string>
     <!-- Description of the sound on target in the Slide unlock screen. [CHAR LIMIT=NONE] -->
     <string name="description_target_soundon">Sound on</string>
     <!-- Description of the browser target in the Slide unlock screen. [CHAR_LIMIT=NONE] -->
     <string name="description_target_browser">Browser</string>
-    <!-- Description of the custom target in the Slide unlock screen. [CHAR_LIMIT=NONE] -->
-    <string name="description_target_custom">Custom</string>
-    <!-- Description of the custom target in the Slide unlock screen. [CHAR_LIMIT=NONE] -->
-    <string name="description_target_custom_2">Custom</string>
-    <!-- Description of the custom target in the Slide unlock screen. [CHAR_LIMIT=NONE] -->
-    <string name="description_target_custom_3">Custom</string>
     
     <!-- Description of the unlock handle in the Slide unlock screen for tablets. [CHAR LIMIT=NONE] -->
     <string name="description_target_unlock_tablet">Swipe to unlock.</string>

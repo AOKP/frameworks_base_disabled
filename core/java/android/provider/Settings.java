@@ -2002,6 +2002,12 @@ public final class Settings {
         public static final String UNLOCK_SOUND = "unlock_sound";
 
         /**
+         * Torch state (flashlight)
+         * @hide
+         */
+        public static final String TORCH_STATE = "torch_state";
+
+        /**
          * Receive incoming SIP calls?
          * 0 = no
          * 1 = yes

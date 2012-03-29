@@ -536,23 +536,19 @@
     <array name="octo_lockscreen_targets">
         <item>@drawable/ic_lockscreen_browser</item>        
         <item>@drawable/ic_lockscreen_sms</item>
-        <item>@drawable/ic_lockscreen_custom</item>
+        <item>@drawable/ic_lockscreen_flashlight</item>
         <item>@drawable/ic_lockscreen_phone</item>
         <item>@drawable/ic_lockscreen_camera</item>
-        <item>@drawable/ic_lockscreen_custom_2</item>
-        <item>@drawable/ic_lockscreen_unlock</item>
-        <item>@drawable/ic_lockscreen_custom_3</item>	
+        <item>@drawable/ic_lockscreen_unlock</item>	
     </array>
     
     <array name="octo_lockscreen_target_descriptions">        
         <item>@string/description_target_browser</item>
         <item>@string/description_target_sms</item>
-        <item>@string/description_target_custom</item>
+        <item>@string/description_target_flashlight</item>
         <item>@string/description_target_phone</item>
-        <item>@string/description_target_camera</item>
-        <item>@string/description_target_custom_2</item>	
+        <item>@string/description_target_camera</item>	
         <item>@string/description_target_unlock</item>
-        <item>@string/description_target_custom_3</item>
     </array>
 
     <!-- Defines the shutdown options shown in the reboot dialog. -->

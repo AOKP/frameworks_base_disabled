@@ -476,7 +476,7 @@ class KeyguardStatusViewManager implements OnClickListener {
                     int dateWidth = (int) (findViewById(R.id.time).getWidth() * 1.2);
 
                     for (EventBundle e : mCalendarEvents) {
-                        String title = e.title + (e.dayString.isEmpty() ? "" : ",");
+                        String title = e.title + (e.dayString.isEmpty() ? " " : ", ");
                         String details = e.dayString
                                 + ((e.allDay) ? " all-day " : " at " + DateFormat.format(
                                         DateFormat.is24HourFormat(getContext()) ? "kk:mm"

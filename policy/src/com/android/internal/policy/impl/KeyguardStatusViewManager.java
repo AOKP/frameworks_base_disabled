@@ -999,21 +999,17 @@ class KeyguardStatusViewManager implements OnClickListener {
                 CalendarContract.Instances.START_DAY + " ASC, "
                         + CalendarContract.Instances.START_MINUTE + " ASC");
         
-        if (eventCur.getCount() < 1) {
-            eventCur.close();
-            return;
-        }
-        if (!multipleEvents) {
+        int events = eventCur.getCount();
+        
+        if (events > 0) {
             eventCur.moveToFirst();
+            do {
             mCalendarEvents.add(new EventBundle(eventCur.getString(0),
                     eventCur.getLong(1), eventCur.getString(2),
                     now, (eventCur.getInt(3) != 0), eventCur.getInt(4)));
-        } else {
-            while (eventCur.moveToNext()) {
-                mCalendarEvents.add(new EventBundle(eventCur.getString(0),
-                        eventCur.getLong(1), eventCur.getString(2),
-                        now, (eventCur.getInt(3) != 0), eventCur.getInt(4)));
-            }
+            if (!multipleEvents)
+                break;
+            } while (eventCur.moveToNext());
         }
         eventCur.close();
     }

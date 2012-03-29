@@ -1516,6 +1516,7 @@ status_t StagefrightRecorder::setupVideoEncoder(
         enc_meta->setInt32(kKeyTimeScale, mVideoTimeScale);
     }
 
+#ifdef QCOM_HARDWARE
     /*
      * can set profile from the app as a parameter.
      * For the mean time, set from shell
@@ -1565,6 +1566,7 @@ status_t StagefrightRecorder::setupVideoEncoder(
             break;
         }
     }
+#endif
 
     if (mVideoEncoderProfile != -1) {
         enc_meta->setInt32(kKeyVideoProfile, mVideoEncoderProfile);

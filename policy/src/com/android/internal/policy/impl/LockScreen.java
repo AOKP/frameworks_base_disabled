@@ -70,12 +70,12 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
     private static final int WAIT_FOR_ANIMATION_TIMEOUT = 0;
     private static final int STAY_ON_WHILE_GRABBED_TIMEOUT = 30000;
     
+    public static final int LAYOUT_SLIDER = 1;
+    public static final int LAYOUT_HONEY = 0;
     public static final int LAYOUT_STOCK = 2;
     public static final int LAYOUT_QUAD = 6;
     public static final int LAYOUT_OCTO = 8;
-    public static final int LAYOUT_AOSP = 1;
-    public static final int LAYOUT_HONEY = 0;
-    
+
     private boolean mLockscreen4Tab = false || (Settings.System.getInt(
 			mContext.getContentResolver(),
 			Settings.System.LOCKSCREEN_4TAB, 0) == 1);
@@ -392,6 +392,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
         public static final String ACTION_APP_PHONE = "**phone**";
         public static final String ACTION_APP_CAMERA = "**camera**";
         public static final String ACTION_APP_MMS = "**mms**";
+        public static final String ACTION_APP_TORCH = "**torch**";
         public static final String ACTION_APP_CUSTOM = "**app**";
         public static final String ACTION_NULL = "**null**";
 
@@ -445,6 +446,9 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
             } else if (action.equals(ACTION_APP_MMS)) {
                     resId = R.drawable.ic_lockscreen_sms;
                     drawable = res.getDrawable(resId);
+            } else if (action.equals(ACTION_APP_TORCH)) {
+                    resId = R.drawable.ic_lockscreen_flashlight;
+                    drawable = res.getDrawable(resId);
             } else if (action.equals(ACTION_SOUND_TOGGLE)) {
                 resId = mSilentMode ? R.drawable.ic_lockscreen_silent
                         : R.drawable.ic_lockscreen_soundon;
@@ -484,6 +488,21 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
                 mCallback.goToUnlockScreen();
             } else if (action.equals(ACTION_APP_CAMERA)) {
                 Intent intent = new Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                mContext.startActivity(intent);
+                mCallback.goToUnlockScreen();
+            } else if (action.equals(ACTION_APP_TORCH)) {
+                boolean mTorchEnabled = Settings.System.getInt(mContext
+                        .getContentResolver(), Settings.System.TORCH_STATE, 0) == 1;
+
+                if (mTorchEnabled) {
+                    Settings.System.putInt(context.getContentResolver(), Settings.System.TORCH_STATE, 0);
+                    Intent intent = new Intent("com.android.systemui.INTENT_TORCH_OFF");
+                } else {
+                    Settings.System.putInt(context.getContentResolver(), Settings.System.TORCH_STATE, 1);
+                    Intent intent = new Intent("com.android.systemui.INTENT_TORCH_ON");
+                }
+                
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 mContext.startActivity(intent);
                 mCallback.goToUnlockScreen();
@@ -560,6 +579,8 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
                         t.action = Target.ACTION_SOUND_TOGGLE;
                     } else if (settingUri.equals(Target.ACTION_APP_MMS)) {
                         t.action = Target.ACTION_APP_MMS;
+                    } else if (settingUri.equals(Target.ACTION_APP_TORCH)) {
+                        t.action = Target.ACTION_APP_TORCH;
                     } else {
                         t.action = Target.ACTION_APP_CUSTOM;
                         t.customAppIntentUri = settingUri;
@@ -653,7 +674,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
                     inflater.inflate(R.layout.keyguard_screen_tab_octounlock, this,
                             true);
                 break;
-            case LAYOUT_AOSP:
+            case LAYOUT_SLIDER:
             	if (landscape)
                     inflater.inflate(R.layout.keyguard_screen_slidingtab_unlock_land, this,
                             true);
@@ -952,4 +973,3 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 		}
 	}
 }
-

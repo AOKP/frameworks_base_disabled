@@ -1690,7 +1690,7 @@ void OMXCodec::setVideoInputFormat(
 
     int32_t width, height, frameRate, bitRate, stride, sliceHeight;
 #ifdef QCOM_HARDWARE
-    int32_t hfr = 0, hfrRatio = 0;
+   int32_t hfr = 0, hfrRatio = 0;
 #endif
     bool success = meta->findInt32(kKeyWidth, &width);
     success = success && meta->findInt32(kKeyHeight, &height);

@@ -1,4 +1,5 @@
 /*
+ * Portions Copyright (C) 2012 VMware, Inc. All Rights Reserved.
  * Copyright (C) 2009 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,6 +28,9 @@
 #include <media/stagefright/AudioSource.h>
 #include <media/stagefright/AMRWriter.h>
 #include <media/stagefright/AACWriter.h>
+#ifdef QCOM_HARDWARE
+#include <media/stagefright/ExtendedWriter.h>
+#endif
 #include <media/stagefright/CameraSource.h>
 #include <media/stagefright/CameraSourceTimeLapse.h>
 #include <media/stagefright/MPEG2TSWriter.h>
@@ -51,6 +55,10 @@
 
 #include "ARTPWriter.h"
 
+#ifdef QCOM_HARDWARE
+#include <cutils/properties.h>
+#endif
+
 namespace android {
 
 // To collect the encoder usage for the battery app
@@ -69,7 +77,13 @@ StagefrightRecorder::StagefrightRecorder()
       mOutputFd(-1),
       mAudioSource(AUDIO_SOURCE_CNT),
       mVideoSource(VIDEO_SOURCE_LIST_END),
+#ifdef QCOM_HARDWARE
+      mStarted(false), mSurfaceMediaSource(NULL),
+      mDisableAudio(false) {
+#else
       mStarted(false), mSurfaceMediaSource(NULL) {
+#endif
+
 
     LOGV("Constructor");
     reset();
@@ -100,6 +114,12 @@ status_t StagefrightRecorder::setAudioSource(audio_source_t as) {
         LOGE("Invalid audio source: %d", as);
         return BAD_VALUE;
     }
+
+#ifdef QCOM_HARDWARE
+    if (mDisableAudio) {
+        return OK;
+    }
+#endif
 
     if (as == AUDIO_SOURCE_DEFAULT) {
         mAudioSource = AUDIO_SOURCE_MIC;
@@ -152,12 +172,31 @@ status_t StagefrightRecorder::setAudioEncoder(audio_encoder ae) {
         return BAD_VALUE;
     }
 
+#ifdef QCOM_HARDWARE
+    if (mDisableAudio) {
+        return OK;
+    }
+#endif
+
     if (ae == AUDIO_ENCODER_DEFAULT) {
         mAudioEncoder = AUDIO_ENCODER_AMR_NB;
     } else {
         mAudioEncoder = ae;
     }
 
+#ifdef QCOM_HARDWARE
+    // Use default values if appropriate setparam's weren't called.
+    if(mAudioEncoder == AUDIO_ENCODER_AAC) {
+        mSampleRate = mSampleRate ? mSampleRate : 48000;
+        mAudioChannels = mAudioChannels ? mAudioChannels : 2;
+        mAudioBitRate = mAudioBitRate ? mAudioBitRate : 156000;
+    }
+    else{
+        mSampleRate = mSampleRate ? mSampleRate : 8000;
+        mAudioChannels = mAudioChannels ? mAudioChannels : 1;
+        mAudioBitRate = mAudioBitRate ? mAudioBitRate : 12200;
+    }
+#endif
     return OK;
 }
 
@@ -768,6 +807,11 @@ status_t StagefrightRecorder::start() {
             status = startMPEG2TSRecording();
             break;
 
+#ifdef QCOM_HARDWARE
+        case OUTPUT_FORMAT_QCP:
+            status = startExtendedRecording( );
+            break;
+#endif
         default:
             LOGE("Unsupported output file format: %d", mOutputFormat);
             status = UNKNOWN_ERROR;
@@ -818,6 +862,14 @@ sp<MediaSource> StagefrightRecorder::createAudioSource() {
         case AUDIO_ENCODER_AAC:
             mime = MEDIA_MIMETYPE_AUDIO_AAC;
             break;
+#ifdef QCOM_HARDWARE
+        case AUDIO_ENCODER_EVRC:
+            mime = MEDIA_MIMETYPE_AUDIO_EVRC;
+            break;
+        case AUDIO_ENCODER_QCELP:
+            mime = MEDIA_MIMETYPE_AUDIO_QCELP;
+            break;
+#endif
         default:
             LOGE("Unknown audio encoder: %d", mAudioEncoder);
             return NULL;
@@ -876,12 +928,32 @@ status_t StagefrightRecorder::startAMRRecording() {
                     mAudioEncoder);
             return BAD_VALUE;
         }
+#ifdef QCOM_HARDWARE
+        if (mSampleRate != 8000) {
+            LOGE("Invalid sampling rate %d used for AMRNB recording",
+                    mSampleRate);
+            return BAD_VALUE;
+        }
+#endif
     } else {  // mOutputFormat must be OUTPUT_FORMAT_AMR_WB
         if (mAudioEncoder != AUDIO_ENCODER_AMR_WB) {
             LOGE("Invlaid encoder %d used for AMRWB recording",
                     mAudioEncoder);
             return BAD_VALUE;
         }
+#ifdef QCOM_HARDWARE
+        if (mSampleRate != 16000) {
+            LOGE("Invalid sample rate %d used for AMRWB recording",
+                    mSampleRate);
+            return BAD_VALUE;
+        }
+    }
+
+    if (mAudioChannels != 1) {
+        LOGE("Invalid number of audio channels %d used for amr recording",
+                mAudioChannels);
+        return BAD_VALUE;
+#endif
     }
 
     mWriter = new AMRWriter(mOutputFd);
@@ -1297,9 +1369,22 @@ status_t StagefrightRecorder::setupCameraSource(
                 mTimeBetweenTimeLapseFrameCaptureUs);
         *cameraSource = mCameraSourceTimeLapse;
     } else {
+
+#ifdef QCOM_HARDWARE
+        bool useMeta = true;
+        char value[PROPERTY_VALUE_MAX];
+        if (property_get("debug.camcorder.disablemeta", value, NULL) &&
+            atoi(value)) {
+            useMeta = false;
+        }
+#endif
         *cameraSource = CameraSource::CreateFromCamera(
                 mCamera, mCameraProxy, mCameraId, videoSize, mFrameRate,
+#ifdef QCOM_HARDWARE
+                mPreviewSurface, useMeta);
+#else
                 mPreviewSurface, true /*storeMetaDataInVideoBuffers*/);
+#endif
     }
     mCamera.clear();
     mCameraProxy.clear();
@@ -1363,11 +1448,21 @@ status_t StagefrightRecorder::setupVideoEncoder(
     sp<MetaData> meta = cameraSource->getFormat();
 
     int32_t width, height, stride, sliceHeight, colorFormat;
+#ifdef QCOM_HARDWARE
+    int32_t hfr;
+#endif
     CHECK(meta->findInt32(kKeyWidth, &width));
     CHECK(meta->findInt32(kKeyHeight, &height));
     CHECK(meta->findInt32(kKeyStride, &stride));
     CHECK(meta->findInt32(kKeySliceHeight, &sliceHeight));
     CHECK(meta->findInt32(kKeyColorFormat, &colorFormat));
+#ifdef QCOM_HARDWARE
+    CHECK(meta->findInt32(kKeyHFR, &hfr));
+
+    if(hfr) {
+      mMaxFileDurationUs = mMaxFileDurationUs * (hfr/mFrameRate);
+    }
+#endif
 
     enc_meta->setInt32(kKeyWidth, width);
     enc_meta->setInt32(kKeyHeight, height);
@@ -1375,9 +1470,80 @@ status_t StagefrightRecorder::setupVideoEncoder(
     enc_meta->setInt32(kKeyStride, stride);
     enc_meta->setInt32(kKeySliceHeight, sliceHeight);
     enc_meta->setInt32(kKeyColorFormat, colorFormat);
+#ifdef QCOM_HARDWARE
+    enc_meta->setInt32(kKeyHFR, hfr);
+#endif
     if (mVideoTimeScale > 0) {
         enc_meta->setInt32(kKeyTimeScale, mVideoTimeScale);
     }
+
+#ifdef QCOM_HARDWARE
+    char mDeviceName[100];
+    property_get("ro.board.platform",mDeviceName,"0");
+    if(!strncmp(mDeviceName, "msm7627a", 8)) {
+      if(hfr && (width * height > 432*240)) {
+        LOGE("HFR mode is supported only upto WQVGA resolution");
+        return INVALID_OPERATION;
+      }
+    }
+    else {
+      if(hfr && ((mVideoEncoder != VIDEO_ENCODER_H264) || (width * height > 800*480))) {
+        LOGE("HFR mode is supported only upto WVGA and H264 codec.");
+        return INVALID_OPERATION;
+      }
+    }
+
+    /*
+     * can set profile from the app as a parameter.
+     * For the mean time, set from shell
+     */
+
+    char value[PROPERTY_VALUE_MAX];
+    bool customProfile = false;
+
+    if (property_get("encoder.video.profile", value, NULL) > 0) {
+        customProfile = true;
+    }
+
+    if (customProfile) {
+        switch ( mVideoEncoder ) {
+        case VIDEO_ENCODER_H264:
+            if (strncmp("base", value, 4) == 0) {
+                mVideoEncoderProfile = OMX_VIDEO_AVCProfileBaseline;
+                LOGI("H264 Baseline Profile");
+            }
+            else if (strncmp("main", value, 4) == 0) {
+                mVideoEncoderProfile = OMX_VIDEO_AVCProfileMain;
+                LOGI("H264 Main Profile");
+            }
+            else if (strncmp("high", value, 4) == 0) {
+                mVideoEncoderProfile = OMX_VIDEO_AVCProfileHigh;
+                LOGI("H264 High Profile");
+            }
+            else {
+               LOGW("Unsupported H264 Profile");
+            }
+            break;
+        case VIDEO_ENCODER_MPEG_4_SP:
+            if (strncmp("simple", value, 5) == 0 ) {
+                mVideoEncoderProfile = OMX_VIDEO_MPEG4ProfileSimple;
+                LOGI("MPEG4 Simple profile");
+            }
+            else if (strncmp("asp", value, 3) == 0 ) {
+                mVideoEncoderProfile = OMX_VIDEO_MPEG4ProfileAdvancedSimple;
+                LOGI("MPEG4 Advanced Simple Profile");
+            }
+            else {
+                LOGW("Unsupported MPEG4 Profile");
+            }
+            break;
+        default:
+            LOGW("No custom profile support for other codecs");
+            break;
+        }
+    }
+#endif
+
     if (mVideoEncoderProfile != -1) {
         enc_meta->setInt32(kKeyVideoProfile, mVideoEncoderProfile);
     }
@@ -1390,6 +1556,7 @@ status_t StagefrightRecorder::setupVideoEncoder(
 
     uint32_t encoder_flags = 0;
     if (mIsMetaDataStoredInVideoBuffers) {
+        LOGW("Camera source supports metadata mode, create OMXCodec for metadata");
         encoder_flags |= OMXCodec::kHardwareCodecsOnly;
         encoder_flags |= OMXCodec::kStoreMetaDataInVideoBuffers;
     }
@@ -1632,9 +1799,15 @@ status_t StagefrightRecorder::reset() {
     mVideoHeight   = 144;
     mFrameRate     = -1;
     mVideoBitRate  = 192000;
+#ifdef QCOM_HARDWARE
+    mSampleRate    = 0;
+    mAudioChannels = 0;
+    mAudioBitRate  = 0;
+#else
     mSampleRate    = 8000;
     mAudioChannels = 1;
     mAudioBitRate  = 12200;
+#endif
     mInterleaveDurationUs = 0;
     mIFramesIntervalSec = 1;
     mAudioSourceNode = 0;
@@ -1659,6 +1832,13 @@ status_t StagefrightRecorder::reset() {
     mLongitudex10000 = -3600000;
 
     mOutputFd = -1;
+
+#ifdef QCOM_HARDWARE
+    // Disable Audio Encoding
+    char value[PROPERTY_VALUE_MAX];
+    property_get("camcorder.debug.disableaudio", value, "0");
+    if(atoi(value)) mDisableAudio = true;
+#endif
 
     return OK;
 }
@@ -1746,4 +1926,48 @@ status_t StagefrightRecorder::dump(
     ::write(fd, result.string(), result.size());
     return OK;
 }
+
+#ifdef QCOM_HARDWARE
+status_t StagefrightRecorder::startExtendedRecording() {
+    CHECK(mOutputFormat == OUTPUT_FORMAT_QCP);
+
+    if (mSampleRate != 8000) {
+        LOGE("Invalid sampling rate %d used for recording",
+             mSampleRate);
+        return BAD_VALUE;
+    }
+    if (mAudioChannels != 1) {
+        LOGE("Invalid number of audio channels %d used for recording",
+                mAudioChannels);
+        return BAD_VALUE;
+    }
+
+    if (mAudioSource >= AUDIO_SOURCE_CNT) {
+        LOGE("Invalid audio source: %d", mAudioSource);
+        return BAD_VALUE;
+    }
+
+    sp<MediaSource> audioEncoder = createAudioSource();
+
+    if (audioEncoder == NULL) {
+        LOGE("AudioEncoder NULL");
+        return UNKNOWN_ERROR;
+    }
+
+    mWriter = new ExtendedWriter(dup(mOutputFd));
+    mWriter->addSource(audioEncoder);
+
+    if (mMaxFileDurationUs != 0) {
+        mWriter->setMaxFileDuration(mMaxFileDurationUs);
+    }
+    if (mMaxFileSizeBytes != 0) {
+        mWriter->setMaxFileSize(mMaxFileSizeBytes);
+    }
+    mWriter->setListener(mListener);
+    mWriter->start();
+
+    return OK;
+}
+#endif
+
 }  // namespace android

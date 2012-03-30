@@ -87,6 +87,10 @@ void CameraSourceListener::postDataTimestamp(
 }
 
 static int32_t getColorFormat(const char* colorFormat) {
+#ifdef QCOM_HARDWARE
+    return OMX_COLOR_FormatYUV420SemiPlanar;
+#endif
+
     if (!strcmp(colorFormat, CameraParameters::PIXEL_FORMAT_YUV420P)) {
        return OMX_COLOR_FormatYUV420Planar;
     }
@@ -528,6 +532,18 @@ status_t CameraSource::initWithCameraAccess(
         }
     }
 
+#ifdef QCOM_HARDWARE
+    const char *hfr_str = params.get("video-hfr");
+    int32_t hfr = -1;
+    if ( hfr_str != NULL ) {
+      hfr = atoi(hfr_str);
+    }
+    if(hfr < 0) {
+      LOGW("Invalid hfr value(%d) set from app. Disabling HFR.", hfr);
+      hfr = 0;
+    }
+#endif
+
     int64_t glitchDurationUs = (1000000LL / mVideoFrameRate);
     if (glitchDurationUs > mGlitchDurationThresholdUs) {
         mGlitchDurationThresholdUs = glitchDurationUs;
@@ -543,6 +559,9 @@ status_t CameraSource::initWithCameraAccess(
     mMeta->setInt32(kKeyStride,      mVideoSize.width);
     mMeta->setInt32(kKeySliceHeight, mVideoSize.height);
     mMeta->setInt32(kKeyFrameRate,   mVideoFrameRate);
+#ifdef QCOM_HARDWARE
+    mMeta->setInt32(kKeyHFR, hfr);
+#endif
     return OK;
 }
 

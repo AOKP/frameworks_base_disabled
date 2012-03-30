@@ -1,6 +1,27 @@
 LOCAL_PATH:= $(call my-dir)
 include $(CLEAR_VARS)
 
+ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
+ifeq ($(TARGET_BOARD_PLATFORM),msm7x27a)
+    LOCAL_CFLAGS += -DUSE_AAC_HW_DEC
+endif
+
+ifeq ($(TARGET_BOARD_PLATFORM),msm7k)
+    LOCAL_CFLAGS += -DTARGET7x27
+endif
+ifeq ($(TARGET_BOARD_PLATFORM),msm7x27a)
+    LOCAL_CFLAGS += -DTARGET7x27A
+endif
+ifeq ($(TARGET_BOARD_PLATFORM),msm7x30)
+    LOCAL_CFLAGS += -DTARGET7x30
+endif
+ifeq ($(TARGET_BOARD_PLATFORM),qsd8k)
+    LOCAL_CFLAGS += -DTARGET8x50
+endif
+ifeq ($(TARGET_BOARD_PLATFORM),msm8660)
+    LOCAL_CFLAGS += -DTARGET8x60
+endif
+endif
 include frameworks/base/media/libstagefright/codecs/common/Config.mk
 
 LOCAL_SRC_FILES:=                         \
@@ -52,12 +73,18 @@ LOCAL_SRC_FILES:=                         \
         XINGSeeker.cpp                    \
         avc_utils.cpp                     \
 
-LOCAL_C_INCLUDES:= \
+ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
+        LOCAL_SRC_FILES += ExtendedExtractor.cpp
+        LOCAL_SRC_FILES += ExtendedWriter.cpp
+	LOCAL_C_INCLUDES += $(TOP)/hardware/qcom/display/libqcomui
+endif
+
+LOCAL_C_INCLUDES+= \
 	$(JNI_H_INCLUDE) \
         $(TOP)/frameworks/base/include/media/stagefright/openmax \
         $(TOP)/external/flac/include \
         $(TOP)/external/tremolo \
-        $(TOP)/external/openssl/include \
+        $(TOP)/external/openssl/include
 
 LOCAL_SHARED_LIBRARIES := \
         libbinder         \
@@ -147,6 +174,14 @@ LOCAL_SHARED_LIBRARIES += \
         libdl
 
 LOCAL_CFLAGS += -Wno-multichar
+
+ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
+        LOCAL_C_INCLUDES += $(TOP)/hardware/qcom/display/libgralloc
+        LOCAL_C_INCLUDES += $(TOP)/vendor/qcom/opensource/omx/mm-core/omxcore/inc
+        LOCAL_C_INCLUDES += $(TOP)/system/core/include
+        LOCAL_C_INCLUDES += $(TOP)/hardware/libhardware_legacy/include
+        LOCAL_CFLAGS += -DQCOM_HARDWARE
+endif
 
 LOCAL_MODULE:= libstagefright
 

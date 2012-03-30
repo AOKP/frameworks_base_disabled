@@ -455,7 +455,9 @@ status_t OMXNodeInstance::useGraphicBuffer2_l(
         return UNKNOWN_ERROR;
     }
 
+#ifndef QCOM_HARDWARE
     CHECK_EQ(header->pBuffer, bufferHandle);
+#endif
     CHECK_EQ(header->pAppPrivate, bufferMeta);
 
     *buffer = header;
@@ -599,15 +601,30 @@ status_t OMXNodeInstance::freeBuffer(
         OMX_U32 portIndex, OMX::buffer_id buffer) {
     Mutex::Autolock autoLock(mLock);
 
+#ifndef QCOM_HARDWARE
     removeActiveBuffer(portIndex, buffer);
+#endif
 
     OMX_BUFFERHEADERTYPE *header = (OMX_BUFFERHEADERTYPE *)buffer;
     BufferMeta *buffer_meta = static_cast<BufferMeta *>(header->pAppPrivate);
 
     OMX_ERRORTYPE err = OMX_FreeBuffer(mHandle, portIndex, header);
 
+#ifdef QCOM_HARDWARE
+    if (err == OMX_ErrorNone) {
+        removeActiveBuffer(portIndex, buffer);
+
+        if (buffer_meta) {
+            delete buffer_meta;
+            buffer_meta = NULL;
+        }
+    } else {
+        LOGE("OMX_FreeBuffer failed with err 0x%08x", err);
+    }
+#else
     delete buffer_meta;
     buffer_meta = NULL;
+#endif
 
     return StatusFromOMXError(err);
 }

@@ -56,6 +56,7 @@ import com.android.internal.widget.SlidingTab;
 import com.android.internal.widget.WaveView;
 import com.android.internal.widget.multiwaveview.MultiWaveView;
 
+
 /**
  * The screen within {@link LockPatternKeyguardView} that shows general information about the device
  * depending on its state, and how to get past it, as applicable.
@@ -69,6 +70,8 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
     private static final String ENABLE_MENU_KEY_FILE = "/data/local/enable_menu_key";
     private static final int WAIT_FOR_ANIMATION_TIMEOUT = 0;
     private static final int STAY_ON_WHILE_GRABBED_TIMEOUT = 30000;
+    public static final String INTENT_TORCH_ON = "com.android.systemui.INTENT_TORCH_ON";
+    public static final String INTENT_TORCH_OFF = "com.android.systemui.INTENT_TORCH_OFF";
     
     public static final int LAYOUT_SLIDER = 1;
     public static final int LAYOUT_HONEY = 0;
@@ -492,22 +495,22 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
                 mContext.startActivity(intent);
                 mCallback.goToUnlockScreen();
             } else if (action.equals(ACTION_APP_TORCH)) {
-                Intent intent = new Intent(Intent.ACTION_MAIN);
-                boolean mTorchEnabled = Settings.System.getInt(getContext()
+                boolean mFlashlightState = Settings.System.getInt(getContext()
                         .getContentResolver(), Settings.System.TORCH_STATE, 0) == 1;
 
-                if (mTorchEnabled) {
-                    Settings.System.putInt(getContext()
+                if (mFlashlightState) {
+                    Settings.System.getInt(getContext()
                             .getContentResolver(), Settings.System.TORCH_STATE, 0);
-                    intent = new Intent("com.android.systemui.INTENT_TORCH_OFF");
+                    Intent i = new Intent(INTENT_TORCH_OFF);
+                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    mContext.startActivity(i);
                 } else {
-                    Settings.System.putInt(getContext()
+                    Settings.System.getInt(getContext()
                             .getContentResolver(), Settings.System.TORCH_STATE, 1);
-                    intent = new Intent("com.android.systemui.INTENT_TORCH_ON");
+                    Intent i = new Intent(INTENT_TORCH_ON);
+                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    mContext.startActivity(i);
                 }
-                
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                mContext.startActivity(intent);
                 mCallback.goToUnlockScreen();
             } else if (action.equals(ACTION_SOUND_TOGGLE)) {
                 toggleRingMode();

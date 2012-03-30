@@ -127,6 +127,12 @@ sp<AMessage> NuPlayer::Decoder::makeFormat(const sp<MetaData> &meta) {
 
         msg->setInt32("channel-count", numChannels);
         msg->setInt32("sample-rate", sampleRate);
+
+        int32_t useSWDecforAudio;
+        if(meta->findInt32(kKeyUseSWDec, &useSWDecforAudio)) {
+            LOGV("Use Software Decoder for Audio");
+            msg->setInt32("use-swdec", useSWDecforAudio);
+        }
     }
 
     int32_t maxInputSize;

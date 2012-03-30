@@ -2129,14 +2129,25 @@ void ACodec::UninitializedState::onSetup(
     AString mime;
     CHECK(msg->findString("mime", &mime));
 
+    int32_t useSWDecforAudio;
     Vector<String8> matchingCodecs;
-    OMXCodec::findMatchingCodecs(
-            mime.c_str(),
-            false, // createEncoder
-            NULL,  // matchComponentName
-            0,     // flags
-            &matchingCodecs);
 
+    if(!strncasecmp("audio/", mime.c_str(), 6) &&
+       msg->findInt32("use-swdec",&useSWDecforAudio)){
+        OMXCodec::findMatchingCodecs(
+                mime.c_str(),
+                false, // createEncoder
+                NULL,  // matchComponentName
+                OMXCodec::kSoftwareCodecsOnly,     // UseSoftwardeCodecsOnly
+                &matchingCodecs);
+    } else {
+       OMXCodec::findMatchingCodecs(
+               mime.c_str(),
+               false, // createEncoder
+               NULL,  // matchComponentName
+               0,     // flags
+               &matchingCodecs);
+    }
     sp<CodecObserver> observer = new CodecObserver;
     IOMX::node_id node = NULL;
 

@@ -40,6 +40,7 @@
 #include <media/stagefright/MetaData.h>
 #include <surfaceflinger/Surface.h>
 #include <gui/ISurfaceTexture.h>
+#include <cutils/properties.h>
 
 #include "avc_utils.h"
 
@@ -99,14 +100,12 @@ status_t NuPlayer::setDataSource(
     if (!strncasecmp(url, "rtsp://", 7)) {
            msg->setObject(
                 "source", new RTSPSource(url, headers, mUIDValid, mUID));
-           mIsHttpLive = false;
            mLiveSourceType = kRtspSource;
     } else {
        if (!strncasecmp(mUri.string(), "http://", 7) && (len >= 4 && !strcasecmp(".mpd", &url[len - 4]))) {
            /* Load the DASH HTTP Live source librery here */
            LOGV("NuPlayer setDataSource url sting %s",mUri.string());
            sp<NuPlayer::Source> DashHttpLiveSource = LoadCreateDashHttpSource(url, headers, mUIDValid, mUID);
-           mIsHttpLive = false;
            if (DashHttpLiveSource != NULL) {
               mLiveSourceType = kHttpDashSource;
               msg->setObject("source", DashHttpLiveSource);
@@ -117,7 +116,6 @@ status_t NuPlayer::setDataSource(
        } else {
            msg->setObject(
                 "source", new HTTPLiveSource(url, headers, mUIDValid, mUID));
-           mIsHttpLive = true;
            mLiveSourceType = kHttpLiveSource;
        }
     }
@@ -504,6 +502,7 @@ void NuPlayer::onMessageReceived(const sp<AMessage> &msg) {
             Mutex::Autolock autoLock(mLock);
 
             /*TODO We have to evaluate if this fix is required from google */
+
             if (mRenderer != NULL) {
                 // There's an edge case where the renderer owns all output
                 // buffers and is paused, therefore the decoder will not read
@@ -515,9 +514,9 @@ void NuPlayer::onMessageReceived(const sp<AMessage> &msg) {
                     mRenderer->resume();
                 }
             }
-
             if ( (mAudioDecoder != NULL && IsFlushingState(mFlushingAudio)) ||
                  (mVideoDecoder != NULL && IsFlushingState(mFlushingVideo)) ) {
+
                 // We're currently flushing, postpone the reset until that's
                 // completed.
 
@@ -556,9 +555,18 @@ void NuPlayer::onMessageReceived(const sp<AMessage> &msg) {
             ALOGV("kWhatSeek seekTimeUs=%lld us (%.2f secs)",
                  seekTimeUs, seekTimeUs / 1E6);
 
-            mSource->seekTo(seekTimeUs, &newSeekTime);
-            LOGV("newSeekTime %lld", newSeekTime);
+            nRet = mSource->seekTo(seekTimeUs);
 
+            if (mLiveSourceType == kHttpLiveSource) {
+                mSource->getNewSeekTime(&newSeekTime);
+                LOGV("newSeekTime %lld", newSeekTime);
+            }
+            else if ( (mLiveSourceType == kHttpDashSource) && (nRet == OK)) // if seek success then flush the audio,video decoder and renderer
+            {
+                if( (mVideoDecoder != NULL) &&
+                    (mFlushingVideo == NONE || mFlushingVideo == AWAITING_DISCONTINUITY) ) {
+                    flushDecoder( false, false ); // flush video, do not shutdown
+                }
             if( newSeekTime >= 0 ) {
                if( (mAudioDecoder != NULL) &&
                    (mFlushingAudio == NONE || mFlushingAudio == AWAITING_DISCONTINUITY) ) {
@@ -686,9 +694,6 @@ void NuPlayer::finishReset() {
     ++mScanSourcesGeneration;
     mScanSourcesPending = false;
 
-    ++mScanSourcesGeneration;
-    mScanSourcesPending = false;
-
     mRenderer.clear();
 
     if (mSource != NULL) {
@@ -746,7 +751,8 @@ status_t NuPlayer::instantiateDecoder(bool audio, sp<Decoder> *decoder) {
                        new Decoder(notify, mNativeWindow);
     looper()->registerHandler(*decoder);
 
-    {
+    char value[PROPERTY_VALUE_MAX] = {0};
+    if (mLiveSourceType == kHttpLiveSource){
         //Set flushing state to none
         Mutex::Autolock autoLock(mLock);
         if( audio ) {
@@ -755,6 +761,10 @@ status_t NuPlayer::instantiateDecoder(bool audio, sp<Decoder> *decoder) {
             mFlushingVideo = NONE;
 
         }
+    } else if (audio && mLiveSourceType == kRtspSource &&
+               property_get("ro.product.device", value, "0") &&
+               !strncmp(value, "msm7627a", sizeof("msm7627a") - 1)) {
+        meta->setInt32(kKeyUseSWDec, true);
     }
 
     (*decoder)->configure(meta);
@@ -774,13 +784,15 @@ status_t NuPlayer::feedDecoderInputData(bool audio, const sp<AMessage> &msg) {
     sp<AMessage> reply;
     CHECK(msg->findMessage("reply", &reply));
 
-    Mutex::Autolock autoLock(mLock);
+    {
+        Mutex::Autolock autoLock(mLock);
 
-    if ((audio && IsFlushingState(mFlushingAudio))
+        if ((audio && IsFlushingState(mFlushingAudio))
             || (!audio && IsFlushingState(mFlushingVideo))) {
-        reply->setInt32("err", INFO_DISCONTINUITY);
-        reply->post();
-        return OK;
+            reply->setInt32("err", INFO_DISCONTINUITY);
+            reply->post();
+            return OK;
+        }
     }
 
     sp<ABuffer> accessUnit;

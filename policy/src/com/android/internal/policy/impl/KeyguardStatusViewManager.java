@@ -489,8 +489,8 @@ class KeyguardStatusViewManager implements OnClickListener {
                         mCalendarView.addView(cEntry);
                     }
                     mCalendarView.setFlipInterval(interval);
-                    mCalendarView.setVisibility(View.VISIBLE);
                     mCalendarView.bringChildToFront(mCalendarView.getChildAt(0));
+                    mCalendarView.setVisibility(View.VISIBLE);
                     if (!multipleEventsEnabled || mCalendarEvents.size() <= 1) {
                         mCalendarView.stopFlipping();
                     } else {

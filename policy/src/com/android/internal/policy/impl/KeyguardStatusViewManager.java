@@ -488,17 +488,14 @@ class KeyguardStatusViewManager implements OnClickListener {
                             cEntry.setColor(e.color);
                         mCalendarView.addView(cEntry);
                     }
-                    mCalendarView.setFlipInterval(interval);
-                    mCalendarView.bringChildToFront(mCalendarView.getChildAt(0));
-                    mCalendarView.setVisibility(View.VISIBLE);
                     if (!multipleEventsEnabled || mCalendarEvents.size() <= 1) {
                         mCalendarView.stopFlipping();
                     } else {
-                        Log.d(TAG, "multiple events, flipping");
+                        mCalendarView.setFlipInterval(interval);
                         mCalendarView.startFlipping();
                     }
+                    mCalendarView.setVisibility(View.VISIBLE);
                 } else {
-                    Log.d(TAG, "hide calendar");
                     mCalendarView.setVisibility(View.GONE);
                 }
             }

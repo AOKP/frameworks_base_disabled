@@ -1058,12 +1058,9 @@ status_t OMXCodec::configureCodec(const sp<MetaData> &meta) {
             LOGV("OMXCodec::configureCodec found kKeyRawCodecSpecificData of size %d\n", size);
             addCodecSpecificData(data, size);
         }
-#else
-        }
-#endif
+
     }
 
-#ifdef QCOM_HARDWARE
     if (!strcasecmp(MEDIA_MIMETYPE_VIDEO_DIVX, mMIME) ||
         !strcasecmp(MEDIA_MIMETYPE_VIDEO_DIVX4, mMIME) ||
         !strcasecmp(MEDIA_MIMETYPE_VIDEO_DIVX311, mMIME)) {
@@ -1093,9 +1090,9 @@ status_t OMXCodec::configureCodec(const sp<MetaData> &meta) {
                          &paramDivX, sizeof(paramDivX));
         if (err!=OK) {
             return err;
+#endif
         }
     }
-#endif
 
     int32_t bitRate = 0;
     if (mIsEncoder) {
@@ -2185,19 +2182,18 @@ status_t OMXCodec::setVideoOutputFormat(
                || format.eColorFormat == OMX_COLOR_FormatYUV420SemiPlanar
                || format.eColorFormat == OMX_COLOR_FormatCbYCrY
                || format.eColorFormat == OMX_TI_COLOR_FormatYUV420PackedSemiPlanar
+               || format.eColorFormat == OMX_QCOM_COLOR_FormatYVU420SemiPlanar
+#ifdef QCOM_HARDWARE
+               || format.eColorFormat == QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka
+#endif
+
 #ifdef SAMSUNG_CODEC_SUPPORT
                || format.eColorFormat == OMX_SEC_COLOR_FormatNV12TPhysicalAddress
                || format.eColorFormat == OMX_SEC_COLOR_FormatNV12Tiled
 #endif
-#ifdef QCOM_HARDWARE
-               || format.eColorFormat == QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka
-#endif
-        );
+               );
 #ifdef SAMSUNG_CODEC_SUPPORT
-        if (!strcmp("OMX.SEC.FP.AVC.Decoder", mComponentName) ||
-            !strcmp("OMX.SEC.AVC.Decoder", mComponentName) ||
-            !strcmp("OMX.SEC.MPEG4.Decoder", mComponentName) ||
-            !strcmp("OMX.SEC.H263.Decoder", mComponentName)) {
+        if (!strncmp("OMX.SEC.", mComponentName, 8)) {
             if (mNativeWindow == NULL)
                 format.eColorFormat = OMX_COLOR_FormatYUV420Planar;
             else
@@ -2226,8 +2222,9 @@ status_t OMXCodec::setVideoOutputFormat(
 
     CHECK_EQ(err, (status_t)OK);
 
-#if 1
-    // XXX Need a (much) better heuristic to compute input buffer sizes.
+#ifdef EXYNOS4210_ENHANCEMENTS
+    const size_t X = 64 * 8 * 1024;  // const size_t X = 64 * 1024;
+#else
     const size_t X = 64 * 1024;
     if (def.nBufferSize < X) {
         def.nBufferSize = X;
@@ -2597,7 +2594,7 @@ status_t OMXCodec::allocateBuffersOnPort(OMX_U32 portIndex) {
         }
 
         if (err != OK) {
-            CODEC_LOGE("allocate_buffer_with_backup failed");
+            LOGE("allocate_buffer_with_backup failed");
             return err;
         }
 

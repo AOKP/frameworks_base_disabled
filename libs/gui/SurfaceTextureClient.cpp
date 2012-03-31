@@ -63,6 +63,9 @@ void SurfaceTextureClient::init() {
     mReqHeight = 0;
     mReqFormat = 0;
     mReqUsage = 0;
+#ifdef QCOM_HARDWARE
+    mReqExtUsage = 0;
+#endif
     mTimestamp = NATIVE_WINDOW_TIMESTAMP_AUTO;
     mDefaultWidth = 0;
     mDefaultHeight = 0;
@@ -473,7 +476,25 @@ int SurfaceTextureClient::setUsage(uint32_t reqUsage)
 {
     LOGV("SurfaceTextureClient::setUsage");
     Mutex::Autolock lock(mMutex);
+#ifdef QCOM_HARDWARE
+    if (reqUsage & GRALLOC_USAGE_EXTERNAL_ONLY) {
+        //Set explicitly, since reqUsage may have other values.
+        mReqExtUsage = GRALLOC_USAGE_EXTERNAL_ONLY;
+        //This flag is never independent. Always an add-on to
+        //GRALLOC_USAGE_EXTERNAL_ONLY
+        if(reqUsage & GRALLOC_USAGE_EXTERNAL_BLOCK) {
+            mReqExtUsage |= GRALLOC_USAGE_EXTERNAL_BLOCK;
+        }
+    }
+    // For most cases mReqExtUsage will be 0.
+    // reqUsage could come from app or driver. When it comes from app
+    // and subsequently from driver, the latter ends up overwriting
+    // the existing values. We cache certain values in mReqExtUsage
+    // to avoid being overwritten.
+    mReqUsage = reqUsage | mReqExtUsage;
+#else
     mReqUsage = reqUsage;
+#endif
     return OK;
 }
 
@@ -677,20 +698,46 @@ status_t SurfaceTextureClient::lock(
                     backBuffer->height == frontBuffer->height &&
                     backBuffer->format == frontBuffer->format);
 
+#ifdef QCOM_HARDWARE
+            int bufferCount;
+
+            mSurfaceTexture->query(NATIVE_WINDOW_NUM_BUFFERS, &bufferCount);
+            const int backBufferidx = getSlotFromBufferLocked(out);
+#endif
+
             if (canCopyBack) {
                 // copy the area that is invalid and not repainted this round
+#ifdef QCOM_HARDWARE
+                Region oldDirtyRegion;
+                for(int i = 0 ; i < bufferCount; i++ ) {
+                    if(i != backBufferidx  && !mOldDirtyRegion[i].isEmpty())
+                        oldDirtyRegion.orSelf(mOldDirtyRegion[i]);
+                }
+
+                const Region copyback(oldDirtyRegion.subtract(newDirtyRegion));
+#else
                 const Region copyback(mOldDirtyRegion.subtract(newDirtyRegion));
+#endif
                 if (!copyback.isEmpty())
                     copyBlt(backBuffer, frontBuffer, copyback);
             } else {
                 // if we can't copy-back anything, modify the user's dirty
                 // region to make sure they redraw the whole buffer
                 newDirtyRegion.set(bounds);
+#ifdef QCOM_HARDWARE
+                for(int i = 0 ; i < bufferCount; i++ ) {
+                     mOldDirtyRegion[i].clear();
+                }
+#endif
             }
 
             // keep track of the are of the buffer that is "clean"
             // (ie: that will be redrawn)
+#ifdef QCOM_HARDWARE
+            mOldDirtyRegion[backBufferidx] = newDirtyRegion;
+#else
             mOldDirtyRegion = newDirtyRegion;
+#endif
 
             if (inOutDirtyBounds) {
                 *inOutDirtyBounds = newDirtyRegion.getBounds();

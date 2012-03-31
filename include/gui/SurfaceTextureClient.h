@@ -162,8 +162,22 @@ private:
     // must be used from the lock/unlock thread
     sp<GraphicBuffer>           mLockedBuffer;
     sp<GraphicBuffer>           mPostedBuffer;
+#ifdef QCOM_HARDWARE
+    mutable Region              mOldDirtyRegion[NUM_BUFFER_SLOTS];
+#else
     mutable Region              mOldDirtyRegion;
+#endif
     bool                        mConnectedToCpu;
+
+#ifdef QCOM_HARDWARE
+    // mReqExtUsage is a flag set by app to mark a layer for display on
+    // external panels only. Depending on the value of this flag mReqUsage
+    // will be ORed with existing values.
+    // Possible values GRALLOC_USAGE_EXTERNAL_ONLY and
+    // GRALLOC_USAGE_EXTERNAL_BLOCK
+    // It is initialized to 0
+    uint32_t mReqExtUsage;
+#endif
 };
 
 }; // namespace android

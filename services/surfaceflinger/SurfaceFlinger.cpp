@@ -105,13 +105,13 @@ SurfaceFlinger::SurfaceFlinger()
         mDebugInTransaction(0),
         mLastTransactionTime(0),
         mBootFinished(false),
-        mConsoleSignals(0),
+#ifdef QCOM_HDMI_OUT
+        mHDMIOutput(EXT_DISPLAY_OFF),
+#endif
 #ifdef QCOM_HARDWARE
         mCanSkipComposition(false),
 #endif
-#ifdef QCOM_HDMI_OUT
-        mHDMIOutput(false),
-#endif
+        mConsoleSignals(0),
         mSecureFrameBuffer(0)
 {
     init();
@@ -444,6 +444,13 @@ bool SurfaceFlinger::threadLoop()
         // build the h/w work list
         handleWorkList();
     }
+
+#ifdef QCOM_HARDWARE
+    if (isRotationCompleted() == false) {
+        LOGD("Rotation is not finished. Skip the composition");
+        return true;
+    }
+#endif
 
     const DisplayHardware& hw(graphicPlane(0).displayHardware());
     if (LIKELY(hw.canDraw())) {
@@ -843,6 +850,21 @@ void SurfaceFlinger::unlockPageFlip(const LayerVector& currentLayers)
     }
 }
 
+#ifdef QCOM_HARDWARE
+bool SurfaceFlinger::isRotationCompleted()
+{
+    const Vector< sp<LayerBase> >& currentLayers(mVisibleLayersSortedByZ);
+    const size_t count = currentLayers.size();
+
+    for (size_t i=0 ; i<count ; i++) {
+        if (currentLayers[i]->isRotated() == false) {
+            return false;
+        }
+    }
+    return true;
+}
+#endif
+
 void SurfaceFlinger::handleWorkList()
 {
     mHwWorkListDirty = false;
@@ -1023,6 +1045,9 @@ void SurfaceFlinger::setupHardwareComposer(Region& dirtyInOut)
                     dirtyInOut.orSelf(layer->visibleRegionScreen);
                 }
                 layer->setOverlay(isOverlay);
+#ifdef QCOM_HARDWARE
+                layer->mQCLayer->setS3DComposeFormat(cur[i].hints);
+#endif
             }
             // don't erase stuff outside the dirty region
             transparent.andSelf(dirtyInOut);
@@ -2456,7 +2481,12 @@ status_t SurfaceFlinger::captureScreenImplLocked(DisplayID dpy,
         glClear(GL_COLOR_BUFFER_BIT);
 
         const LayerVector& layers(mDrawingState.layersSortedByZ);
+#ifdef QCOM_HARDWARE
+        //if we have secure windows, do not draw any layers.
+        const size_t count = mSecureFrameBuffer ? 0: layers.size();
+#else
         const size_t count = layers.size();
+#endif
         for (size_t i=0 ; i<count ; ++i) {
             const sp<LayerBase>& layer(layers[i]);
             const uint32_t flags = layer->drawingState().flags;
@@ -2560,9 +2590,11 @@ status_t SurfaceFlinger::captureScreen(DisplayID dpy,
         virtual bool handler() {
             Mutex::Autolock _l(flinger->mStateLock);
 
+#ifndef QCOM_HARDWARE
             // if we have secure windows, never allow the screen capture
             if (flinger->mSecureFrameBuffer)
                 return true;
+#endif
 
             result = flinger->captureScreenImplLocked(dpy,
                     heap, w, h, f, sw, sh, minLayerZ, maxLayerZ);
@@ -2716,7 +2748,14 @@ status_t Client::destroySurface(SurfaceID sid) {
 
 // ---------------------------------------------------------------------------
 
+#ifdef QCOM_HARDWARE
+GraphicBufferAlloc::GraphicBufferAlloc() {
+    mFreedIndex = -1;
+    mSize = 0;
+}
+#else
 GraphicBufferAlloc::GraphicBufferAlloc() {}
+#endif
 
 GraphicBufferAlloc::~GraphicBufferAlloc() {}
 
@@ -2735,6 +2774,11 @@ sp<GraphicBuffer> GraphicBufferAlloc::createGraphicBuffer(uint32_t w, uint32_t h
         return 0;
     }
 #ifdef QCOM_HARDWARE
+    err = checkBuffer((native_handle_t *)graphicBuffer->handle, mSize, usage);
+    if (err) {
+        LOGE("%s: checkBuffer failed",__FUNCTION__);
+        return 0;
+    }
     Mutex::Autolock _l(mLock);
     mBuffers.add(graphicBuffer);
 #endif
@@ -2744,13 +2788,28 @@ sp<GraphicBuffer> GraphicBufferAlloc::createGraphicBuffer(uint32_t w, uint32_t h
 #ifdef QCOM_HARDWARE
 void GraphicBufferAlloc::freeAllGraphicBuffersExcept(int bufIdx) {
     Mutex::Autolock _l(mLock);
-    if (0 <= bufIdx && bufIdx < mBuffers.size()) {
+    if (bufIdx >= 0 && bufIdx < (int)mBuffers.size()) {
         sp<GraphicBuffer> b(mBuffers[bufIdx]);
         mBuffers.clear();
         mBuffers.add(b);
     } else {
         mBuffers.clear();
     }
+    mFreedIndex = -1;
+}
+
+void GraphicBufferAlloc::freeGraphicBufferAtIndex(int bufIdx) {
+     Mutex::Autolock _l(mLock);
+     if (bufIdx >= 0 && bufIdx < (int)mBuffers.size()) {
+        mBuffers.removeItemsAt(bufIdx);
+        mFreedIndex = bufIdx;
+     } else {
+        mFreedIndex = -1;
+     }
+}
+
+void GraphicBufferAlloc::setGraphicBufferSize(int size) {
+    mSize = size;
 }
 #endif
 // ---------------------------------------------------------------------------

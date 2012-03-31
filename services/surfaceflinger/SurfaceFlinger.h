@@ -99,9 +99,13 @@ public:
         PixelFormat format, uint32_t usage, status_t* error);
 #ifdef QCOM_HARDWARE
     virtual void freeAllGraphicBuffersExcept(int bufIdx);
+    virtual void freeGraphicBufferAtIndex(int bufIdx);
+    virtual void setGraphicBufferSize(int size);
 private:
     Vector<sp<GraphicBuffer> > mBuffers;
     Mutex mLock;
+    int mFreedIndex;
+    int mSize;
 #endif
 };
 
@@ -311,6 +315,9 @@ private:
             void        handlePageFlip();
             bool        lockPageFlip(const LayerVector& currentLayers);
             void        unlockPageFlip(const LayerVector& currentLayers);
+#ifdef QCOM_HARDWARE
+            bool        isRotationCompleted();
+#endif
             void        handleWorkList();
             void        handleRepaint();
             void        postFramebuffer();

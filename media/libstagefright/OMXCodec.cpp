@@ -14,6 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/*--------------------------------------------------------------------------
+Copyright (c) 2011-2012, Code Aurora Forum. All rights reserved.
+--------------------------------------------------------------------------*/
 
 //#define LOG_NDEBUG 0
 #define LOG_TAG "OMXCodec"
@@ -1058,9 +1061,12 @@ status_t OMXCodec::configureCodec(const sp<MetaData> &meta) {
             LOGV("OMXCodec::configureCodec found kKeyRawCodecSpecificData of size %d\n", size);
             addCodecSpecificData(data, size);
         }
-
+#else
+        }
+#endif
     }
 
+#ifdef QCOM_HARDWARE
     if (!strcasecmp(MEDIA_MIMETYPE_VIDEO_DIVX, mMIME) ||
         !strcasecmp(MEDIA_MIMETYPE_VIDEO_DIVX4, mMIME) ||
         !strcasecmp(MEDIA_MIMETYPE_VIDEO_DIVX311, mMIME)) {
@@ -1090,9 +1096,9 @@ status_t OMXCodec::configureCodec(const sp<MetaData> &meta) {
                          &paramDivX, sizeof(paramDivX));
         if (err!=OK) {
             return err;
-#endif
         }
     }
+#endif
 
     int32_t bitRate = 0;
     if (mIsEncoder) {
@@ -2222,9 +2228,8 @@ status_t OMXCodec::setVideoOutputFormat(
 
     CHECK_EQ(err, (status_t)OK);
 
-#ifdef EXYNOS4210_ENHANCEMENTS
-    const size_t X = 64 * 8 * 1024;  // const size_t X = 64 * 1024;
-#else
+#if 1
+    // XXX Need a (much) better heuristic to compute input buffer sizes.
     const size_t X = 64 * 1024;
     if (def.nBufferSize < X) {
         def.nBufferSize = X;
@@ -2594,7 +2599,7 @@ status_t OMXCodec::allocateBuffersOnPort(OMX_U32 portIndex) {
         }
 
         if (err != OK) {
-            LOGE("allocate_buffer_with_backup failed");
+            CODEC_LOGE("allocate_buffer_with_backup failed");
             return err;
         }
 
@@ -2713,37 +2718,37 @@ status_t OMXCodec::allocateOutputBuffersFromNativeWindow() {
 
 #ifndef SAMSUNG_CODEC_SUPPORT
     err = native_window_set_buffers_geometry(
-            mNativeWindow.get(),
+                                             mNativeWindow.get(),
 #ifdef QCOM_HARDWARE
-            def.format.video.nStride,
-            def.format.video.nSliceHeight,
-            format);
+                                             def.format.video.nStride,
+                                             def.format.video.nSliceHeight,
+                                             format);
 #else
-            def.format.video.nFrameWidth,
-            def.format.video.nFrameHeight,
-            def.format.video.eColorFormat);
+    def.format.video.nFrameWidth,
+    def.format.video.nFrameHeight,
+    def.format.video.eColorFormat);
 #endif
 #else
     OMX_COLOR_FORMATTYPE eColorFormat;
-
+    
     switch (def.format.video.eColorFormat) {
-    case OMX_SEC_COLOR_FormatNV12TPhysicalAddress:
-        eColorFormat = (OMX_COLOR_FORMATTYPE)HAL_PIXEL_FORMAT_CUSTOM_YCbCr_420_SP_TILED;
-        break;
-    case OMX_COLOR_FormatYUV420SemiPlanar:
-        eColorFormat = (OMX_COLOR_FORMATTYPE)HAL_PIXEL_FORMAT_YCbCr_420_SP;
-        break;
-    case OMX_COLOR_FormatYUV420Planar:
-    default:
-        eColorFormat = (OMX_COLOR_FORMATTYPE)HAL_PIXEL_FORMAT_YCbCr_420_P;
-        break;
+        case OMX_SEC_COLOR_FormatNV12TPhysicalAddress:
+            eColorFormat = (OMX_COLOR_FORMATTYPE)HAL_PIXEL_FORMAT_CUSTOM_YCbCr_420_SP_TILED;
+            break;
+        case OMX_COLOR_FormatYUV420SemiPlanar:
+            eColorFormat = (OMX_COLOR_FORMATTYPE)HAL_PIXEL_FORMAT_YCbCr_420_SP;
+            break;
+        case OMX_COLOR_FormatYUV420Planar:
+        default:
+            eColorFormat = (OMX_COLOR_FORMATTYPE)HAL_PIXEL_FORMAT_YCbCr_420_P;
+            break;
     }
-
+    
     err = native_window_set_buffers_geometry(
-            mNativeWindow.get(),
-            def.format.video.nFrameWidth,
-            def.format.video.nFrameHeight,
-            eColorFormat);
+                                             mNativeWindow.get(),
+                                             def.format.video.nFrameWidth,
+                                             def.format.video.nFrameHeight,
+                                             eColorFormat);
 #endif
     if (err != 0) {
         ALOGE("native_window_set_buffers_geometry failed: %s (%d)",

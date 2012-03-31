@@ -2780,6 +2780,13 @@ sp<GraphicBuffer> GraphicBufferAlloc::createGraphicBuffer(uint32_t w, uint32_t h
         return 0;
     }
 #ifdef QCOM_HARDWARE
+/*
+    err = checkBuffer((native_handle_t *)graphicBuffer->handle, mSize, usage);
+    if (err) {
+        LOGE("%s: checkBuffer failed",__FUNCTION__);
+        return 0;
+    }
+*/
     checkBuffer((native_handle_t *)graphicBuffer->handle, mSize, usage);
     Mutex::Autolock _l(mLock);
     if (-1 != mFreedIndex) {
@@ -2795,6 +2802,9 @@ sp<GraphicBuffer> GraphicBufferAlloc::createGraphicBuffer(uint32_t w, uint32_t h
 #ifdef QCOM_HARDWARE
 void GraphicBufferAlloc::freeAllGraphicBuffersExcept(int bufIdx) {
     Mutex::Autolock _l(mLock);
+/*
+    if (bufIdx >= 0 && bufIdx < (int)mBuffers.size()) {
+*/
     if (0 <= bufIdx && bufIdx < mBuffers.size()) {
         sp<GraphicBuffer> b(mBuffers[bufIdx]);
         mBuffers.clear();
@@ -2807,6 +2817,9 @@ void GraphicBufferAlloc::freeAllGraphicBuffersExcept(int bufIdx) {
 
 void GraphicBufferAlloc::freeGraphicBufferAtIndex(int bufIdx) {
      Mutex::Autolock _l(mLock);
+/*
+     if (bufIdx >= 0 && bufIdx < (int)mBuffers.size()) {
+*/
      if (0 <= bufIdx && bufIdx < mBuffers.size()) {
         mBuffers.removeItemsAt(bufIdx);
         mFreedIndex = bufIdx;

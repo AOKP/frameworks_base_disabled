@@ -481,6 +481,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     int mLongPressHomeActionCode;
     String mLongPressHomeAppString;
     boolean mLongPressBackKill;
+    boolean mBackJustKilled;
 
     final KeyCharacterMap.FallbackAction mFallbackAction = new KeyCharacterMap.FallbackAction();
 
@@ -790,6 +791,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                         }
                         break;
                     }
+                    mBackJustKilled = false;
                 }
             } catch (RemoteException remoteException) {
                 // Do nothing; just let it go.
@@ -1739,6 +1741,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 
         if (keyCode == KeyEvent.KEYCODE_BACK && !down) {
             mHandler.removeCallbacks(mBackLongPress);
+            mBackJustKilled = false;
         }
 
         // First we always handle the home key here, so applications
@@ -1851,8 +1854,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             return -1;
         } else if (keyCode == KeyEvent.KEYCODE_BACK) {
             if (mLongPressBackKill) {
-                if (down && repeatCount == 0) {
+                if (!mBackJustKilled && down && repeatCount == 0) {
                     mHandler.postDelayed(mBackLongPress, ViewConfiguration.getGlobalActionKeyTimeout());
+                    mBackJustKilled = true;
                 }
             }
         }

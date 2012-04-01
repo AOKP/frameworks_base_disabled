@@ -47,10 +47,6 @@ import android.widget.LinearLayout;
 import com.android.internal.statusbar.IStatusBarService;
 import com.android.systemui.R;
 import com.android.systemui.statusbar.policy.KeyButtonView;
-import com.android.systemui.statusbar.policy.buttons.BackKeyWithKillButtonView;
-import com.android.systemui.statusbar.policy.buttons.HomeKeyWithTasksButtonView;
-import com.android.systemui.statusbar.policy.buttons.RecentsKey;
-import com.android.systemui.statusbar.policy.buttons.SearchKeyButtonView;
 
 public class NavigationBarView extends LinearLayout {
     final static boolean DEBUG = false;
@@ -302,7 +298,7 @@ public class NavigationBarView extends LinearLayout {
 
         switch (keyId) {
             case KEY_BACK:
-                v = new BackKeyWithKillButtonView(mContext, null);
+                v = new KeyButtonView(mContext, null);
                 v.setLayoutParams(getLayoutParams(landscape, btnWidth));
 
                 v.setId(R.id.back);
@@ -315,7 +311,7 @@ public class NavigationBarView extends LinearLayout {
                 return v;
 
             case KEY_HOME:
-                v = new HomeKeyWithTasksButtonView(mContext, null);
+                v = new KeyButtonView(mContext, null);
                 v.setLayoutParams(getLayoutParams(landscape, btnWidth));
 
                 v.setId(R.id.home);
@@ -328,7 +324,7 @@ public class NavigationBarView extends LinearLayout {
                 return v;
 
             case KEY_SEARCH:
-                v = new SearchKeyButtonView(mContext, null);
+                v = new KeyButtonView(mContext, null);
                 v.setLayoutParams(getLayoutParams(landscape, btnWidth));
 
                 v.setId(R.id.search);
@@ -340,7 +336,7 @@ public class NavigationBarView extends LinearLayout {
                 return v;
 
             case KEY_TASKS:
-                v = new RecentsKey(mContext, null);
+                v = new KeyButtonView(mContext, null);
                 v.setLayoutParams(getLayoutParams(landscape, btnWidth));
 
                 v.setId(R.id.recent_apps);

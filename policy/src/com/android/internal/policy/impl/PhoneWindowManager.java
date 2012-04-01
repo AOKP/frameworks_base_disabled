@@ -57,6 +57,7 @@ import android.os.SystemProperties;
 import android.os.UEventObserver;
 import android.os.Vibrator;
 import android.provider.Settings;
+import android.provider.MediaStore;
 
 import com.android.internal.R;
 import com.android.internal.app.ShutdownThread;
@@ -472,11 +473,15 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     public static final String INTENT_TORCH_OFF = "com.android.systemui.INTENT_TORCH_OFF";
     boolean mFastTorchOn; // local state of torch
     boolean mEnableQuickTorch; // System.Setting
+
     boolean mLongPressBackKill;
     boolean mBackJustKilled;
 
     public static ProgressDialog mBootMsgDialog = null;
     public static String CURRENT_PACKAGE_NAME = "no";
+
+    int mLongPressHomeActionCode;
+    String mLongPressHomeAppString;
 
     final KeyCharacterMap.FallbackAction mFallbackAction = new KeyCharacterMap.FallbackAction();
 
@@ -524,6 +529,10 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     Settings.System.NAVIGATION_BAR_BUTTONS_SHOW), false, this);
             resolver.registerContentObserver(Settings.Secure.getUriFor(
                     Settings.Secure.KILL_APP_LONGPRESS_BACK), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.NAVIGATION_BAR_HOME_LONGPRESS), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.NAVIGATION_BAR_HOME_LONGPRESS_CUSTOMAPP), false, this);
             updateSettings();
         }
 
@@ -805,33 +814,62 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 
     private void handleLongPressOnHome() {
         // We can't initialize this in init() since the configuration hasn't been loaded yet.
-        if (mLongPressOnHomeBehavior < 0) {
-            mLongPressOnHomeBehavior
-                    = mContext.getResources().getInteger(R.integer.config_longPressOnHomeBehavior);
-            if (mLongPressOnHomeBehavior < LONG_PRESS_HOME_NOTHING ||
-                    mLongPressOnHomeBehavior > LONG_PRESS_HOME_RECENT_SYSTEM_UI) {
-                mLongPressOnHomeBehavior = LONG_PRESS_HOME_NOTHING;
-            }
+        Intent intent;
+        switch (mLongPressHomeActionCode) {
+            case 0: // no longpress
+                break;
+            case 1: // default behavior, recent apps 
+                if (mLongPressOnHomeBehavior < 0) {
+                    mLongPressOnHomeBehavior
+                            = mContext.getResources().getInteger(R.integer.config_longPressOnHomeBehavior);
+                    if (mLongPressOnHomeBehavior < LONG_PRESS_HOME_NOTHING ||
+                            mLongPressOnHomeBehavior > LONG_PRESS_HOME_RECENT_SYSTEM_UI) {
+                        mLongPressOnHomeBehavior = LONG_PRESS_HOME_NOTHING;
+                    }
+                }
+        
+                if (mLongPressOnHomeBehavior != LONG_PRESS_HOME_NOTHING) {
+                    performHapticFeedbackLw(null, HapticFeedbackConstants.LONG_PRESS, false);
+                    sendCloseSystemWindows(SYSTEM_DIALOG_REASON_RECENT_APPS);
+                }
+        
+                if (mLongPressOnHomeBehavior == LONG_PRESS_HOME_RECENT_DIALOG) {
+                    showOrHideRecentAppsDialog(RECENT_APPS_BEHAVIOR_SHOW_OR_DISMISS);
+                } else if (mLongPressOnHomeBehavior == LONG_PRESS_HOME_RECENT_SYSTEM_UI) {
+                    try {
+                        mStatusBarService.toggleRecentApps();
+                    } catch (RemoteException e) {
+                        Slog.e(TAG, "RemoteException when showing recent apps", e);
+                    }
+                }
+                break;
+            case 2: // launch camera
+                intent = new Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                try {
+                    mContext.startActivity(intent);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+            case 3: // launch custom app
+                if (mLongPressHomeAppString != null) {
+                    try {
+                        intent = Intent.parseUri(mLongPressHomeAppString, 0);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        mContext.startActivity(intent);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                break;
+            default:
+                Log.e(TAG, "received unknown actioncode");
+                break;
         }
-
-        if (mLongPressOnHomeBehavior != LONG_PRESS_HOME_NOTHING) {
-            performHapticFeedbackLw(null, HapticFeedbackConstants.LONG_PRESS, false);
-            sendCloseSystemWindows(SYSTEM_DIALOG_REASON_RECENT_APPS);
-
-            // Eat the longpress so it won't dismiss the recent apps dialog when
-            // the user lets go of the home key
-            mHomePressed = false;
-        }
-
-        if (mLongPressOnHomeBehavior == LONG_PRESS_HOME_RECENT_DIALOG) {
-            showOrHideRecentAppsDialog(RECENT_APPS_BEHAVIOR_SHOW_OR_DISMISS);
-        } else if (mLongPressOnHomeBehavior == LONG_PRESS_HOME_RECENT_SYSTEM_UI) {
-            try {
-                mStatusBarService.toggleRecentApps();
-            } catch (RemoteException e) {
-                Slog.e(TAG, "RemoteException when showing recent apps", e);
-            }
-        }
+        // Eat the longpress so it won't dismiss the action immediately when
+        // the user lets go of the home key
+        mHomePressed = false;
     }
 
     /**
@@ -1127,8 +1165,13 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 updateRotation = true;
             }
 
-        mLongPressBackKill = (Settings.Secure.getInt(
+            mLongPressBackKill = (Settings.Secure.getInt(
                     resolver, Settings.Secure.KILL_APP_LONGPRESS_BACK, 0) == 1);
+            mLongPressHomeActionCode = Settings.System.getInt(
+                    resolver, Settings.System.NAVIGATION_BAR_HOME_LONGPRESS, 0);
+            mLongPressHomeAppString = Settings.System.getString(
+                    resolver, Settings.System.NAVIGATION_BAR_HOME_LONGPRESS_CUSTOMAPP);
+
         }
         if (updateRotation) {
             updateRotation(true);

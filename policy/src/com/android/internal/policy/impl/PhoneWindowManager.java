@@ -480,6 +480,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     
     int mLongPressHomeActionCode;
     String mLongPressHomeAppString;
+    boolean mLongPressBackKill;
 
     final KeyCharacterMap.FallbackAction mFallbackAction = new KeyCharacterMap.FallbackAction();
 
@@ -529,6 +530,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     Settings.System.NAVIGATION_BAR_HOME_LONGPRESS), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.NAVIGATION_BAR_HOME_LONGPRESS_CUSTOMAPP), false, this);
+            resolver.registerContentObserver(Settings.Secure.getUriFor(
+                    Settings.Secure.KILL_APP_LONGPRESS_BACK), false, this);
             updateSettings();
         }
 
@@ -1175,6 +1178,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     resolver, Settings.System.NAVIGATION_BAR_HOME_LONGPRESS, 0);
             mLongPressHomeAppString = Settings.System.getString(
                     resolver, Settings.System.NAVIGATION_BAR_HOME_LONGPRESS_CUSTOMAPP);
+            mLongPressBackKill = (Settings.Secure.getInt(
+                    resolver, Settings.Secure.KILL_APP_LONGPRESS_BACK, 0) == 1);
         }
         if (updateRotation) {
             updateRotation(true);
@@ -1845,8 +1850,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             }
             return -1;
         } else if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (Settings.Secure.getInt(mContext.getContentResolver(),
-                    Settings.Secure.KILL_APP_LONGPRESS_BACK, 0) == 1) {
+            if (mLongPressBackKill) {
                 if (down && repeatCount == 0) {
                     mHandler.postDelayed(mBackLongPress, ViewConfiguration.getGlobalActionKeyTimeout());
                 }

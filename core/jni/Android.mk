@@ -161,6 +161,9 @@ ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
         LOCAL_CFLAGS += -DQCOM_HARDWARE
 	LOCAL_SRC_FILES += org_codeaurora_Performance.cpp
 endif
+ifeq ($(BOARD_USES_LEGACY_QCOM), true)
+	LOCAL_CFLAGS += -DLEGACY_QCOM
+endif
 
 LOCAL_C_INCLUDES += \
 	$(JNI_H_INCLUDE) \

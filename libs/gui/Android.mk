@@ -39,6 +39,9 @@ endif
 ifeq ($(TARGET_QCOM_HDMI_OUT),true)
 LOCAL_CFLAGS += -DQCOM_HDMI_OUT
 endif
+ifeq ($(BOARD_USES_LEGACY_QCOM), true)
+LOCAL_CFLAGS += -DLEGACY_QCOM
+endif
 endif
 
 LOCAL_MODULE:= libgui

@@ -29,7 +29,7 @@ public class HomeKeyWithTasksButtonView extends KeyButtonView {
         super(context, attrs);
 
         if (Settings.System.getInt(getContext().getContentResolver(),
-                Settings.System.NAVIGATION_BAR_HOME_LONGPRESS, 0) == 1)
+                Settings.System.NAVIGATION_BAR_HOME_LONGPRESS, 0) >= 1)
             mSupportsLongpress = true;
         else
             mSupportsLongpress = false;

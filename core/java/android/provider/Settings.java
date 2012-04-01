@@ -2695,6 +2695,13 @@ public final class Settings {
          * @hide
          */
         public static final String NAVIGATION_BAR_HOME_LONGPRESS = "navigation_bar_home_longpress";
+        
+        /**
+         * The custom app to launch if the above is set so
+         * 
+         * @hide
+         */
+        public static final String NAVIGATION_BAR_HOME_LONGPRESS_CUSTOMAPP = "navigation_bar_home_longpress_customapp";
 
         /**
          * Whether to show the battery bar

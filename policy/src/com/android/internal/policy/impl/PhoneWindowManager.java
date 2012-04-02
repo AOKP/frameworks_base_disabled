@@ -1686,8 +1686,11 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         }
 
         if (keyCode == KeyEvent.KEYCODE_BACK && !down) {
-            mHandler.removeCallbacks(mBackLongPress);
-            mBackJustKilled = false;
+            if ((flags&KeyEvent.FLAG_CANCELED) == 0) {
+                mHandler.removeCallbacks(mBackLongPress);
+                KeyEvent.changeFlags(event, flags + KeyEvent.FLAG_CANCELED);
+                mBackJustKilled = false;
+            }
         }
 
         // First we always handle the home key here, so applications

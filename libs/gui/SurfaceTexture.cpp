@@ -49,6 +49,9 @@
 #ifdef ALLOW_DEQUEUE_CURRENT_BUFFER
 #define FLAG_ALLOW_DEQUEUE_CURRENT_BUFFER    true
 #warning "ALLOW_DEQUEUE_CURRENT_BUFFER enabled"
+#ifdef OMAP_ENHANCEMENT
+#error "ALLOW_DEQUEUE_CURRENT_BUFFER enabled, but breaks taking/releasing buffers"
+#endif
 #else
 #define FLAG_ALLOW_DEQUEUE_CURRENT_BUFFER    false
 #endif
@@ -1340,6 +1343,9 @@ void SurfaceTexture::dump(String8& result, const char* prefix,
                 case BufferSlot::DEQUEUED: return "DEQUEUED";
                 case BufferSlot::QUEUED: return "QUEUED";
                 case BufferSlot::FREE: return "FREE";
+#ifdef OMAP_ENHANCEMENT
+                case BufferSlot::TAKEN: return "TAKEN";
+#endif
                 default: return "Unknown";
             }
         }

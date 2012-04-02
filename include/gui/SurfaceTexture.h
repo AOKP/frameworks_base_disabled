@@ -248,6 +248,31 @@ public:
     void dump(String8& result) const;
     void dump(String8& result, const char* prefix, char* buffer, size_t SIZE) const;
 
+#ifdef OMAP_ENHANCEMENT
+    //sets the layout for the buffers
+    virtual status_t setLayout(uint32_t layout);
+    // getCurrentLayout returns the layout of the current buffer
+    uint32_t getCurrentLayout() const;
+
+    // updateAndGetCurrent updates to the current buffer and returns
+    virtual status_t updateAndGetCurrent(sp<GraphicBuffer>* buf);
+
+    // updateTexImage sets the image contents of the target texture to that of
+    // the most recently queued buffer.
+    //
+    // This call may only be made while the OpenGL ES context to which the
+    // target texture belongs is bound to the calling thread.
+    status_t __updateTexImage(bool lock = true);
+
+    // takeCurrentBuffer returns the buffer associated with the current image.
+    // The buffer will not be reused until releaseBuffer() is called
+    sp<GraphicBuffer> takeCurrentBuffer();
+
+    // releaseBuffer allows the SurfaceTexture to continue using the
+    // buffer.
+    void releaseBuffer(sp<GraphicBuffer> graphic_buffer);
+#endif
+
 protected:
 
     // freeBufferLocked frees the resources (both GraphicBuffer and EGLImage)

@@ -136,12 +136,12 @@ public:
     // connected to the specified client API.
     virtual status_t disconnect(int api);
 
-#ifdef QCOM_HARDWARE
-    status_t updateTexImage();
-#else
+    // updateTexImage sets the image contents of the target texture to that of
+    // the most recently queued buffer.
     //
-    status_t updateTexImage(bool isComposition  = false);
-#endif
+    // This call may only be made while the OpenGL ES context to which the
+    // target texture belongs is bound to the calling thread.
+    status_t updateTexImage();
 
     // setBufferCountServer set the buffer count. If the client has requested
     // a buffer count using setBufferCount, the server-buffer count will

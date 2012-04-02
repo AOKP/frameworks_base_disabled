@@ -52,7 +52,7 @@ public class KeyButtonView extends ImageView {
     final float GLOW_MAX_SCALE_FACTOR = 1.8f;
     float BUTTON_QUIESCENT_ALPHA = 1f;
 
-    IWindowManager mWindowManager;
+    public IWindowManager mWindowManager;
     long mDownTime;
     int mCode;
     int mTouchSlop;
@@ -66,15 +66,9 @@ public class KeyButtonView extends ImageView {
 
     Runnable mCheckLongPress = new Runnable() {
         public void run() {
-            if (isPressed()) {
-                // Slog.d("KeyButtonView", "longpressed: " + this);
-                if (mCode != 0) {
-                    sendEvent(KeyEvent.ACTION_DOWN, KeyEvent.FLAG_LONG_PRESS);
-                    sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_LONG_CLICKED);
-                } else {
-                    // Just an old-fashioned ImageView
-                    performLongClick();
-                }
+            if (isPressed()) {   
+            	setPressed(false);
+                performLongClick();
             }
         }
     };

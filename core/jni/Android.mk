@@ -158,7 +158,6 @@ LOCAL_SRC_FILES:= \
         android_animation_PropertyValuesHolder.cpp
 
 ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
-        LOCAL_CFLAGS += -DQCOM_HARDWARE
 	LOCAL_SRC_FILES += org_codeaurora_Performance.cpp
 endif
 
@@ -242,6 +241,29 @@ LOCAL_SHARED_LIBRARIES += libtilerenderer
 endif
 LOCAL_C_INCLUDES += hardware/qcom/display/libtilerenderer
 LOCAL_CFLAGS += -DQCOM_HARDWARE
+endif
+
+ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
+ifeq ($(USE_OPENGL_RENDERER),true)
+LOCAL_SHARED_LIBRARIES += libtilerenderer
+endif
+LOCAL_C_INCLUDES += hardware/qcom/display/libtilerenderer
+LOCAL_CFLAGS += -DQCOM_HARDWARE
+endif
+
+ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
+ifeq ($(USE_OPENGL_RENDERER),true)
+LOCAL_SHARED_LIBRARIES += libtilerenderer
+endif
+LOCAL_C_INCLUDES += hardware/qcom/display/libtilerenderer
+LOCAL_CFLAGS += -DQCOM_HARDWARE
+endif
+
+ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
+ifeq ($(USE_OPENGL_RENDERER),true)
+LOCAL_SHARED_LIBRARIES += libtilerenderer
+endif
+LOCAL_C_INCLUDES += hardware/qcom/display/libtilerenderer
 endif
 
 ifeq ($(BOARD_HAVE_BLUETOOTH),true)

@@ -49,6 +49,7 @@ public:
         SWAP_RECTANGLE              = 0x00080000,
 #ifdef QCOM_HARDWARE
         C2D_COMPOSITION             = 0x00100000,   // C2D composition
+        HWC_CAN_HANDLE_ALPHA        = 0x00100000,   // HWC supports alpha blending
         MDP_COMPOSITION             = 0x00200000    // MDP composition
 #endif
     };

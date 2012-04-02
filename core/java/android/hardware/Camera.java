@@ -4294,14 +4294,6 @@ public class Camera {
         }
 
         /**
-         * @return true if full size video snapshot is supported.
-         */
-        public boolean isPowerModeSupported() {
-            String str = get(KEY_POWER_MODE_SUPPORTED);
-            return TRUE.equals(str);
-        }
-
-        /**
          * @hide
          * Gets the current face detection setting.
          *

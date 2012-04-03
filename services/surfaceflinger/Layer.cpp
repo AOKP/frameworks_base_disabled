@@ -211,7 +211,7 @@ void Layer::setGeometry(hwc_layer_t* hwcl)
     // can handle fade cases
     const State& s(drawingState());
     if ((s.alpha < 0xFF) &&
-        !(DisplayHardware::HWC_CAN_HANDLE_ALPHA & hw.getFlags())) {
+        !(DisplayHardware::C2D_COMPOSITION & hw.getFlags())) {
         hwcl->flags = HWC_SKIP_LAYER;
     }
 

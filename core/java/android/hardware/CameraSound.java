@@ -61,6 +61,9 @@ public class CameraSound {
     public static final int STOP_VIDEO_RECORDING  = 3;
 
     private static final int NUM_SOUNDS           = 4;
+
+    private static final String PROP_CAMERA_SOUND = "persist.sys.camera-sound";
+
     private CameraSoundPlayer[] mCameraSoundPlayers;
 
     public CameraSound() {
@@ -88,13 +91,16 @@ public class CameraSound {
      * @see #STOP_VIDEO_RECORDING
      */
     public void playSound(int soundId) {
-        if (mCameraSoundPlayers == null) {
-            mCameraSoundPlayers = new CameraSoundPlayer[NUM_SOUNDS];
+        if (SystemProperties.getBoolean(
+                PROP_CAMERA_SOUND, true)) {
+            if (mCameraSoundPlayers == null) {
+                mCameraSoundPlayers = new CameraSoundPlayer[NUM_SOUNDS];
+            }
+            if (mCameraSoundPlayers[soundId] == null) {
+                mCameraSoundPlayers[soundId] = new CameraSoundPlayer(soundId);
+            }
+            mCameraSoundPlayers[soundId].play();
         }
-        if (mCameraSoundPlayers[soundId] == null) {
-            mCameraSoundPlayers[soundId] = new CameraSoundPlayer(soundId);
-        }
-        mCameraSoundPlayers[soundId].play();
     }
 
     public void release() {

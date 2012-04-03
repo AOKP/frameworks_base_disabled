@@ -64,11 +64,19 @@ struct OMXCodec : public MediaSource,
         kEnableThumbnailMode = 512,
         kUseMinBufferCount = 32768,
 #endif
+#ifdef OMAP_ENHANCEMENT
+        // To request codec to return frames in decode order
+        kEnableTimeStampInDecodeOrder         = 512,
+	MAX_RESOLUTION = 414720, // video resolution for TI Vid Dec
+#else
         kPreferThumbnailMode               = 0x8,
         kPreferInterlacedOutputContent     = 0x10,
         MAX_RESOLUTION = 414720, // video resolution for TI Vid Dec
         MAX_RESOLUTION_WIDTH = 864, // video width for TI Vid Dec
         MAX_RESOLUTION_HEIGHT = 864, // video height for TI Vid Dec
+#endif
+
+
 
     };
     static sp<MediaSource> Create(

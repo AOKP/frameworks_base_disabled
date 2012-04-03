@@ -953,7 +953,22 @@ status_t OMXCodec::configureCodec(const sp<MetaData> &meta) {
                 return ERROR_UNSUPPORTED;
             }
 
+#if defined(OMAP_ENHANCEMENT) && defined(TARGET_OMAP3)
+            int32_t width, height;
+            bool success = meta->findInt32(kKeyWidth, &width);
+            success = success && meta->findInt32(kKeyHeight, &height);
+            CHECK(success);
+            if (!strcmp(mComponentName, "OMX.TI.720P.Decoder")
+                && (profile == kAVCProfileBaseline && level <= 31)
+                && (width*height < MAX_RESOLUTION)) {
+                // Though this decoder can handle this profile/level,
+                // we prefer to use "OMX.TI.Video.Decoder" for
+                // Baseline Profile with level <=31 and sub 720p
+                return ERROR_UNSUPPORTED;
+            }
+#endif
         } else if (meta->findData(kKeyVorbisInfo, &type, &data, &size)) {
+
             addCodecSpecificData(data, size);
 
             CHECK(meta->findData(kKeyVorbisBooks, &type, &data, &size));

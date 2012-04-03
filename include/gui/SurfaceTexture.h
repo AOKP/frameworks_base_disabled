@@ -136,7 +136,7 @@ public:
     // connected to the specified client API.
     virtual status_t disconnect(int api);
 
-#ifndef QCOM_HARDWARE
+#ifdef QCOM_HARDWARE
     status_t updateTexImage();
 #else
     //

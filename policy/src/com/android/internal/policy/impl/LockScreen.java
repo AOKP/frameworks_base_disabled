@@ -511,7 +511,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
                     i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     mContext.startActivity(i);
                 }
-                mCallback.goToUnlockScreen();
+                //mCallback.goToUnlockScreen();
             } else if (action.equals(ACTION_SOUND_TOGGLE)) {
                 toggleRingMode();
                 mUnlockWidgetMethods.updateResources();

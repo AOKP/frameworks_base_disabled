@@ -32,6 +32,7 @@ import android.os.SystemClock;
 import android.provider.Settings;
 import android.provider.Settings.SettingNotFoundException;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.HapticFeedbackConstants;
 import android.view.IWindowManager;
 import android.view.InputDevice;
@@ -59,6 +60,7 @@ public class KeyButtonView extends ImageView {
     Drawable mGlowBG;
     float mGlowAlpha = 0f, mGlowScale = 1f, mDrawingAlpha = 1f;
     protected boolean mSupportsLongpress = true;
+    protected boolean mHandlingLongpress = false;
     RectF mRect = new RectF(0f, 0f, 0f, 0f);
 
     int durationSpeedOn = 500;
@@ -67,7 +69,7 @@ public class KeyButtonView extends ImageView {
     Runnable mCheckLongPress = new Runnable() {
         public void run() {
             if (isPressed()) {   
-            	setPressed(false);
+                setHandlingLongpress(true);
                 performLongClick();
             }
         }
@@ -127,6 +129,11 @@ public class KeyButtonView extends ImageView {
     public void setSupportsLongPress(boolean supports) {
         mSupportsLongpress = supports;
     }
+    
+    public void setHandlingLongpress(boolean handling) {
+        mHandlingLongpress = handling;
+    }
+    
 
     public void setCode(int code) {
         mCode = code;
@@ -232,6 +239,7 @@ public class KeyButtonView extends ImageView {
         switch (action) {
             case MotionEvent.ACTION_DOWN:
                 // Slog.d("KeyButtonView", "press");
+            	setHandlingLongpress(false);
                 mDownTime = SystemClock.uptimeMillis();
                 setPressed(true);
                 if (mCode != 0) {
@@ -265,8 +273,10 @@ public class KeyButtonView extends ImageView {
             case MotionEvent.ACTION_UP:
                 final boolean doIt = isPressed();
                 setPressed(false);
+                Log.d(TAG,"in ACTION_UP DoIT:"+ doIt);
+                Log.d(TAG,"in ACTION_UP isPressed():" + isPressed());
                 if (mCode != 0) {
-                    if (doIt) {
+                    if ((doIt)&&(!mHandlingLongpress)) {
                         sendEvent(KeyEvent.ACTION_UP, 0);
                         sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_CLICKED);
                         playSoundEffect(SoundEffectConstants.CLICK);
@@ -275,7 +285,7 @@ public class KeyButtonView extends ImageView {
                     }
                 } else {
                     // no key code, just a regular ImageView
-                    if (doIt) {
+                    if ((doIt)&&(!mHandlingLongpress)) {
                         performClick();
                     }
                 }

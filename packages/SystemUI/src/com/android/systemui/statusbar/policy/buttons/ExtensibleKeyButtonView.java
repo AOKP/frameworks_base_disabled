@@ -24,6 +24,7 @@ import android.view.ViewConfiguration;
 
 import com.android.internal.statusbar.IStatusBarService;
 import com.android.systemui.statusbar.policy.KeyButtonView;
+import com.android.systemui.R;
 
 
 
@@ -62,16 +63,18 @@ public class ExtensibleKeyButtonView extends KeyButtonView {
         mLongpress = Longpress;
         setCode(0);
         if (ClickAction != null){
-        	if (ClickAction.equals("") || ClickAction.equals(ACTION_NULL)) {
-        		setCode(0);
-        	} else if (ClickAction.equals(ACTION_HOME)) {
+        	if (ClickAction.equals(ACTION_HOME)) {
         		setCode(KeyEvent.KEYCODE_HOME);
+        		setId(R.id.home);
         	} else if (ClickAction.equals(ACTION_BACK)) {
         		setCode (KeyEvent.KEYCODE_BACK);
+        		setId(R.id.back);
         	} else if (ClickAction.equals(ACTION_SEARCH)) {
         		setCode (KeyEvent.KEYCODE_SEARCH);
+        		setId(R.id.search);
         	} else if (ClickAction.equals(ACTION_MENU)) {
         		setCode (KeyEvent.KEYCODE_MENU);
+        		setId(R.id.menu);
         	} else if (ClickAction.equals(ACTION_POWER)) {
         		setCode (KeyEvent.KEYCODE_POWER);
         	} else { // the remaining options need to be handled by OnClick;
@@ -84,14 +87,12 @@ public class ExtensibleKeyButtonView extends KeyButtonView {
         		setSupportsLongPress(true);
         		setOnLongClickListener(mLongPressListener);
         	}
-        Log.d(TAG,"New Key-Action:" + ClickAction + " Long:"+ Longpress);
-        Log.d(TAG,"Supports LongPress:"+ mSupportsLongpress);
     }
         
     public void injectKeyDelayed(int keycode){
         mInjectKeycode = keycode;
         mHandler.removeCallbacks(onInjectKeyDelayed);
-        mHandler.postDelayed(onInjectKeyDelayed, 50);
+        mHandler.postDelayed(onInjectKeyDelayed, 0);
     }
 
     final Runnable onInjectKeyDelayed = new Runnable() {
@@ -130,7 +131,7 @@ public class ExtensibleKeyButtonView extends KeyButtonView {
             }
         }
     };
-
+    
     private OnClickListener mClickListener = new OnClickListener() {
 
         @Override
@@ -155,6 +156,7 @@ public class ExtensibleKeyButtonView extends KeyButtonView {
         		return;
         		
         	} else {  // we must have a custom uri
+        		Log.d(TAG,"Starting Intent:" + mClickAction);
         		 try {
                      Intent intent = Intent.parseUri(mClickAction, 0);
                      intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -173,17 +175,13 @@ public class ExtensibleKeyButtonView extends KeyButtonView {
 
         @Override
         public boolean onLongClick(View v) {
-
-        	Log.d(TAG,"At onLongClick" + mLongpress);
         	if (mLongpress == null) {
         		return true;
         	}
-        	
         	if (mLongpress.equals(ACTION_NULL)|| mLongpress.equals("")) {
         		return true;    	
         	} else if (mLongpress.equals(ACTION_HOME)) {
         		injectKeyDelayed(KeyEvent.KEYCODE_HOME);
-        		//mHandler.sendEmptyMessage(MESSAGE_DISMISS);
         		return true;
         	} else if (mLongpress.equals(ACTION_BACK)) {
         		injectKeyDelayed(KeyEvent.KEYCODE_BACK);
@@ -198,17 +196,18 @@ public class ExtensibleKeyButtonView extends KeyButtonView {
         		injectKeyDelayed(KeyEvent.KEYCODE_POWER);
         		return true;
         	} else if (mLongpress.equals(ACTION_KILL)) {        		
-        		mHandler.postDelayed(mKillTask, ViewConfiguration.getGlobalActionKeyTimeout());  
+        		mHandler.postDelayed(mKillTask, 0);  
         		return true;
         	} else if (mLongpress.equals(ACTION_RECENTS)) {
         		try {
                     mBarService.toggleRecentApps();
-                } catch (RemoteException e) {            	
+                } catch (RemoteException e) {   
+                	// let it go.
                 }
                 return true;
         	} else {  // we must have a custom uri
        		 	try {
-       		 		Intent intent = Intent.parseUri(mClickAction, 0);
+       		 		Intent intent = Intent.parseUri(mLongpress, 0);
        		 		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
        		 		getContext().startActivity(intent);
        		 	} catch (URISyntaxException e) {

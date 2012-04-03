@@ -107,6 +107,8 @@ public class MultiWaveView extends View {
     private float mSnapMargin = 0.0f;
     private boolean mDragging;
     private int mNewTargetResources;
+    private Drawable[] mNewTargetDrawables;
+    private boolean mWaitingAnimation = false;
 
     private AnimatorListener mResetListener = new AnimatorListenerAdapter() {
         public void onAnimationEnd(Animator animator) {
@@ -134,6 +136,11 @@ public class MultiWaveView extends View {
             if (mNewTargetResources != 0) {
                 internalSetTargetResources(mNewTargetResources);
                 mNewTargetResources = 0;
+                hideTargets(false);
+            }
+            if (mWaitingAnimation) {
+                internalSetTargetResources(mNewTargetDrawables);
+                mWaitingAnimation = false;
                 hideTargets(false);
             }
             mAnimatingTargets = false;
@@ -558,7 +565,8 @@ public class MultiWaveView extends View {
     public void setTargetResources(Drawable[] drawables) {
         if (mAnimatingTargets) {
             // postpone this change until we return to the initial state
-            //mNewTargetResources = resourceId;
+            mWaitingAnimation = true;
+            mNewTargetDrawables = drawables;
         } else {
             internalSetTargetResources(drawables);
         }

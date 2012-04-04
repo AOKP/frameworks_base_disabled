@@ -687,7 +687,6 @@ public class MediaRecorder
     public native void native_stop() throws IllegalStateException;
 
     public void start() throws IllegalStateException {
-        if (SystemProperties.QCOM_HARDWARE) {
             try {
                 Application application = ActivityThread.currentApplication();
                 if (application != null) {
@@ -699,13 +698,11 @@ public class MediaRecorder
             } catch (Exception exception) {
                 Log.e(TAG, "Unable to vote to turn io_is_busy off.");
             }
-        }
 
         native_start();
     }
 
     public void stop() throws IllegalStateException {
-        if (SystemProperties.QCOM_HARDWARE) {
             try {
                 Application application = ActivityThread.currentApplication();
                 if (application != null) {
@@ -717,7 +714,6 @@ public class MediaRecorder
             } catch (Exception exception) {
                 Log.e(TAG, "Unable to withdraw io_is_busy off vote.");
             }
-        }
 
         native_stop();
     }

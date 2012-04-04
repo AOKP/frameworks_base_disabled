@@ -70,7 +70,12 @@ public class KeyButtonView extends ImageView {
         public void run() {
             if (isPressed()) {   
                 setHandlingLongpress(true);
-                performLongClick();
+                if (!performLongClick() && (mCode != 0)) {
+                	// we tried to do custom long click and failed - let's
+                	// do long click on the primary 'key'
+                	sendEvent(KeyEvent.ACTION_DOWN, KeyEvent.FLAG_LONG_PRESS);
+                    sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_LONG_CLICKED);
+                }
             }
         }
     };
@@ -137,6 +142,10 @@ public class KeyButtonView extends ImageView {
 
     public void setCode(int code) {
         mCode = code;
+    }
+
+    public int getCode(){
+    	return mCode;
     }
 
     public void setGlowBackground(int id) {

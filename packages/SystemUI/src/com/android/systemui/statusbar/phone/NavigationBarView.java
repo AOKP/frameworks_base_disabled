@@ -79,7 +79,7 @@ public class NavigationBarView extends LinearLayout {
     final Display mDisplay;
     View mCurrentView = null;
     View[] mRotatedViews = new View[4];
-
+    
     int mBarSize;
     boolean mVertical;
 
@@ -227,11 +227,11 @@ public class NavigationBarView extends LinearLayout {
             }
 
             for (int j = 0; j < mNumberOfButtons; j++) {
-                Log.i(TAG, "Key" + j);
-                View v = null;
+                ExtensibleKeyButtonView v = null;
 
                 v = generateKey(landscape,mClickActions[j],mLongpressActions[j],
                 		landscape ? mPortraitIcons[j] : mLandscapeIcons[j]);
+                v.setTag("Key_"+ j );
                
                 addButton(navButtonLayout, v, landscape);
                 addLightsOutButton(lightsOut, v, landscape, false);
@@ -324,9 +324,9 @@ public class NavigationBarView extends LinearLayout {
     return null;
 }
     
-    private View generateKey(boolean landscape, String ClickAction, String Longpress, 
+    private ExtensibleKeyButtonView generateKey(boolean landscape, String ClickAction, String Longpress, 
     			String IconUri) {
-        KeyButtonView v = null;
+        ExtensibleKeyButtonView v = null;
         Resources r = getResources();
 
         int btnWidth = 80;
@@ -335,6 +335,7 @@ public class NavigationBarView extends LinearLayout {
         v.setLayoutParams(getLayoutParams(landscape, btnWidth));
         v.setGlowBackground(landscape ? R.drawable.ic_sysbar_highlight_land
                 : R.drawable.ic_sysbar_highlight);
+                
         // the rest is for setting the icon (or custom icon)
         if (IconUri != null && IconUri.length() > 0) {
             File f = new File(Uri.parse(IconUri).getPath());
@@ -410,38 +411,24 @@ public class NavigationBarView extends LinearLayout {
             return;
 
         mDisabledFlags = disabledFlags;
-
+       
         final boolean disableHome = ((disabledFlags & View.STATUS_BAR_DISABLE_HOME) != 0);
         final boolean disableRecent = ((disabledFlags & View.STATUS_BAR_DISABLE_RECENT) != 0);
         final boolean disableBack = ((disabledFlags & View.STATUS_BAR_DISABLE_BACK) != 0);
-
-        try {
-            getBackButton().setVisibility(disableBack ? View.INVISIBLE : View.VISIBLE);
-        } catch (NullPointerException e) {
-        }
-        try {
-            getHomeButton().setVisibility(disableHome ? View.INVISIBLE : View.VISIBLE);
-        } catch (NullPointerException e) {
-        }
-        try {
-            getRecentsButton().setVisibility(disableRecent ? View.INVISIBLE : View.VISIBLE);
-        } catch (NullPointerException e) {
-        }
-        try {
-            getSearchButton().setVisibility(disableHome ? View.INVISIBLE : View.VISIBLE);
-        } catch (NullPointerException e) {
-        }
-        try {
-            getBigMenuButton().setVisibility(disableHome ? View.INVISIBLE : View.VISIBLE);
-        } catch (NullPointerException e) {
-        }
-
-        final boolean hideBar = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.LOCKSCREEN_HIDE_NAV, 0) == 1;
-        if (hideBar && disableHome && disableRecent && disableBack) {
-            
-        } else {
-           
+        
+        for (int j = 0; j < mNumberOfButtons; j++) {
+        	View v = (View) findViewWithTag("Key_"+j);
+        	if (v != null) {
+        		int vid = v.getId();
+        		if (vid == R.id.back) {
+        			v.setVisibility(disableBack ? View.INVISIBLE : View.VISIBLE);
+        		} else if (vid == R.id.recent_apps) {
+        			v.setVisibility(disableRecent ? View.INVISIBLE : View.VISIBLE);
+        		} else {   // treat all other buttons as same rule as home
+        			v.setVisibility(disableHome ? View.INVISIBLE : View.VISIBLE);
+        		}
+        		
+        	}
         }
     }
     
@@ -758,9 +745,13 @@ public class NavigationBarView extends LinearLayout {
         for (int j = 0; j < mNumberOfButtons; j++) {
         	mClickActions[j] = Settings.System.getString(resolver,
                     Settings.System.NAVIGATION_CUSTOM_ACTIVITIES[j]);
+        	if (mClickActions[j] == null)
+        		mClickActions[j] = StockClickActions[j];
         	
         	mLongpressActions[j] = Settings.System.getString(resolver,
                     Settings.System.NAVIGATION_LONGPRESS_ACTIVITIES[j]);
+        	if (mLongpressActions[j] == null)
+        		mLongpressActions[j] = StockLongpress[j];
         	
         	mPortraitIcons[j]= Settings.System.getString(resolver,
                     Settings.System.NAVIGATION_CUSTOM_APP_ICONS[j]);
@@ -776,9 +767,7 @@ public class NavigationBarView extends LinearLayout {
     	
         if (uri == null)
             return getResources().getDrawable(R.drawable.ic_null);
-        
-        Log.d (TAG,"GetNavBarIcon:" + uri);
-
+      
         if (uri.startsWith("**")) {
             if (uri.equals(ACTION_HOME)) {
             	if (!landscape)

@@ -418,7 +418,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
             String customIconUri = Settings.System.getString(getContext().getContentResolver(),
                     Settings.System.LOCKSCREEN_CUSTOM_APP_ICONS[index]);
 
-            if (customIconUri != null && !customIconUri.equals("") && customIconUri.startsWith("file")) {
+            if (customIconUri != null && !customIconUri.equals("") && customIconUri.startsWith("icon")) {
                 // it's an icon the user chose from the gallery here
                 File icon = new File(Uri.parse(customIconUri).getPath());
                 if(icon.exists())

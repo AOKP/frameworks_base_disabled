@@ -70,12 +70,6 @@ ifeq ($(TARGET_BOARD_PLATFORM),msm7x30)
     LOCAL_SRC_FILES+= OverlayHtc.cpp
 endif
 
-ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
-ifneq ($(BOARD_USES_LEGACY_QCOM),true)
-LOCAL_CFLAGS += -DQCOM_HARDWARE
-endif
-endif
-
 LOCAL_MODULE:= libui
 
 include $(BUILD_SHARED_LIBRARY)

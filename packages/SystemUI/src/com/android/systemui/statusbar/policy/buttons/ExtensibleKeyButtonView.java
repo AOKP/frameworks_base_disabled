@@ -74,16 +74,20 @@ public class ExtensibleKeyButtonView extends KeyButtonView {
         		setId(R.id.search);
         	} else if (ClickAction.equals(ACTION_MENU)) {
         		setCode (KeyEvent.KEYCODE_MENU);
-        		setId(R.id.menu);
+        		setId(R.id.menu_big);
         	} else if (ClickAction.equals(ACTION_POWER)) {
         		setCode (KeyEvent.KEYCODE_POWER);
         	} else { // the remaining options need to be handled by OnClick;
         		setOnClickListener(mClickListener);
+        		if (ClickAction.equals(ACTION_RECENTS))
+        			setId(R.id.recent_apps);
         	}
         }
         setSupportsLongPress (false);	
         if (Longpress != null) 
-        	if (!Longpress.equals(ACTION_NULL)) {
+        	if ((!Longpress.equals(ACTION_NULL)) || (getCode() !=0)) {
+        		// I want to allow long presses for defined actions, or if 
+        		// primary action is a 'key' and long press isn't defined otherwise
         		setSupportsLongPress(true);
         		setOnLongClickListener(mLongPressListener);
         	}
@@ -156,7 +160,6 @@ public class ExtensibleKeyButtonView extends KeyButtonView {
         		return;
         		
         	} else {  // we must have a custom uri
-        		Log.d(TAG,"Starting Intent:" + mClickAction);
         		 try {
                      Intent intent = Intent.parseUri(mClickAction, 0);
                      intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -178,8 +181,10 @@ public class ExtensibleKeyButtonView extends KeyButtonView {
         	if (mLongpress == null) {
         		return true;
         	}
-        	if (mLongpress.equals(ACTION_NULL)|| mLongpress.equals("")) {
-        		return true;    	
+        	if (mLongpress.equals(ACTION_NULL)) {
+        		// attempt to keep long press functionality of 'keys' if
+        		// they haven't been overridden.
+        		return false;    	
         	} else if (mLongpress.equals(ACTION_HOME)) {
         		injectKeyDelayed(KeyEvent.KEYCODE_HOME);
         		return true;

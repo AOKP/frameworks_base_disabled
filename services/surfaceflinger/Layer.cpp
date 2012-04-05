@@ -97,7 +97,9 @@ void Layer::onFirstRef()
     mSurfaceTexture = new SurfaceTextureLayer(mTextureName, this);
     mSurfaceTexture->setFrameAvailableListener(new FrameQueuedListener(this));
     mSurfaceTexture->setSynchronousMode(true);
+#ifdef QCOM_HARDWARE
     mSurfaceTexture->setBufferCountServer(BUFFER_COUNT_SERVER);
+#endif
 }
 
 Layer::~Layer()

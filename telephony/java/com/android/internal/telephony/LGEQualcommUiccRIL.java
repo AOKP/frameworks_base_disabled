@@ -457,6 +457,9 @@ public class LGEQualcommUiccRIL extends LGEQualcommRIL implements CommandsInterf
                 response[i] = -1;
                 noLte = true;
             }
+            if (i == 8 && !noLte) {
+                response[i] *= -1;
+            }
         }
 
         return response;

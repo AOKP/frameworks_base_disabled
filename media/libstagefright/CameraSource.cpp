@@ -436,9 +436,9 @@ status_t CameraSource::checkFrameRate(
     // Check the actual video frame rate against the target/requested
     // video frame rate.
     if (frameRate != -1 && (frameRateActual - frameRate) != 0) {
-        LOGE("APP set preview frame rate to %d fps. The actual "
+        LOGE("Failed to set preview frame rate to %d fps. The actual "
                 "frame rate is %d", frameRate, frameRateActual);
-        /* return UNKNOWN_ERROR; */
+        return UNKNOWN_ERROR;
     }
 
     // Good now.

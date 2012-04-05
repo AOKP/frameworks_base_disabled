@@ -240,11 +240,11 @@ static VideoFrame *extractVideoFrameWithCodecFlags(
     frame->mHeight = crop_bottom - crop_top + 1;
     frame->mDisplayWidth = frame->mWidth;
     frame->mDisplayHeight = frame->mHeight;
-#ifdef QCOM_HARDWARE
 
     int32_t srcFormat;
     CHECK(meta->findInt32(kKeyColorFormat, &srcFormat));
 
+#ifdef QCOM_HARDWARE
     frame_width_rounded = frame->mWidth;
     switch (srcFormat) {
         case OMX_QCOM_COLOR_FormatYVU420SemiPlanar:
@@ -273,7 +273,6 @@ static VideoFrame *extractVideoFrameWithCodecFlags(
     if (meta->findInt32(kKeyDisplayHeight, &displayHeight)) {
         frame->mDisplayHeight = displayHeight;
     }
-
 
     ColorConverter converter(
             (OMX_COLOR_FORMATTYPE)srcFormat, OMX_COLOR_Format16bitRGB565);

@@ -74,7 +74,9 @@ Copyright (c) 2011-2012, Code Aurora Forum. All rights reserved.
 #include <binder/IServiceManager.h>
 #include <binder/Parcel.h>
 
+#ifdef QCOM_HARDWARE
 const uint32_t START_BROADCAST_TRANSACTION = IBinder::FIRST_CALL_TRANSACTION + 13;
+#endif
 
 namespace android {
 
@@ -489,7 +491,9 @@ bool sendBroadCastEvent(String16 intentName) {
 	data.writeInt32(0); // serialize
 	data.writeInt32(0); // sticky
 
+#ifdef QCOM_HARDWARE
 	status_t ret = am->transact(START_BROADCAST_TRANSACTION, data, &reply, 0);
+#endif
 	return true;
 }
 
@@ -1064,7 +1068,6 @@ status_t OMXCodec::configureCodec(const sp<MetaData> &meta) {
         size_t size;
 #ifdef QCOM_HARDWARE
         const char *mime_type;
-#endif
 
         if (!strncasecmp(mMIME, "video/", 6)) {
             int32_t arbitraryMode = 1;
@@ -1073,6 +1076,7 @@ status_t OMXCodec::configureCodec(const sp<MetaData> &meta) {
                 mUseArbitraryMode = arbitraryMode ? true : false;
             }
         }
+#endif
 
         if (meta->findData(kKeyESDS, &type, &data, &size)) {
             ESDS esds((const char *)data, size);
@@ -2402,7 +2406,7 @@ OMXCodec::OMXCodec(
       mNumBFrames(0),
       mUseArbitraryMode(true) {
 #ifdef QCOM_HARDWARE
-    parseFlags();
+      parseFlags();
 #endif
     mPortStatus[kPortIndexInput] = ENABLED;
     mPortStatus[kPortIndexOutput] = ENABLED;

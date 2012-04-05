@@ -321,6 +321,9 @@ private:
             OMX_U32 portIndex, int32_t sampleRate, int32_t numChannels);
 
     status_t allocateBuffers();
+#ifdef OMAP_ENHANCEMENT
+    status_t updateNumBuffers(OMX_U32 portIndex);
+#endif
     status_t allocateBuffersOnPort(OMX_U32 portIndex);
     status_t allocateOutputBuffersFromNativeWindow();
 

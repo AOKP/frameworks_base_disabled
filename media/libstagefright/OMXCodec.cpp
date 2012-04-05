@@ -2263,6 +2263,54 @@ bool OMXCodec::isIntermediateState(State state) {
         || state == RECONFIGURING;
 }
 
+#ifdef OMAP_ENHANCEMENT
+// This function updates the actual buffer count via OMX_IndexParamPortDefinition.
+// In case of kPortIndexOutput , if mNativeWindow is not NULL then it determines
+// the num buffers based on  NATIVE_WINDOW_MIN_UNDEQUEUED_BUFFERS.
+status_t OMXCodec::updateNumBuffers(OMX_U32 portIndex) {
+
+    status_t err = OK;
+
+    OMX_PARAM_PORTDEFINITIONTYPE def;
+    InitOMXParams(&def);
+    def.nPortIndex = portIndex;
+
+    err = mOMX->getParameter(
+            mNode, OMX_IndexParamPortDefinition, &def, sizeof(def));
+
+    if (err != OK) {
+        CODEC_LOGE("Error getting OMX_IndexParamPortDefinition");
+        return err;
+    }
+
+    if (mNativeWindow != NULL && portIndex == kPortIndexOutput) {
+        int minUndequeuedBufs = 0;
+        err = mNativeWindow->query(mNativeWindow.get(),
+                NATIVE_WINDOW_MIN_UNDEQUEUED_BUFFERS, &minUndequeuedBufs);
+        if (err != OK) {
+            CODEC_LOGE("NATIVE_WINDOW_MIN_UNDEQUEUED_BUFFERS query failed: %s (%d)",
+                    strerror(-err), -err);
+            return err;
+        }
+
+        if (def.nBufferCountActual < def.nBufferCountMin + minUndequeuedBufs) {
+
+            OMX_U32 newBufferCount = def.nBufferCountMin + minUndequeuedBufs;
+            def.nBufferCountActual = newBufferCount;
+            err = mOMX->setParameter(
+                     mNode, OMX_IndexParamPortDefinition, &def, sizeof(def));
+            if (err != OK) {
+                CODEC_LOGE("setting nBufferCountActual to %lu failed: %d",
+                        newBufferCount, err);
+                return err;
+            }
+        }
+    }
+
+    return err;
+}
+#endif
+
 status_t OMXCodec::allocateBuffers() {
     status_t err = allocateBuffersOnPort(kPortIndexInput);
 
@@ -3404,7 +3452,18 @@ void OMXCodec::onCmdComplete(OMX_COMMANDTYPE cmd, OMX_U32 data) {
                     mOutputPortSettingsHaveChanged = formatChanged;
                 }
 
+#ifdef OMAP_ENHANCEMENT
+                //Calculate and update the number of buffers to be allocated
+                //Note: This needs to be called in port disabled state as this function
+                //can call OMX setpatameter
+                status_t err = updateNumBuffers(portIndex);
+                if (err != OK) {
+                    setState(ERROR);
+                }
+                err = enablePortAsync(portIndex);
+#else
                 status_t err = enablePortAsync(portIndex);
+#endif
                 if (err != OK) {
                     CODEC_LOGE("enablePortAsync(%ld) failed (err = %d)", portIndex, err);
                     setState(ERROR);

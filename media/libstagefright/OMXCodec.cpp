@@ -2258,7 +2258,6 @@ status_t OMXCodec::setVideoOutputFormat(
         CODEC_LOGV("Video O/P format.nIndex 0x%x",format.nIndex);
         CODEC_LOGE("Video O/P format.eColorFormat 0x%x",format.eColorFormat);
 #endif
-
         status_t err = mOMX->getParameter(
                 mNode, OMX_IndexParamVideoPortFormat,
                 &format, sizeof(format));
@@ -2270,13 +2269,12 @@ status_t OMXCodec::setVideoOutputFormat(
                || format.eColorFormat == OMX_COLOR_FormatCbYCrY
                || format.eColorFormat == OMX_TI_COLOR_FormatYUV420PackedSemiPlanar
                || format.eColorFormat == OMX_QCOM_COLOR_FormatYVU420SemiPlanar
-#ifdef QCOM_HARDWARE
-               || format.eColorFormat == QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka
-#endif
-
 #ifdef SAMSUNG_CODEC_SUPPORT
                || format.eColorFormat == OMX_SEC_COLOR_FormatNV12TPhysicalAddress
                || format.eColorFormat == OMX_SEC_COLOR_FormatNV12Tiled
+#endif
+#ifdef QCOM_HARDWARE
+               || format.eColorFormat == QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka
 #endif
                );
 #ifdef SAMSUNG_CODEC_SUPPORT
@@ -2287,7 +2285,6 @@ status_t OMXCodec::setVideoOutputFormat(
                 format.eColorFormat = OMX_COLOR_FormatYUV420SemiPlanar;
         }
 #endif
-
         err = mOMX->setParameter(
                 mNode, OMX_IndexParamVideoPortFormat,
                 &format, sizeof(format));
@@ -2800,6 +2797,7 @@ status_t OMXCodec::allocateOutputBuffersFromNativeWindow() {
     if (err != OK) {
         return err;
     }
+#ifndef SAMSUNG_CODEC_SUPPORT
 
 #ifdef QCOM_HARDWARE
     int format = (def.format.video.eColorFormat ==
@@ -2807,21 +2805,20 @@ status_t OMXCodec::allocateOutputBuffersFromNativeWindow() {
                  HAL_PIXEL_FORMAT_YCbCr_420_SP_TILED : def.format.video.eColorFormat;
     if(def.format.video.eColorFormat == OMX_QCOM_COLOR_FormatYVU420SemiPlanar)
         format = HAL_PIXEL_FORMAT_YCrCb_420_SP;
-
-    format ^= (mInterlaceFormatDetected ? HAL_PIXEL_FORMAT_INTERLACE : 0);
 #endif
 
-#ifndef SAMSUNG_CODEC_SUPPORT
-    err = native_window_set_buffers_geometry(
-                                             mNativeWindow.get(),
 #ifdef QCOM_HARDWARE
-                                             def.format.video.nStride,
-                                             def.format.video.nSliceHeight,
-                                             format);
+    err = native_window_set_buffers_geometry(
+            mNativeWindow.get(),
+            def.format.video.nStride,
+            def.format.video.nSliceHeight,
+            format);
 #else
-    def.format.video.nFrameWidth,
-    def.format.video.nFrameHeight,
-    def.format.video.eColorFormat);
+    err = native_window_set_buffers_geometry(
+            mNativeWindow.get(),
+            def.format.video.nFrameWidth,
+            def.format.video.nFrameHeight,
+            def.format.video.eColorFormat);
 #endif
 #else
     OMX_COLOR_FORMATTYPE eColorFormat;

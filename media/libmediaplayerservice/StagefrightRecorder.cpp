@@ -1440,11 +1440,7 @@ status_t StagefrightRecorder::setupCameraSource(
 #endif
         *cameraSource = CameraSource::CreateFromCamera(
                 mCamera, mCameraProxy, mCameraId, videoSize, mFrameRate,
-#ifdef QCOM_HARDWARE
-                mPreviewSurface, useMeta);
-#else
                 mPreviewSurface, true /*storeMetaDataInVideoBuffers*/);
-#endif
     }
     mCamera.clear();
     mCameraProxy.clear();

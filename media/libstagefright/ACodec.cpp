@@ -1137,8 +1137,9 @@ status_t ACodec::setSupportedOutputFormat() {
 #ifdef QCOM_HARDWARE
            || format.eColorFormat == (OMX_COLOR_FORMATTYPE)OMX_QCOM_COLOR_FormatYVU420SemiPlanar
            || format.eColorFormat ==  (OMX_COLOR_FORMATTYPE)QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka
-#endif
+#else
            || format.eColorFormat == OMX_QCOM_COLOR_FormatYVU420SemiPlanar);
+#endif
 
     return mOMX->setParameter(
             mNode, OMX_IndexParamVideoPortFormat,

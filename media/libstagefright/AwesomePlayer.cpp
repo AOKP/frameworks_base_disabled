@@ -1751,11 +1751,17 @@ void AwesomePlayer::onVideoEvent() {
         if (mSeeking != NO_SEEK) {
             LOGV("seeking to %lld us (%.2f secs)", mSeekTimeUs, mSeekTimeUs / 1E6);
 
+#if defined(OMAP_ENHANCEMENT) && defined(OMAP_TIME_INTERPOLATOR)
+            options.setSeekTo(
+                    mSeekTimeUs,
+                    MediaSource::ReadOptions::SEEK_NEXT_SYNC);
+#else
             options.setSeekTo(
                     mSeekTimeUs,
                     mSeeking == SEEK_VIDEO_ONLY
                         ? MediaSource::ReadOptions::SEEK_NEXT_SYNC
                         : MediaSource::ReadOptions::SEEK_CLOSEST_SYNC);
+#endif
         }
         for (;;) {
             status_t err = mVideoSource->read(&mVideoBuffer, &options);

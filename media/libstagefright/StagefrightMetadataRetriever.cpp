@@ -32,7 +32,6 @@
 
 #ifdef QCOM_HARDWARE
 #include <cutils/properties.h>
-#include <OMX_QCOMExtns.h>
 #endif
 
 namespace android {
@@ -240,25 +239,8 @@ static VideoFrame *extractVideoFrameWithCodecFlags(
     frame->mHeight = crop_bottom - crop_top + 1;
     frame->mDisplayWidth = frame->mWidth;
     frame->mDisplayHeight = frame->mHeight;
-
-    int32_t srcFormat;
-    CHECK(meta->findInt32(kKeyColorFormat, &srcFormat));
-
 #ifdef QCOM_HARDWARE
-    frame_width_rounded = frame->mWidth;
-    switch (srcFormat) {
-        case OMX_QCOM_COLOR_FormatYVU420SemiPlanar:
-        case OMX_COLOR_FormatYUV420SemiPlanar:
-        case OMX_TI_COLOR_FormatYUV420PackedSemiPlanar:
-        case QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka:
-            {
-                frame_width_rounded = ((frame->mWidth + 3)/4)*4;
-                break;
-            }
-        default:
-            break;
-    }
-
+    frame_width_rounded = ((frame->mWidth + 3)/4)*4;
     frame->mSize = frame_width_rounded * frame->mHeight * 2;
 #else
     frame->mSize = frame->mWidth * frame->mHeight * 2;
@@ -273,6 +255,9 @@ static VideoFrame *extractVideoFrameWithCodecFlags(
     if (meta->findInt32(kKeyDisplayHeight, &displayHeight)) {
         frame->mDisplayHeight = displayHeight;
     }
+
+    int32_t srcFormat;
+    CHECK(meta->findInt32(kKeyColorFormat, &srcFormat));
 
     ColorConverter converter(
             (OMX_COLOR_FORMATTYPE)srcFormat, OMX_COLOR_Format16bitRGB565);

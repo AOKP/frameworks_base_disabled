@@ -1504,6 +1504,8 @@
         <enum name="KEYCODE_BRIGHTNESS_UP" value="215" />
         <enum name="KEYCODE_BRIGHTNESS_AUTO" value="216" />
         <enum name="KEYCODE_SCREENSHOT" value="217" />
+        <enum name="KEYCODE_ALT_LOCK" value="218" />
+        <enum name="KEYCODE_VOICE" value="219" />
     </attr>
 
     <!-- ***************************************************************** -->

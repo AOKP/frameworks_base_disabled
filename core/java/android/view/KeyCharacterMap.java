@@ -120,6 +120,17 @@ public class KeyCharacterMap {
     public static final char PICKER_DIALOG_INPUT = '\uEF01';
 
     /**
+     * Private use character for alt-lock
+     * @hide
+     */
+    public static final char ALT_LOCK_INPUT = '\uEF05';
+
+    /**
+     * Private use character indicating the voice input should be activated
+     */
+    public static final char VOICE_INPUT = '\uEF06';
+
+    /**
      * Modifier keys may be chorded with character keys.
      *
      * @see {#link #getModifierBehavior()} for more details.

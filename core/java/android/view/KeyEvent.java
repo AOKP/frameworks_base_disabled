@@ -611,6 +611,9 @@ public class KeyEvent extends InputEvent implements Parcelable {
 
     private static final int LAST_KEYCODE           = KEYCODE_CAPTURE;
 
+    public static final int KEYCODE_ALT_LOCK      = 211;
+    public static final int KEYCODE_VOICE      = 212;
+
     // NOTE: If you add a new keycode here you must also add it to:
     //  isSystem()
     //  native/include/android/keycodes.h
@@ -858,6 +861,8 @@ public class KeyEvent extends InputEvent implements Parcelable {
         names.append(KEYCODE_BRIGHTNESS_DOWN, "KEYCODE_BRIGHTNESS_DOWN");
         names.append(KEYCODE_BRIGHTNESS_AUTO, "KEYCODE_BRIGHTNESS_AUTO");
         names.append(KEYCODE_CAPTURE, "KEYCODE_CAPTURE");
+        names.append(KEYCODE_ALT_LOCK, "KEYCODE_ALT_LOCK");
+        names.append(KEYCODE_VOICE, "KEYCODE_VOICE");
     };
 
     // Symbolic names of all metakeys in bit order from least significant to most significant.

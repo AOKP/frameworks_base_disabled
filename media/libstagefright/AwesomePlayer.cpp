@@ -2218,15 +2218,13 @@ status_t AwesomePlayer::finishSetDataSource_l() {
         String8 mimeType;
         float confidence;
         sp<AMessage> dummy;
-        bool success = SniffWVM(dataSource, &mimeType, &confidence, &dummy);
+        bool success = SniffDRM(dataSource, &mimeType, &confidence, &dummy);
 
         if (!success
                 || strcasecmp(
                     mimeType.string(), MEDIA_MIMETYPE_CONTAINER_WVM)) {
             return ERROR_UNSUPPORTED;
         }
-
-        dataSource->DrmInitialization();
 
         mWVMExtractor = new WVMExtractor(dataSource);
         mWVMExtractor->setAdaptiveStreamingMode(true);

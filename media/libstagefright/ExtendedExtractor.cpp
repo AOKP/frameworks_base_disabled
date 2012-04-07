@@ -138,11 +138,13 @@ void ExtendedExtractor::RegisterSniffers() {
     bool flag= true;
     //Register the remote sniffers with the DataSource.
     for(int i=0; i<snifferCount; i++) {
-          DataSource::RegisterSniffer(snifferArray[i],flag);
-          flag = false;
+#ifdef QCOM_HARDWARE
+        DataSource::RegisterSniffer(snifferArray[i],flag);
+        flag = false;
+#else
+        DataSource::RegisterSniffer(snifferArray[i]);
+#endif 
     }
 }
 
 }  // namespace android
-
-

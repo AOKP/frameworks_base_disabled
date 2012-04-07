@@ -2411,6 +2411,7 @@ OMXCodec::OMXCodec(
               (!strncmp(componentName, "OMX.google.", 11)
               || !strcmp(componentName, "OMX.Nvidia.mpeg2v.decode"))
                         ? NULL : nativeWindow) {
+#endif
 #ifdef QCOM_HARDWARE
       parseFlags();
 #endif

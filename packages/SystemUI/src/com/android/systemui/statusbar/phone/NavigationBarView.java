@@ -788,7 +788,7 @@ public class NavigationBarView extends LinearLayout {
                 return getResources().getDrawable(R.drawable.ic_sysbar_search);
             } else if (uri.equals(ACTION_MENU)) {
 
-                return getResources().getDrawable(R.drawable.ic_sysbar_menu_land);
+                return getResources().getDrawable(R.drawable.ic_sysbar_menu_big);
             } else if (uri.equals(ACTION_KILL)) {
 
                 return getResources().getDrawable(R.drawable.ic_sysbar_killtask);

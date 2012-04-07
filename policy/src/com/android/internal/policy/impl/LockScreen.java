@@ -417,20 +417,28 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 
             String customIconUri = Settings.System.getString(getContext().getContentResolver(),
                     Settings.System.LOCKSCREEN_CUSTOM_APP_ICONS[index]);
-
-            if (customIconUri != null && !customIconUri.equals("") && customIconUri.startsWith("icon")) {
-                // it's an icon the user chose from the gallery here
-                File icon = new File(Uri.parse(customIconUri).getPath());
-                if(icon.exists())
-                    return resize(new BitmapDrawable(getResources(), icon.getAbsolutePath()));
-            } else if (customIconUri != null && !customIconUri.equals("")) {
-                // here they chose another app icon
-                try {
-                    return resize(pm.getActivityIcon(Intent.parseUri(customIconUri, 0)));
-                } catch (NameNotFoundException e) {
-                    e.printStackTrace();
-                } catch (URISyntaxException e) {
-                    e.printStackTrace();
+            if(customIconUri != null && !customIconUri.equals("")) {
+                if (customIconUri.startsWith("file")) {
+                    // it's an icon the user chose from the gallery here
+                    File icon = new File(Uri.parse(customIconUri).getPath());
+                    if(icon.exists()) {
+                        Bitmap b = BitmapFactory.decodeFile(icon.getAbsolutePath());
+                        if (b != null) {
+                            Drawable ic = new BitmapDrawable(getResources(), b);
+                            return resize(ic);
+                        } else {
+                            Log.e(TAG, "Lockscreen icon URI (" + customIconUri + ") couldn't be decoded. Using stock icon.");
+                        }
+                    }
+                } else {
+                    // here they chose another app icon
+                    try {
+                        return resize(pm.getActivityIcon(Intent.parseUri(customIconUri, 0)));
+                    } catch (NameNotFoundException e) {
+                        Log.e(TAG, "user chose app's icon that doesn't exist anymore", e);
+                    } catch (URISyntaxException e) {
+                        Log.e(TAG, "URISyntaxException when setting icon", e);
+                    }
                 }
             }
 

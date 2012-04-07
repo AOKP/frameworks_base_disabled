@@ -2516,18 +2516,24 @@ OMXCodec::~OMXCodec() {
 
     CHECK(mState == LOADED || mState == ERROR || mState == LOADED_TO_IDLE);
 
+#ifdef QCOM_HARDWARE
     if (!strncasecmp(mComponentName,"OMX.qcom",8) &&(mFlags & kUseSecureInputBuffers) && (!mIsEncoder) && (!strncasecmp(mMIME, "video/", 6)) )
     {
         //send secure end event
         sendBroadCastEvent(String16("android.intent.action.SECURE_END"));
     }
+#endif
+
 	status_t err = mOMX->freeNode(mNode);
+
+#ifdef QCOM_HARDWARE
     if (!strncasecmp(mComponentName,"OMX.qcom",8) && (mFlags & kUseSecureInputBuffers) && (!mIsEncoder) && (!strncasecmp(mMIME, "video/", 6)) )
     {
         //send secure end done event
         sendBroadCastEvent(String16("android.intent.action.SECURE_END_DONE"));
         mSecureStart = false;
     }
+#endif
 
 	CHECK_EQ(err, (status_t)OK);
 

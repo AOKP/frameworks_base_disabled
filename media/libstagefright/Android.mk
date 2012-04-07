@@ -50,14 +50,14 @@ LOCAL_SRC_FILES:=                         \
         WAVExtractor.cpp                  \
         WVMExtractor.cpp                  \
         XINGSeeker.cpp                    \
-        avc_utils.cpp
+        avc_utils.cpp                     \
 
 LOCAL_C_INCLUDES:= \
 	$(JNI_H_INCLUDE) \
         $(TOP)/frameworks/base/include/media/stagefright/openmax \
         $(TOP)/external/flac/include \
         $(TOP)/external/tremolo \
-        $(TOP)/external/openssl/include
+        $(TOP)/external/openssl/include \
 
 LOCAL_SHARED_LIBRARIES := \
         libbinder         \
@@ -89,7 +89,7 @@ LOCAL_STATIC_LIBRARIES := \
         libstagefright_mpeg2ts \
         libstagefright_httplive \
         libstagefright_id3 \
-        libFLAC
+        libFLAC \
 
 ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
 

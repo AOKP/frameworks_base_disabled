@@ -1,0 +1,10 @@
+Change-Id: Ic6ac4c9e3d54da388ab533bb9a2c1e6459605ebc
+Code-Review+2: Roman Birg <romanbirg@gmail.com>
+Verified+1: Roman Birg <romanbirg@gmail.com>
+Code-Review+1: Mike Wilson <mwilson@acesappraisal.com>
+Code-Review+1: Gergely Szell <sethyx@gmail.com>
+Submitted-by: Roman Birg <romanbirg@gmail.com>
+Submitted-at: Sat, 07 Apr 2012 11:57:37 -0400
+Reviewed-on: http://gerrit.sudoservers.com/39
+Project: AOKP/frameworks_base
+Branch: refs/heads/ics

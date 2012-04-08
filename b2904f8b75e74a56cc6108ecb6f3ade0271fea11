@@ -1,0 +1,10 @@
+Change-Id: Ib2904f8b75e74a56cc6108ecb6f3ade0271fea11
+Code-Review+2: Roman Birg <romanbirg@gmail.com>
+Verified+1: Roman Birg <romanbirg@gmail.com>
+Code-Review+1: Gergely Szell <sethyx@gmail.com>
+Verified+1: Gergely Szell <sethyx@gmail.com>
+Submitted-by: Roman Birg <romanbirg@gmail.com>
+Submitted-at: Sun, 08 Apr 2012 12:46:18 -0400
+Reviewed-on: http://gerrit.sudoservers.com/65
+Project: AOKP/frameworks_base
+Branch: refs/heads/ics

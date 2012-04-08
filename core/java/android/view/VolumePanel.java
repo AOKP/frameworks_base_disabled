@@ -627,7 +627,8 @@ public class VolumePanel extends Handler implements OnSeekBarChangeListener,
             sc.seekbarView.setProgress(index);
             // If adjusting Ring volume and preference is to link it to Notification
             if (streamType == AudioManager.STREAM_RING &&
-                    System.getInt(mContext.getContentResolver(),Settings.System.VOLUME_LINK_NOTIFICATION, 1) == 1) {
+                    Settings.System.getInt(mContext.getContentResolver(),
+                            Settings.System.VOLUME_LINK_NOTIFICATION, 1) == 1) {
                 StreamControl notifySc = mStreamControls.get(AudioManager.STREAM_NOTIFICATION);
                 if (index > notifySc.seekbarView.getMax()) {
                     notifySc.seekbarView.setProgress(notifySc.seekbarView.getMax());
@@ -806,7 +807,8 @@ public class VolumePanel extends Handler implements OnSeekBarChangeListener,
             if (mAudioManager.getStreamVolume(sc.streamType) != progress) {
                 mAudioManager.setStreamVolume(sc.streamType, progress, 0);
                 // if audio is linked then adjust other one if change made by user
-                if (fromUser && System.getInt(mContext.getContentResolver(),Settings.System.VOLUME_LINK_NOTIFICATION, 1) == 1) {
+                if (fromUser && Settings.System.getInt(mContext.getContentResolver(),
+                        Settings.System.VOLUME_LINK_NOTIFICATION, 1) == 1) {
                     if (sc.streamType == AudioManager.STREAM_RING) {
                         StreamControl notifySc = mStreamControls.get(AudioManager.STREAM_NOTIFICATION);
                         if (notifySc != null) {

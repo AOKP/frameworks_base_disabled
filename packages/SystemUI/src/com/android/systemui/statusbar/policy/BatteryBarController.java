@@ -115,11 +115,18 @@ public class BatteryBarController extends LinearLayout {
     @Override
     protected void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        mBatteryLevel = Prefs.getLastBatteryLevel(getContext());
+        if (isAttached) {
+            getHandler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    updateSettings();
+                }
+            }, 500);
+
+        }
     }
 
     public void addBars() {
-
         // set heights
         DisplayMetrics metrics = getContext().getResources().getDisplayMetrics();
         float dp = (float) Settings.System.getInt(getContext().getContentResolver(),
@@ -139,7 +146,7 @@ public class BatteryBarController extends LinearLayout {
         else
             params.height = pixels;
         setLayoutParams(params);
-
+        mBatteryLevel = Prefs.getLastBatteryLevel(getContext());
         if (mStyle == STYLE_REGULAR) {
             addView(new BatteryBar(mContext, mBatteryCharging, mBatteryLevel, isVertical),
                     new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,

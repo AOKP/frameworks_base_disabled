@@ -105,14 +105,12 @@ SurfaceFlinger::SurfaceFlinger()
         mDebugInTransaction(0),
         mLastTransactionTime(0),
         mBootFinished(false),
-        mConsoleSignals(0),
 #ifdef QCOM_HARDWARE
         mCanSkipComposition(false),
 #endif
 #ifdef QCOM_HDMI_OUT
 	mHDMIOutput(EXT_DISPLAY_OFF),
 #endif
-        mSecureFrameBuffer(0)
         mConsoleSignals(0),
         mSecureFrameBuffer(0),
         mUseDithering(false)

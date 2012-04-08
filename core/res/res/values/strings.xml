@@ -3469,5 +3469,7 @@
     <string name="lockscreen_custom_app_default_3">intent:#Intent;action=android.intent.action.MAIN;component=com.android.mms/.ui.ConversationList;end</string>
     <string name="lockscreen_custom_app_default_4">intent:#Intent;action=android.intent.action.MAIN;component=com.android.browser/.BrowserActivity;end</string>
 
+    <!-- Lockscreen calendar string -->
+    <string name="lockscreen_calendar_tomorrow">Tomorrow</string>
 
 </resources>

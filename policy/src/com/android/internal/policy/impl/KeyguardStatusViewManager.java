@@ -1044,7 +1044,7 @@ class KeyguardStatusViewManager implements OnClickListener {
             if (beginDay == today) { // today
                 dayString = "";
             } else if (today + 1 == beginDay || (today >= 365 && beginDay == 1)) { // tomorrow
-                dayString = "Tomorrow";
+                dayString = getContext().getString(R.string.lockscreen_calendar_tomorrow);
             } else { // another day of week
                 dayString = begin.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT,
                         Locale.getDefault());

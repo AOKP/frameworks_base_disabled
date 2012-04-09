@@ -69,6 +69,9 @@ LOCAL_C_INCLUDES := \
 ifeq ($(TARGET_BOARD_PLATFORM),msm7x30)
     LOCAL_SRC_FILES+= OverlayHtc.cpp
 endif
+ifneq ($(TARGET_BOARD_PLATFORM),msm7x30)
+    LOCAL_SRC_FILES+= Overlay.cpp
+endif
 
 LOCAL_MODULE:= libui
 

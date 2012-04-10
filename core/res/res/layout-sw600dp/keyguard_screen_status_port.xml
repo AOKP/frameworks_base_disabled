@@ -100,14 +100,14 @@
     </LinearLayout>
     
     <com.android.internal.policy.impl.WeatherText
-	android:id="@+id/weather"
-	android:layout_width="wrap_content"
+        android:id="@+id/weather"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dip"
         android:textSize="16sp"
         android:singleLine="true"
         android:ellipsize="end"
-	android:gravity="right"
+        android:gravity="right"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <ViewFlipper
@@ -118,7 +118,7 @@
         android:outAnimation="@anim/calendar_fadeout"
         android:layout_marginTop="10dip"
         android:layout_gravity="right"
-	android:drawablePadding="4dip" />
+        android:drawablePadding="4dip" />
 
     <TextView
         android:id="@+id/status1"

@@ -8254,6 +8254,9 @@ public class TextView extends View implements ViewTreeObserver.OnPreDrawListener
             if (mBlink != null) {
                 mBlink.cancel();
             }
+
+            ensureEndedBatchEdit();
+
             // Don't leave us in the middle of a batch edit.
             onEndBatchEdit();
             if (mInputContentType != null) {

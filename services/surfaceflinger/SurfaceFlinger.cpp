@@ -1405,7 +1405,7 @@ void SurfaceFlinger::updateHwcHDMI(int externaltype)
     const DisplayHardware& hw(graphicPlane(0).displayHardware());
     mDirtyRegion.set(hw.bounds());
     HWComposer& hwc(hw.getHwComposer());
-    hwc.enableHDMIOutput(externaltype);
+    hwc.perform(EVENT_EXTERNAL_DISPLAY, externaltype);
 }
 
 void SurfaceFlinger::enableHDMIOutput(int externaltype)
@@ -1418,16 +1418,6 @@ void SurfaceFlinger::enableHDMIOutput(int externaltype)
         updateHwcHDMI(mHDMIOutput);
         signalEvent();
     }
-}
-
-void SurfaceFlinger::setActionSafeWidthRatio(float asWidthRatio){
-    const DisplayHardware& hw(graphicPlane(0).displayHardware());
-    hw.setActionSafeWidthRatio(asWidthRatio);
-}
-
-void SurfaceFlinger::setActionSafeHeightRatio(float asHeightRatio){
-    const DisplayHardware& hw(graphicPlane(0).displayHardware());
-    hw.setActionSafeHeightRatio(asHeightRatio);
 }
 #endif
 

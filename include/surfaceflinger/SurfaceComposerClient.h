@@ -137,9 +137,7 @@ public:
 
 #ifdef QCOM_HDMI_OUT
     //HDMI SPecific functions
-    static void enableHDMIOutput(int enable);
-    static void setActionSafeWidthRatio(float asWidthRatio);
-    static void setActionSafeHeightRatio(float asHeightRatio);
+    static void enableExternalDisplay(int disp_type, int enable);
 #endif
 
     status_t    hide(SurfaceID id);

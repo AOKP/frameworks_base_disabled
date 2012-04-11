@@ -227,9 +227,9 @@ void HWComposer::dump(String8& result, char* buffer, size_t SIZE,
 }
 
 #ifdef QCOM_HDMI_OUT
-void HWComposer::enableHDMIOutput(int externaltype) {
+void HWComposer::perform(int event, int value) {
     if (mHwc) {
-        mHwc->enableHDMIOutput(mHwc, externaltype);
+        mHwc->perform(mHwc, event, value);
     }
 }
 #endif

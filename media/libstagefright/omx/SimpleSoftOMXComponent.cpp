@@ -120,6 +120,15 @@ OMX_ERRORTYPE SimpleSoftOMXComponent::setParameter(
 OMX_ERRORTYPE SimpleSoftOMXComponent::internalGetParameter(
         OMX_INDEXTYPE index, OMX_PTR params) {
     switch (index) {
+        case OMX_IndexParamVideoInit:
+        case OMX_IndexParamAudioInit:
+        {
+            OMX_PORT_PARAM_TYPE *portParams = (OMX_PORT_PARAM_TYPE *)params;
+            portParams->nPorts = mPorts.size();
+            portParams->nStartPortNumber = 0;
+            return OMX_ErrorNone;
+        }
+
         case OMX_IndexParamPortDefinition:
         {
             OMX_PARAM_PORTDEFINITIONTYPE *defParams =

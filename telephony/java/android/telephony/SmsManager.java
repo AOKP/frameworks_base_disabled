@@ -98,8 +98,13 @@ public final class SmsManager {
      * @param text the original message.  Must not be null.
      * @return an <code>ArrayList</code> of strings that, in order,
      *   comprise the original message
+     *
+     * @throws IllegalArgumentException if text is null
      */
     public ArrayList<String> divideMessage(String text) {
+        if (null == text) {
+            throw new IllegalArgumentException("text is null");
+        }
         return SmsMessage.fragmentText(text);
     }
 
@@ -242,11 +247,15 @@ public final class SmsManager {
      *               STATUS_ON_ICC_SENT, STATUS_ON_ICC_UNSENT)
      * @return true for success
      *
+     * @throws IllegalArgumentException if pdu is NULL
      * {@hide}
      */
     public boolean copyMessageToIcc(byte[] smsc, byte[] pdu, int status) {
         boolean success = false;
 
+        if (null == pdu) {
+            throw new IllegalArgumentException("pdu is NULL");
+        }
         try {
             ISms iccISms = ISms.Stub.asInterface(ServiceManager.getService("isms"));
             if (iccISms != null) {
@@ -414,11 +423,15 @@ public final class SmsManager {
      * @return true if successful, false otherwise
      * @see #disableCellBroadcastRange(int, int)
      *
+     * @throws IllegalArgumentException if endMessageId < startMessageId
      * {@hide}
      */
     public boolean enableCellBroadcastRange(int startMessageId, int endMessageId) {
         boolean success = false;
 
+        if (endMessageId < startMessageId) {
+            throw new IllegalArgumentException("endMessageId < startMessageId");
+        }
         try {
             ISms iccISms = ISms.Stub.asInterface(ServiceManager.getService("isms"));
             if (iccISms != null) {
@@ -445,11 +458,15 @@ public final class SmsManager {
      *
      * @see #enableCellBroadcastRange(int, int)
      *
+     * @throws IllegalArgumentException if endMessageId < startMessageId
      * {@hide}
      */
     public boolean disableCellBroadcastRange(int startMessageId, int endMessageId) {
         boolean success = false;
 
+        if (endMessageId < startMessageId) {
+            throw new IllegalArgumentException("endMessageId < startMessageId");
+        }
         try {
             ISms iccISms = ISms.Stub.asInterface(ServiceManager.getService("isms"));
             if (iccISms != null) {

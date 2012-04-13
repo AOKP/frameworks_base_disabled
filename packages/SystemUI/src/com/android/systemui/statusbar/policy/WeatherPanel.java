@@ -15,7 +15,6 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.systemui.R;
 
@@ -81,8 +80,16 @@ public class WeatherPanel extends FrameLayout {
 
         @Override
         public void onClick(View v) {
-            v.getContext().sendBroadcast(new Intent("com.aokp.romcontrol.INTENT_WEATHER_REQUEST"));
-            Toast.makeText(v.getContext(), "Requesting weather update!", Toast.LENGTH_LONG).show();
+            Intent weatherintent = new Intent("com.aokp.romcontrol.INTENT_WEATHER_REQUEST");
+
+            if (v.getId() == R.id.condition_image) {
+                weatherintent.putExtra(android.content.Intent.EXTRA_TEXT, "startapp");
+            } else {
+                weatherintent.putExtra(android.content.Intent.EXTRA_TEXT, "updateweather");
+            }
+
+            v.getContext().sendBroadcast(weatherintent);
+
         }
     };
 
@@ -103,6 +110,11 @@ public class WeatherPanel extends FrameLayout {
         mWinds = (TextView) this.findViewById(R.id.winds);
         mCondition = (TextView) this.findViewById(R.id.condition);
         mConditionImage = (ImageView) this.findViewById(R.id.condition_image);
+
+        if (mConditionImage != null) {
+            mConditionImage.setOnClickListener(mPanelOnClickListener);
+        }
+
         if (!mAttached) {
             mAttached = true;
             IntentFilter filter = new IntentFilter("com.aokp.romcontrol.INTENT_WEATHER_UPDATE");

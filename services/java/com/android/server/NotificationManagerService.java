@@ -66,6 +66,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Calendar;
+import java.util.Map;
 
 /** {@hide} */
 public class NotificationManagerService extends INotificationManager.Stub
@@ -108,11 +109,14 @@ public class NotificationManagerService extends INotificationManager.Stub
     private NotificationRecord mVibrateNotification;
     private Vibrator mVibrator = new Vibrator();
 
-    // for enabling and disabling notification pulse behavior
+    // for enabling and disabling notification pulse behaviour
     private boolean mScreenOn = true;
     private boolean mWasScreenOn = false;
     private boolean mInCall = false;
     private boolean mNotificationPulseEnabled;
+
+    private HashMap<String, NotificationLedValues> mNotificationPulseCustomLedValues;
+    private Map<String, String> mPackageNameMappings;
 
     private final ArrayList<NotificationRecord> mNotificationList =
             new ArrayList<NotificationRecord>();
@@ -503,6 +507,23 @@ public class NotificationManagerService extends INotificationManager.Stub
 
         mNotificationLight = lights.getLight(LightsService.LIGHT_ID_NOTIFICATIONS);
         mAttentionLight = lights.getLight(LightsService.LIGHT_ID_ATTENTION);
+
+        Resources resources = mContext.getResources();
+        mDefaultNotificationColor = resources.getColor(
+                com.android.internal.R.color.config_defaultNotificationColor);
+        mDefaultNotificationLedOn = resources.getInteger(
+                com.android.internal.R.integer.config_defaultNotificationLedOn);
+        mDefaultNotificationLedOff = resources.getInteger(
+                com.android.internal.R.integer.config_defaultNotificationLedOff);
+
+        mNotificationPulseCustomLedValues = new HashMap<String, NotificationLedValues>();
+
+        mPackageNameMappings = new HashMap<String, String>();
+        for(String mapping : resources.getStringArray(
+                com.android.internal.R.array.notification_light_package_mapping)) {
+            String[] map = mapping.split("\\|");
+            mPackageNameMappings.put(map[0], map[1]);
+        }
 
         // Don't start allowing notifications until the setup wizard has run once.
         // After that, including subsequent boots, init with notifications turned on.
@@ -1222,13 +1243,24 @@ public class NotificationManagerService extends INotificationManager.Stub
         || (inQuietHours() && mQuietHoursDim) || (wasScreenOn && !forceWithScreenOff)) {
             mNotificationLight.turnOff();
         } else {
-            int ledARGB = mLedNotification.notification.ledARGB;
-            int ledOnMS = mLedNotification.notification.ledOnMS;
-            int ledOffMS = mLedNotification.notification.ledOffMS;
-            if ((mLedNotification.notification.defaults & Notification.DEFAULT_LIGHTS) != 0) {
-                ledARGB = mDefaultNotificationColor;
-                ledOnMS = mDefaultNotificationLedOn;
-                ledOffMS = mDefaultNotificationLedOff;
+            int ledARGB;
+            int ledOnMS;
+            int ledOffMS;
+            NotificationLedValues ledValues = getLedValuesForNotification(mLedNotification);
+            if (ledValues != null) {
+                ledARGB = ledValues.color != 0 ? ledValues.color : mDefaultNotificationColor;
+                ledOnMS = ledValues.onMS >= 0 ? ledValues.onMS : mDefaultNotificationLedOn;
+                ledOffMS = ledValues.offMS >= 0 ? ledValues.offMS : mDefaultNotificationLedOn;
+            } else {
+                if ((mLedNotification.notification.defaults & Notification.DEFAULT_LIGHTS) != 0) {
+                    ledARGB = mDefaultNotificationColor;
+                    ledOnMS = mDefaultNotificationLedOn;
+                    ledOffMS = mDefaultNotificationLedOff;
+                } else {
+                    ledARGB = mLedNotification.notification.ledARGB;
+                    ledOnMS = mLedNotification.notification.ledOnMS;
+                    ledOffMS = mLedNotification.notification.ledOffMS;
+                }
             }
             if (mNotificationPulseEnabled) {
                 // pulse repeatedly
@@ -1236,6 +1268,47 @@ public class NotificationManagerService extends INotificationManager.Stub
                         ledOnMS, ledOffMS);
             }
         }
+    }
+
+    private void parseNotificationPulseCustomValuesString(String customLedValuesString) {
+        if (TextUtils.isEmpty(customLedValuesString)) {
+            return;
+        }
+
+        for (String packageValuesString : customLedValuesString.split("\\|")) {
+            String[] packageValues = packageValuesString.split("=");
+            if (packageValues.length != 2) {
+                Log.e(TAG, "Error parsing custom led values for unknown package");
+                continue;
+            }
+            String packageName = packageValues[0];
+            String[] values = packageValues[1].split(";");
+            if (values.length != 3) {
+                Log.e(TAG, "Error parsing custom led values '" + packageValues[1] + "' for " + packageName);
+                continue;
+            }
+            NotificationLedValues ledValues = new NotificationLedValues();
+            try {
+                ledValues.color = Integer.parseInt(values[0]);
+                ledValues.onMS = Integer.parseInt(values[1]);
+                ledValues.offMS = Integer.parseInt(values[2]);
+            } catch (Exception e) {
+                Log.e(TAG, "Error parsing custom led values '" + packageValues[1] + "' for " + packageName);
+                continue;
+            }
+            mNotificationPulseCustomLedValues.put(packageName, ledValues);
+        }
+    }
+
+    private NotificationLedValues getLedValuesForNotification(NotificationRecord ledNotification) {
+        return mNotificationPulseCustomLedValues.get(mapPackage(ledNotification.pkg));
+    }
+
+    private String mapPackage(String pkg) {
+        if(!mPackageNameMappings.containsKey(pkg)) {
+            return pkg;
+        }
+        return mPackageNameMappings.get(pkg);
     }
 
     // lock on mNotificationList

@@ -74,6 +74,8 @@ bool DisplayHardwareBase::DisplayEventThread::threadLoop()
     int fd;
 
     fd = open(kSleepFileName, O_RDONLY, 0);
+    if (fd == -1 && errno == ENOENT)
+        return true; // End silently if FB_EARLYSUSPEND appears to be missing, as on kernels >= 3.3
     do {
       err = read(fd, &buf, 1);
     } while (err < 0 && errno == EINTR);

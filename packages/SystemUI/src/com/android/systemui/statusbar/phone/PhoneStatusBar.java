@@ -2567,6 +2567,8 @@ public class PhoneStatusBar extends StatusBar {
                     Settings.System.getUriFor(Settings.System.WEATHER_STATUSBAR_STYLE), false, this);
             resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.STATUS_BAR_BRIGHTNESS_TOGGLE), false, this);
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.STATUSBAR_FONT_SIZE), false, this);
         }
 
         @Override
@@ -2592,6 +2594,8 @@ public class PhoneStatusBar extends StatusBar {
 
     private void updateSettings() {
         // Slog.i(TAG, "updated settings values");
+    	
+    	int fontSize = 16;
         
         ContentResolver cr = mContext.getContentResolver();
         mDropdownSettingsDefualtBehavior = Settings.System.getInt(cr,
@@ -2606,6 +2610,16 @@ public class PhoneStatusBar extends StatusBar {
         mIsStatusBarBrightNess = Settings.System.getInt(mStatusBarView.getContext()
                 .getContentResolver(),
                 Settings.System.STATUS_BAR_BRIGHTNESS_TOGGLE, 0) == 1;
+        fontSize = Settings.System.getInt(cr, Settings.System.STATUSBAR_FONT_SIZE, 16) ;
+        
+        Clock clock = (Clock) mStatusBarView.findViewById(R.id.clock);
+        if (clock != null) {
+            clock.setTextSize(fontSize);
+        }
+        CenterClock cclock = (CenterClock) mStatusBarView.findViewById(R.id.center_clock);
+        if (cclock != null) {
+            cclock.setTextSize(fontSize);
+        }
 
         reDrawHeader();
     }

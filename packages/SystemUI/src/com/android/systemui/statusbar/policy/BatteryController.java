@@ -189,6 +189,8 @@ public class BatteryController extends LinearLayout {
             resolver.registerContentObserver(Settings.System
                     .getUriFor(Settings.System.STATUSBAR_BATTERY_ICON), false,
                     this);
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.STATUSBAR_FONT_SIZE), false, this);
         }
 
         @Override
@@ -256,6 +258,11 @@ public class BatteryController extends LinearLayout {
         }
 
         setBatteryIcon(mLevel, mPlugged);
+        
+        int fontSize = Settings.System.getInt(cr,
+                Settings.System.STATUSBAR_FONT_SIZE, 16);
+        if (mBatteryTextOnly != null)
+        	 mBatteryTextOnly.setTextSize(fontSize);
 
     }
 }

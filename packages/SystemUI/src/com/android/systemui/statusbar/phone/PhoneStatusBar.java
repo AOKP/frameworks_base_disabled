@@ -2588,6 +2588,8 @@ public class PhoneStatusBar extends StatusBar {
                     Settings.System.NAVIGATION_BAR_BACKGROUND_COLOR), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUSBAR_HANDLE_ALPHA), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.STATUSBAR_FONT_SIZE), false, this);
         }
 
         @Override
@@ -2611,6 +2613,10 @@ public class PhoneStatusBar extends StatusBar {
 
     private void updateSettings() {
         // Check all our settings and respond accordingly
+        // Slog.i(TAG, "updated settings values");
+    	
+    	int fontSize = 16;
+
         ContentResolver cr = mContext.getContentResolver();
         mDropdownSettingsDefualtBehavior = Settings.System.getInt(cr,
                 Settings.System.STATUSBAR_SETTINGS_BEHAVIOR, 0) == 1;
@@ -2620,6 +2626,20 @@ public class PhoneStatusBar extends StatusBar {
 
         mDropdownDateBehavior = Settings.System.getInt(cr,
                 Settings.System.STATUSBAR_DATE_BEHAVIOR, 0) == 1;
+
+        mIsStatusBarBrightNess = Settings.System.getInt(mStatusBarView.getContext()
+                .getContentResolver(),
+                Settings.System.STATUS_BAR_BRIGHTNESS_TOGGLE, 0) == 1;
+        fontSize = Settings.System.getInt(cr, Settings.System.STATUSBAR_FONT_SIZE, 16) ;
+        
+        Clock clock = (Clock) mStatusBarView.findViewById(R.id.clock);
+        if (clock != null) {
+            clock.setTextSize(fontSize);
+        }
+        CenterClock cclock = (CenterClock) mStatusBarView.findViewById(R.id.center_clock);
+        if (cclock != null) {
+            cclock.setTextSize(fontSize);
+        }
 
         // To format the layout correctly we must first know if user has a preference.
         // If we drop the date we must add padding on the left of aosp settings.

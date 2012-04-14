@@ -2756,6 +2756,11 @@ public final class Settings {
         public static final String STATUSBAR_CLOCK_WEEKDAY = "statusbar_clock_weekday";
 
         /**
+        * @hide
+        */
+       public static final String STATUSBAR_FONT_SIZE = "statusbar_font_size";
+        
+        /**
          * @hide
          */
         public static final String STATUSBAR_SIXBAR_SIGNAL = "statusbar_sixbar_signal";

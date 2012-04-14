@@ -28,6 +28,7 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.StatusBarManager;
 import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -36,12 +37,13 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.inputmethodservice.InputMethodService;
+import android.database.ContentObserver;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
+import android.inputmethodservice.InputMethodService;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
@@ -52,7 +54,6 @@ import android.os.storage.StorageManager;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Slog;
-import android.view.accessibility.AccessibilityEvent;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.IWindowManager;
@@ -66,15 +67,12 @@ import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.WindowManagerImpl;
+import android.view.accessibility.AccessibilityEvent;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RemoteViews;
 import android.widget.ScrollView;
 import android.widget.TextView;
-
-import android.provider.Settings;
-import android.app.Activity;
-import android.util.Log;
 
 import com.android.internal.statusbar.StatusBarIcon;
 import com.android.internal.statusbar.StatusBarNotification;
@@ -85,7 +83,6 @@ import com.android.systemui.statusbar.NotificationData;
 import com.android.systemui.statusbar.SignalClusterView;
 import com.android.systemui.statusbar.StatusBar;
 import com.android.systemui.statusbar.StatusBarIconView;
-import com.android.systemui.statusbar.policy.BatteryController;
 import com.android.systemui.statusbar.policy.BluetoothController;
 import com.android.systemui.statusbar.policy.CompatModeButton;
 import com.android.systemui.statusbar.policy.LocationController;
@@ -162,6 +159,7 @@ public class TabletStatusBar extends StatusBar implements
     int mNotificationPeekIndex;
     IBinder mNotificationPeekKey;
     LayoutTransition mNotificationPeekScrubLeft, mNotificationPeekScrubRight;
+    public boolean mShowStatusBar = true;
 
     int mNotificationPeekTapDuration;
     int mNotificationFlingVelocity;
@@ -415,6 +413,8 @@ public class TabletStatusBar extends StatusBar implements
         super.start(); // will add the main bar view
 
         Settings.System.putInt(mContext.getContentResolver(), Settings.System.IS_TABLET, 1);
+        SettingsObserver settingsObserver = new SettingsObserver(new Handler());
+        settingsObserver.observe();
     }
 
     @Override
@@ -1941,6 +1941,32 @@ public class TabletStatusBar extends StatusBar implements
         pw.println(Integer.toHexString(mDisabled));
         pw.println("mNetworkController:");
         mNetworkController.dump(fd, pw, args);
+    }
+
+    class SettingsObserver extends ContentObserver {
+        SettingsObserver(Handler handler) {
+            super(handler);
+        }
+
+        void observe() {
+            ContentResolver resolver = mContext.getContentResolver();
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_BUTTONS_SHOW), false,
+                    this);
+            updateSettings();
+        }
+
+        @Override
+        public void onChange(boolean selfChange) {
+            updateSettings();
+        }
+    }
+
+    protected void updateSettings() {
+        ContentResolver resolver = mContext.getContentResolver();
+        mStatusBarView.setVisibility(mShowStatusBar ? View.VISIBLE : View.GONE);
+        mShowStatusBar = (Settings.System.getInt(resolver,
+                Settings.System.NAVIGATION_BAR_BUTTONS_SHOW, 1) == 1);
     }
 }
 

@@ -78,6 +78,7 @@ public class PasswordUnlockScreen extends LinearLayout implements KeyguardScreen
     private final boolean mUseSystemIME = true; // TODO: Make configurable
     private boolean mQuickUnlock;
     private boolean mResuming; // used to prevent poking the wakelock during onResume()
+    private int mLastPasswordLength = 0;
 
     // To avoid accidental lockout due to events while the device in in the pocket, ignore
     // any passwords with length less than or equal to this length.
@@ -189,13 +190,16 @@ public class PasswordUnlockScreen extends LinearLayout implements KeyguardScreen
                             mCallback.keyguardDone(true);
                             mCallback.reportSuccessfulUnlockAttempt();
                         } else {
-                            mCallback.reportFailedUnlockAttempt();
-                            if (0 == (mUpdateMonitor.getFailedAttempts() % LockPatternUtils.FAILED_ATTEMPTS_BEFORE_TIMEOUT)) {
-                                long deadline = mLockPatternUtils.setLockoutAttemptDeadline();
-                                handleAttemptLockout(deadline);
+                            if (mLastPasswordLength > entry.length()) { // user deleted last char
+                                mCallback.reportFailedUnlockAttempt();
+                                if (0 == (mUpdateMonitor.getFailedAttempts() % LockPatternUtils.FAILED_ATTEMPTS_BEFORE_TIMEOUT)) {
+                                    long deadline = mLockPatternUtils.setLockoutAttemptDeadline();
+                                    handleAttemptLockout(deadline);
+                                }
                             }
                         }
                     }
+                    mLastPasswordLength = entry.length();
                 }
             }
         });

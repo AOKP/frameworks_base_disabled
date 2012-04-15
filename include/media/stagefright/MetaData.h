@@ -160,7 +160,9 @@ enum {
     kKey3D                = '3Dvf',  // bool (int32_t)
     kKeyHFR               = 'hfr ',  // int32_t
     //Extractor sets this
-    kKeyUseArbitraryMode  = 'ArbM'  //bool (int32_t)
+    kKeyUseArbitraryMode  = 'ArbM',  //bool (int32_t)
+    //Enable smooth streaming
+    kKeySmoothStreaming   = 'ESmS' //bool (int32_t)
 #endif
 
 };

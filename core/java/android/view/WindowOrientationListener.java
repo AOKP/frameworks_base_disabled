@@ -347,12 +347,11 @@ public abstract class WindowOrientationListener {
         private static final int SETTLE_ORIENTATION_ANGLE_MAX_DELTA = 8;
         
         protected Context mContext;
-        
         private int mSettleTimeMs = SETTLE_TIME_MIN_MS;
 
-        public SensorEventListenerImpl(WindowOrientationListener orientationListener, Context context) {
+        public SensorEventListenerImpl(WindowOrientationListener orientationListener, Context c) {
             mOrientationListener = orientationListener;
-            mContext = context;
+            mContext = c;
             SettingsObserver settingsObserver = new SettingsObserver(new Handler());
             settingsObserver.observe();
         }
@@ -614,7 +613,7 @@ public abstract class WindowOrientationListener {
                 }
             }
             mProposalAgeMS = age;
-            if (age >= SETTLE_TIME_MIN_MS
+            if (age >= mSettleTimeMs
                     || timestampMS - mProposalTime >= SETTLE_TIME_MAX_MS) {
                 mProposalSettled = true;
             } else {
@@ -629,7 +628,7 @@ public abstract class WindowOrientationListener {
             }
             return delta;
         }
-        
+
         class SettingsObserver extends ContentObserver {
             SettingsObserver(Handler handler) {
                 super(handler);

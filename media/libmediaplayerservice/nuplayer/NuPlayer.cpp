@@ -64,7 +64,7 @@ NuPlayer::NuPlayer()
       mVideoLateByUs(0ll),
       mNumFramesTotal(0ll),
       mNumFramesDropped(0ll),
-      mIsHttpLive(false),
+      mPauseIndication(false),
       mLiveSourceType(kDefaultSource) {
 }
 
@@ -250,42 +250,45 @@ void NuPlayer::onMessageReceived(const sp<AMessage> &msg) {
 
         case kWhatScanSources:
         {
-            int32_t generation;
-            CHECK(msg->findInt32("generation", &generation));
-            if (generation != mScanSourcesGeneration) {
-                // Drop obsolete msg.
-                break;
-            }
 
-            mScanSourcesPending = false;
-
-            ALOGV("scanning sources haveAudio=%d, haveVideo=%d",
-                 mAudioDecoder != NULL, mVideoDecoder != NULL);
-
-            instantiateDecoder(false, &mVideoDecoder);
-
-            if (mAudioSink != NULL) {
-                instantiateDecoder(true, &mAudioDecoder);
-            }
-
-            status_t err;
-            if ((err = mSource->feedMoreTSData()) != OK) {
-                if (mAudioDecoder == NULL && mVideoDecoder == NULL) {
-                    // We're not currently decoding anything (no audio or
-                    // video tracks found) and we just ran out of input data.
-
-                    if (err == ERROR_END_OF_STREAM) {
-                        notifyListener(MEDIA_PLAYBACK_COMPLETE, 0, 0);
-                    } else {
-                        notifyListener(MEDIA_ERROR, MEDIA_ERROR_UNKNOWN, err);
-                    }
+            if(!mPauseIndication) {
+                int32_t generation =0;
+                CHECK(msg->findInt32("generation", &generation));
+                if (generation != mScanSourcesGeneration) {
+                    // Drop obsolete msg.
+                    break;
                 }
-                break;
-            }
 
-            if (mAudioDecoder == NULL || mVideoDecoder == NULL) {
-                msg->post(100000ll);
-                mScanSourcesPending = true;
+                mScanSourcesPending = false;
+
+                LOGV("scanning sources haveAudio=%d, haveVideo=%d",
+                     mAudioDecoder != NULL, mVideoDecoder != NULL);
+
+                instantiateDecoder(false, &mVideoDecoder);
+
+                if (mAudioSink != NULL) {
+                    instantiateDecoder(true, &mAudioDecoder);
+                }
+
+                status_t err;
+                if ((err = mSource->feedMoreTSData()) != OK) {
+                    if (mAudioDecoder == NULL && mVideoDecoder == NULL) {
+                        // We're not currently decoding anything (no audio or
+                        // video tracks found) and we just ran out of input data.
+
+                        if (err == ERROR_END_OF_STREAM) {
+                            notifyListener(MEDIA_PLAYBACK_COMPLETE, 0, 0);
+                        } else {
+                            notifyListener(MEDIA_ERROR, MEDIA_ERROR_UNKNOWN, err);
+                        }
+                    }
+                    break;
+                }
+
+                if (mAudioDecoder == NULL || mVideoDecoder == NULL) {
+                    msg->post(100000ll);
+                    mScanSourcesPending = true;
+                }
             }
             break;
         }
@@ -593,6 +596,7 @@ void NuPlayer::onMessageReceived(const sp<AMessage> &msg) {
         {
             CHECK(mRenderer != NULL);
             mRenderer->pause();
+            mPauseIndication = true;
             break;
         }
 
@@ -600,6 +604,12 @@ void NuPlayer::onMessageReceived(const sp<AMessage> &msg) {
         {
             CHECK(mRenderer != NULL);
             mRenderer->resume();
+            mPauseIndication = false;
+            if (mAudioDecoder == NULL || mVideoDecoder == NULL) {
+                mScanSourcesPending = false;
+                postScanSources();
+            }
+
             break;
         }
 

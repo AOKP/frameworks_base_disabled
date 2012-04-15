@@ -139,7 +139,7 @@ public class Clock extends TextView {
         }
     };
 
-    final void updateClock() {
+    protected final void updateClock() {
         mCalendar.setTimeInMillis(System.currentTimeMillis());
         setText(getSmallTime());
     }
@@ -252,7 +252,7 @@ public class Clock extends TextView {
 
     }
 
-    class SettingsObserver extends ContentObserver {
+    protected class SettingsObserver extends ContentObserver {
         SettingsObserver(Handler handler) {
             super(handler);
         }

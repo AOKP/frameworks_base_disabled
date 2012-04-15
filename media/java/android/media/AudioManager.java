@@ -466,8 +466,8 @@ public class AudioManager {
 
         int currentMode = getRingerMode();
 
-        if (vibrate && currentMode == AudioManager.RINGER_MODE_VIBRATE
-                || currentMode == AudioManager.RINGER_MODE_SILENT) {
+        if ((vibrate && currentMode == AudioManager.RINGER_MODE_VIBRATE)
+                || (currentMode == AudioManager.RINGER_MODE_SILENT)) {
             setRingerMode(AudioManager.RINGER_MODE_NORMAL);
         } else {
             setRingerMode(vibrate ? AudioManager.RINGER_MODE_VIBRATE

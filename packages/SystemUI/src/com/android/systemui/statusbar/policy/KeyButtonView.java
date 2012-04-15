@@ -23,6 +23,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.database.ContentObserver;
 import android.graphics.Canvas;
+import android.graphics.PorterDuff;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
@@ -67,15 +68,16 @@ public class KeyButtonView extends ImageView {
 
     int durationSpeedOn = 500;
     int durationSpeedOff = 50;
+    int mGlowBGColor = 0;
 
     Runnable mCheckLongPress = new Runnable() {
         public void run() {
-            if (isPressed()) {   
+            if (isPressed()) {
                 setHandlingLongpress(true);
                 if (!performLongClick() && (mCode != 0)) {
-                	// we tried to do custom long click and failed - let's
-                	// do long click on the primary 'key'
-                	sendEvent(KeyEvent.ACTION_DOWN, KeyEvent.FLAG_LONG_PRESS);
+                    // we tried to do custom long click and failed - let's
+                    // do long click on the primary 'key'
+                    sendEvent(KeyEvent.ACTION_DOWN, KeyEvent.FLAG_LONG_PRESS);
                     sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_LONG_CLICKED);
                 }
             }
@@ -136,23 +138,25 @@ public class KeyButtonView extends ImageView {
     public void setSupportsLongPress(boolean supports) {
         mSupportsLongpress = supports;
     }
-    
+
     public void setHandlingLongpress(boolean handling) {
         mHandlingLongpress = handling;
     }
-    
 
     public void setCode(int code) {
         mCode = code;
     }
 
-    public int getCode(){
-    	return mCode;
+    public int getCode() {
+        return mCode;
     }
 
     public void setGlowBackground(int id) {
         mGlowBG = getResources().getDrawable(id);
         if (mGlowBG != null) {
+            if (mGlowBGColor != Integer.MIN_VALUE)
+                mGlowBG.setColorFilter(mGlowBGColor, PorterDuff.Mode.SRC_ATOP);
+
             mDrawingAlpha = BUTTON_QUIESCENT_ALPHA;
         }
     }
@@ -208,7 +212,8 @@ public class KeyButtonView extends ImageView {
                             getRight() + rx,
                             getBottom() + ry));
 
-            // also invalidate our immediate parent to help avoid situations where nearby glows
+            // also invalidate our immediate parent to help avoid situations
+            // where nearby glows
             // interfere
             ((View) getParent()).invalidate();
         }
@@ -250,13 +255,14 @@ public class KeyButtonView extends ImageView {
         switch (action) {
             case MotionEvent.ACTION_DOWN:
                 // Slog.d("KeyButtonView", "press");
-            	setHandlingLongpress(false);
+                setHandlingLongpress(false);
                 mDownTime = SystemClock.uptimeMillis();
                 setPressed(true);
                 if (mCode != 0) {
                     sendEvent(KeyEvent.ACTION_DOWN, 0, mDownTime);
                 } else {
-                    // Provide the same haptic feedback that the system offers for virtual keys.
+                    // Provide the same haptic feedback that the system offers
+                    // for virtual keys.
                     performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
                 }
                 if (mSupportsLongpress) {
@@ -284,10 +290,10 @@ public class KeyButtonView extends ImageView {
             case MotionEvent.ACTION_UP:
                 final boolean doIt = isPressed();
                 setPressed(false);
-                Log.d(TAG,"in ACTION_UP DoIT:"+ doIt);
-                Log.d(TAG,"in ACTION_UP isPressed():" + isPressed());
+                Log.d(TAG, "in ACTION_UP DoIT:" + doIt);
+                Log.d(TAG, "in ACTION_UP isPressed():" + isPressed());
                 if (mCode != 0) {
-                    if ((doIt)&&(!mHandlingLongpress)) {
+                    if ((doIt) && (!mHandlingLongpress)) {
                         sendEvent(KeyEvent.ACTION_UP, 0);
                         sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_CLICKED);
                         playSoundEffect(SoundEffectConstants.CLICK);
@@ -296,7 +302,7 @@ public class KeyButtonView extends ImageView {
                     }
                 } else {
                     // no key code, just a regular ImageView
-                    if ((doIt)&&(!mHandlingLongpress)) {
+                    if ((doIt) && (!mHandlingLongpress)) {
                         performClick();
                     }
                 }
@@ -338,6 +344,9 @@ public class KeyButtonView extends ImageView {
                     Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_TINT), false,
                     this);
             resolver.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_GLOW_TINT), false,
+                    this);
+            resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_GLOW_DURATION[1]),
                     false,
                     this);
@@ -364,6 +373,20 @@ public class KeyButtonView extends ImageView {
                 Settings.System.NAVIGATION_BAR_BUTTON_ALPHA,
                 0.6f);
         setDrawingAlpha(BUTTON_QUIESCENT_ALPHA);
+
+        try {
+            mGlowBGColor = Settings.System.getInt(resolver,
+                    Settings.System.NAVIGATION_BAR_GLOW_TINT);
+            if (mGlowBGColor == Integer.MIN_VALUE) {
+                mGlowBG.setColorFilter(null);
+            } else if (mGlowBG != null) {
+                mGlowBG.setColorFilter(null);
+                mGlowBG.setColorFilter(mGlowBGColor, PorterDuff.Mode.SRC_ATOP);
+            }
+        } catch (SettingNotFoundException e1) {
+            mGlowBGColor = Integer.MIN_VALUE;
+        }
+
         invalidate();
 
         try {

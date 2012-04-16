@@ -100,7 +100,7 @@ private:
 
     bool mAudioEOS;
     bool mVideoEOS;
-    bool mPauseIndication;
+    bool mIsHttpLive;
 
     bool mScanSourcesPending;
     int32_t mScanSourcesGeneration;

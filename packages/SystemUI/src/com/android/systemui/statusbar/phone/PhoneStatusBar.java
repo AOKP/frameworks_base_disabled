@@ -499,10 +499,15 @@ public class PhoneStatusBar extends StatusBar {
     }
 
     private void doBrightNess(MotionEvent e) {
-        int screenBrightness = checkMinMax(Float.valueOf((e.getRawX() * mPropFactor.floatValue()))
-                .intValue());
-        Settings.System.putInt(mContext.getContentResolver(), "screen_brightness", screenBrightness);
-        // Log.e(TAG, "Screen brightness: " + screenBrightness);
+        int screenBrightness;
+        try {
+            screenBrightness = checkMinMax(Float.valueOf((e.getRawX() * mPropFactor.floatValue()))
+                    .intValue());
+            Settings.System.putInt(mContext.getContentResolver(), "screen_brightness",
+                    screenBrightness);
+        } catch (NullPointerException e2) {
+            return;
+        }
         try {
             IPowerManager pw = IPowerManager.Stub.asInterface(ServiceManager.getService("power"));
             if (pw != null) {

@@ -2720,11 +2720,9 @@ public class PhoneStatusBar extends StatusBar {
                         ("background navbar color found to be: %d", navbarBackgroundColor));
                 else Log.d(TAG, "default navbar color found");
         }
-        try {
+
+        if (navbarBackgroundColor != null)
             mNavigationBarView.setBackgroundColor(navbarBackgroundColor);
-        } catch (Exception e) { //TODO: it's late and this is lazy, what exception COULD this throw?
-            e.printStackTrace();
-        }
 
         /* these are the statusbar backgrounds we roll with the ROM LiquidSmooth baby ;)
         if (mLiquidStatusbarBackground) {

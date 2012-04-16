@@ -169,7 +169,7 @@ public class PasswordUnlockScreen extends LinearLayout implements KeyguardScreen
         mQuickUnlock = (Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.LOCKSCREEN_QUICK_UNLOCK_CONTROL, 0) == 1);
 
-        mPasswordEntry.addTextChangedListener(new TextWatcher()) {
+        mPasswordEntry.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
             }
 
@@ -182,7 +182,7 @@ public class PasswordUnlockScreen extends LinearLayout implements KeyguardScreen
                 }
                 if (mQuickUnlock) {
                     String entry = mPasswordEntry.getText().toString();
-                        if (entry.length() > MINIMUM_PASSWORD_LENGTH_BEFORE_REPORT &&
+                    if (entry.length() > MINIMUM_PASSWORD_LENGTH_BEFORE_REPORT &&
                             mLockPatternUtils.checkPassword(entry)) {
                             mCallback.keyguardDone(true);
                             mCallback.reportSuccessfulUnlockAttempt();
@@ -195,8 +195,9 @@ public class PasswordUnlockScreen extends LinearLayout implements KeyguardScreen
                                 }
                             }
                         }
+                    }
+                    mLastPasswordLength = entry.length();
                 }
-                mLastPasswordLength = entry.length();
             }
         });
 

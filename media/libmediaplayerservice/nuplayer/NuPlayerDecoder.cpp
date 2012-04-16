@@ -134,11 +134,6 @@ sp<AMessage> NuPlayer::Decoder::makeFormat(const sp<MetaData> &meta) {
         msg->setInt32("max-input-size", maxInputSize);
     }
 
-    int32_t value;
-    if (meta->findInt32(kKeySmoothStreaming, &value)) {
-        msg->setInt32("smooth-streaming", value);
-    }
-
     mCSDIndex = 0;
 
     uint32_t type;

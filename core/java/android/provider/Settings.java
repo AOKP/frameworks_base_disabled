@@ -2695,12 +2695,6 @@ public final class Settings {
         public static final String STATUSBAR_UNEXPANDED_COLOR = "statusbar_unexpanded_color";
 
         /**
-         * background color of unexpanded statusbar (title bar)
-         * @hide
-         */
-        public static final String STATUSBAR_UNEXPANDED_COLOR = "statusbar_unexpanded_color";
-
-        /**
          * should we use a custom background or custom color/alpha
          * ?alpha may be handled via setAlpha(drawable) later, int value
          * @hide

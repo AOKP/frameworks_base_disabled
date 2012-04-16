@@ -2189,6 +2189,7 @@ void ACodec::UninitializedState::onSetup(
 
     mCodec->mInputEOSResult = OK;
 
+#ifdef QCOM_HARDWARE
     int32_t value;
     if (msg->findInt32("smooth-streaming", &value) && (value == 1) &&
        !strcmp("OMX.qcom.video.decoder.avc", mCodec->mComponentName.c_str())) {
@@ -2209,6 +2210,7 @@ void ACodec::UninitializedState::onSetup(
             }
         }
     }
+#endif
 
     mCodec->configureCodec(mime.c_str(), msg);
 

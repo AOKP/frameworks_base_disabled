@@ -182,8 +182,8 @@ public class PasswordUnlockScreen extends LinearLayout implements KeyguardScreen
                 }
                 if (mQuickUnlock) {
                     String entry = mPasswordEntry.getText().toString();
-                    if (entry.length() > MINIMUM_PASSWORD_LENGTH_BEFORE_REPORT &&
-                            mLockPatternUtils.checkPassword(entry)) {
+                    if (entry.length() > MINIMUM_PASSWORD_LENGTH_BEFORE_REPORT) {
+                        if (mLockPatternUtils.checkPassword(entry)) {
                             mCallback.keyguardDone(true);
                             mCallback.reportSuccessfulUnlockAttempt();
                         } else {

@@ -1920,6 +1920,36 @@ public final class Settings {
         public static final String BATTERY_LIGHT_PULSE = "battery_light_pulse";
 
         /**
+         * What color to use for the notification LED by default
+         * @hide
+         */
+        public static final String NOTIFICATION_LIGHT_PULSE_DEFAULT_COLOR = "notification_light_pulse_default_color";
+
+        /**
+         * How long to flash the notification LED by default
+         * @hide
+         */
+        public static final String NOTIFICATION_LIGHT_PULSE_DEFAULT_LED_ON = "notification_light_pulse_default_led_on";
+
+        /**
+         * How long to wait between flashes for the notification LED by default
+         * @hide
+         */
+        public static final String NOTIFICATION_LIGHT_PULSE_DEFAULT_LED_OFF = "notification_light_pulse_default_led_off";
+
+        /**
+         * Whether to use the custom LED values for the notification pulse LED.
+         * @hide
+         */
+        public static final String NOTIFICATION_LIGHT_PULSE_CUSTOM_ENABLE = "notification_light_pulse_custom_enable";
+
+        /**
+         * Which custom LED values to use for the notification pulse LED.
+         * @hide
+         */
+        public static final String NOTIFICATION_LIGHT_PULSE_CUSTOM_VALUES = "notification_light_pulse_custom_values";
+
+        /**
          * Show pointer location on screen?
          * 0 = no
          * 1 = yes
@@ -2056,7 +2086,7 @@ public final class Settings {
          */
         public static final String POINTER_SPEED = "pointer_speed";
 
-        /*
+        /**
          * Whether to enable quiet hours.
          * @hide
          */
@@ -2078,16 +2108,16 @@ public final class Settings {
          * Whether to remove the sound from outgoing notifications during quiet hours.
          * @hide
          */
-        public static final String QUIET_HOURS_MUTE = "quiet_hours_mute";
+        public static final String QUIET_HOURS_NOTIFICATIONS = "quiet_hours_notifications";
 
         /**
-         * Whether to disable haptic feedback during quiet hours.
+         * Whether to mute phone ringtones during quiet hours.
          * @hide
          */
-        public static final String QUIET_HOURS_HAPTIC = "quiet_hours_haptic";
+        public static final String QUIET_HOURS_RINGER = "quiet_hours_ringer";
 
         /**
-         * Whether to remove the vibration from outgoing notifications during quiet hours.
+         * Whether to disable vibrations during quiet hours.
          * @hide
          */
         public static final String QUIET_HOURS_STILL = "quiet_hours_still";

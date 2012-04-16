@@ -21,10 +21,13 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.database.ContentObserver;
 import android.graphics.drawable.Drawable;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.PorterDuff.Mode;
 import android.graphics.Rect;
+import android.os.Handler;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -50,8 +53,8 @@ public class StatusBarIconView extends AnimatedImageView {
     private int mNumberY;
     private String mNumberText;
     private Notification mNotification;
-    public float mAlpha;
-
+    private Handler mHandler;
+    
     public StatusBarIconView(Context context, String slot, Notification notification) {
         super(context);
         final Resources res = context.getResources();
@@ -71,12 +74,16 @@ public class StatusBarIconView extends AnimatedImageView {
             final float scale = (float)imageBounds / (float)outerBounds;
             setScaleX(scale);
             setScaleY(scale);
+            float mAlpha = Settings.System.getFloat(context.getContentResolver(),
+                    Settings.System.STATUSBAR_UNEXPANDED_ALPHA, 0.8f);
+            setAlpha(mAlpha);
         }
-        mAlpha = Settings.System.getFloat(context.getContentResolver(),
-                Settings.System.STATUSBAR_UNEXPANDED_ALPHA, 0.8f);
-        //final float alpha = res.getFraction(R.dimen.status_bar_icon_drawing_alpha, 1, 1);
-        setAlpha(mAlpha);
+        
         setScaleType(ImageView.ScaleType.CENTER);
+        mHandler = new Handler();
+        SettingsObserver settingsObserver = new SettingsObserver(mHandler);
+        settingsObserver.observe();
+        updateSettings();
     }
 
     public StatusBarIconView(Context context, AttributeSet attrs) {
@@ -87,9 +94,8 @@ public class StatusBarIconView extends AnimatedImageView {
         final float scale = (float)imageBounds / (float)outerBounds;
         setScaleX(scale);
         setScaleY(scale);
-        mAlpha = Settings.System.getFloat(context.getContentResolver(),
+        float mAlpha = Settings.System.getFloat(context.getContentResolver(),
                 Settings.System.STATUSBAR_UNEXPANDED_ALPHA, 0.8f);
-        //final float alpha = res.getFraction(R.dimen.status_bar_icon_drawing_alpha, 1, 1);
         setAlpha(mAlpha);
     }
 
@@ -243,7 +249,6 @@ public class StatusBarIconView extends AnimatedImageView {
             str = f.format(mIcon.number);
         }
         mNumberText = str;
-
         final int w = getWidth();
         final int h = getHeight();
         final Rect r = new Rect();
@@ -274,7 +279,36 @@ public class StatusBarIconView extends AnimatedImageView {
     }
 
     public String toString() {
-        return "StatusBarIconView(slot=" + mSlot + " icon=" + mIcon 
-            + " notification=" + mNotification + " alpha=" + mAlpha + ")";
+        return "StatusBarIconView(slot=" + mSlot + " icon=" + mIcon
+            + " notification=" + mNotification + ")";
+    }
+
+    class SettingsObserver extends ContentObserver {
+        SettingsObserver(Handler handler) {
+            super(handler);
+        }
+
+        void observe() {
+            ContentResolver resolver = mContext.getContentResolver();
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.STATUSBAR_UNEXPANDED_ALPHA), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.STATUSBAR_UNEXPANDED_COLOR), false, this);
+        }
+
+        @Override
+        public void onChange(boolean selfChange) {
+            updateSettings();
+        }
+    }
+
+    private void updateSettings() {
+        ContentResolver resolver = mContext.getContentResolver();
+        float mAlpha = Settings.System.getFloat(resolver,
+                Settings.System.STATUSBAR_UNEXPANDED_ALPHA, 0.8f);
+        int mColor = Settings.System.getInt(resolver,
+                Settings.System.STATUSBAR_UNEXPANDED_COLOR, 0xFFFFFFFF);
+        setAlpha(mAlpha);
+        setColorFilter(mColor, SCREEN_MODE);
     }
 }

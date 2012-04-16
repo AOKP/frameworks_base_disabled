@@ -50,10 +50,6 @@ Copyright (c) 2011-2012, Code Aurora Forum. All rights reserved.
 #include <media/stagefright/OMXCodec.h>
 #include <media/stagefright/Utils.h>
 #include <utils/Vector.h>
-#ifdef QCOM_HARDWARE
-#include <cutils/properties.h>
-#endif
-
 #include <OMX_Audio.h>
 #include <OMX_Component.h>
 
@@ -2188,7 +2184,7 @@ status_t OMXCodec::setVideoOutputFormat(
         CODEC_LOGV("Video O/P format.nIndex 0x%x",format.nIndex);
         CODEC_LOGE("Video O/P format.eColorFormat 0x%x",format.eColorFormat);
 #endif
-        status_t err = mOMX->getParameter(
+         status_t err = mOMX->getParameter(
                 mNode, OMX_IndexParamVideoPortFormat,
                 &format, sizeof(format));
         CHECK_EQ(err, (status_t)OK);
@@ -2205,9 +2201,12 @@ status_t OMXCodec::setVideoOutputFormat(
 #ifdef QCOM_HARDWARE
                || format.eColorFormat == QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka
 #endif
-               );
+        );
 #ifdef SAMSUNG_CODEC_SUPPORT
-        if (!strncmp("OMX.SEC.", mComponentName, 8)) {
+        if (!strcmp("OMX.SEC.FP.AVC.Decoder", mComponentName) ||
+            !strcmp("OMX.SEC.AVC.Decoder", mComponentName) ||
+            !strcmp("OMX.SEC.MPEG4.Decoder", mComponentName) ||
+            !strcmp("OMX.SEC.H263.Decoder", mComponentName)) {
             if (mNativeWindow == NULL)
                 format.eColorFormat = OMX_COLOR_FormatYUV420Planar;
             else
@@ -2767,7 +2766,7 @@ status_t OMXCodec::allocateOutputBuffersFromNativeWindow() {
             eColorFormat);
 #endif
     if (err != 0) {
-        ALOGE("native_window_set_buffers_geometry failed: %s (%d)",
+        LOGE("native_window_set_buffers_geometry failed: %s (%d)",
                 strerror(-err), -err);
         return err;
     }

@@ -56,10 +56,6 @@
 
 #include "ARTPWriter.h"
 
-#ifdef QCOM_HARDWARE
-#include <cutils/properties.h>
-#endif
-
 namespace android {
 
 // To collect the encoder usage for the battery app
@@ -1429,15 +1425,6 @@ status_t StagefrightRecorder::setupCameraSource(
                 mTimeBetweenTimeLapseFrameCaptureUs);
         *cameraSource = mCameraSourceTimeLapse;
     } else {
-
-#ifdef QCOM_HARDWARE
-        bool useMeta = true;
-        char value[PROPERTY_VALUE_MAX];
-        if (property_get("debug.camcorder.disablemeta", value, NULL) &&
-            atoi(value)) {
-            useMeta = false;
-        }
-#endif
         *cameraSource = CameraSource::CreateFromCamera(
                 mCamera, mCameraProxy, mCameraId, videoSize, mFrameRate,
                 mPreviewSurface, true /*storeMetaDataInVideoBuffers*/);
@@ -1503,19 +1490,12 @@ status_t StagefrightRecorder::setupVideoEncoder(
 
     sp<MetaData> meta = cameraSource->getFormat();
 
-    int32_t width, height, stride, sliceHeight, colorFormat, hfr;
+    int32_t width, height, stride, sliceHeight, colorFormat;
     CHECK(meta->findInt32(kKeyWidth, &width));
     CHECK(meta->findInt32(kKeyHeight, &height));
     CHECK(meta->findInt32(kKeyStride, &stride));
     CHECK(meta->findInt32(kKeySliceHeight, &sliceHeight));
     CHECK(meta->findInt32(kKeyColorFormat, &colorFormat));
-#ifdef QCOM_HARDWARE
-    CHECK(meta->findInt32(kKeyHFR, &hfr));
-
-    if(hfr) {
-      mMaxFileDurationUs = mMaxFileDurationUs * (hfr/mFrameRate);
-    }
-#endif
 
     enc_meta->setInt32(kKeyWidth, width);
     enc_meta->setInt32(kKeyHeight, height);
@@ -1523,82 +1503,10 @@ status_t StagefrightRecorder::setupVideoEncoder(
     enc_meta->setInt32(kKeyStride, stride);
     enc_meta->setInt32(kKeySliceHeight, sliceHeight);
     enc_meta->setInt32(kKeyColorFormat, colorFormat);
-#ifdef QCOM_HARDWARE
-    enc_meta->setInt32(kKeyHFR, hfr);
-#endif
+
     if (mVideoTimeScale > 0) {
         enc_meta->setInt32(kKeyTimeScale, mVideoTimeScale);
     }
-
-#ifdef QCOM_HARDWARE
-    char mDeviceName[100];
-    property_get("ro.board.platform",mDeviceName,"0");
-    if(!strncmp(mDeviceName, "msm7627a", 8)) {
-      if(hfr && (width * height > 432*240)) {
-        LOGE("HFR mode is supported only upto WQVGA resolution");
-        return INVALID_OPERATION;
-      }
-    }
-    else {
-      if(hfr && ((mVideoEncoder != VIDEO_ENCODER_H264) || (width * height > 800*480))) {
-        LOGE("HFR mode is supported only upto WVGA and H264 codec.");
-        return INVALID_OPERATION;
-      }
-    }
-#endif
-
-    /*
-     * can set profile from the app as a parameter.
-     * For the mean time, set from shell
-     */
-
-#ifdef QCOM_HARDWARE
-    char value[PROPERTY_VALUE_MAX];
-    bool customProfile = false;
-
-    if (property_get("encoder.video.profile", value, NULL) > 0) {
-        customProfile = true;
-    }
-
-    if (customProfile) {
-        switch ( mVideoEncoder ) {
-        case VIDEO_ENCODER_H264:
-            if (strncmp("base", value, 4) == 0) {
-                mVideoEncoderProfile = OMX_VIDEO_AVCProfileBaseline;
-                ALOGI("H264 Baseline Profile");
-            }
-            else if (strncmp("main", value, 4) == 0) {
-                mVideoEncoderProfile = OMX_VIDEO_AVCProfileMain;
-                ALOGI("H264 Main Profile");
-            }
-            else if (strncmp("high", value, 4) == 0) {
-                mVideoEncoderProfile = OMX_VIDEO_AVCProfileHigh;
-                ALOGI("H264 High Profile");
-            }
-            else {
-               ALOGW("Unsupported H264 Profile");
-            }
-            break;
-        case VIDEO_ENCODER_MPEG_4_SP:
-            if (strncmp("simple", value, 5) == 0 ) {
-                mVideoEncoderProfile = OMX_VIDEO_MPEG4ProfileSimple;
-                ALOGI("MPEG4 Simple profile");
-            }
-            else if (strncmp("asp", value, 3) == 0 ) {
-                mVideoEncoderProfile = OMX_VIDEO_MPEG4ProfileAdvancedSimple;
-                ALOGI("MPEG4 Advanced Simple Profile");
-            }
-            else {
-                ALOGW("Unsupported MPEG4 Profile");
-            }
-            break;
-        default:
-            ALOGW("No custom profile support for other codecs");
-            break;
-        }
-    }
-#endif
-
     if (mVideoEncoderProfile != -1) {
         enc_meta->setInt32(kKeyVideoProfile, mVideoEncoderProfile);
     }
@@ -1610,18 +1518,10 @@ status_t StagefrightRecorder::setupVideoEncoder(
     CHECK_EQ(client.connect(), OK);
     uint32_t encoder_flags = 0;
 
-#ifdef QCOM_HARDWARE
     if (mIsMetaDataStoredInVideoBuffers) {
-        LOGW("Camera source supports metadata mode, create OMXCodec for metadata");
         encoder_flags |= OMXCodec::kHardwareCodecsOnly;
         encoder_flags |= OMXCodec::kStoreMetaDataInVideoBuffers;
-        if (property_get("ro.product.device", value, "0")
-            && (!strncmp(value, "msm7627", sizeof("msm7627") - 1))) {
-            LOGW("msm7627 family of chipsets supports, only one buffer at a time");
-            encoder_flags |= OMXCodec::kOnlySubmitOneInputBufferAtOneTime;
-        }
     }
-#endif
 
     // Do not wait for all the input buffers to become available.
     // This give timelapse video recording faster response in
@@ -1635,7 +1535,7 @@ status_t StagefrightRecorder::setupVideoEncoder(
             true /* createEncoder */, cameraSource,
             NULL, encoder_flags);
     if (encoder == NULL) {
-        ALOGW("Failed to create the encoder");
+        LOGW("Failed to create the encoder");
         // When the encoder fails to be created, we need
         // release the camera source due to the camera's lock
         // and unlock mechanism.

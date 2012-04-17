@@ -247,6 +247,9 @@ private:
     status_t seekTo_l(int64_t timeUs);
     status_t pause_l(bool at_eos = false);
     void initRenderer_l();
+#if defined(OMAP_ENHANCEMENT) && defined(TARGET_OMAP3)
+    void determineVideoSize_l();
+#endif
     void notifyVideoSize_l();
     void seekAudioIfNecessary_l();
 

@@ -1085,6 +1085,55 @@ status_t AwesomePlayer::startAudioPlayer_l(bool sendErrorNotification) {
     return OK;
 }
 
+#if defined(OMAP_ENHANCEMENT) && defined(TARGET_OMAP3)
+void AwesomePlayer::determineVideoSize_l() {
+    sp<MetaData> meta = mVideoSource->getFormat();
+
+    int32_t cropLeft, cropTop, cropRight, cropBottom;
+    if (!meta->findRect(
+                kKeyCropRect, &cropLeft, &cropTop, &cropRight, &cropBottom)) {
+        int32_t width, height;
+        CHECK(meta->findInt32(kKeyWidth, &width));
+        CHECK(meta->findInt32(kKeyHeight, &height));
+
+        cropLeft = cropTop = 0;
+        cropRight = width - 1;
+        cropBottom = height - 1;
+
+        LOGV("got dimensions only %d x %d", width, height);
+    } else {
+        LOGV("got crop rect %d, %d, %d, %d",
+             cropLeft, cropTop, cropRight, cropBottom);
+    }
+
+    int32_t displayWidth;
+    if (meta->findInt32(kKeyDisplayWidth, &displayWidth)) {
+        LOGV("Display width changed (%d=>%d)", mDisplayWidth, displayWidth);
+        mDisplayWidth = displayWidth;
+    }
+    int32_t displayHeight;
+    if (meta->findInt32(kKeyDisplayHeight, &displayHeight)) {
+        LOGV("Display height changed (%d=>%d)", mDisplayHeight, displayHeight);
+        mDisplayHeight = displayHeight;
+    }
+
+    int32_t usableWidth = cropRight - cropLeft + 1;
+    int32_t usableHeight = cropBottom - cropTop + 1;
+    if (mDisplayWidth != 0) {
+        usableWidth = mDisplayWidth;
+    }
+    if (mDisplayHeight != 0) {
+        usableHeight = mDisplayHeight;
+    }
+
+    {
+        Mutex::Autolock autoLock(mStatsLock);
+        mStats.mVideoWidth = usableWidth;
+        mStats.mVideoHeight = usableHeight;
+    }
+}
+#endif
+
 void AwesomePlayer::notifyVideoSize_l() {
     sp<MetaData> meta = mVideoSource->getFormat();
 
@@ -2394,6 +2443,13 @@ void AwesomePlayer::onPrepareAsyncEvent() {
     }
 
     if (mAudioTrack != NULL && mAudioSource == NULL) {
+#if defined(OMAP_ENHANCEMENT) && defined(TARGET_OMAP3)
+        if(mVideoSource != NULL)
+        {
+            LOGD("%s %d invoking determineVideoSize_l", __func__, __LINE__);
+            determineVideoSize_l();
+        }
+#endif
         status_t err = initAudioDecoder();
 
         if (err != OK) {

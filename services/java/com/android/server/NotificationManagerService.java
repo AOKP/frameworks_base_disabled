@@ -250,6 +250,12 @@ public class NotificationManagerService extends INotificationManager.Stub
         }
     }
 
+    class NotificationLedValues {
+        public int color;
+        public int onMS;
+        public int offMS;
+    }
+
     private StatusBarManagerService.NotificationCallbacks mNotificationCallbacks = new StatusBarManagerService.NotificationCallbacks() {
 
         public void onSetDisabled(int status) {

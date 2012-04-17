@@ -2627,9 +2627,6 @@ public class PhoneStatusBar extends StatusBar {
         mDropdownDateBehavior = Settings.System.getInt(cr,
                 Settings.System.STATUSBAR_DATE_BEHAVIOR, 0) == 1;
 
-        mIsStatusBarBrightNess = Settings.System.getInt(mStatusBarView.getContext()
-                .getContentResolver(),
-                Settings.System.STATUS_BAR_BRIGHTNESS_TOGGLE, 0) == 1;
         fontSize = Settings.System.getInt(cr, Settings.System.STATUSBAR_FONT_SIZE, 16) ;
         
         Clock clock = (Clock) mStatusBarView.findViewById(R.id.clock);
@@ -2741,7 +2738,7 @@ public class PhoneStatusBar extends StatusBar {
                 else Log.d(TAG, "default navbar color found");
         }
 
-        if (navbarBackgroundColor != null)
+        if (navbarBackgroundColor != DEFAULT_BACKGROUND_COLOR)
             mNavigationBarView.setBackgroundColor(navbarBackgroundColor);
 
         /* these are the statusbar backgrounds we roll with the ROM LiquidSmooth baby ;)

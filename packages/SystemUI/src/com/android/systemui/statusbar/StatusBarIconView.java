@@ -54,6 +54,7 @@ public class StatusBarIconView extends AnimatedImageView {
     private String mNumberText;
     private Notification mNotification;
     private Handler mHandler;
+    private static final Mode SCREEN_MODE = Mode.MULTIPLY;
     
     public StatusBarIconView(Context context, String slot, Notification notification) {
         super(context);
@@ -77,13 +78,13 @@ public class StatusBarIconView extends AnimatedImageView {
             float mAlpha = Settings.System.getFloat(context.getContentResolver(),
                     Settings.System.STATUSBAR_UNEXPANDED_ALPHA, 0.8f);
             setAlpha(mAlpha);
+
+            mHandler = new Handler();
+            SettingsObserver settingsObserver = new SettingsObserver(mHandler);
+            settingsObserver.observe();
+            updateSettings();
         }
-        
         setScaleType(ImageView.ScaleType.CENTER);
-        mHandler = new Handler();
-        SettingsObserver settingsObserver = new SettingsObserver(mHandler);
-        settingsObserver.observe();
-        updateSettings();
     }
 
     public StatusBarIconView(Context context, AttributeSet attrs) {
@@ -196,7 +197,6 @@ public class StatusBarIconView extends AnimatedImageView {
                   + (icon.iconPackage != null ? icon.iconId : "<system>")
                   + ": " + Integer.toHexString(icon.iconId));
         }
-
         return null;
     }
 

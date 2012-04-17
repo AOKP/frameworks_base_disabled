@@ -2111,6 +2111,12 @@ public final class Settings {
         public static final String QUIET_HOURS_NOTIFICATIONS = "quiet_hours_notifications";
 
         /**
+         * Whether to mute quiet hours.
+         * @hide
+         */
+        public static final String QUIET_HOURS_MUTE = "quiet_hours_mute";
+
+        /**
          * Whether to mute phone ringtones during quiet hours.
          * @hide
          */
@@ -2288,6 +2294,8 @@ public final class Settings {
             QUIET_HOURS_START,
             QUIET_HOURS_END,
             QUIET_HOURS_MUTE,
+            QUIET_HOURS_NOTIFICATIONS,
+            QUIET_HOURS_RINGER,
             QUIET_HOURS_STILL,
             QUIET_HOURS_DIM,
         };

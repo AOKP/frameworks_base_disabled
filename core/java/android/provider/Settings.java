@@ -2105,6 +2105,12 @@ public final class Settings {
         public static final String QUIET_HOURS_END = "quiet_hours_end";
 
         /**
+         * Sets haptic feedback quiet hours options
+         * @hide
+         */
+        public static final String QUIET_HOURS_HAPTIC = "quiet_hours_haptic";
+
+        /**
          * Whether to remove the sound from outgoing notifications during quiet hours.
          * @hide
          */
@@ -2293,6 +2299,7 @@ public final class Settings {
             QUIET_HOURS_ENABLED,
             QUIET_HOURS_START,
             QUIET_HOURS_END,
+            QUIET_HOURS_HAPTIC,
             QUIET_HOURS_MUTE,
             QUIET_HOURS_NOTIFICATIONS,
             QUIET_HOURS_RINGER,

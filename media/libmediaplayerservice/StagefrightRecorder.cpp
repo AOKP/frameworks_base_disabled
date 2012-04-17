@@ -1793,13 +1793,6 @@ status_t StagefrightRecorder::reset() {
     mLongitudex10000 = -3600000;
     mOutputFd = -1;
 
-#ifdef QCOM_HARDWARE
-    // Disable Audio Encoding
-    char value[PROPERTY_VALUE_MAX];
-    property_get("camcorder.debug.disableaudio", value, "0");
-    if(atoi(value)) mDisableAudio = true;
-#endif
-
     return OK;
 }
 

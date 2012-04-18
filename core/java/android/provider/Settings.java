@@ -2628,21 +2628,6 @@ public final class Settings {
         };
         
         /**
-         * Drawable URIs, each index needs to be matched up to NAVIGATION_CUSTOM_ACTIVITIES
-         *
-         * OR ELSE
-         *
-         * @hide
-         */
-        public static final String[] NAVIGATION_LANDSCAPE_APP_ICONS = new String[] {
-                "navigation_landscape_app_icon_0",
-                "navigation_landscape_app_icon_1",
-                "navigation_landscape_app_icon_2",
-                "navigation_landscape_app_icon_3",
-                "navigation_landscape_app_icon_4",
-        };
-        
-        /**
          * whether volume keys wake the screen. boolean value
          * 
          * @hide

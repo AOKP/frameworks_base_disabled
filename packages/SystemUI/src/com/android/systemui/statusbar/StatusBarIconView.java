@@ -76,7 +76,7 @@ public class StatusBarIconView extends AnimatedImageView {
             setScaleX(scale);
             setScaleY(scale);
             float mAlpha = Settings.System.getFloat(context.getContentResolver(),
-                    Settings.System.STATUSBAR_UNEXPANDED_ALPHA, 0.8f);
+                    Settings.System.STATUSBAR_NOTIFICATION_ALPHA, 0.8f);
             setAlpha(mAlpha);
 
             mHandler = new Handler();
@@ -291,9 +291,9 @@ public class StatusBarIconView extends AnimatedImageView {
         void observe() {
             ContentResolver resolver = mContext.getContentResolver();
             resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.STATUSBAR_UNEXPANDED_ALPHA), false, this);
+                    Settings.System.System.STATUSBAR_NOTIFICATION_ALPHA), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.STATUSBAR_UNEXPANDED_COLOR), false, this);
+                    Settings.System.STATUSBAR_NOTIFICATION_COLOR), false, this);
         }
 
         @Override
@@ -305,9 +305,9 @@ public class StatusBarIconView extends AnimatedImageView {
     private void updateSettings() {
         ContentResolver resolver = mContext.getContentResolver();
         float mAlpha = Settings.System.getFloat(resolver,
-                Settings.System.STATUSBAR_UNEXPANDED_ALPHA, 0.8f);
+                Settings.System.STATUSBAR_NOTIFICATION_ALPHA, 0.8f);
         int mColor = Settings.System.getInt(resolver,
-                Settings.System.STATUSBAR_UNEXPANDED_COLOR, 0xFFFFFFFF);
+                Settings.System.STATUSBAR_NOTIFICATION_COLOR, 0xFFFFFFFF);
         setAlpha(mAlpha);
         setColorFilter(mColor, SCREEN_MODE);
     }

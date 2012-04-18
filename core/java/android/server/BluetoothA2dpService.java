@@ -32,16 +32,23 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Resources;
 import android.media.AudioManager;
+import android.os.Bundle;
 import android.os.ParcelUuid;
 import android.provider.Settings;
 import android.util.Log;
 
+import com.android.internal.R;
+
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 
 public class BluetoothA2dpService extends IBluetoothA2dp.Stub {
@@ -80,10 +87,6 @@ public class BluetoothA2dpService extends IBluetoothA2dp.Stub {
     private final static int EVENT_PLAYSTATUS_CHANGED = 0x1;
     private final static int EVENT_TRACK_CHANGED = 0x2;
 
-    /*AVRCP 1.3 Music App Intents */
-    private static final String PLAYSTATE_CHANGED = "com.android.music.playstatechanged";
-    private static final String META_CHANGED = "com.android.music.metachanged";
-
     private final static String DEFAULT_METADATA_STRING = "Unknown";
     private final static String DEFAULT_METADATA_NUMBER = "0";
 
@@ -95,6 +98,13 @@ public class BluetoothA2dpService extends IBluetoothA2dp.Stub {
     private final static int STATUS_REV_SEEK = 0X04;
     private final static int STATUS_ERROR = 0XFF;
 
+    /* AVRCP 1.3 Intents */
+    private List<String> metachanged_intents;
+    private List<String> playstatechanged_intents;
+
+    /* AVRCP 1.3 special extra keys */
+    private List<String> has_special_extra_keys;
+    private HashMap<String, String> special_extra_keys;
 
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
@@ -139,24 +149,80 @@ public class BluetoothA2dpService extends IBluetoothA2dp.Stub {
                         }
                     }
                 }
-            } else if (action.equals(META_CHANGED)) {
-                mTrackName = intent.getStringExtra("track");
-                mArtistName = intent.getStringExtra("artist");
-                mAlbumName = intent.getStringExtra("album");
+            } else if (metachanged_intents.contains(action)) {
+
+                if(DBG) {
+                    Log.d(TAG, "action: " + action);
+
+                    Bundle extras = intent.getExtras();
+
+                    if (extras != null) {
+                        Set<String> ks = extras.keySet();
+                        Iterator<String> iterator = ks.iterator();
+                        while (iterator.hasNext()) {
+                            String key = iterator.next();
+                            Object value = extras.get(key);
+                            Log.d(TAG, key + ": " + value.toString());
+                        }
+                    }
+                }
+
+                // check if there are special extra keys that we will use
+                if (has_special_extra_keys.contains(action)) {
+                    if (special_extra_keys.containsKey(action + "_track")) {
+                        mTrackName = intent.getStringExtra(special_extra_keys.get(action + "_track"));
+                    }
+                    else {
+                        mTrackName = intent.getStringExtra("track");
+                    }
+
+                    if (special_extra_keys.containsKey(action + "_artist")) {
+                        mArtistName = intent.getStringExtra(special_extra_keys.get(action + "_artist"));
+                    }
+                    else {
+                        mArtistName = intent.getStringExtra("artist");
+                    }
+
+                    if (special_extra_keys.containsKey(action + "_album")) {
+                        mAlbumName = intent.getStringExtra(special_extra_keys.get(action + "_album"));
+                    }
+                    else {
+                        mAlbumName = intent.getStringExtra("album");
+                    }
+
+                    long extra;
+                    if (special_extra_keys.containsKey(action + "_id")){
+                        extra = intent.getLongExtra(special_extra_keys.get(action + "_id"), 0);
+                    }
+                    else {
+                        extra = intent.getLongExtra("id", 0);
+                    }
+                    if (extra < 0)
+                        extra = 0;
+                    mMediaNumber = String.valueOf(extra);
+                }
+                else {
+                    mTrackName = intent.getStringExtra("track");
+                    mArtistName = intent.getStringExtra("artist");
+                    mAlbumName = intent.getStringExtra("album");
+                    long extra = intent.getLongExtra("id", 0);
+                    if (extra < 0)
+                        extra = 0;
+                    mMediaNumber = String.valueOf(extra);
+                }
+
                 if (mTrackName == null)
                     mTrackName = DEFAULT_METADATA_STRING;
                 if (mArtistName == null)
                     mArtistName = DEFAULT_METADATA_STRING;
                 if (mAlbumName == null)
                     mAlbumName = DEFAULT_METADATA_STRING;
-                long extra = intent.getLongExtra("id", 0);
-                if (extra < 0)
-                    extra = 0;
-                mMediaNumber = String.valueOf(extra);
-                extra = intent.getLongExtra("ListSize", 0);;
+
+                long extra = intent.getLongExtra("ListSize", 0);
                 if (extra < 0)
                     extra = 0;
                 mMediaCount = String.valueOf(extra);
+
                 extra = intent.getLongExtra("duration", 0);
                 if (extra < 0)
                     extra = 0;
@@ -166,31 +232,96 @@ public class BluetoothA2dpService extends IBluetoothA2dp.Stub {
                     extra = 0;
                 mPosition = extra;
                 if(DBG) {
-                    Log.d(TAG, "Meta data info is trackname: "+ mTrackName+" artist: "+mArtistName);
-                    Log.d(TAG, "mMediaNumber: "+mMediaNumber+" mediaCount "+mMediaCount);
-                    Log.d(TAG, "mPostion "+ mPosition+" album: "+mAlbumName+ "duration "+mDuration);
+                    Log.d(TAG, "Meta changed " + mPlayStatus);
+                    Log.d(TAG, "player: " + action);
+                    Log.d(TAG, "trackname: "+ mTrackName + " artist: " + mArtistName);
+                    Log.d(TAG, "album: "+ mAlbumName);
+                    Log.d(TAG, "medianumber: " + mMediaNumber + " mediacount " + mMediaCount);
+                    Log.d(TAG, "postion "+ mPosition + " duration "+ mDuration);
                 }
                 for (String path: getConnectedSinksPaths()) {
                     sendMetaData(path);
                     sendEvent(path, EVENT_TRACK_CHANGED, Long.valueOf(mMediaNumber));
                 }
-            } else if (action.equals(PLAYSTATE_CHANGED)) {
-                String currentTrackName = intent.getStringExtra("track");
-                if ((currentTrackName != null) && (!currentTrackName.equals(mTrackName))) {
+            } else if (playstatechanged_intents.contains(action)) {
+
+                if(DBG) {
+                    Log.d(TAG, "action: " + action);
+
+                    Bundle extras = intent.getExtras();
+
+                    if (extras != null) {
+                        Set<String> ks = extras.keySet();
+                        Iterator<String> iterator = ks.iterator();
+                        while (iterator.hasNext()) {
+                            String key = iterator.next();
+                            Object value = extras.get(key);
+                            Log.d(TAG, key + ": " + value.toString());
+                        }
+                    }
+                }
+
+                String currentTrackName;
+                // check if there are special extra keys that we will use
+                if (has_special_extra_keys.contains(action)) {
+                    if (special_extra_keys.containsKey(action + "_track")) {
+                        currentTrackName = intent.getStringExtra(special_extra_keys.get(action + "_track"));
+                    }
+                    else {
+                        currentTrackName = intent.getStringExtra("track");
+                    }
+                    if (currentTrackName == null)
+                        currentTrackName = DEFAULT_METADATA_STRING;
+                }
+                else {
+                    currentTrackName = intent.getStringExtra("track");
+                    if (currentTrackName == null)
+                        currentTrackName = DEFAULT_METADATA_STRING;
+                }
+                if ((!currentTrackName.equals(DEFAULT_METADATA_STRING)) && (!currentTrackName.equals(mTrackName))) {
                     mTrackName = currentTrackName;
-                    mArtistName = intent.getStringExtra("artist");
-                    mAlbumName = intent.getStringExtra("album");
-                    if (mTrackName == null)
-                        mTrackName = DEFAULT_METADATA_STRING;
+                    // check if there are special extra keys that we will use
+                    if (has_special_extra_keys.contains(action)) {
+                        if (special_extra_keys.containsKey(action + "_artist")) {
+                            mArtistName = intent.getStringExtra(special_extra_keys.get(action + "_artist"));
+                        }
+                        else {
+                            mArtistName = intent.getStringExtra("artist");
+                        }
+
+                        if (special_extra_keys.containsKey(action + "_album")) {
+                            mAlbumName = intent.getStringExtra(special_extra_keys.get(action + "_album"));
+                        }
+                        else {
+                            mAlbumName = intent.getStringExtra("album");
+                        }
+
+                        long extra;
+                        if (special_extra_keys.containsKey(action + "_id")) {
+                            extra = intent.getLongExtra(special_extra_keys.get(action + "_id"), 0);
+                        }
+                        else {
+                            extra = intent.getLongExtra("id", 0);
+                        }
+                        if (extra < 0)
+                            extra = 0;
+                        mMediaNumber = String.valueOf(extra);
+                    }
+                    else {
+                        mArtistName = intent.getStringExtra("artist");
+                        mAlbumName = intent.getStringExtra("album");
+                        long extra = intent.getLongExtra("id", 0);
+                        if (extra < 0)
+                            extra = 0;
+                        mMediaNumber = String.valueOf(extra);
+                    }
+
                     if (mArtistName == null)
                         mArtistName = DEFAULT_METADATA_STRING;
                     if (mAlbumName == null)
                         mAlbumName = DEFAULT_METADATA_STRING;
-                    long extra = intent.getLongExtra("id", 0);
-                    if (extra < 0)
-                        extra = 0;
-                    mMediaNumber = String.valueOf(extra);
-                    extra = intent.getLongExtra("ListSize", 0);;
+
+                    long extra = intent.getLongExtra("ListSize", 0);
                     if (extra < 0)
                         extra = 0;
                     mMediaCount = String.valueOf(extra);
@@ -205,12 +336,32 @@ public class BluetoothA2dpService extends IBluetoothA2dp.Stub {
                     for (String path: getConnectedSinksPaths())
                         sendMetaData(path);
                 }
-                boolean playStatus = intent.getBooleanExtra("playing", false);
+                boolean playStatusPlaying = intent.getBooleanExtra("playing", false);
+                boolean playStatusPlaystate = intent.getBooleanExtra("playstate", false);
+                boolean playStatusState;
+
+                int state = intent.getIntExtra("state", 2);
+
+                if ((state == 0) || (state == 1))
+                    playStatusState = true;
+                else
+                    playStatusState = false;
+
+                boolean playStatus = playStatusPlaying || playStatusPlaystate || playStatusState;
+
                 mPosition = intent.getLongExtra("position", 0);
                 if (mPosition < 0)
                     mPosition = 0;
                 mPlayStatus = convertedPlayStatus(playStatus, mPosition);
-                if(DBG) Log.d(TAG, "PlayState changed "+ mPlayStatus);
+                if(DBG) {
+                    Log.d(TAG, "PlayState changed " + mPlayStatus);
+                    Log.d(TAG, "player: " + action);
+                    Log.d(TAG, "trackname: "+ mTrackName + " artist: " + mArtistName);
+                    Log.d(TAG, "album: "+ mAlbumName);
+                    Log.d(TAG, "medianumber: " + mMediaNumber + " mediacount " + mMediaCount);
+                    Log.d(TAG, "postion "+ mPosition + " duration "+ mDuration);
+                }
+
                 for (String path: getConnectedSinksPaths()) {
                     sendEvent(path, EVENT_PLAYSTATUS_CHANGED, (long)mPlayStatus);
                 }
@@ -231,25 +382,25 @@ public class BluetoothA2dpService extends IBluetoothA2dp.Stub {
     private synchronized void sendMetaData(String path) {
         if(DBG) {
             Log.d(TAG, "sendMetaData "+ path);
-            Log.d(TAG, "Meta data info is trackname: "+ mTrackName+" artist: "+mArtistName);
-            Log.d(TAG, "mMediaNumber: "+mMediaNumber+" mediaCount "+mMediaCount);
-            Log.d(TAG, "mPostion "+ mPosition+" album: "+mAlbumName+ "duration "+mDuration);
         }
         sendMetaDataNative(path);
     }
 
     private synchronized void sendEvent(String path, int eventId, long data) {
-        if(DBG) Log.d(TAG, "sendEvent "+path+ " data "+ data);
+        if(DBG)
+            Log.d(TAG, "sendEvent "+path+ " data "+ data);
         sendEventNative(path, eventId, data);
     }
 
     private synchronized void sendPlayStatus(String path) {
-        if(DBG) Log.d(TAG, "sendPlayStatus"+ path);
+        if(DBG)
+            Log.d(TAG, "sendPlayStatus"+ path);
         sendPlayStatusNative(path, (int)Integer.valueOf(mDuration), (int)mPosition, mPlayStatus);
     }
 
     private void onGetPlayStatusRequest() {
-        if(DBG) Log.d(TAG, "onGetPlayStatusRequest");
+        if(DBG)
+            Log.d(TAG, "onGetPlayStatusRequest");
         for (String path: getConnectedSinksPaths()) {
             sendPlayStatus(path);
         }
@@ -290,8 +441,59 @@ public class BluetoothA2dpService extends IBluetoothA2dp.Stub {
         mIntentFilter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
         mIntentFilter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
         mIntentFilter.addAction(AudioManager.VOLUME_CHANGED_ACTION);
-        mIntentFilter.addAction(PLAYSTATE_CHANGED);
-        mIntentFilter.addAction(META_CHANGED);
+
+        Resources res = mContext.getResources();
+        try {
+            /* AVRCP 1.3 Intents */
+            metachanged_intents = Arrays.asList(res.getStringArray(R.array.avrcp_meta_changed_intents));
+            playstatechanged_intents = Arrays.asList(res.getStringArray(R.array.avrcp_playstate_changed_intents));
+
+            for (String intent: metachanged_intents) {
+                mIntentFilter.addAction(intent);
+            }
+
+            for (String intent: playstatechanged_intents) {
+                mIntentFilter.addAction(intent);
+            }
+        }
+        catch (Exception e) {
+            Log.e(TAG, "Error getting AVRCP 1.3 intents from the resource file.");
+        }
+
+        try {
+            /* AVRCP 1.3 special extra keys */
+            has_special_extra_keys = Arrays.asList(res.getStringArray(R.array.avrcp_special_extra_keys));
+
+            special_extra_keys = new HashMap<String, String>();
+
+            String key_name;
+            int resID;
+
+            List<String> overridable_extra_keys = Arrays.asList(res.getStringArray(R.array.avrcp_overridable_extra_keys));
+
+            for (String intent: has_special_extra_keys) {
+                if(DBG) {
+                    Log.d(TAG, "has_special_extra_keys: " + intent);
+                }
+                for (String key: overridable_extra_keys) {
+                    key_name = intent + "_" + key;
+                    if(DBG) {
+                        Log.d(TAG, "key_name: " + key_name);
+                    }
+                    resID = res.getIdentifier(key_name, "string", mContext.getPackageName());
+                    if (resID != 0) {
+                        special_extra_keys.put(key_name, res.getString(resID));
+                        if(DBG) {
+                            Log.d(TAG, key_name + ": " + special_extra_keys.get(key_name));
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception e) {
+            Log.e(TAG, "Error getting AVRCP 1.3 special extra keys from the resource file.");
+        }
+
         mContext.registerReceiver(mReceiver, mIntentFilter);
 
         mAudioDevices = new HashMap<BluetoothDevice, Integer>();
@@ -344,6 +546,10 @@ public class BluetoothA2dpService extends IBluetoothA2dp.Stub {
             for (String path: paths) {
                 String address = mBluetoothService.getAddressFromObjectPath(path);
                 BluetoothDevice device = mAdapter.getRemoteDevice(address);
+                if (DBG) {
+                    log("RemoteName: " + mBluetoothService.getRemoteName(address));
+                    log("RemoteAlias: " + mBluetoothService.getRemoteAlias(address));
+                }
                 ParcelUuid[] remoteUuids = mBluetoothService.getRemoteUuids(address);
                 if (remoteUuids != null)
                     if (BluetoothUuid.containsAnyUuid(remoteUuids,
@@ -353,7 +559,7 @@ public class BluetoothA2dpService extends IBluetoothA2dp.Stub {
                     }
                 }
         }
-        mAudioManager.setParameters(BLUETOOTH_ENABLED+"=true");
+        mAudioManager.setParameters(BLUETOOTH_ENABLED + "=true");
         mAudioManager.setParameters("A2dpSuspended=false");
     }
 
@@ -503,7 +709,7 @@ public class BluetoothA2dpService extends IBluetoothA2dp.Stub {
     public synchronized boolean suspendSink(BluetoothDevice device) {
         mContext.enforceCallingOrSelfPermission(BLUETOOTH_ADMIN_PERM,
                             "Need BLUETOOTH_ADMIN permission");
-        if (DBG) log("suspendSink(" + device + "), mTargetA2dpState: "+mTargetA2dpState);
+        if (DBG) log("suspendSink(" + device + "), mTargetA2dpState: "+ mTargetA2dpState);
         if (device == null || mAudioDevices == null) {
             return false;
         }
@@ -520,7 +726,7 @@ public class BluetoothA2dpService extends IBluetoothA2dp.Stub {
     public synchronized boolean resumeSink(BluetoothDevice device) {
         mContext.enforceCallingOrSelfPermission(BLUETOOTH_ADMIN_PERM,
                             "Need BLUETOOTH_ADMIN permission");
-        if (DBG) log("resumeSink(" + device + "), mTargetA2dpState: "+mTargetA2dpState);
+        if (DBG) log("resumeSink(" + device + "), mTargetA2dpState: "+ mTargetA2dpState);
         if (device == null || mAudioDevices == null) {
             return false;
         }
@@ -627,7 +833,7 @@ public class BluetoothA2dpService extends IBluetoothA2dp.Stub {
 
         if (name.equals(PROPERTY_STATE)) {
             int state = convertBluezSinkStringToState(propValues[1]);
-            log("A2DP: onSinkPropertyChanged newState is: " + state + "mPlayingA2dpDevice: " + mPlayingA2dpDevice);
+            log("A2DP: onSinkPropertyChanged newState is: " + state + " mPlayingA2dpDevice: " + mPlayingA2dpDevice);
 
             if (mAudioDevices.get(device) == null) {
                 // This is for an incoming connection for a device not known to us.

@@ -525,8 +525,10 @@ public class PackageManagerService extends IPackageManager.Stub {
                     if (mContainerService == null) {
                         // Something seriously wrong. Bail out
                         Slog.e(TAG, "Cannot bind to media container service");
-                        for (HandlerParams params : mPendingInstalls) {
-                            mPendingInstalls.remove(0);
+                        Iterator<HandlerParams> iter = mPendingInstalls.iterator();
+                        while (iter.hasNext()) {
+                            HandlerParams params = iter.next();
+                            iter.remove();
                             // Indicate service bind error
                             params.serviceError();
                         }
@@ -577,8 +579,10 @@ public class PackageManagerService extends IPackageManager.Stub {
                         }
                         if (!connectToService()) {
                             Slog.e(TAG, "Failed to bind to media container service");
-                            for (HandlerParams params : mPendingInstalls) {
-                                mPendingInstalls.remove(0);
+                            Iterator<HandlerParams> iter = mPendingInstalls.iterator();
+                            while (iter.hasNext()) {
+                                HandlerParams params = iter.next();
+                                iter.remove();
                                 // Indicate service bind error
                                 params.serviceError();
                             }

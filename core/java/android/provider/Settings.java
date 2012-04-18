@@ -2731,13 +2731,13 @@ public final class Settings {
          * unexpanded statusbar notification icons visibility
          * @hide
          */
-        public static final String STATUSBAR_UNEXPANDED_ALPHA = "statusbar_unexpanded_alpha";
+        public static final String STATUSBAR_NOTIFICATION_ALPHA = "statusbar_notification_alpha";
 
         /**
          * unexpanded statusbar notification icons color value
          * @hide
          */
-        public static final String STATUSBAR_UNEXPANDED_COLOR = "statusbar_unexpanded_color";
+        public static final String STATUSBAR_NOTIFICATION_COLOR = "statusbar_notification_color";
 
         /**
          * should we use a custom background or custom color/alpha

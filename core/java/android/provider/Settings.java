@@ -2728,6 +2728,12 @@ public final class Settings {
         public static final String STATUSBAR_EXPANDED_BACKGROUND_COLOR = "statusbar_expanded_background_color";
 
         /**
+         * unexpanded statusbar color
+         *@hide
+         */
+        public static final String STATUSBAR_UNEXPANDED_COLOR = "statusbar_unexpanded_color";
+
+        /**
          * unexpanded statusbar notification icons visibility
          * @hide
          */

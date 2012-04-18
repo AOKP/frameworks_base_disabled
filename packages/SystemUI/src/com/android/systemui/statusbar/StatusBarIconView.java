@@ -291,7 +291,7 @@ public class StatusBarIconView extends AnimatedImageView {
         void observe() {
             ContentResolver resolver = mContext.getContentResolver();
             resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.System.STATUSBAR_NOTIFICATION_ALPHA), false, this);
+                    Settings.System.STATUSBAR_NOTIFICATION_ALPHA), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUSBAR_NOTIFICATION_COLOR), false, this);
         }

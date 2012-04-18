@@ -96,7 +96,7 @@ public class StatusBarIconView extends AnimatedImageView {
         setScaleX(scale);
         setScaleY(scale);
         float mAlpha = Settings.System.getFloat(context.getContentResolver(),
-                Settings.System.STATUSBAR_UNEXPANDED_ALPHA, 0.8f);
+                Settings.System.STATUSBAR_NOTIFICATION_ALPHA, 0.8f);
         setAlpha(mAlpha);
     }
 

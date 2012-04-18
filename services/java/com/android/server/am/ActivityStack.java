@@ -1316,8 +1316,8 @@ final class ActivityStack {
         if ((mService.mSleeping || mService.mShuttingDown)
                 && mLastPausedActivity == next
                 && (next.state == ActivityState.PAUSED
-                   || next.state == ActivityState.STOPPED
-                   || next.state == ActivityState.STOPPING)) {
+                    || next.state == ActivityState.STOPPED
+                    || next.state == ActivityState.STOPPING)) {
             // Make sure we have executed any pending transitions, since there
             // should be nothing left to do at this point.
             mService.mWindowManager.executeAppTransition();

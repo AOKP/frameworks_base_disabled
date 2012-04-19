@@ -2055,6 +2055,9 @@ public class TabletStatusBar extends StatusBar implements
                         Settings.System.getUriFor(Settings.System.NAVIGATION_CUSTOM_APP_ICONS[j]),
                         false,
                         this);
+                resolver.registerContentObserver(
+                		Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_BUTTONS_SHOW), false,
+                		this);
             }
             updateSettings();
         }
@@ -2099,6 +2102,9 @@ public class TabletStatusBar extends StatusBar implements
                 Settings.System.putString(resolver,
                 		Settings.System.NAVIGATION_CUSTOM_APP_ICONS[j], "");
             }
+            mShowStatusBar = (Settings.System.getInt(resolver,
+                    Settings.System.NAVIGATION_BAR_BUTTONS_SHOW, 1) == 1);
+            mStatusBarView.setVisibility(mShowStatusBar ? View.VISIBLE : View.GONE);
         }
         makeNavBar();
 

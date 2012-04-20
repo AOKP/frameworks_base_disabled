@@ -59,6 +59,17 @@ bool XINGSeeker::getDuration(int64_t *durationUs) {
     return true;
 }
 
+#ifdef OMAP_ENHANCEMENT
+bool XINGSeeker::updateDuration(int64_t *durationUs){
+    if (mDurationUs <= 0){
+        mDurationUs = *durationUs;
+        return true;
+    }
+
+    return false;
+}
+#endif
+
 bool XINGSeeker::getOffsetForTime(int64_t *timeUs, off64_t *pos) {
     if (mSizeBytes == 0 || mTableOfContents[0] <= 0 || mDurationUs < 0) {
         return false;

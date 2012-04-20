@@ -319,10 +319,23 @@ MP3Extractor::MP3Extractor(
 
     int64_t durationUs;
 
+#ifdef OMAP_ENHANCEMENT
+    /* Need check situation when XING or VBRI headers can contain
+     * incorrect frame number value, which impact on duration.
+     * If need calculate duration in another way
+     * and for prevent problem with seeking send duration
+     * value to XINGSeeker or VBRISeeker.*/
+    if (mSeeker == NULL || !mSeeker->getDuration(&durationUs) || durationUs == 0) {
+#else
     if (mSeeker == NULL || !mSeeker->getDuration(&durationUs)) {
+#endif
         off64_t fileSize;
         if (mDataSource->getSize(&fileSize) == OK) {
             durationUs = 8000LL * (fileSize - mFirstFramePos) / bitrate;
+#ifdef OMAP_ENHANCEMENT
+            if (mSeeker != NULL)
+                mSeeker->updateDuration(&durationUs);
+#endif
         } else {
             durationUs = -1;
         }

@@ -17,6 +17,17 @@
 */
 -->
 
+
+<RelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:gravity="center_horizontal">
+
+<com.android.internal.policy.impl.LockscreenWallpaper
+	android:id="@+id/lockscreen_wallpaper"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent" />
 <!-- This is the screen that shows the 9 circle unlock widget and instructs
      the user how to unlock their device, or make an emergency call.  This
      is the portrait layout.  -->
@@ -204,3 +215,4 @@
     />
 
 </GridLayout>
+</RelativeLayout>

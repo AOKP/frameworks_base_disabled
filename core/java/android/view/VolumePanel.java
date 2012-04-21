@@ -280,9 +280,7 @@ public class VolumePanel extends Handler implements OnSeekBarChangeListener,
         settingsObserver.observe();
 
         // get the users preference
-        int choosenStyle = Settings.System.getInt(
-                context.getContentResolver(),Settings.System.MODE_VOLUME_OVERLAY,
-                Settings.System.VOLUME_OVERLAY_SINGLE);
+        int choosenStyle = Settings.System.getInt(context.getContentResolver(),Settings.System.MODE_VOLUME_OVERLAY, -1);
         // by default -1 is expected - deal with choosing the right default
         if (choosenStyle == -1) {
             if (mVoiceCapable) {

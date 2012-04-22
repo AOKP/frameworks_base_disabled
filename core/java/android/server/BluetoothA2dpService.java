@@ -162,7 +162,8 @@ public class BluetoothA2dpService extends IBluetoothA2dp.Stub {
                         while (iterator.hasNext()) {
                             String key = iterator.next();
                             Object value = extras.get(key);
-                            Log.d(TAG, key + ": " + value.toString());
+                            if (value != null)
+                                Log.d(TAG, key + ": " + value.toString());
                         }
                     }
                 }
@@ -256,7 +257,8 @@ public class BluetoothA2dpService extends IBluetoothA2dp.Stub {
                         while (iterator.hasNext()) {
                             String key = iterator.next();
                             Object value = extras.get(key);
-                            Log.d(TAG, key + ": " + value.toString());
+                            if (value != null)
+                                Log.d(TAG, key + ": " + value.toString());
                         }
                     }
                 }

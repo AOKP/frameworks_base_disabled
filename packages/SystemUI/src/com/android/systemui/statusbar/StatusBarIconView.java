@@ -58,8 +58,11 @@ public class StatusBarIconView extends AnimatedImageView {
     public StatusBarIconView(Context context, String slot, Notification notification) {
         super(context);
         mHandler = new Handler();
-        SettingsObserver settingsObserver = new SettingsObserver(mHandler);
-        settingsObserver.observe();
+	// only set the observer for notifications - not status icons
+        if (null != notification) {
+        	SettingsObserver settingsObserver = new SettingsObserver(mHandler);
+        	settingsObserver.observe();
+        }
         final Resources res = context.getResources();
         mSlot = slot;
         mNumberPain = new Paint();
@@ -85,8 +88,6 @@ public class StatusBarIconView extends AnimatedImageView {
     public StatusBarIconView(Context context, AttributeSet attrs) {
         super(context, attrs);
         mHandler = new Handler();
-        SettingsObserver settingsObserver = new SettingsObserver(mHandler);
-        settingsObserver.observe();
         final Resources res = context.getResources();
         final int outerBounds = res.getDimensionPixelSize(R.dimen.status_bar_icon_size);
         final int imageBounds = res.getDimensionPixelSize(R.dimen.status_bar_icon_drawing_size);

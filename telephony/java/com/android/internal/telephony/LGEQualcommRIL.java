@@ -351,6 +351,11 @@ public class LGEQualcommRIL extends QualcommNoSimReadyRIL implements CommandsInt
     protected DataCallState getDataCallState(Parcel p, int version) {
         DataCallState dataCall = new DataCallState();
 
+        boolean oldRil = needsOldRilFeature("datacall");
+
+        if (!oldRil)
+           return super.getDataCallState(p, version);
+
         dataCall.version = 3; // was dataCall.version = version;
         dataCall.cid = p.readInt();
         dataCall.active = p.readInt();
@@ -375,6 +380,11 @@ public class LGEQualcommRIL extends QualcommNoSimReadyRIL implements CommandsInt
     protected Object
     responseSetupDataCall(Parcel p) {
         DataCallState dataCall;
+
+        boolean oldRil = needsOldRilFeature("datacall");
+
+        if (!oldRil)
+           return super.responseSetupDataCall(p);
 
         dataCall = new DataCallState();
         dataCall.version = 3;

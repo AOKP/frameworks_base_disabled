@@ -745,7 +745,6 @@
     <string translatable="false" name="config_ntpServer">pool.ntp.org</string>
     <!-- Timeout to wait for NTP server response. -->
     <integer name="config_ntpTimeout">20000</integer>
-
     <!-- Default network policy warning threshold, in megabytes. -->
     <integer name="config_networkPolicyDefaultWarning">2048</integer>
 
@@ -781,4 +780,19 @@
          [bootmode]:[original USB mode]:[USB mode used]-->
     <integer-array translatable="false" name="config_oemUsbModeOverride">
     </integer-array>
+
+    <!-- LUN file to be used by legacy USB manager.
+         The existence of this file will be used to determine in the
+         legacy USB manager should be started. -->
+    <string name="config_legacyUmsLunFile">/sys/devices/platform/usb_mass_storage/lun0/file</string>
+
+    <!-- Workaround for devices with broken keyboards -->
+    <bool name="config_forceDisableHardwareKeyboard">false</bool>
+
+    <!-- Asus dock compatibility disabled by default -->
+    <bool name="config_hasDockBattery">false</bool>
+
+    <!-- If true, Device uses Samsung CDMA Signal Strength fix for displaying signal bars -->
+    <bool name="config_SamsungCDMASignalStrength">false</bool>
+
 </resources>

@@ -67,7 +67,7 @@ public class Clock extends TextView {
 
     protected int mWeekday = WEEKDAY_STYLE_GONE;
 
-    private final boolean DEBUG = true;
+    private final boolean DEBUG = false;
     private static final String TAG = "Statusbar :Clock";
 
     protected boolean mShowClockDuringLockscreen = false;

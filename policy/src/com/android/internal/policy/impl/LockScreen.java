@@ -16,46 +16,42 @@
 
 package com.android.internal.policy.impl;
 
-import java.io.File;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-
-import android.app.ActivityManager;
-import android.content.ActivityNotFoundException;
-import android.content.ContentResolver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.content.res.ColorStateList;
-import android.content.res.Configuration;
-import android.content.res.Resources;
-import android.database.ContentObserver;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.media.AudioManager;
-import android.net.Uri;
-import android.os.Handler;
-import android.provider.MediaStore;
-import android.provider.Settings;
-import android.provider.Settings.SettingNotFoundException;
-import android.util.Log;
-import android.util.TypedValue;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-
 import com.android.internal.R;
 import com.android.internal.widget.DigitalClock;
 import com.android.internal.widget.LockPatternUtils;
 import com.android.internal.widget.SlidingTab;
 import com.android.internal.widget.WaveView;
 import com.android.internal.widget.multiwaveview.MultiWaveView;
+import com.android.internal.widget.multiwaveview.TargetDrawable;
 
+import android.app.ActivityManager;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.content.res.Resources.NotFoundException;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.InsetDrawable;
+import android.graphics.drawable.LayerDrawable;
+import android.graphics.drawable.StateListDrawable;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.*;
+import android.util.Log;
+import android.media.AudioManager;
+import android.provider.MediaStore;
+import android.provider.Settings;
+
+import java.io.File;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
 
 /**
  * The screen within {@link LockPatternKeyguardView} that shows general information about the device
@@ -70,21 +66,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
     private static final String ENABLE_MENU_KEY_FILE = "/data/local/enable_menu_key";
     private static final int WAIT_FOR_ANIMATION_TIMEOUT = 0;
     private static final int STAY_ON_WHILE_GRABBED_TIMEOUT = 30000;
-    public static final String INTENT_TORCH_ON = "com.android.systemui.INTENT_TORCH_ON";
-    public static final String INTENT_TORCH_OFF = "com.android.systemui.INTENT_TORCH_OFF";
-    
-    public static final int LAYOUT_SLIDER = 1;
-    public static final int LAYOUT_HONEY = 0;
-    public static final int LAYOUT_STOCK = 2;
-    public static final int LAYOUT_QUAD = 6;
-    public static final int LAYOUT_OCTO = 8;
-
-    private boolean mLockscreen4Tab = false || (Settings.System.getInt(
-			mContext.getContentResolver(),
-			Settings.System.LOCKSCREEN_4TAB, 0) == 1);
-
     private static final int COLOR_WHITE = 0xFFFFFFFF;
-    private int mLockscreenTargets = LAYOUT_STOCK;
 
     private LockPatternUtils mLockPatternUtils;
     private KeyguardUpdateMonitor mUpdateMonitor;
@@ -101,19 +83,10 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 
     private KeyguardStatusViewManager mStatusViewManager;
     private UnlockWidgetCommonMethods mUnlockWidgetMethods;
-    private UnlockWidgetCommonMethods mUnlockWidgetMethods2;
     private View mUnlockWidget;
-    private View mUnlockWidget2;
     
     private TextView mCarrier;
     private DigitalClock mDigitalClock;
-
-    private Drawable[] lockDrawables;
-
-    ArrayList<Target> lockTargets = new ArrayList<Target>();
-
-    private String mCustomAppActivity = (Settings.System.getString(mContext.getContentResolver(),
-            Settings.System.LOCKSCREEN_CUSTOM_APP_ACTIVITY));
 
     private interface UnlockWidgetCommonMethods {
         // Update resources based on phone state
@@ -189,54 +162,6 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
         public void ping() {
         }
     }
-    
-    class SlidingTabMethods2 implements SlidingTab.OnTriggerListener, UnlockWidgetCommonMethods {
-        private final SlidingTab mSlidingTab2;
-
-        SlidingTabMethods2(SlidingTab slidingTab) {
-            mSlidingTab2 = slidingTab;
-        }
-
-        public void updateResources() {
-        }
-
-        /** {@inheritDoc} */
-		public void onTrigger(View v, int whichHandle) {
-			if (whichHandle == SlidingTab.OnTriggerListener.LEFT_HANDLE) {
-				Intent callIntent = new Intent(Intent.ACTION_DIAL);
-				callIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-				getContext().startActivity(callIntent);
-				mCallback.goToUnlockScreen();
-			} else if (whichHandle == SlidingTab.OnTriggerListener.RIGHT_HANDLE) {
-				Intent intent = new Intent(Intent.ACTION_MAIN);
-                intent.addCategory(Intent.CATEGORY_LAUNCHER);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                        | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-                intent.setClassName("com.android.mms", "com.android.mms.ui.ConversationList");
-                mContext.startActivity(intent);
-                mCallback.goToUnlockScreen();
-				if (mCustomAppActivity != null) {
-					runActivity(mCustomAppActivity);
-				}
-			}
-		}
-
-        /** {@inheritDoc} */
-		public void onGrabbedStateChange(View v, int grabbedState) {
-			mCallback.pokeWakelock();
-		}
-
-        public View getView() {
-            return mSlidingTab2;
-        }
-
-        public void reset(boolean animate) {
-            mSlidingTab2.reset(animate);
-        }
-
-        public void ping() {
-        }
-    }
 
     class WaveViewMethods implements WaveView.OnTriggerListener, UnlockWidgetCommonMethods {
 
@@ -283,6 +208,9 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 
         private final MultiWaveView mMultiWaveView;
         private boolean mCameraDisabled;
+        private String[] mStoredTargets;
+        private int mTargetOffset;
+        private boolean mIsScreenLarge;
 
         MultiWaveViewMethods(MultiWaveView multiWaveView) {
             mMultiWaveView = multiWaveView;
@@ -299,14 +227,134 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
             }
         }
 
+        public boolean isScreenLarge() {
+            final int screenSize = Resources.getSystem().getConfiguration().screenLayout &
+                    Configuration.SCREENLAYOUT_SIZE_MASK;
+            boolean isScreenLarge = screenSize == Configuration.SCREENLAYOUT_SIZE_LARGE ||
+                    screenSize == Configuration.SCREENLAYOUT_SIZE_XLARGE;
+            return isScreenLarge;
+        }
+
+        private StateListDrawable getLayeredDrawable(Drawable back, Drawable front, int inset, boolean frontBlank) {
+            Resources res = getResources();
+            InsetDrawable[] inactivelayer = new InsetDrawable[2];
+            InsetDrawable[] activelayer = new InsetDrawable[2];
+            inactivelayer[0] = new InsetDrawable(res.getDrawable(com.android.internal.R.drawable.ic_lockscreen_lock_pressed), 0, 0, 0, 0);
+            inactivelayer[1] = new InsetDrawable(front, inset, inset, inset, inset);
+            activelayer[0] = new InsetDrawable(back, 0, 0, 0, 0);
+            activelayer[1] = new InsetDrawable(frontBlank ? res.getDrawable(android.R.color.transparent) : front, inset, inset, inset, inset);
+            StateListDrawable states = new StateListDrawable();
+            LayerDrawable inactiveLayerDrawable = new LayerDrawable(inactivelayer);
+            inactiveLayerDrawable.setId(0, 0);
+            inactiveLayerDrawable.setId(1, 1);
+            LayerDrawable activeLayerDrawable = new LayerDrawable(activelayer);
+            activeLayerDrawable.setId(0, 0);
+            activeLayerDrawable.setId(1, 1);
+            states.addState(TargetDrawable.STATE_INACTIVE, inactiveLayerDrawable);
+            states.addState(TargetDrawable.STATE_ACTIVE, activeLayerDrawable);
+            return states;
+        }
+
         public void updateResources() {
-            boolean isLandscape = (mCreationOrientation == Configuration
-                    .ORIENTATION_LANDSCAPE);
-
-            targetController.setLandscape(isLandscape);
-            targetController.setupTargets();
-
-            mMultiWaveView.setTargetResources(targetController.getDrawables());
+            String storedVal = Settings.System.getString(mContext.getContentResolver(),
+                    Settings.System.LOCKSCREEN_TARGETS);
+            if (storedVal == null) {
+                int resId;
+                mStoredTargets = null;
+                if (mCameraDisabled) {
+                    // Fall back to showing ring/silence if camera is disabled by DPM...
+                    resId = mSilentMode ? R.array.lockscreen_targets_when_silent
+                            : R.array.lockscreen_targets_when_soundon;
+                } else {
+                    resId = R.array.lockscreen_targets_with_camera;
+                }
+                mMultiWaveView.setTargetResources(resId);
+            } else {
+                mStoredTargets = storedVal.split("\\|");
+                mIsScreenLarge = isScreenLarge();
+                ArrayList<TargetDrawable> storedDraw = new ArrayList<TargetDrawable>();
+                final Resources res = getResources();
+                final int targetInset = mIsScreenLarge ? MultiWaveView.TABLET_TARGET_INSET :
+                    MultiWaveView.PHONE_TARGET_INSET;
+                final PackageManager packMan = mContext.getPackageManager();
+                final boolean isLandscape = mCreationOrientation == Configuration.ORIENTATION_LANDSCAPE;
+                final Drawable blankActiveDrawable = res.getDrawable(R.drawable.ic_lockscreen_target_activated);
+                final InsetDrawable activeBack = new InsetDrawable(blankActiveDrawable, 0, 0, 0, 0);
+                // Shift targets for landscape lockscreen on phones
+                mTargetOffset = isLandscape && !mIsScreenLarge ? 2 : 0;
+                if (mTargetOffset == 2) {
+                    storedDraw.add(new TargetDrawable(res, null));
+                    storedDraw.add(new TargetDrawable(res, null));
+                }
+                // Add unlock target
+                storedDraw.add(new TargetDrawable(res, res.getDrawable(R.drawable.ic_lockscreen_unlock)));
+                for (int i = 0; i < 8 - mTargetOffset - 1; i++) {
+                    int tmpInset = targetInset;
+                    if (i < mStoredTargets.length) {
+                        String uri = mStoredTargets[i];
+                        if (!uri.equals(MultiWaveView.EMPTY_TARGET)) {
+                            try {
+                                Intent in = Intent.parseUri(uri,0);
+                                Drawable front = null;
+                                Drawable back = activeBack;
+                                boolean frontBlank = false;
+                                if (in.hasExtra(MultiWaveView.ICON_FILE)) {
+                                    String fSource = in.getStringExtra(MultiWaveView.ICON_FILE);
+                                    if (fSource != null) {
+                                        File fPath = new File(fSource);
+                                        if (fPath.exists()) {
+                                            front = new BitmapDrawable(res, BitmapFactory.decodeFile(fSource));
+                                        }
+                                    }
+                                } else if (in.hasExtra(MultiWaveView.ICON_RESOURCE)) {
+                                    String rSource = in.getStringExtra(MultiWaveView.ICON_RESOURCE);
+                                    String rPackage = in.getStringExtra(MultiWaveView.ICON_PACKAGE);
+                                    if (rSource != null) {
+                                        if (rPackage != null) {
+                                            try {
+                                                Context rContext = mContext.createPackageContext(rPackage, 0);
+                                                int id = rContext.getResources().getIdentifier(rSource, "drawable", rPackage);
+                                                front = rContext.getResources().getDrawable(id);
+                                                id = rContext.getResources().getIdentifier(rSource.replaceAll("_normal", "_activated"),
+                                                        "drawable", rPackage);
+                                                back = rContext.getResources().getDrawable(id);
+                                                tmpInset = 0;
+                                                frontBlank = true;
+                                            } catch (NameNotFoundException e) {
+                                                e.printStackTrace();
+                                            } catch (NotFoundException e) {
+                                                e.printStackTrace();
+                                            }
+                                        } else {
+                                            front = res.getDrawable(res.getIdentifier(rSource, "drawable", "android"));
+                                            back = res.getDrawable(res.getIdentifier(
+                                                    rSource.replaceAll("_normal", "_activated"), "drawable", "android"));
+                                            tmpInset = 0;
+                                            frontBlank = true;
+                                        }
+                                    }
+                                }
+                                if (front == null || back == null) {
+                                    ActivityInfo aInfo = in.resolveActivityInfo(packMan, PackageManager.GET_ACTIVITIES);
+                                    if (aInfo != null) {
+                                        front = aInfo.loadIcon(packMan);
+                                    } else {
+                                        front = res.getDrawable(android.R.drawable.sym_def_app_icon);
+                                    }
+                                }
+                                storedDraw.add(new TargetDrawable(res, getLayeredDrawable(back,front, tmpInset, frontBlank)));
+                            } catch (Exception e) {
+                                storedDraw.add(new TargetDrawable(res, null));
+                            }
+                        } else {
+                            storedDraw.add(new TargetDrawable(res, null));
+                        }
+                    } else {
+                        storedDraw.add(new TargetDrawable(res, null));
+                    }
+                }
+                mMultiWaveView.setTargetResources(storedDraw);
+            }
         }
 
         public void onGrabbed(View v, int handle) {
@@ -318,11 +366,40 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
         }
 
         public void onTrigger(View v, int target) {
-            if (DBG)
-                Log.v(TAG, "onTrigger: target = " + target);
-            if (DBG)
-                Log.v(TAG, "onTrigger: Orientation = " + mCreationOrientation);
-            targetController.getTarget(target).doAction();
+            if (mStoredTargets == null) {
+                if (target == 0 || target == 1) { // 0 = unlock/portrait, 1 = unlock/landscape
+                    mCallback.goToUnlockScreen();
+                } else if (target == 2 || target == 3) { // 2 = alt/portrait, 3 = alt/landscape
+                    if (!mCameraDisabled) {
+                        // Start the Camera
+                        Intent intent = new Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        mContext.startActivity(intent);
+                        mCallback.goToUnlockScreen();
+                    } else {
+                        toggleRingMode();
+                        mUnlockWidgetMethods.updateResources();
+                        mCallback.pokeWakelock();
+                    }
+                }
+            } else {
+                final boolean isLand = mCreationOrientation == Configuration.ORIENTATION_LANDSCAPE;
+                if ((target == 0 && (mIsScreenLarge || !isLand)) || (target == 2 && !mIsScreenLarge && isLand)) {
+                    mCallback.goToUnlockScreen();
+                } else {
+                    target -= 1 + mTargetOffset;
+                    if (target < mStoredTargets.length && mStoredTargets[target] != null) {
+                        try {
+                            Intent tIntent = Intent.parseUri(mStoredTargets[target], 0);
+                            tIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            mContext.startActivity(tIntent);
+                            mCallback.goToUnlockScreen();
+                            return;
+                        } catch (URISyntaxException e) {
+                        }
+                    }
+                }
+            }
         }
 
         public void onGrabbedStateChange(View v, int handle) {
@@ -363,7 +440,6 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
             final boolean vibe = (Settings.System.getInt(
                     mContext.getContentResolver(),
                     Settings.System.VIBRATE_IN_SILENT, 1) == 1);
-
             mAudioManager.setRingerMode(vibe
                     ? AudioManager.RINGER_MODE_VIBRATE
                     : AudioManager.RINGER_MODE_SILENT);
@@ -384,252 +460,9 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
         final boolean configDisabled = res.getBoolean(R.bool.config_disableMenuKeyInLockScreen);
         final boolean isTestHarness = ActivityManager.isRunningInTestHarness();
         final boolean fileOverride = (new File(ENABLE_MENU_KEY_FILE)).exists();
-        boolean defaultValue = !configDisabled || isTestHarness || fileOverride;
-
-        return (Settings.System.getInt(getContext().getContentResolver(),
-                Settings.System.LOCKSCREEN_ENABLE_MENU_KEY, defaultValue ? 1 : 0) == 1);
+        final boolean menuOverride = Settings.System.getInt(getContext().getContentResolver(), Settings.System.LOCKSCREEN_ENABLE_MENU_KEY, 0) == 1;
+        return !configDisabled || isTestHarness || fileOverride || menuOverride;
     }
-
-    class Target {
-        public static final String ACTION_UNLOCK = "**unlock**";
-        public static final String ACTION_SOUND_TOGGLE = "**sound**";
-        public static final String ACTION_APP_PHONE = "**phone**";
-        public static final String ACTION_APP_CAMERA = "**camera**";
-        public static final String ACTION_APP_MMS = "**mms**";
-        public static final String ACTION_APP_TORCH = "**torch**";
-        public static final String ACTION_APP_CUSTOM = "**app**";
-        public static final String ACTION_NULL = "**null**";
-
-        String action = ACTION_NULL;
-        Drawable icon;
-        String customAppIntentUri;
-        final int index;
-
-        public Target(int index) {
-            this.index = index;
-        }
-
-        void setDrawable() {
-            icon = getDrawable();
-        }
-
-        Drawable getDrawable() {
-            int resId;
-            Drawable drawable = null;
-            PackageManager pm = getContext().getPackageManager();
-            Resources res = getContext().getResources();
-
-            String customIconUri = Settings.System.getString(getContext().getContentResolver(),
-                    Settings.System.LOCKSCREEN_CUSTOM_APP_ICONS[index]);
-            if(customIconUri != null && !customIconUri.equals("")) {
-                if (customIconUri.startsWith("file")) {
-                    // it's an icon the user chose from the gallery here
-                    File icon = new File(Uri.parse(customIconUri).getPath());
-                    if(icon.exists()) {
-                        Bitmap b = BitmapFactory.decodeFile(icon.getAbsolutePath());
-                        if (b != null) {
-                            Drawable ic = new BitmapDrawable(getResources(), b);
-                            return resize(ic);
-                        } else {
-                            Log.e(TAG, "Lockscreen icon URI (" + customIconUri + ") couldn't be decoded. Using stock icon.");
-                        }
-                    }
-                } else {
-                    // here they chose another app icon
-                    try {
-                        return resize(pm.getActivityIcon(Intent.parseUri(customIconUri, 0)));
-                    } catch (NameNotFoundException e) {
-                        Log.e(TAG, "user chose app's icon that doesn't exist anymore", e);
-                    } catch (URISyntaxException e) {
-                        Log.e(TAG, "URISyntaxException when setting icon", e);
-                    }
-                }
-            }
-
-            if (action.equals(ACTION_UNLOCK)) {
-                resId = R.drawable.ic_lockscreen_unlock;
-                drawable = res.getDrawable(resId);
-            } else if (action.equals(ACTION_APP_PHONE)) {
-                resId = R.drawable.ic_lockscreen_phone;
-                drawable = res.getDrawable(resId);
-            } else if (action.equals(ACTION_APP_CAMERA)) {
-                resId = R.drawable.ic_lockscreen_camera;
-                drawable = res.getDrawable(resId);
-            } else if (action.equals(ACTION_APP_MMS)) {
-                    resId = R.drawable.ic_lockscreen_sms;
-                    drawable = res.getDrawable(resId);
-            } else if (action.equals(ACTION_APP_TORCH)) {
-                    resId = R.drawable.ic_lockscreen_flashlight;
-                    drawable = res.getDrawable(resId);
-            } else if (action.equals(ACTION_SOUND_TOGGLE)) {
-                resId = mSilentMode ? R.drawable.ic_lockscreen_silent
-                        : R.drawable.ic_lockscreen_soundon;
-                drawable = res.getDrawable(resId);
-            } else if (action.equals(ACTION_NULL)) {
-                drawable = null;
-            } else if (action.equals(ACTION_APP_CUSTOM)) {
-                try {
-                    Intent intent = Intent.parseUri(customAppIntentUri, 0);
-                    drawable = resize(pm.getActivityIcon(intent));
-                } catch (PackageManager.NameNotFoundException e) {
-                    Log.e(TAG, "NameNotFoundException: [" + customAppIntentUri + "]");
-                } catch (URISyntaxException e) {
-                    Log.e(TAG, "URISyntaxException: [" + customAppIntentUri + "]");
-                }
-            }
-            return drawable;
-        }
-
-        void doAction() {
-            if (action.equals(ACTION_UNLOCK)) {
-                mCallback.goToUnlockScreen();
-            } else if (action.equals(ACTION_APP_PHONE)) {
-                Intent phoneIntent = new Intent(Intent.ACTION_MAIN);
-                phoneIntent.setClassName("com.android.contacts",
-                        "com.android.contacts.activities.DialtactsActivity");
-                phoneIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                mContext.startActivity(phoneIntent);
-                mCallback.goToUnlockScreen();
-            } else if (action.equals(ACTION_APP_MMS)) {
-                Intent intent = new Intent(Intent.ACTION_MAIN);
-                intent.addCategory(Intent.CATEGORY_LAUNCHER);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                        | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-                intent.setClassName("com.android.mms", "com.android.mms.ui.ConversationList");
-                mContext.startActivity(intent);
-                mCallback.goToUnlockScreen();
-            } else if (action.equals(ACTION_APP_CAMERA)) {
-                Intent intent = new Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                mContext.startActivity(intent);
-                mCallback.goToUnlockScreen();
-            } else if (action.equals(ACTION_APP_TORCH)) {
-                boolean mFlashlightState = Settings.System.getInt(getContext()
-                        .getContentResolver(), Settings.System.TORCH_STATE, 0) == 1;
-
-                if (mFlashlightState) {
-                    Settings.System.getInt(getContext()
-                            .getContentResolver(), Settings.System.TORCH_STATE, 0);
-                    Intent i = new Intent(INTENT_TORCH_OFF);
-                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    mContext.startActivity(i);
-                } else {
-                    Settings.System.getInt(getContext()
-                            .getContentResolver(), Settings.System.TORCH_STATE, 1);
-                    Intent i = new Intent(INTENT_TORCH_ON);
-                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    mContext.startActivity(i);
-                }
-                mCallback.goToUnlockScreen();
-            } else if (action.equals(ACTION_SOUND_TOGGLE)) {
-                toggleRingMode();
-                mUnlockWidgetMethods.updateResources();
-
-                String message = mSilentMode ?
-                        getContext().getString(R.string.global_action_silent_mode_on_status)
-                        : getContext().getString(R.string.global_action_silent_mode_off_status);
-
-                final int toastIcon = mSilentMode ? R.drawable.ic_lock_ringer_off
-                        : R.drawable.ic_lock_ringer_on;
-
-                final int toastColor = mSilentMode ?
-                        getContext().getResources().getColor(R.color.keyguard_text_color_soundoff)
-                        : getContext().getResources().getColor(R.color.keyguard_text_color_soundon);
-                toastMessage(mCarrier, message, toastColor, toastIcon);
-
-                mCallback.pokeWakelock();
-            } else if (action.equals(ACTION_APP_CUSTOM) && customAppIntentUri != null) {
-                try {
-                    Intent intent = Intent.parseUri(customAppIntentUri, 0);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    mContext.startActivity(intent);
-                    mCallback.goToUnlockScreen();
-                } catch (URISyntaxException e) {
-                    Log.e(TAG, "URISyntaxException: [" + customAppIntentUri + "]");
-                }
-            }
-        }
-    }
-
-    class TargetController {
-        ArrayList<Target> targets = new ArrayList<Target>();
-        int unlockTarget = -1;
-        boolean landscape = false;
-
-        public TargetController() {
-            setupTargets();
-        }
-
-        public void setLandscape(boolean isLandscape) {
-            this.landscape = isLandscape;
-
-        }
-
-        public void setupTargets() {
-            targets.clear();
-
-            int numTargets = mLockscreenTargets;
-
-            for (int i = 0; i < numTargets; i++) {
-                String settingUri = Settings.System.getString(mContext.getContentResolver(),
-                        Settings.System.LOCKSCREEN_CUSTOM_APP_ACTIVITIES[i]);
-                Target t = new Target(i);
-                if (settingUri == null) {
-                    if (i == 0) {
-                        t.action = Target.ACTION_UNLOCK;
-                    } else if (numTargets == 2 && i == 1) {
-                        t.action = Target.ACTION_APP_CAMERA;
-                    } else if ((numTargets / 2) == (i + 1)) {
-                        t.action = Target.ACTION_APP_CAMERA;
-                    }
-                } else {
-                    if (settingUri.equals(Target.ACTION_UNLOCK)) {
-                        t.action = Target.ACTION_UNLOCK;
-                        unlockTarget = i;
-                    } else if (settingUri.equals(Target.ACTION_APP_CAMERA)) {
-                        t.action = Target.ACTION_APP_CAMERA;
-                    } else if (settingUri.equals(Target.ACTION_APP_PHONE)) {
-                        t.action = Target.ACTION_APP_PHONE;
-                    } else if (settingUri.equals(Target.ACTION_SOUND_TOGGLE)) {
-                        t.action = Target.ACTION_SOUND_TOGGLE;
-                    } else if (settingUri.equals(Target.ACTION_APP_MMS)) {
-                        t.action = Target.ACTION_APP_MMS;
-                    } else if (settingUri.equals(Target.ACTION_APP_TORCH)) {
-                        t.action = Target.ACTION_APP_TORCH;
-                    } else {
-                        t.action = Target.ACTION_APP_CUSTOM;
-                        t.customAppIntentUri = settingUri;
-                    }
-                }
-                t.setDrawable();
-                targets.add(t);
-            }
-
-            if (unlockTarget == -1)
-                if (targets.size() > 1)
-                    targets.get(0).action = Target.ACTION_UNLOCK;
-                else {
-                    Target t = new Target(0);
-                    t.action = Target.ACTION_UNLOCK;
-                    targets.add(0, t);
-                }
-        }
-
-        public Drawable[] getDrawables() {
-            int size = targets.size();
-            Drawable[] d = new Drawable[size];
-            for (int i = 0; i < targets.size(); i++)
-                d[i] = targets.get(i).getDrawable();
-
-            return d;
-        }
-
-        public Target getTarget(int target) {
-            return targets.get(target);
-        }
-    }
-
-    TargetController targetController;
 
     /**
      * @param context Used to setup the view.
@@ -648,64 +481,18 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
         mCallback = callback;
 
         mEnableMenuKeyInLockScreen = shouldEnableMenuKey();
-
         mCreationOrientation = configuration.orientation;
-
         mKeyboardHidden = configuration.hardKeyboardHidden;
 
         mSettingsObserver = new SettingsObserver(new Handler());
         mSettingsObserver.observe();
 
-        targetController = new TargetController();
-
-        if (LockPatternKeyguardView.DEBUG_CONFIGURATION) {
-            Log.v(TAG, "***** CREATING LOCK SCREEN", new RuntimeException());
-            Log.v(TAG, "Cur orient=" + mCreationOrientation
-                    + " res orient=" + context.getResources().getConfiguration().orientation);
-        }
-
         final LayoutInflater inflater = LayoutInflater.from(context);
-        if (DBG)
-            Log.v(TAG, "Creation orientation = " + mCreationOrientation);
-
-        boolean landscape = mCreationOrientation == Configuration.ORIENTATION_LANDSCAPE;
-
-        switch (mLockscreenTargets) {
-            default:
-            case LAYOUT_STOCK:
-            case LAYOUT_QUAD:
-                if (landscape)
-                    inflater.inflate(R.layout.keyguard_screen_tab_unlock_land, this,
-                            true);
-                else
-                    inflater.inflate(R.layout.keyguard_screen_tab_unlock, this,
-                            true);
-                break;
-            case LAYOUT_OCTO:
-                if (landscape)
-                    inflater.inflate(R.layout.keyguard_screen_tab_octounlock_land, this,
-                            true);
-                else
-                    inflater.inflate(R.layout.keyguard_screen_tab_octounlock, this,
-                            true);
-                break;
-            case LAYOUT_SLIDER:
-            	if (landscape)
-                    inflater.inflate(R.layout.keyguard_screen_slidingtab_unlock_land, this,
-                            true);
-                else 
-                    inflater.inflate(R.layout.keyguard_screen_slidingtab_unlock, this,
-                            true);
-                break;
-            case LAYOUT_HONEY:
-            	if (landscape)
-                    inflater.inflate(R.layout.keyguard_screen_honeycomb_unlock_land, this,
-                            true);
-                else 
-                    inflater.inflate(R.layout.keyguard_screen_honeycomb_unlock, this,
-                            true);
-                break;
-                
+        if (DBG) Log.v(TAG, "Creation orientation = " + mCreationOrientation);
+        if (mCreationOrientation != Configuration.ORIENTATION_LANDSCAPE) {
+            inflater.inflate(R.layout.keyguard_screen_tab_unlock, this, true);
+        } else {
+            inflater.inflate(R.layout.keyguard_screen_tab_unlock_land, this, true);
         }
 
         mStatusViewManager = new KeyguardStatusViewManager(this, mUpdateMonitor, mLockPatternUtils,
@@ -714,18 +501,13 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
         setFocusable(true);
         setFocusableInTouchMode(true);
         setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
-
         mAudioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
         mSilentMode = isSilentMode();
 
         mDigitalClock = (DigitalClock) findViewById(R.id.time);
         mCarrier = (TextView) findViewById(R.id.carrier);
-
         mUnlockWidget = findViewById(R.id.unlock_widget);
-        mUnlockWidget2 = findViewById(R.id.unlock_widget2);
-        if (mUnlockWidget2 == null) Log.e(TAG, "ERROR UNLOCKWIDGET2 IS NULL");
-        if (mUnlockWidget == null) Log.d(TAG, "mUnlockwidget is not null");
-        else Log.d(TAG, "mUnlockWidget is null");
+
         if (mUnlockWidget instanceof SlidingTab) {
             SlidingTab slidingTabView = (SlidingTab) mUnlockWidget;
             slidingTabView.setHoldAfterTrigger(true, false);
@@ -738,27 +520,6 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
             SlidingTabMethods slidingTabMethods = new SlidingTabMethods(slidingTabView);
             slidingTabView.setOnTriggerListener(slidingTabMethods);
             mUnlockWidgetMethods = slidingTabMethods;
-            SlidingTab slidingTabView2 = (SlidingTab) mUnlockWidget2;
-            slidingTabView2.setHoldAfterTrigger(true, false);
-            slidingTabView2.setLeftHintText(R.string.lockscreen_phone_label);
-            slidingTabView2.setLeftTabResources(
-                    R.drawable.ic_jog_dial_answer,
-                    R.drawable.jog_tab_target_green,
-                    R.drawable.jog_tab_bar_left_generic,
-                    R.drawable.jog_tab_left_generic);
-            slidingTabView2.setRightHintText(R.string.lockscreen_custom_label);
-            slidingTabView2.setRightTabResources(
-                    R.drawable.ic_jog_dial_custom,
-                    R.drawable.jog_tab_target_green,
-                    R.drawable.jog_tab_bar_right_generic,
-                    R.drawable.jog_tab_right_generic);
-            SlidingTabMethods2 slidingTabMethods2 = new SlidingTabMethods2(slidingTabView2);
-            slidingTabView2.setOnTriggerListener(slidingTabMethods2);
-            mUnlockWidgetMethods2 = slidingTabMethods2;
-            if (mLockscreen4Tab)
-                slidingTabView2.setVisibility(View.VISIBLE);
-            else	
-                slidingTabView2.setVisibility(View.GONE);
         } else if (mUnlockWidget instanceof WaveView) {
             WaveView waveView = (WaveView) mUnlockWidget;
             WaveViewMethods waveViewMethods = new WaveViewMethods(waveView);
@@ -775,63 +536,22 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 
         // Update widget with initial ring state
         mUnlockWidgetMethods.updateResources();
-        // Update the settings everytime we draw lockscreen
-        updateSettings();
 
-        if (DBG)
-            Log.v(TAG, "*** LockScreen accel is "
-                    + (mUnlockWidget.isHardwareAccelerated() ? "on" : "off"));
-		}
+        if (DBG) Log.v(TAG, "*** LockScreen accel is "
+                + (mUnlockWidget.isHardwareAccelerated() ? "on":"off"));
+    }
 
     private boolean isSilentMode() {
         return mAudioManager.getRingerMode() != AudioManager.RINGER_MODE_NORMAL;
     }
 
-    /**
-     * Displays a message in a text view and then restores the previous text.
-     * 
-     * @param textView The text view.
-     * @param text The text.
-     * @param color The color to apply to the text, or 0 if the existing color should be used.
-     * @param iconResourceId The left hand icon.
-     */
-    private void toastMessage(final TextView textView, final String text,
-            final int color, final int iconResourceId) {
-        if (mPendingR1 != null) {
-            textView.removeCallbacks(mPendingR1);
-            mPendingR1 = null;
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_MENU && mEnableMenuKeyInLockScreen) {
+            mCallback.goToUnlockScreen();
         }
-        if (mPendingR2 != null) {
-            mPendingR2.run(); // fire immediately, restoring non-toasted appearance
-            textView.removeCallbacks(mPendingR2);
-            mPendingR2 = null;
-        }
-        final String oldText = textView.getText().toString();
-        final ColorStateList oldColors = textView.getTextColors();
-
-        mPendingR1 = new Runnable() {
-            public void run() {
-                textView.setText(text);
-                if (color != 0) {
-                    textView.setTextColor(color);
-                }
-                textView.setCompoundDrawablesWithIntrinsicBounds(0, iconResourceId, 0, 0);
-            }
-        };
-
-        textView.postDelayed(mPendingR1, 0);
-        mPendingR2 = new Runnable() {
-            public void run() {
-                textView.setText(oldText);
-                textView.setTextColor(oldColors);
-                textView.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
-            }
-        };
-        textView.postDelayed(mPendingR2, 3500);
+        return false;
     }
-
-    private Runnable mPendingR1;
-    private Runnable mPendingR2;
     
     void updateConfiguration() {
         Configuration newConfig = getResources().getConfiguration();
@@ -897,7 +617,6 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
         mStatusViewManager.onResume();
         postDelayed(mOnResumePing, ON_RESUME_PING_DELAY);
         // update the settings when we resume
-        if (DEBUG) Log.d(TAG, "We are resuming and want to update settings");
         updateSettings();
     }
 
@@ -931,12 +650,8 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
         void observe() {
             ContentResolver resolver = mContext.getContentResolver();
             resolver.registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.LOCKSCREEN_LAYOUT),
-                    false, this);
-            resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.LOCKSCREEN_CUSTOM_TEXT_COLOR),
                     false, this);
-            updateSettings();
         }
 
         @Override
@@ -945,26 +660,13 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
         }
     }
 
-    private Drawable resize(Drawable image) {
-        int size = 50;
-        int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, size, getResources().getDisplayMetrics());
-
-        Bitmap d = ((BitmapDrawable) image).getBitmap();
-        Bitmap bitmapOrig = Bitmap.createScaledBitmap(d, px, px, false);
-        return new BitmapDrawable(getContext().getResources(), bitmapOrig);
-    }
-
     private void updateSettings() {
         if (DEBUG) Log.d(TAG, "Settings for lockscreen have changed lets update");
         ContentResolver resolver = mContext.getContentResolver();
 
-        mLockscreenTargets = Settings.System.getInt(resolver,
-                Settings.System.LOCKSCREEN_LAYOUT, LAYOUT_STOCK);
-
         int mLockscreenColor = Settings.System.getInt(resolver,
                 Settings.System.LOCKSCREEN_CUSTOM_TEXT_COLOR, COLOR_WHITE);
 
-        // XXX: UPDATE COLORS each could throw a null pointer so watch your ass
         // digital clock first (see @link com.android.internal.widget.DigitalClock.updateTime())
         try {
             mDigitalClock.updateTime();
@@ -979,16 +681,4 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
             if (DEBUG) Log.d(TAG, "KeyguardStatusViewManager.updateColors() failed: NullPointerException");
         }
     }
-
-	private void runActivity(String uri) {
-		try {
-			Intent i = Intent.parseUri(uri, 0);
-			i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-					| Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-			mContext.startActivity(i);
-			mCallback.goToUnlockScreen();
-		} catch (URISyntaxException e) {
-		} catch (ActivityNotFoundException e) {
-		}
-	}
 }

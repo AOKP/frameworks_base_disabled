@@ -2056,10 +2056,8 @@ public class TabletStatusBar extends StatusBar implements
                         false,
                         this);
                 resolver.registerContentObserver(
-                        Settings.System
-                                .getUriFor(Settings.System.NAVIGATION_LANDSCAPE_APP_ICONS[j]),
-                        false,
-                        this);
+                		Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_BUTTONS_SHOW), false,
+                		this);
             }
             updateSettings();
         }
@@ -2074,21 +2072,39 @@ public class TabletStatusBar extends StatusBar implements
         ContentResolver resolver = mContext.getContentResolver();
 
         mNumberOfButtons = Settings.System.getInt(resolver,
-                Settings.System.NAVIGATION_BAR_BUTTONS_QTY, StockButtonsQty);
+                Settings.System.NAVIGATION_BAR_BUTTONS_QTY, 0);
+        if (mNumberOfButtons == 0){
+        	mNumberOfButtons = StockButtonsQty;
+        	Settings.System.putInt(resolver,
+            		Settings.System.NAVIGATION_BAR_BUTTONS_QTY, StockButtonsQty);    	
+        }
 
         for (int j = 0; j < mNumberOfButtons; j++) {
             mClickActions[j] = Settings.System.getString(resolver,
                     Settings.System.NAVIGATION_CUSTOM_ACTIVITIES[j]);
-            if (mClickActions[j] == null)
+            if (mClickActions[j] == null){
                 mClickActions[j] = StockClickActions[j];
+                Settings.System.putString(resolver,
+                		Settings.System.NAVIGATION_CUSTOM_ACTIVITIES[j], mClickActions[j]);
+            }
 
             mLongpressActions[j] = Settings.System.getString(resolver,
                     Settings.System.NAVIGATION_LONGPRESS_ACTIVITIES[j]);
-            if (mLongpressActions[j] == null)
+            if (mLongpressActions[j] == null) {
                 mLongpressActions[j] = StockLongpress[j];
-
+                Settings.System.putString(resolver,
+                		Settings.System.NAVIGATION_LONGPRESS_ACTIVITIES[j], mLongpressActions[j]);
+            }
             mPortraitIcons[j] = Settings.System.getString(resolver,
                     Settings.System.NAVIGATION_CUSTOM_APP_ICONS[j]);
+            if (mPortraitIcons[j] == null) {
+                mPortraitIcons[j] = "";
+                Settings.System.putString(resolver,
+                		Settings.System.NAVIGATION_CUSTOM_APP_ICONS[j], "");
+            }
+            mShowStatusBar = (Settings.System.getInt(resolver,
+                    Settings.System.NAVIGATION_BAR_BUTTONS_SHOW, 1) == 1);
+            mStatusBarView.setVisibility(mShowStatusBar ? View.VISIBLE : View.GONE);
         }
         makeNavBar();
 

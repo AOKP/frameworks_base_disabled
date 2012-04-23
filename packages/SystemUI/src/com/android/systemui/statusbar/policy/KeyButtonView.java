@@ -377,11 +377,13 @@ public class KeyButtonView extends ImageView {
         try {
             mGlowBGColor = Settings.System.getInt(resolver,
                     Settings.System.NAVIGATION_BAR_GLOW_TINT);
-            if (mGlowBGColor == Integer.MIN_VALUE) {
-                mGlowBG.setColorFilter(null);
-            } else if (mGlowBG != null) {
+            if (mGlowBG != null) { 
+            	if (mGlowBGColor == Integer.MIN_VALUE) {
+            		mGlowBG.setColorFilter(null);
+            	} else {
                 mGlowBG.setColorFilter(null);
                 mGlowBG.setColorFilter(mGlowBGColor, PorterDuff.Mode.SRC_ATOP);
+            	}
             }
         } catch (SettingNotFoundException e1) {
             mGlowBGColor = Integer.MIN_VALUE;

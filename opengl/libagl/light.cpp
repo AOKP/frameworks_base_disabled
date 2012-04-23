@@ -381,7 +381,14 @@ void lightVertex(ogles_context_t* c, vertex_t* v)
             // compute vertex-to-light vector
             if (ggl_unlikely(l.position.w)) {
                 // lightPos/1.0 - vertex/vertex.w == lightPos*vertex.w - vertex
+#if !OBJECT_SPACE_LIGHTING
+                vec4_t o;
+                const transform_t& mv = c->transforms.modelview.transform;
+                mv.point4(&mv, &o, &v->obj);
+                vss3(d.v, l.objPosition.v, o.w, o.v);
+#else
                 vss3(d.v, l.objPosition.v, v->obj.w, v->obj.v);
+#endif
                 sqDist = dot3(d.v, d.v);
                 vscale3(d.v, d.v, gglSqrtRecipx(sqDist));
             } else {

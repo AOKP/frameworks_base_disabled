@@ -1083,7 +1083,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             mLongPressBackKill = (Settings.Secure.getInt(
                     resolver, Settings.Secure.KILL_APP_LONGPRESS_BACK, 0) == 1);
             mLongPressOnHomeBehavior = Settings.System.getInt(
-            		resolver, Settings.System.NAVIGATION_BAR_HOME_LONGPRESS, 0);
+                    resolver, Settings.System.NAVIGATION_BAR_HOME_LONGPRESS, -1);
             // set up rotation lock state
             mUserRotationMode = (accelerometerDefault == 0)
                 ? WindowManagerPolicy.USER_ROTATION_LOCKED

@@ -42,7 +42,7 @@
         <item>com.rhapsody.metachanged</item>
         <!-- Player Pro Music App -->
         <item>com.tbig.playerpro.metachanged</item>
-        <!-- Doubletwist Music App - broken -->
+        <!-- Doubletwist Music App - breaks system-->
         <!-- <item>com.doubleTwist.androidPlayer.metachanged</item> -->
         <!-- Last.fm scrobbler intent -->
         <item>fm.last.android.metachanged</item>
@@ -73,7 +73,7 @@
         <item>com.rhapsody.playstatechanged</item>
         <!-- Player Pro Music App -->
         <item>com.tbig.playerpro.playstatechanged</item>
-        <!-- Doubletwist Music App - broken -->
+        <!-- Doubletwist Music App  - breaks system-->
         <!-- <item>com.doubleTwist.androidPlayer.playstatechanged</item> -->
         <!-- Last.fm scrobbler intent -->
         <item>fm.last.android.playstatechanged</item>

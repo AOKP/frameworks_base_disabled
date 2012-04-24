@@ -1211,19 +1211,18 @@ public class TabletStatusBar extends StatusBar implements
         // We will not show or hide the menu button if the user specifically created it for the
         // NavBar.  If they did not, we will temporarily create one.
         if (showMenu) { // we need to show the menu button
-        	if (mMenuButton == null) {  // User has not put their own menu button on the navbar.
+        	if (mMenuButton == null && mTempMenuButton == null) {  // User has not put their own menu button on the navbar or a temp one exists 
         		mTempMenu = true;
-        		// rather than constantly creating a new view, I'll just create one and keep it
-        		if (mTempMenuButton == null)
-        			mTempMenuButton = generateKey(true, ACTION_MENU,ACTION_NULL,"");
-        		mNavigationArea.addView(mTempMenuButton);
+        		mTempMenuButton = generateKey(true, ACTION_MENU,ACTION_NULL,"");
+        		mTempMenuButton.setTag("temp_menu_button");
+        		mNavigationArea.addView((View) mTempMenuButton);
         	}
         } else {
         	if (mMenuButton == null) { // only try to remove menu if user doesn't have custom button
         		mTempMenu = false;
         		if (mTempMenuButton != null) { // just a little sanity check.  It better not be null
-        			mNavigationArea.removeView(mTempMenuButton);
-        		// I'm not disposing of the tempview, we'll keep it for next time.
+        			mNavigationArea.removeView(mNavigationArea.findViewWithTag("temp_menu_button"));
+        			mTempMenuButton = null;
         		}
         	}
         }
@@ -2068,6 +2067,12 @@ public class TabletStatusBar extends StatusBar implements
         	Settings.System.putInt(resolver,
             		Settings.System.NAVIGATION_BAR_BUTTONS_QTY, StockButtonsQty);    	
         }
+        
+        mBackButton = null;
+        mHomeButton = null;
+        mMenuButton = null;
+        mRecentButton = null;
+        mTempMenuButton = null;
 
         for (int j = 0; j < mNumberOfButtons; j++) {
             mClickActions[j] = Settings.System.getString(resolver,
@@ -2183,8 +2188,7 @@ public class TabletStatusBar extends StatusBar implements
 
         v = new ExtensibleKeyButtonView(mContext, null, ClickAction, Longpress);
         v.setLayoutParams(getLayoutParams(landscape, btnWidth));
-        v.setGlowBackground(landscape ? R.drawable.ic_sysbar_highlight_land
-                : R.drawable.ic_sysbar_highlight);
+        v.setGlowBackground(R.drawable.ic_sysbar_highlight);
 
         // the rest is for setting the icon (or custom icon)
         if (IconUri != null && IconUri.length() > 0) {

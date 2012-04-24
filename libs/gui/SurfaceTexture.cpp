@@ -843,11 +843,7 @@ status_t SurfaceTexture::setScalingMode(int mode) {
     return OK;
 }
 
-#ifdef QCOM_HARDWARE
-status_t SurfaceTexture::updateTexImage(bool isComposition) {
-#else
 status_t SurfaceTexture::updateTexImage() {
-#endif
     ST_LOGV("updateTexImage");
     Mutex::Autolock lock(mMutex);
     
@@ -868,31 +864,19 @@ status_t SurfaceTexture::updateTexImage() {
 #ifdef QCOM_HARDWARE
         if (isGPUSupportedFormat(mSlots[buf].mGraphicBuffer->format)) {
 #endif
+        if (image == EGL_NO_IMAGE_KHR) {
+            if (mSlots[buf].mGraphicBuffer == 0) {
+                ST_LOGE("buffer at slot %d is null", buf);
+                return BAD_VALUE;
+            }
+            image = createImage(dpy, mSlots[buf].mGraphicBuffer);
+            mSlots[buf].mEglImage = image;
+            mSlots[buf].mEglDisplay = dpy;
+
             if (image == EGL_NO_IMAGE_KHR) {
-                if (mSlots[buf].mGraphicBuffer == 0) {
-                    ST_LOGE("buffer at slot %d is null", buf);
-                    return BAD_VALUE;
-                }
-                image = createImage(dpy, mSlots[buf].mGraphicBuffer);
-                mSlots[buf].mEglImage = image;
-                mSlots[buf].mEglDisplay = dpy;
-                
-#ifdef QCOM_HARDWARE
-                // GPU is not efficient in handling GL_TEXTURE_EXTERNAL_OES
-                // texture target. Depending on the image format, decide,
-                // the texture target to be used
-                
-                if (isComposition) {
-                    mTexTarget =
-                    decideTextureTarget (mSlots[buf].mGraphicBuffer->format);
-                }
-#endif
-                
-                if (image == EGL_NO_IMAGE_KHR) {
-                    // NOTE: if dpy was invalid, createImage() is guaranteed to
-                    // fail. so we'd end up here.
-                    return -EINVAL;
-                }
+                // NOTE: if dpy was invalid, createImage() is guaranteed to
+                // fail. so we'd end up here.
+                return -EINVAL;
             }
 
         GLint error;

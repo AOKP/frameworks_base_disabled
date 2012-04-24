@@ -763,14 +763,14 @@ public abstract class PackageManager {
     * Feature for {@link #getSystemAvailableFeatures} and
     * {@link #hasSystemFeature}: The device has a keyboard dock.
     */
-    public static final String FEATURE_TF101_KB_DOCK = "aokp.hardware.dock";
+    public static final String FEATURE_TF101_KB_DOCK = "asus.hardware.dock";
 
     /**
     * Feature for {@link #getSystemAvailableFeatures} and
     * {@link #hasSystemFeature}: The device uses a hall effect
     * sensor to change the value of the lid switch.
     */
-    public static final String FEATURE_TF101_HALL_SENSOR = "aokp.hardware.hall_sensor";
+    public static final String FEATURE_TF101_HALL_SENSOR = "asus.hardware.hall_sensor";
 
     /**
      * Feature for {@link #getSystemAvailableFeatures} and {@link #hasSystemFeature}: The device's

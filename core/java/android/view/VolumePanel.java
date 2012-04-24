@@ -117,6 +117,8 @@ public class VolumePanel extends Handler implements OnSeekBarChangeListener,
     /** Used by the observer */
     private Handler mHandler;
 
+    private boolean mRingerAndNotificationStreamsLinked = true;
+
     /** Watch over the toggle in order to update when user changes preference */
     class SettingsObserver extends ContentObserver {
 
@@ -128,6 +130,8 @@ public class VolumePanel extends Handler implements OnSeekBarChangeListener,
             ContentResolver resolver = mContext.getContentResolver();
             resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.ENABLE_VOLUME_OPTIONS), false, this);
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.VOLUME_LINK_NOTIFICATION), false, this);
         }
 
         @Override
@@ -272,6 +276,9 @@ public class VolumePanel extends Handler implements OnSeekBarChangeListener,
         mShowCombinedVolumes = Settings.System.getInt(
                 resolver,
                 Settings.System.ENABLE_VOLUME_OPTIONS, 0) == 1;
+        mRingerAndNotificationStreamsLinked = Settings.System.getInt(
+                resolver,
+                Settings.System.VOLUME_LINK_NOTIFICATION, 1) == 1;
         toggleMore(mShowCombinedVolumes);
     }
 
@@ -555,6 +562,9 @@ public class VolumePanel extends Handler implements OnSeekBarChangeListener,
             }
             mDialog.show();
         }
+        if(mRingerAndNotificationStreamsLinked) {
+            updateStates();
+        }
 
         // Do a little vibrate if applicable (only when going into vibrate mode)
         if ((flags & AudioManager.FLAG_VIBRATE) != 0
@@ -724,6 +734,7 @@ public class VolumePanel extends Handler implements OnSeekBarChangeListener,
     }
 
     public void onStopTrackingTouch(SeekBar seekBar) {
+        updateStates();
     }
 
     public void onClick(View v) {

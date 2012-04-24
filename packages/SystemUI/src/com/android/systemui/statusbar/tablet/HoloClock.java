@@ -208,6 +208,8 @@ public class HoloClock extends FrameLayout {
                     Settings.System.getUriFor(Settings.System.STATUSBAR_CLOCK_STYLE), false, this);
             resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.STATUSBAR_CLOCK_COLOR), false, this);
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.STATUSBAR_FONT_SIZE), false, this);
             updateSettings();
         }
 
@@ -230,6 +232,10 @@ public class HoloClock extends FrameLayout {
 
         mClockStyle = Settings.System.getInt(resolver, Settings.System.STATUSBAR_CLOCK_STYLE, 1);
         updateClockVisibility();
+
+        // we add 24 to get back to the base size of 40, and everything else is additive
+        int fontSize = Settings.System.getInt(resolver, Settings.System.STATUSBAR_FONT_SIZE, 16) + 24;
+        if (mSolidText != null) mSolidText.setTextSize(fontSize);
     }
 }
 

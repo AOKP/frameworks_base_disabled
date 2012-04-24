@@ -54,6 +54,7 @@ import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.Slog;
+import android.util.TypedValue;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.IWindowManager;
@@ -319,7 +320,7 @@ public class PhoneStatusBar extends StatusBar {
         updateDisplaySize(); // populates mDisplayMetrics
         loadDimens();
 
-        mIconSize = res.getDimensionPixelSize(com.android.internal.R.dimen.status_bar_icon_size);
+        //mIconSize = res.getDimensionPixelSize(com.android.internal.R.dimen.status_bar_icon_size);
         mScreenWidth = (float) context.getResources().getDisplayMetrics().widthPixels;
         mMinBrightness = context.getResources().getInteger(
                 com.android.internal.R.integer.config_screenBrightnessDim);
@@ -599,8 +600,10 @@ public class PhoneStatusBar extends StatusBar {
     }
 
     public int getStatusBarHeight() {
-        final Resources res = mContext.getResources();
-        return res.getDimensionPixelSize(com.android.internal.R.dimen.status_bar_height);
+    	Slog.d(TAG,"Status Bar Height:"+mNaturalBarHeight);
+    	return mNaturalBarHeight;
+        /*final Resources res = mContext.getResources();
+        return res.getDimensionPixelSize(com.android.internal.R.dimen.status_bar_height); */
     }
 
     private View.OnClickListener mRecentsClickListener = new View.OnClickListener() {
@@ -2615,8 +2618,10 @@ public class PhoneStatusBar extends StatusBar {
         mIsStatusBarBrightNess = Settings.System.getInt(mStatusBarView.getContext()
                 .getContentResolver(),
                 Settings.System.STATUS_BAR_BRIGHTNESS_TOGGLE, 0) == 1;
-        fontSize = Settings.System.getInt(cr, Settings.System.STATUSBAR_FONT_SIZE, 16) ;
         
+        loadDimens();
+        fontSize = Settings.System.getInt(cr, Settings.System.STATUSBAR_FONT_SIZE, 16) ;
+
         Clock clock = (Clock) mStatusBarView.findViewById(R.id.clock);
         if (clock != null) {
             clock.setTextSize(fontSize);
@@ -2625,7 +2630,6 @@ public class PhoneStatusBar extends StatusBar {
         if (cclock != null) {
             cclock.setTextSize(fontSize);
         }
-
         reDrawHeader();
     }
     
@@ -2715,15 +2719,25 @@ public class PhoneStatusBar extends StatusBar {
 
         mNaturalBarHeight = res.getDimensionPixelSize(
                 com.android.internal.R.dimen.status_bar_height);
+        float sbOffsetpx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, res.getDisplayMetrics());
+        //assume stock font size is 16 - get number of pixels
+        int sbSizeOffset = (int) (mNaturalBarHeight -  sbOffsetpx);
+        int fontSize = Settings.System.getInt(mContext.getContentResolver(), Settings.System.STATUSBAR_FONT_SIZE, 16) ;
+        float fontSizepx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, fontSize, res.getDisplayMetrics());
+        mNaturalBarHeight = (int) (sbSizeOffset + fontSizepx);
 
         int newIconSize = res.getDimensionPixelSize(
                 com.android.internal.R.dimen.status_bar_icon_size);
+        
+        sbSizeOffset = (int) (newIconSize - sbOffsetpx);
+        newIconSize = (int) (sbSizeOffset + fontSizepx);
+
         int newIconHPadding = res.getDimensionPixelSize(
                 R.dimen.status_bar_icon_padding);
 
         if (newIconHPadding != mIconHPadding || newIconSize != mIconSize) {
-            // Slog.d(TAG, "size=" + newIconSize + " padding=" +
-            // newIconHPadding);
+            Slog.d(TAG, "size=" + newIconSize + " padding=" +
+            		newIconHPadding + " Height:"+mNaturalBarHeight);
             mIconHPadding = newIconHPadding;
             mIconSize = newIconSize;
             // reloadAllNotificationIcons(); // reload the tray

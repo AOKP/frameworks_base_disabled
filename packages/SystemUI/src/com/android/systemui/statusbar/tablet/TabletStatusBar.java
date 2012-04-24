@@ -2029,6 +2029,9 @@ public class TabletStatusBar extends StatusBar implements
             resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_BUTTONS_QTY), false,
                     this);
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_BUTTONS_SHOW), false,
+                    this);
 
             for (int j = 0; j < 5; j++) { // watch all 5 settings for changes.
                 resolver.registerContentObserver(
@@ -2044,9 +2047,6 @@ public class TabletStatusBar extends StatusBar implements
                         Settings.System.getUriFor(Settings.System.NAVIGATION_CUSTOM_APP_ICONS[j]),
                         false,
                         this);
-                resolver.registerContentObserver(
-                		Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_BUTTONS_SHOW), false,
-                		this);
             }
             updateSettings();
         }

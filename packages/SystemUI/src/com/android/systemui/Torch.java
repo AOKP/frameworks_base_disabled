@@ -63,6 +63,7 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
     public static final String KEY_TORCH_ON = "torch_on";
     public static final String INTENT_TORCH_ON = "com.android.systemui.INTENT_TORCH_ON";
     public static final String INTENT_TORCH_OFF = "com.android.systemui.INTENT_TORCH_OFF";
+    public static final String INTENT_TORCH_TOGGLE = "com.android.systemui.INTENT_TORCH_TOGGLE";
 
     public Torch() {
         super();
@@ -192,6 +193,13 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
         prefs = getSharedPreferences("torch", Context.MODE_WORLD_READABLE);
         Log.i(TAG, "onCreate");
     }
+    
+    private void toggleTorch(){
+    	if (prefs.getBoolean(KEY_TORCH_ON,false)) //find torch state
+    		stopTorch(); // torch is on - turn it off
+    	else
+    		startTorch(); // torch is off, turn it on
+    }
 
     private void startTorch(){
     	if (!startingTorch) {
@@ -238,6 +246,8 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
     		startTorch();
     	} else if (action == INTENT_TORCH_OFF) {
     		stopTorch();
+    	} else { // assume we started from MAIN
+    		toggleTorch();
     	}
     }
 

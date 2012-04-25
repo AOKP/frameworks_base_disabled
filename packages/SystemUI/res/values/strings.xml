@@ -400,5 +400,6 @@
     <string name="toggle_torch">Torch</string>
     <string name="toggle_sync">Sync</string>
     <string name="toggle_fcharge">FastCharge</string>
-    <string name="status_bar_settings_toggles">Toggles</string>
+    <string name="status_bar_settings_toggles">Toggles</string>    
+    <string name="toggle_navbar">Toggle NavBar</string>    
 </resources>

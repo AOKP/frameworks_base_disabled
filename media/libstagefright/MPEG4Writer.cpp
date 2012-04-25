@@ -2592,6 +2592,18 @@ void MPEG4Writer::Track::writeVideoFourCCBox() {
     success = success && mMeta->findInt32(kKeyHeight, &height);
     CHECK(success);
 
+#if defined (OMAP_ENHANCEMENT) && defined (TARGET_OMAP3)
+
+    if(width == 192)
+    {
+        width = 176;
+    }
+    if(width == 736)
+    {
+        width = 720;
+    }
+#endif
+
     mOwner->writeInt16(width);
     mOwner->writeInt16(height);
     mOwner->writeInt32(0x480000);    // horiz resolution
@@ -2767,6 +2779,17 @@ void MPEG4Writer::Track::writeTkhdBox(int64_t now) {
         success = success && mMeta->findInt32(kKeyHeight, &height);
         CHECK(success);
 
+#if defined (OMAP_ENHANCEMENT) && defined (TARGET_OMAP3)
+
+        if(width == 192)
+        {
+            width = 176;
+        }
+        if(width == 736)
+        {
+            width = 720;
+        }
+#endif
         mOwner->writeInt32(width << 16);   // 32-bit fixed-point value
         mOwner->writeInt32(height << 16);  // 32-bit fixed-point value
     }

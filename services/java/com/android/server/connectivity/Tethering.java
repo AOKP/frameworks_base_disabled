@@ -1445,8 +1445,7 @@ public class Tethering extends INetworkManagementEventObserver.Stub {
                         }
                         break;
                     case CMD_UPSTREAM_CHANGED:
-                        // need to try DUN immediately if Wifi goes down
-                        mTryCell = !WAIT_FOR_NETWORK_TO_SETTLE;
+                        mTryCell = WAIT_FOR_NETWORK_TO_SETTLE;
                         chooseUpstreamType(mTryCell);
                         mTryCell = !mTryCell;
                         break;

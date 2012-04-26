@@ -415,6 +415,8 @@ public class NotificationManagerService extends INotificationManager.Stub
                     Settings.System.NOTIFICATION_LIGHT_ON), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.NOTIFICATION_LIGHT_COLOR), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.NOTIFICATION_LIGHT_PULSE_CUSTOM_VALUES), false, this);
             update();
         }
 
@@ -433,23 +435,21 @@ public class NotificationManagerService extends INotificationManager.Stub
             }
 
             Resources resources = mContext.getResources();
-            mDefaultNotificationColor = Settings.System
-                    .getInt(mContext.getContentResolver(),
-                            Settings.System.NOTIFICATION_LIGHT_COLOR,
-                            resources.getColor(
-                                    com.android.internal.R.color.config_defaultNotificationColor));
+            mDefaultNotificationColor = Settings.System.getInt(mContext.getContentResolver(), Settings.System.NOTIFICATION_LIGHT_COLOR,
+                    resources.getColor(com.android.internal.R.color.config_defaultNotificationColor));
 
-            mDefaultNotificationLedOff = Settings.System
-                    .getInt(mContext.getContentResolver(),
-                            Settings.System.NOTIFICATION_LIGHT_OFF,
-                            resources.getInteger(com.android.internal.R.integer.config_defaultNotificationLedOff));
+            mDefaultNotificationLedOff = Settings.System.getInt(mContext.getContentResolver(), Settings.System.NOTIFICATION_LIGHT_OFF,
+                    resources.getInteger(com.android.internal.R.integer.config_defaultNotificationLedOff));
 
-            mDefaultNotificationLedOn = Settings.System
-                    .getInt(mContext.getContentResolver(),
-                            Settings.System.NOTIFICATION_LIGHT_ON,
-                            resources
-                                    .getInteger(com.android.internal.R.integer.config_defaultNotificationLedOn));
+            mDefaultNotificationLedOn = Settings.System.getInt(mContext.getContentResolver(), Settings.System.NOTIFICATION_LIGHT_ON,
+                    resources.getInteger(com.android.internal.R.integer.config_defaultNotificationLedOn));
 
+            // LED custom notification colors
+            mNotificationPulseCustomLedValues.clear();
+            if (Settings.System.getInt(resolver, Settings.System.NOTIFICATION_LIGHT_PULSE_CUSTOM_ENABLE, 0) != 0) {
+                parseNotificationPulseCustomValuesString(Settings.System.getString(resolver,
+                        Settings.System.NOTIFICATION_LIGHT_PULSE_CUSTOM_VALUES));
+            }
         }
     }
 

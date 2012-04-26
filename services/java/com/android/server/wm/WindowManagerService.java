@@ -3788,30 +3788,35 @@ public class WindowManagerService extends IWindowManager.Stub
             // show a starting window -- the current effect (a full-screen
             // opaque starting window that fades away to the real contents
             // when it is ready) does not work for this.
-            if (theme != 0) {
-                AttributeCache.Entry ent = AttributeCache.instance().get(pkg, theme,
-                        com.android.internal.R.styleable.Window);
-                if (ent.array.getBoolean(
-                        com.android.internal.R.styleable.Window_windowIsTranslucent, false)) {
-                    return;
-                }
-                if (ent.array.getBoolean(
-                        com.android.internal.R.styleable.Window_windowIsFloating, false)) {
-                    return;
-                }
-                if (ent.array.getBoolean(
-                        com.android.internal.R.styleable.Window_windowShowWallpaper, false)) {
-                    if (mWallpaperTarget == null) {
-                        // If this theme is requesting a wallpaper, and the wallpaper
-                        // is not curently visible, then this effectively serves as
-                        // an opaque window and our starting window transition animation
-                        // can still work.  We just need to make sure the starting window
-                        // is also showing the wallpaper.
-                        windowFlags |= WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER;
-                    } else {
+            try {
+                if (theme != 0) {
+                    AttributeCache.Entry ent = AttributeCache.instance().get(pkg, theme,
+                            com.android.internal.R.styleable.Window);
+                    if (ent.array.getBoolean(
+                            com.android.internal.R.styleable.Window_windowIsTranslucent, false)) {
                         return;
                     }
+                    if (ent.array.getBoolean(
+                            com.android.internal.R.styleable.Window_windowIsFloating, false)) {
+                        return;
+                    }
+                    if (ent.array.getBoolean(
+                            com.android.internal.R.styleable.Window_windowShowWallpaper, false)) {
+                        if (mWallpaperTarget == null) {
+                            // If this theme is requesting a wallpaper, and the wallpaper
+                            // is not curently visible, then this effectively serves as
+                            // an opaque window and our starting window transition animation
+                            // can still work.  We just need to make sure the starting window
+                            // is also showing the wallpaper.
+                            windowFlags |= WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER;
+                        } else {
+                            return;
+                        }
+                    }
                 }
+            } catch (NullPointerException npe) {
+                // we failed but don't let that kill the server
+                return;
             }
 
             mStartingIconInTransition = true;

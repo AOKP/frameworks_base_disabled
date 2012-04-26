@@ -3253,9 +3253,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             mHandler.postDelayed(mTorchOn, ViewConfiguration.getLongPressTimeout());
         } else {
             mHandler.removeCallbacks(mTorchOn);
-            if (mFastTorchOn) {
-                mHandler.post(mTorchOff);
-            }
+            mHandler.post(mTorchOff);
         }
     }
 

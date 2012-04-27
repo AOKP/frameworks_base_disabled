@@ -1001,7 +1001,7 @@ status_t OMXCodec::configureCodec(const sp<MetaData> &meta) {
             bool success = meta->findInt32(kKeyWidth, &width);
             success = success && meta->findInt32(kKeyHeight, &height);
             CHECK(success);
-            if (width*height > MAX_RESOLUTION) {
+            if (width*height > DVD_RESOLUTION) {
                 // need OMX.TI.720P.Encoder
                 return ERROR_UNSUPPORTED;
             }

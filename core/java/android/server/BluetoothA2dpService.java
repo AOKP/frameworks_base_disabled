@@ -150,140 +150,33 @@ public class BluetoothA2dpService extends IBluetoothA2dp.Stub {
                     }
                 }
             } else if (metachanged_intents.contains(action)) {
+                try {
+                    if(DBG) {
+                        Log.d(TAG, "action: " + action);
 
-                if(DBG) {
-                    Log.d(TAG, "action: " + action);
+                        Bundle extras = intent.getExtras();
 
-                    Bundle extras = intent.getExtras();
-
-                    if (extras != null) {
-                        Set<String> ks = extras.keySet();
-                        Iterator<String> iterator = ks.iterator();
-                        while (iterator.hasNext()) {
-                            String key = iterator.next();
-                            Object value = extras.get(key);
-                            if (value != null)
-                                Log.d(TAG, key + ": " + value.toString());
+                        if (extras != null) {
+                            Set<String> ks = extras.keySet();
+                            Iterator<String> iterator = ks.iterator();
+                            while (iterator.hasNext()) {
+                                String key = iterator.next();
+                                Object value = extras.get(key);
+                                if (value != null)
+                                    Log.d(TAG, key + ": " + value.toString());
+                            }
                         }
                     }
-                }
 
-                // check if there are special extra keys that we will use
-                if (has_special_extra_keys.contains(action)) {
-                    if (special_extra_keys.containsKey(action + "_track")) {
-                        mTrackName = intent.getStringExtra(special_extra_keys.get(action + "_track"));
-                    }
-                    else {
-                        mTrackName = intent.getStringExtra("track");
-                    }
-
-                    if (special_extra_keys.containsKey(action + "_artist")) {
-                        mArtistName = intent.getStringExtra(special_extra_keys.get(action + "_artist"));
-                    }
-                    else {
-                        mArtistName = intent.getStringExtra("artist");
-                    }
-
-                    if (special_extra_keys.containsKey(action + "_album")) {
-                        mAlbumName = intent.getStringExtra(special_extra_keys.get(action + "_album"));
-                    }
-                    else {
-                        mAlbumName = intent.getStringExtra("album");
-                    }
-
-                    long extra;
-                    if (special_extra_keys.containsKey(action + "_id")){
-                        extra = intent.getLongExtra(special_extra_keys.get(action + "_id"), 0);
-                    }
-                    else {
-                        extra = intent.getLongExtra("id", 0);
-                    }
-                    if (extra < 0)
-                        extra = 0;
-                    mMediaNumber = String.valueOf(extra);
-                }
-                else {
-                    mTrackName = intent.getStringExtra("track");
-                    mArtistName = intent.getStringExtra("artist");
-                    mAlbumName = intent.getStringExtra("album");
-                    long extra = intent.getLongExtra("id", 0);
-                    if (extra < 0)
-                        extra = 0;
-                    mMediaNumber = String.valueOf(extra);
-                }
-
-                if (mTrackName == null)
-                    mTrackName = DEFAULT_METADATA_STRING;
-                if (mArtistName == null)
-                    mArtistName = DEFAULT_METADATA_STRING;
-                if (mAlbumName == null)
-                    mAlbumName = DEFAULT_METADATA_STRING;
-
-                long extra = intent.getLongExtra("ListSize", 0);
-                if (extra < 0)
-                    extra = 0;
-                mMediaCount = String.valueOf(extra);
-
-                extra = intent.getLongExtra("duration", 0);
-                if (extra < 0)
-                    extra = 0;
-                mDuration = String.valueOf(extra);
-                extra = intent.getLongExtra("position", 0);
-                if (extra < 0)
-                    extra = 0;
-                mPosition = extra;
-                if(DBG) {
-                    Log.d(TAG, "Meta changed " + mPlayStatus);
-                    Log.d(TAG, "player: " + action);
-                    Log.d(TAG, "trackname: "+ mTrackName + " artist: " + mArtistName);
-                    Log.d(TAG, "album: "+ mAlbumName);
-                    Log.d(TAG, "medianumber: " + mMediaNumber + " mediacount " + mMediaCount);
-                    Log.d(TAG, "postion "+ mPosition + " duration "+ mDuration);
-                }
-                for (String path: getConnectedSinksPaths()) {
-                    sendMetaData(path);
-                    sendEvent(path, EVENT_TRACK_CHANGED, Long.valueOf(mMediaNumber));
-                }
-            } else if (playstatechanged_intents.contains(action)) {
-
-                if(DBG) {
-                    Log.d(TAG, "action: " + action);
-
-                    Bundle extras = intent.getExtras();
-
-                    if (extras != null) {
-                        Set<String> ks = extras.keySet();
-                        Iterator<String> iterator = ks.iterator();
-                        while (iterator.hasNext()) {
-                            String key = iterator.next();
-                            Object value = extras.get(key);
-                            if (value != null)
-                                Log.d(TAG, key + ": " + value.toString());
-                        }
-                    }
-                }
-
-                String currentTrackName;
-                // check if there are special extra keys that we will use
-                if (has_special_extra_keys.contains(action)) {
-                    if (special_extra_keys.containsKey(action + "_track")) {
-                        currentTrackName = intent.getStringExtra(special_extra_keys.get(action + "_track"));
-                    }
-                    else {
-                        currentTrackName = intent.getStringExtra("track");
-                    }
-                    if (currentTrackName == null)
-                        currentTrackName = DEFAULT_METADATA_STRING;
-                }
-                else {
-                    currentTrackName = intent.getStringExtra("track");
-                    if (currentTrackName == null)
-                        currentTrackName = DEFAULT_METADATA_STRING;
-                }
-                if ((!currentTrackName.equals(DEFAULT_METADATA_STRING)) && (!currentTrackName.equals(mTrackName))) {
-                    mTrackName = currentTrackName;
                     // check if there are special extra keys that we will use
                     if (has_special_extra_keys.contains(action)) {
+                        if (special_extra_keys.containsKey(action + "_track")) {
+                            mTrackName = intent.getStringExtra(special_extra_keys.get(action + "_track"));
+                        }
+                        else {
+                            mTrackName = intent.getStringExtra("track");
+                        }
+
                         if (special_extra_keys.containsKey(action + "_artist")) {
                             mArtistName = intent.getStringExtra(special_extra_keys.get(action + "_artist"));
                         }
@@ -299,7 +192,7 @@ public class BluetoothA2dpService extends IBluetoothA2dp.Stub {
                         }
 
                         long extra;
-                        if (special_extra_keys.containsKey(action + "_id")) {
+                        if (special_extra_keys.containsKey(action + "_id")){
                             extra = intent.getLongExtra(special_extra_keys.get(action + "_id"), 0);
                         }
                         else {
@@ -310,6 +203,7 @@ public class BluetoothA2dpService extends IBluetoothA2dp.Stub {
                         mMediaNumber = String.valueOf(extra);
                     }
                     else {
+                        mTrackName = intent.getStringExtra("track");
                         mArtistName = intent.getStringExtra("artist");
                         mAlbumName = intent.getStringExtra("album");
                         long extra = intent.getLongExtra("id", 0);
@@ -318,6 +212,8 @@ public class BluetoothA2dpService extends IBluetoothA2dp.Stub {
                         mMediaNumber = String.valueOf(extra);
                     }
 
+                    if (mTrackName == null)
+                        mTrackName = DEFAULT_METADATA_STRING;
                     if (mArtistName == null)
                         mArtistName = DEFAULT_METADATA_STRING;
                     if (mAlbumName == null)
@@ -327,6 +223,7 @@ public class BluetoothA2dpService extends IBluetoothA2dp.Stub {
                     if (extra < 0)
                         extra = 0;
                     mMediaCount = String.valueOf(extra);
+
                     extra = intent.getLongExtra("duration", 0);
                     if (extra < 0)
                         extra = 0;
@@ -335,37 +232,148 @@ public class BluetoothA2dpService extends IBluetoothA2dp.Stub {
                     if (extra < 0)
                         extra = 0;
                     mPosition = extra;
-                    for (String path: getConnectedSinksPaths())
+                    if(DBG) {
+                        Log.d(TAG, "Meta changed " + mPlayStatus);
+                        Log.d(TAG, "player: " + action);
+                        Log.d(TAG, "trackname: "+ mTrackName + " artist: " + mArtistName);
+                        Log.d(TAG, "album: "+ mAlbumName);
+                        Log.d(TAG, "medianumber: " + mMediaNumber + " mediacount " + mMediaCount);
+                        Log.d(TAG, "postion "+ mPosition + " duration "+ mDuration);
+                    }
+                    for (String path: getConnectedSinksPaths()) {
                         sendMetaData(path);
+                        sendEvent(path, EVENT_TRACK_CHANGED, Long.valueOf(mMediaNumber));
+                    }
                 }
-                boolean playStatusPlaying = intent.getBooleanExtra("playing", false);
-                boolean playStatusPlaystate = intent.getBooleanExtra("playstate", false);
-                boolean playStatusState;
-
-                int state = intent.getIntExtra("state", 2);
-
-                if ((state == 0) || (state == 1))
-                    playStatusState = true;
-                else
-                    playStatusState = false;
-
-                boolean playStatus = playStatusPlaying || playStatusPlaystate || playStatusState;
-
-                mPosition = intent.getLongExtra("position", 0);
-                if (mPosition < 0)
-                    mPosition = 0;
-                mPlayStatus = convertedPlayStatus(playStatus, mPosition);
-                if(DBG) {
-                    Log.d(TAG, "PlayState changed " + mPlayStatus);
-                    Log.d(TAG, "player: " + action);
-                    Log.d(TAG, "trackname: "+ mTrackName + " artist: " + mArtistName);
-                    Log.d(TAG, "album: "+ mAlbumName);
-                    Log.d(TAG, "medianumber: " + mMediaNumber + " mediacount " + mMediaCount);
-                    Log.d(TAG, "postion "+ mPosition + " duration "+ mDuration);
+                catch (Exception e) {
+                    Log.e(TAG, "Error getting metadata from intent", e);
                 }
+            } else if (playstatechanged_intents.contains(action)) {
+                try {
+                    if(DBG) {
+                        Log.d(TAG, "action: " + action);
 
-                for (String path: getConnectedSinksPaths()) {
-                    sendEvent(path, EVENT_PLAYSTATUS_CHANGED, (long)mPlayStatus);
+                        Bundle extras = intent.getExtras();
+
+                        if (extras != null) {
+                            Set<String> ks = extras.keySet();
+                            Iterator<String> iterator = ks.iterator();
+                            while (iterator.hasNext()) {
+                                String key = iterator.next();
+                                Object value = extras.get(key);
+                                if (value != null)
+                                    Log.d(TAG, key + ": " + value.toString());
+                            }
+                        }
+                    }
+
+                    String currentTrackName;
+                    // check if there are special extra keys that we will use
+                    if (has_special_extra_keys.contains(action)) {
+                        if (special_extra_keys.containsKey(action + "_track")) {
+                            currentTrackName = intent.getStringExtra(special_extra_keys.get(action + "_track"));
+                        }
+                        else {
+                            currentTrackName = intent.getStringExtra("track");
+                        }
+                        if (currentTrackName == null)
+                            currentTrackName = DEFAULT_METADATA_STRING;
+                    }
+                    else {
+                        currentTrackName = intent.getStringExtra("track");
+                        if (currentTrackName == null)
+                            currentTrackName = DEFAULT_METADATA_STRING;
+                    }
+                    if ((!currentTrackName.equals(DEFAULT_METADATA_STRING)) && (!currentTrackName.equals(mTrackName))) {
+                        mTrackName = currentTrackName;
+                        // check if there are special extra keys that we will use
+                        if (has_special_extra_keys.contains(action)) {
+                            if (special_extra_keys.containsKey(action + "_artist")) {
+                                mArtistName = intent.getStringExtra(special_extra_keys.get(action + "_artist"));
+                            }
+                            else {
+                                mArtistName = intent.getStringExtra("artist");
+                            }
+
+                            if (special_extra_keys.containsKey(action + "_album")) {
+                                mAlbumName = intent.getStringExtra(special_extra_keys.get(action + "_album"));
+                            }
+                            else {
+                                mAlbumName = intent.getStringExtra("album");
+                            }
+
+                            long extra;
+                            if (special_extra_keys.containsKey(action + "_id")) {
+                                extra = intent.getLongExtra(special_extra_keys.get(action + "_id"), 0);
+                            }
+                            else {
+                                extra = intent.getLongExtra("id", 0);
+                            }
+                            if (extra < 0)
+                                extra = 0;
+                            mMediaNumber = String.valueOf(extra);
+                        }
+                        else {
+                            mArtistName = intent.getStringExtra("artist");
+                            mAlbumName = intent.getStringExtra("album");
+                            long extra = intent.getLongExtra("id", 0);
+                            if (extra < 0)
+                                extra = 0;
+                            mMediaNumber = String.valueOf(extra);
+                        }
+
+                        if (mArtistName == null)
+                            mArtistName = DEFAULT_METADATA_STRING;
+                        if (mAlbumName == null)
+                            mAlbumName = DEFAULT_METADATA_STRING;
+
+                        long extra = intent.getLongExtra("ListSize", 0);
+                        if (extra < 0)
+                            extra = 0;
+                        mMediaCount = String.valueOf(extra);
+                        extra = intent.getLongExtra("duration", 0);
+                        if (extra < 0)
+                            extra = 0;
+                        mDuration = String.valueOf(extra);
+                        extra = intent.getLongExtra("position", 0);
+                        if (extra < 0)
+                            extra = 0;
+                        mPosition = extra;
+                        for (String path: getConnectedSinksPaths())
+                            sendMetaData(path);
+                    }
+                    boolean playStatusPlaying = intent.getBooleanExtra("playing", false);
+                    boolean playStatusPlaystate = intent.getBooleanExtra("playstate", false);
+                    boolean playStatusState;
+
+                    int state = intent.getIntExtra("state", 2);
+
+                    if ((state == 0) || (state == 1))
+                        playStatusState = true;
+                    else
+                        playStatusState = false;
+
+                    boolean playStatus = playStatusPlaying || playStatusPlaystate || playStatusState;
+
+                    mPosition = intent.getLongExtra("position", 0);
+                    if (mPosition < 0)
+                        mPosition = 0;
+                    mPlayStatus = convertedPlayStatus(playStatus, mPosition);
+                    if(DBG) {
+                        Log.d(TAG, "PlayState changed " + mPlayStatus);
+                        Log.d(TAG, "player: " + action);
+                        Log.d(TAG, "trackname: "+ mTrackName + " artist: " + mArtistName);
+                        Log.d(TAG, "album: "+ mAlbumName);
+                        Log.d(TAG, "medianumber: " + mMediaNumber + " mediacount " + mMediaCount);
+                        Log.d(TAG, "postion "+ mPosition + " duration "+ mDuration);
+                    }
+
+                    for (String path: getConnectedSinksPaths()) {
+                        sendEvent(path, EVENT_PLAYSTATUS_CHANGED, (long)mPlayStatus);
+                    }
+                }
+                catch (Exception e) {
+                    Log.e(TAG, "Error getting playstate from intent", e);
                 }
             }
         }

@@ -184,7 +184,7 @@ public class ExtensibleKeyButtonView extends KeyButtonView {
         	if (mLongpress.equals(ACTION_NULL)) {
         		// attempt to keep long press functionality of 'keys' if
         		// they haven't been overridden.
-        		return false;    	
+                return true;
         	} else if (mLongpress.equals(ACTION_HOME)) {
         		injectKeyDelayed(KeyEvent.KEYCODE_HOME);
         		return true;

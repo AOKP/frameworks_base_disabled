@@ -26,6 +26,7 @@ import android.database.ContentObserver;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.IPowerManager;
+import android.os.Message;
 import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.provider.Settings;
@@ -51,7 +52,7 @@ public class BrightnessSlider implements ToggleSlider.Listener {
 
     boolean mSystemChange;
 
-    boolean mAsyncChange;
+    boolean mAutomatic = false;
 
     public BrightnessSlider(Context context) {
         mContext = context;
@@ -74,6 +75,7 @@ public class BrightnessSlider implements ToggleSlider.Listener {
             } catch (SettingNotFoundException snfe) {
                 automatic = 0;
             }
+            mAutomatic = automatic != 0;
             mControl.setChecked(automatic != 0);
         } else {
             mControl.setChecked(false);
@@ -102,21 +104,24 @@ public class BrightnessSlider implements ToggleSlider.Listener {
     }
 
     public void onChanged(ToggleSlider view, boolean tracking, boolean automatic, int value) {
-        if (mSystemChange)
+        if(mSystemChange)
             return;
+
+        boolean skip = false;
+        if(mAutomatic != automatic)
+            skip = true;
+        mAutomatic = automatic;
 
         setMode(automatic ? Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC
                 : Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL);
         if (!automatic) {
             final int val = value + mScreenBrightnessDim;
             setBrightness(val);
-            if (!tracking) {
+            if (!tracking && !skip) {
                 AsyncTask.execute(new Runnable() {
                     public void run() {
-                        mAsyncChange = true;
                         Settings.System.putInt(mContext.getContentResolver(),
                                 Settings.System.SCREEN_BRIGHTNESS, val);
-                        mAsyncChange = false;
                     }
                 });
             }
@@ -136,14 +141,13 @@ public class BrightnessSlider implements ToggleSlider.Listener {
     }
 
     private void updateValues() {
-        if (mAsyncChange)
-            return;
 
         int automatic;
         mSystemChange = true;
         try {
             automatic = Settings.System.getInt(mContext.getContentResolver(),
                     Settings.System.SCREEN_BRIGHTNESS_MODE);
+            mAutomatic = automatic != 0;
             mControl.setChecked(automatic != 0);
 
             mControl.setValue(Settings.System.getInt(mContext.getContentResolver(),

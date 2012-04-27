@@ -23,6 +23,7 @@ import android.os.Handler;
 import android.provider.Settings;
 import android.util.AttributeSet;
 import android.util.Slog;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -53,6 +54,7 @@ public class SignalClusterView
    
     private boolean showingSignalText = false;
     private boolean showingWiFiText = false;
+    private boolean mHideSignal = false;
     
     ViewGroup mWifiGroup, mMobileGroup;
     ImageView mWifi, mMobile, mWifiActivity, mMobileActivity, mMobileType;
@@ -215,6 +217,9 @@ public class SignalClusterView
                     this);
             resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.STATUSBAR_FONT_SIZE), false, this);
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.STATUSBAR_HIDE_SIGNAL_BARS), false,
+                    this);
             updateSettings();
         }
 
@@ -231,12 +236,20 @@ public class SignalClusterView
                 Settings.System.STATUSBAR_SIGNAL_TEXT, 0) != 0;
         showingWiFiText = Settings.System.getInt(resolver,
                 Settings.System.STATUSBAR_WIFI_SIGNAL_TEXT, 0) != 0;
+        mHideSignal = (Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.STATUSBAR_HIDE_SIGNAL_BARS, 0) == 1);
         int fontSize = Settings.System.getInt(resolver,
                 Settings.System.STATUSBAR_FONT_SIZE, 16);
         if (mMobileText != null)
         	mMobileText.setTextSize(fontSize);
         if (mWiFiText != null)
         	mWiFiText.setTextSize(fontSize);
+        if(mWifiGroup != null) {
+            float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 6,
+                    getContext().getResources().getDisplayMetrics());
+            if(mHideSignal) mWifiGroup.setPadding(0, 0, (int) px, 0);
+            else mWifiGroup.setPadding(0, 0, 0, 0);
+        }
         apply();
     }
  

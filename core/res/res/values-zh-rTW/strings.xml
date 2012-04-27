@@ -156,6 +156,13 @@
     <string name="global_actions_toggle_airplane_mode" msgid="5884330306926307456">"飛航模式"</string>
     <string name="global_actions_airplane_mode_on_status" msgid="2719557982608919750">"飛航模式為 [開啟]"</string>
     <string name="global_actions_airplane_mode_off_status" msgid="5075070442854490296">"飛航模式為 [關閉]"</string>
+    <string name="global_actions_toggle_power_saver">節電模式</string>
+    <string name="global_actions_power_saver_on_status">節電模式為[開啟]</string>
+    <string name="global_actions_power_saver_off_status">節電模式為[關閉]</string>
+    <string name="global_actions_toggle_torch">手電筒</string>
+    <string name="global_actions_torch_on_status">手電筒目前[開啟]</string>
+    <string name="global_actions_torch_off_status">手電筒目前[關閉]</string>
+    <string name="global_actions_toggle_navbar_hide">導航快捷開關</string>
     <string name="status_bar_notification_info_overflow" msgid="5301981741705354993">"超過 999"</string>
     <string name="safeMode" msgid="2788228061547930246">"安全模式"</string>
     <string name="android_system_label" msgid="6577375335728551336">"Android 系統"</string>
@@ -1227,4 +1234,17 @@
     <string name="sending" msgid="8715108995741758718">"傳送中..."</string>
     <string name="launchBrowserDefault" msgid="2057951947297614725">"啟動「瀏覽器」嗎？"</string>
     <string name="SetupCallDefault" msgid="6870275517518479651">"接聽電話嗎？"</string>
+    <string name="reboot_system" product="tablet">重新啟動平板電腦</string>
+    <string name="reboot_system" product="default">重新啟動手機</string>
+    <string name="global_action_screenshot">桌面截圖</string>
+    <string name="reboot_reboot">重新啟動</string>
+    <string name="reboot_recovery">Recovery</string>
+    <string name="reboot_bootloader">Bootloader</string>
+    <string name="reboot_bootmenu">Bootmenu</string>
+    <string name="reboot_fastboot">Fastboot</string>
+    <string name="reboot_download">Download</string>
+    <string name="reboot_progress">正在重新啟動...</string>
+    <string name="reboot_confirm">手機即將重啟。</string>
+    <string name="global_action_reboot">重新啟動</string>
+    <string name="app_killed_message">應用程式已刪除</string>
 </resources>

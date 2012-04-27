@@ -59,7 +59,6 @@ public class SignalClusterView
     ViewGroup mWifiGroup, mMobileGroup;
     ImageView mWifi, mMobile, mWifiActivity, mMobileActivity, mMobileType;
     TextView mMobileText,mWiFiText;
-    View mSpacer;
     
     Handler mHandler;
         
@@ -93,7 +92,6 @@ public class SignalClusterView
         mMobileType     = (ImageView) findViewById(R.id.mobile_type);
         mMobileText		= (TextView)  findViewById(R.id.signal_text);
         mWiFiText		= (TextView)  findViewById(R.id.wifi_signal_text);
-        mSpacer         =             findViewById(R.id.spacer);
         
         mHandler = new Handler();
         
@@ -188,9 +186,11 @@ public class SignalClusterView
             mMobileGroup.setVisibility(View.GONE);
         }
         if (mMobileVisible && mWifiVisible && mIsAirplaneMode) {
-            mSpacer.setVisibility(View.INVISIBLE);
+            float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 6,
+                    getContext().getResources().getDisplayMetrics());
+             mMobileGroup.setPadding((int) px, 0, 0, 0);
         } else {
-            mSpacer.setVisibility(View.GONE);
+            mMobileGroup.setPadding(0, 0, 0, 0);
         }
 
         if (DEBUG) Slog.d(TAG,

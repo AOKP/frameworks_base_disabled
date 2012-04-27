@@ -48,13 +48,6 @@
 				android:layout_height="match_parent"
 				android:paddingRight="8dp" />
   </FrameLayout>
-    <View
-        android:layout_height="6dp"
-        android:layout_width="6dp"
-        android:visibility="gone"
-        android:id="@+id/spacer"
-        /> 
- 
  	<FrameLayout
       	android:id="@+id/mobile_combo"
 		android:layout_width="wrap_content"

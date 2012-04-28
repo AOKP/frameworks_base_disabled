@@ -290,7 +290,5 @@ interface ITelephony {
      * or {@link PHone#LTE_ON_CDMA_TRUE}
      */
     int getLteOnCdmaMode();
-
-    int getLteOnGsmMode();
 }
 

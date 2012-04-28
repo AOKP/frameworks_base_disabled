@@ -386,6 +386,8 @@
     <string name="status_bar_settings_toggles">Toggles</string>
     <string name="weatherpanel_slash">/</string>
     
+    <string name="toggle_navbar">Toggle NavBar</string>
+    
 	<!-- Title for the pseudo-notification shown when notifications are disabled (do-not-disturb
          mode) -->
     <string name="notifications_off_title">Notifications off</string>

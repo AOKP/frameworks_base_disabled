@@ -2577,7 +2577,7 @@ public class PackageManagerService extends IPackageManager.Stub {
                     }
                 }
 
-                if (pi != null && !list.append(pi)) {
+                if (pi != null && list.append(pi)) {
                     break;
                 }
             }
@@ -2624,7 +2624,7 @@ public class PackageManagerService extends IPackageManager.Stub {
                     }
                 }
 
-                if (ai != null && !list.append(ai)) {
+                if (ai != null && list.append(ai)) {
                     break;
                 }
             }

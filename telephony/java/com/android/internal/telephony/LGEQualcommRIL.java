@@ -21,6 +21,7 @@ import static com.android.internal.telephony.RILConstants.*;
 import android.content.Context;
 import android.os.Message;
 import android.os.Parcel;
+import android.os.SystemProperties;
 import android.text.TextUtils;
 import android.util.Log;
 

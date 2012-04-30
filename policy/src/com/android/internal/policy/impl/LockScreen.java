@@ -722,7 +722,9 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 
         mUnlockWidget = findViewById(R.id.unlock_widget);
         mUnlockWidget2 = findViewById(R.id.unlock_widget2);
-        if(mUnlockWidget2 == null) Log.e("HELP", "ERROR UNLOCKWIDGET2 IS NULL");
+        if (mUnlockWidget2 == null) Log.e(TAG, "ERROR UNLOCKWIDGET2 IS NULL");
+        if (mUnlockWidget == null) Log.d(TAG, "mUnlockwidget is not null");
+        else Log.d(TAG, "mUnlockWidget is null");
         if (mUnlockWidget instanceof SlidingTab) {
             SlidingTab slidingTabView = (SlidingTab) mUnlockWidget;
             slidingTabView.setHoldAfterTrigger(true, false);

@@ -2807,12 +2807,16 @@ public final class Settings {
 		 */
         public static final String LOCKSCREEN_HIDE_NAV = "lockscreen_hide_nav";
 
-        /** 
-         * Whether to use horizontal recents tasks (WebAOKP)
-         * 
+        /**
+         * the type of recent switcher
+         *
+         * 0 = Stock
+         * 1 = WebAOKP
+         * 2 = Sense 4
+         *
          * @hide
          */
-        public static final String HORIZONTAL_RECENTS_TASK_PANEL = "horizontal_recents_task_panel";
+        public static final String RECENT_APP_SWITCHER = "recent_app_switcher";
 
         /**
          * thickness of the batteyr bar (in dp)

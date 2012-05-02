@@ -27,6 +27,14 @@ import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.Shader.TileMode;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.Color;
+import android.graphics.Canvas;
+import android.graphics.LinearGradient;
+import android.graphics.Paint;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Bitmap.Config;
+import android.graphics.PorterDuff.Mode;
+import android.graphics.Shader.TileMode;
 import android.net.Uri;
 import android.provider.Settings;
 import android.util.AttributeSet;
@@ -130,11 +138,20 @@ public class RecentsPanelView extends RelativeLayout implements OnItemClickListe
         public View getView(int position, View convertView, ViewGroup parent) {
             ViewHolder holder;
             if (convertView == null) {
-            	if (Settings.System.getInt(mContext.getContentResolver(),
-                      Settings.System.HORIZONTAL_RECENTS_TASK_PANEL,0) == 1)
+
+                int recent_style = Settings.System.getInt(mContext.getContentResolver(),
+                      Settings.System.RECENT_APP_SWITCHER,0);
+
+            	if (recent_style == 1) {
             		convertView = mInflater.inflate(R.layout.status_bar_recent_item_webaokp, parent, false);
-            	else 
-            		convertView = mInflater.inflate(R.layout.status_bar_recent_item, parent, false);
+                }
+                else if (recent_style == 2) {
+                    convertView = mInflater.inflate(R.layout.status_bar_recent_item_sense4, parent, false);
+                }
+                else {
+                    convertView = mInflater.inflate(R.layout.status_bar_recent_item, parent, false);
+                }
+
                 holder = new ViewHolder();
                 holder.thumbnailView = convertView.findViewById(R.id.app_thumbnail);
                 holder.thumbnailViewImage = (ImageView) convertView.findViewById(
@@ -255,7 +272,13 @@ public class RecentsPanelView extends RelativeLayout implements OnItemClickListe
 
     public void handleShowBackground(boolean show) {
         if (show) {
-            mRecentsScrim.setBackgroundResource(R.drawable.status_bar_recents_background_solid);
+            if(Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.RECENT_APP_SWITCHER,0) == 2) {
+                mRecentsScrim.setBackgroundResource(R.drawable.status_bar_recents_background_solid_sense4);
+            }
+            else {
+                mRecentsScrim.setBackgroundResource(R.drawable.status_bar_recents_background_solid);
+            }
         } else {
             mRecentsScrim.setBackgroundDrawable(null);
         }
@@ -334,15 +357,24 @@ public class RecentsPanelView extends RelativeLayout implements OnItemClickListe
     public void updateValuesFromResources() {
         final Resources res = mContext.getResources();
 
-        if (Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.HORIZONTAL_RECENTS_TASK_PANEL,0) == 1) {
+        int recent_style = Settings.System.getInt(mContext.getContentResolver(),
+                      Settings.System.RECENT_APP_SWITCHER,0);
+
+        if (recent_style == 1) {
         	mFitThumbnailToXY = res.getBoolean(R.bool.config_recents_thumbnail_image_fits_to_xy_webaokp);
         	mThumbnailWidth = Math.round(res.getDimension(R.dimen.status_bar_recents_thumbnail_width_webaokp));
         }
-        else{
+        else if (recent_style == 2) {
+        	mFitThumbnailToXY = res.getBoolean(R.bool.config_recents_thumbnail_image_fits_to_xy_sense4);
+        	mThumbnailWidth = Math.round(res.getDimension(R.dimen.status_bar_recents_thumbnail_width_sense4));
+        }
+        else {
             mFitThumbnailToXY = res.getBoolean(R.bool.config_recents_thumbnail_image_fits_to_xy);
         	mThumbnailWidth = Math.round(res.getDimension(R.dimen.status_bar_recents_thumbnail_width));
         }
+
+        if (DEBUG) Log.d(TAG, "mFitThumbnailToXY: " + mFitThumbnailToXY);
+        if (DEBUG) Log.d(TAG, "mThumbnailWidth: " + mThumbnailWidth);
     }
 
     @Override
@@ -417,7 +449,40 @@ public class RecentsPanelView extends RelativeLayout implements OnItemClickListe
             // Should remove the default image in the frame
             // that this now covers, to improve scrolling speed.
             // That can't be done until the anim is complete though.
-            h.thumbnailViewImage.setImageBitmap(thumbnail);
+
+            if(Settings.System.getInt(mContext.getContentResolver(),
+                        Settings.System.RECENT_APP_SWITCHER,0) == 2) {
+
+                final int reflectionGap = 4;
+                int width = thumbnail.getWidth();
+                int height = thumbnail.getHeight();
+
+                Matrix matrix = new Matrix();
+                matrix.preScale(1, -1);
+
+                Bitmap reflectionImage = Bitmap.createBitmap(thumbnail, 0, height * 2 / 3, width, height/3, matrix, false);
+                Bitmap bitmapWithReflection = Bitmap.createBitmap(width, (height + height/3), Config.ARGB_8888);
+
+                Canvas canvas = new Canvas(bitmapWithReflection);
+                canvas.drawBitmap(thumbnail, 0, 0, null);
+                Paint defaultPaint = new Paint();
+                canvas.drawRect(0, height, width, height + reflectionGap, defaultPaint);
+                canvas.drawBitmap(reflectionImage, 0, height + reflectionGap, null);
+
+                Paint paint = new Paint();
+                LinearGradient shader = new LinearGradient(0, thumbnail.getHeight(), 0,
+                    bitmapWithReflection.getHeight() + reflectionGap, 0x70ffffff, 0x00ffffff,
+                    TileMode.CLAMP);
+                paint.setShader(shader);
+                paint.setXfermode(new PorterDuffXfermode(Mode.DST_IN));
+                canvas.drawRect(0, height, width,
+                    bitmapWithReflection.getHeight() + reflectionGap, paint);
+
+                h.thumbnailViewImage.setImageBitmap(bitmapWithReflection);
+            }
+            else {
+                h.thumbnailViewImage.setImageBitmap(thumbnail);
+            }
 
             // scale the image to fill the full width of the ImageView. do this only if
             // we haven't set a bitmap before, or if the bitmap size has changed
@@ -426,12 +491,25 @@ public class RecentsPanelView extends RelativeLayout implements OnItemClickListe
                 h.thumbnailViewImageBitmap.getHeight() != thumbnail.getHeight()) {
                 if (mFitThumbnailToXY) {
                     h.thumbnailViewImage.setScaleType(ScaleType.FIT_XY);
+                    if(Settings.System.getInt(mContext.getContentResolver(),
+                        Settings.System.RECENT_APP_SWITCHER,0) == 2) {
+                        h.thumbnailViewImage.setRotationY(25.0f);
+                    }
                 } else {
-                    Matrix scaleMatrix = new Matrix();
-                    float scale = mThumbnailWidth / (float) thumbnail.getWidth();
-                    scaleMatrix.setScale(scale, scale);
-                    h.thumbnailViewImage.setScaleType(ScaleType.MATRIX);
-                    h.thumbnailViewImage.setImageMatrix(scaleMatrix);
+                    if(Settings.System.getInt(mContext.getContentResolver(),
+                        Settings.System.RECENT_APP_SWITCHER,0) == 2) {
+                        h.thumbnailViewImage.setScaleType(ScaleType.FIT_CENTER);
+                        h.thumbnailViewImage.setRotationY(25.0f);
+                        if (DEBUG) Log.d(TAG, "thumbnail.getHeight(): " + thumbnail.getHeight());
+                        if (DEBUG) Log.d(TAG, "thumbnail.getWidth(): " + thumbnail.getWidth());
+                    }
+                    else {
+                        Matrix scaleMatrix = new Matrix();
+                        float scale = mThumbnailWidth / (float) thumbnail.getWidth();
+                        scaleMatrix.setScale(scale, scale);
+                        h.thumbnailViewImage.setScaleType(ScaleType.MATRIX);
+                        h.thumbnailViewImage.setImageMatrix(scaleMatrix);
+                    }
                 }
             }
             if (show && h.thumbnailView.getVisibility() != View.VISIBLE) {

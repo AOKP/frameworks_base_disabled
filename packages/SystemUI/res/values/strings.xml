@@ -3,16 +3,16 @@
 /**
  * Copyright (c) 2009, The Android Open Source Project
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); 
- * you may not use this file except in compliance with the License. 
- * You may obtain a copy of the License at 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0 
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, 
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- * See the License for the specific language governing permissions and 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
  * limitations under the License.
  */
 -->
@@ -101,7 +101,7 @@
 
     <!-- Label in system panel saying the device will use the orientation sensor to rotate [CHAR LIMIT=30] -->
     <string name="status_bar_settings_auto_rotation">Auto-rotate screen</string>
-    
+
     <!-- Label in drop down to identify brightness slider -->
     <string name="brightness_label">Brightness</string>
 
@@ -365,7 +365,10 @@
 
     <!-- Content description of the clear button in the notification panel for accessibility (not shown on the screen). [CHAR LIMIT=NONE] -->
     <string name="accessibility_clear_all">Clear all notifications.</string>
-    
+
+    <!-- for Sense 4.0 style multitasking mod -->
+    <string name="recent_apps_title">Recent apps</string>
+
     <string name="battery_test">99</string>
     <string name="status_bar_settings_gps_button">GPS</string>
     <string name="toggle_bt">BT</string>

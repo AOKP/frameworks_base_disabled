@@ -41,6 +41,10 @@
     <dimen name="status_bar_recents_thumbnail_width">208dp</dimen>
     <dimen name="status_bar_recents_thumbnail_height">130dp</dimen>
 
+    <!-- Dimensions for Sense4 View -->
+    <dimen name="status_bar_recents_thumbnail_width_sense4">157.0dip</dimen>
+    <dimen name="status_bar_recents_thumbnail_height_sense4">242.0dip</dimen>
+
     <!-- Width of recents panel -->
     <dimen name="status_bar_recents_width">600dp</dimen>
     <!-- Padding for text descriptions -->

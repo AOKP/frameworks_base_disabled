@@ -32,9 +32,9 @@
     <dimen name="password_keyboard_height">48.0mm</dimen>
 
     <!-- The width that is used when creating thumbnails of applications. -->
-    <dimen name="thumbnail_width">230dp</dimen>
+    <dimen name="thumbnail_width">267dp</dimen>
     <!-- The height that is used when creating thumbnails of applications. -->
-    <dimen name="thumbnail_height">135dp</dimen>
+    <dimen name="thumbnail_height">168dp</dimen>
     <!-- Minimum width of the search view text entry area. -->
     <dimen name="search_view_text_min_width">192dip</dimen>
 

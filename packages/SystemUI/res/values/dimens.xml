@@ -24,13 +24,22 @@
     <dimen name="status_bar_recents_app_icon_max_width">48dp</dimen>
     <!-- Upper height limit for application icon -->
     <dimen name="status_bar_recents_app_icon_max_height">48dp</dimen>
-    
+
+    <!-- Upper width limit for application icon for Sense4 View-->
+    <dimen name="status_bar_recents_app_icon_max_width_sense4">42dp</dimen>
+    <!-- Upper height limit for application icon for Sense4 View-->
+    <dimen name="status_bar_recents_app_icon_max_height_sense4">42dp</dimen>
+
     <!-- Dimensions for WebAOKP View -->
     <dimen name="status_bar_recents_thumbnail_width_webaokp">170.0dip</dimen>
     <dimen name="status_bar_recents_thumbnail_height_webaokp">210.0dip</dimen>
 
+    <!-- Dimensions for Sense4 View -->
+    <dimen name="status_bar_recents_thumbnail_width_sense4">162.0dip</dimen>
+    <dimen name="status_bar_recents_thumbnail_height_sense4">385.0dip</dimen>
+
     <!-- Size of application thumbnail -->
-    <dimen name="status_bar_recents_thumbnail_width">164dp</dimen>
+    <dimen name="status_bar_recents_thumbnail_width">162dp</dimen>
     <dimen name="status_bar_recents_thumbnail_height">145dp</dimen>
 
     <!-- Size of application label text -->

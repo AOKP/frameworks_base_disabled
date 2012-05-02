@@ -43,4 +43,9 @@
     <!-- Size of clock font in LockScreen on Unsecure unlock screen. -->
     <dimen name="keyguard_lockscreen_clock_font_size">70sp</dimen>
 
+    <!-- The width that is used when creating thumbnails of applications. -->
+    <dimen name="thumbnail_width">267dp</dimen>
+    <!-- The height that is used when creating thumbnails of applications. -->
+    <dimen name="thumbnail_height">168dp</dimen>
+
 </resources>

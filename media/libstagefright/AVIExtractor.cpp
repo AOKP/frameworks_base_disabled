@@ -611,7 +611,10 @@ status_t AVIExtractor::parseStreamHeader(off64_t offset, size_t size) {
 
     uint32_t rate = U32LE_AT(&data[20]);
     uint32_t scale = U32LE_AT(&data[24]);
-
+#ifdef OMAP_ENHANCEMENT
+    //Calculating fps and rounding to the closest integer value
+    uint32_t fps=(scale * 1.0 / rate) + 0.5;
+#endif
     uint32_t sampleSize = U32LE_AT(&data[44]);
 
     const char *mime = NULL;
@@ -661,7 +664,9 @@ status_t AVIExtractor::parseStreamHeader(off64_t offset, size_t size) {
     track->mMaxSampleSize = 0;
     track->mAvgChunkSize = 1.0;
     track->mFirstChunkSize = 0;
-
+#ifdef OMAP_ENHANCEMENT
+    track->mMeta->setInt32(kKeyVideoFPS,fps);
+#endif
     return OK;
 }
 

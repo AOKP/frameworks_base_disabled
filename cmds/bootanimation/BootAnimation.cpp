@@ -45,6 +45,8 @@
 #include <core/SkStream.h>
 #include <images/SkImageDecoder.h>
 
+#include <media/mediaplayer.h>
+
 #include <GLES/gl.h>
 #include <GLES/glext.h>
 #include <EGL/eglext.h>
@@ -369,6 +371,30 @@ bool BootAnimation::android()
 
 bool BootAnimation::movie()
 {
+
+    char bootenabled[PROPERTY_VALUE_MAX];
+    char bootsound[PROPERTY_VALUE_MAX];
+    char bootvolume[PROPERTY_VALUE_MAX];
+    property_get("persist.sys.boot_enabled", bootenabled, "1");
+    property_get("persist.sys.boot_sound", bootsound, "1");
+    property_get("persist.sys.boot_volume", bootvolume, "0.2");
+
+    bool bootEnabled = atoi(bootenabled) != 0;
+    bool enableSound = atoi(bootsound) != 0;
+    float bootVolume = strtof(bootvolume, NULL);
+
+    if(!bootEnabled) {
+        return false;
+    }
+
+    if(enableSound){
+      sp<MediaPlayer> mediaplay = new MediaPlayer();
+      mediaplay->setDataSource ("/system/media/boot_audio.mp3", NULL);
+        mediaplay->setVolume (bootVolume, bootVolume);
+      mediaplay->prepare();
+      mediaplay->start();
+    }        
+
     ZipFileRO& zip(mZip);
 
     size_t numEntries = zip.getNumEntries();
@@ -467,7 +493,6 @@ bool BootAnimation::movie()
 
     Region clearReg(Rect(mWidth, mHeight));
     clearReg.subtractSelf(Rect(xc, yc, xc+animation.width, yc+animation.height));
-
     for (int i=0 ; i<pcount && !exitPending() ; i++) {
         const Animation::Part& part(animation.parts[i]);
         const size_t fcount = part.frames.size();

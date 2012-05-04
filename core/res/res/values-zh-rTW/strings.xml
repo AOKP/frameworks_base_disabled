@@ -1235,7 +1235,7 @@
     <string name="launchBrowserDefault" msgid="2057951947297614725">"啟動「瀏覽器」嗎？"</string>
     <string name="SetupCallDefault" msgid="6870275517518479651">"接聽電話嗎？"</string>
     <string name="reboot_system" product="tablet">重新啟動平板電腦</string>
-    <string name="reboot_system" product="default">重新啟動手機</string>
+    <string name="reboot_system" product="default">手機重啟</string>
     <string name="global_action_screenshot">桌面截圖</string>
     <string name="reboot_reboot">重新啟動</string>
     <string name="reboot_recovery">Recovery</string>
@@ -1243,8 +1243,8 @@
     <string name="reboot_bootmenu">Bootmenu</string>
     <string name="reboot_fastboot">Fastboot</string>
     <string name="reboot_download">Download</string>
-    <string name="reboot_progress">正在重新啟動...</string>
+    <string name="reboot_progress">正在重啟...</string>
     <string name="reboot_confirm">手機即將重啟。</string>
     <string name="global_action_reboot">重新啟動</string>
-    <string name="app_killed_message">應用程式已刪除</string>
+    <string name="app_killed_message">應用程式已刪除。</string>
 </resources>

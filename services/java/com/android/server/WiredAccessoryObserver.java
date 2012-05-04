@@ -21,14 +21,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.media.AudioManager;
 import android.os.Handler;
 import android.os.Message;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.os.UEventObserver;
-import android.provider.Settings;
 import android.util.Slog;
+import android.media.AudioManager;
 import android.util.Log;
 
 import java.io.FileReader;
@@ -41,7 +40,6 @@ class WiredAccessoryObserver extends UEventObserver {
     private static final String TAG = WiredAccessoryObserver.class.getSimpleName();
     private static final boolean LOG = true;
     private static final int MAX_AUDIO_PORTS = 3; /* h2w, USB Audio & hdmi */
-    private static final int MAX_AUDIO_PORTS_DOCK = 1;
     private static final String uEventInfo[][] = { {"DEVPATH=/devices/virtual/switch/h2w",
                                                     "/sys/class/switch/h2w/state",
                                                     "/sys/class/switch/h2w/name"},
@@ -51,10 +49,6 @@ class WiredAccessoryObserver extends UEventObserver {
                                                    {"DEVPATH=/devices/virtual/switch/hdmi",
                                                     "/sys/class/switch/hdmi/state",
                                                     "/sys/class/switch/hdmi/name"} };
-
-    private static final String uEventInfoDock[][] = { {"DEVPATH=/devices/virtual/switch/dock",
-                                                        "/sys/class/switch/dock/state",
-                                                        "/sys/class/switch/dock/name"} };
 
     private static final int BIT_HEADSET = (1 << 0);
     private static final int BIT_HEADSET_NO_MIC = (1 << 1);
@@ -91,17 +85,8 @@ class WiredAccessoryObserver extends UEventObserver {
         // one on the board, one on the dock and one on HDMI:
         // observe three UEVENTs
         init();  // set initial status
-
         for (int i = 0; i < MAX_AUDIO_PORTS; i++) {
             startObserving(uEventInfo[i][0]);
-        }
-
-        // Do we actually need/want to hack the system and look at the dock uevents?
-        if (Settings.System.getInt(context.getContentResolver(),
-                Settings.System.DOCK_USB_AUDIO_ENABLED, 0) == 1) {
-            for (int i = 0; i < MAX_AUDIO_PORTS_DOCK; i++) {
-                startObserving(uEventInfoDock[i][0]);
-            }
         }
       }
   }

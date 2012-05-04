@@ -918,8 +918,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
 
         PackageManager packageManager = mContext.getPackageManager();
-        mKeyboardDockFeature = packageManager.hasSystemFeature(PackageManager.FEATURE_TF101_KB_DOCK);
-        mHallSensorFeature = packageManager.hasSystemFeature(PackageManager.FEATURE_TF101_HALL_SENSOR);
+        mKeyboardDockFeature = packageManager.hasSystemFeature(PackageManager.FEATURE_KB_DOCK);
+        mHallSensorFeature = packageManager.hasSystemFeature(PackageManager.FEATURE_HALL_SENSOR);
 
         PowerManager pm = (PowerManager)context.getSystemService(Context.POWER_SERVICE);
         mBroadcastWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
@@ -2720,7 +2720,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     /** {@inheritDoc} */
     public void notifyLidSwitchChanged(long whenNanos, boolean lidOpen) {
         // lid changed state
-        if ((mKeyboardDockFeature) && (mDockMode == Intent.EXTRA_DOCK_STATE_TF101_KB));
+        if ((mKeyboardDockFeature) && (mDockMode == Intent.EXTRA_DOCK_STATE_KB));
             lidOpen = lidOpen ? false : true;
         mLidOpen = lidOpen ? LID_OPEN : LID_CLOSED;
         readLidStateByHardwareFeature();
@@ -2763,7 +2763,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         if (!mHallSensorFeature)
             mLidOpen = LID_ABSENT;
         else {
-            if((mKeyboardDockFeature) && (mDockMode != Intent.EXTRA_DOCK_STATE_TF101_KB))
+            if((mKeyboardDockFeature) && (mDockMode != Intent.EXTRA_DOCK_STATE_KB))
                 mLidOpen = LID_ABSENT;
             else
                 flag = false;
@@ -3574,7 +3574,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 // enable 180 degree rotation while docked.
                 preferredRotation = mDeskDockEnablesAccelerometer
                         ? sensorRotation : mDeskDockRotation;
-            } else if(mDockMode == Intent.EXTRA_DOCK_STATE_TF101_KB
+            } else if(mDockMode == Intent.EXTRA_DOCK_STATE_KB
                     && (mKeyboardDockEnablesAccelerometer || mKeyboardDockRotation >= 0)) {
                 // Ignore sensor when in keyboard dock unless explicitly enabled.
                 // This case can override the behavior of NOSENSOR, and can also

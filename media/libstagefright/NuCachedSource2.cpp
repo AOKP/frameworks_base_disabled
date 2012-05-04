@@ -455,6 +455,11 @@ void NuCachedSource2::restartPrefetcherIfNecessary_l(
         size_t maxBytes = mMinAccessPos - mCacheOffset - kGrayArea;
         size_t actualBytes = mCache->releaseFromStart(maxBytes);
         mCacheOffset += actualBytes;
+    } else if (mCache->totalSize() >= mHighwaterThresholdBytes
+               && mCacheOffset + mCache->totalSize() - mMaxAccessPos < mLowwaterThresholdBytes) {
+        size_t maxBytes = mCache->totalSize() - mHighwaterThresholdBytes;
+        size_t actualBytes = mCache->releaseFromStart(maxBytes);
+        mCacheOffset += actualBytes;
     }
 #endif
 

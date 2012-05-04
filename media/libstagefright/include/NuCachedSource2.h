@@ -87,7 +87,7 @@ private:
 
 #ifdef OMAP_ENHANCEMENT
     enum {
-        kGrayArea = 1024 * 1024,
+        kGrayArea = 2 * 1024 * 1024,
     };
 #endif
 

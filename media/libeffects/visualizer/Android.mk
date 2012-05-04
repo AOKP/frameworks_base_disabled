@@ -18,6 +18,8 @@ endif
 
 LOCAL_CFLAGS+= -fno-strict-aliasing
 
+LOCAL_CFLAGS+= -fno-strict-aliasing
+
 LOCAL_SHARED_LIBRARIES := \
 	libcutils \
 	libdl

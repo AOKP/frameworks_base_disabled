@@ -407,10 +407,10 @@ void AudioStream::decode(int tick)
             MSG_TRUNC | MSG_DONTWAIT) >> 1;
     } else {
         __attribute__((aligned(4))) union {
-            uint8_t buffer[2048];
-            uint16_t buffer16[2048/2];
-            uint32_t buffer32[2048/4];
-        };
+		uint8_t buffer[2048];
+		uint16_t buffer16[2048/2];
+		uint32_t buffer32[2048/4];
+	};
         sockaddr_storage remote;
         socklen_t addrlen = sizeof(remote);
 
@@ -421,7 +421,7 @@ void AudioStream::decode(int tick)
         // reliable but at least they can be used to identify duplicates?
         if (length < 12 || length > (int)sizeof(buffer) ||
             (ntohl(*buffer32) & 0xC07F0000) != mCodecMagic) {
-            ALOGV("stream[%d] malformed packet", mSocket);
+            LOGV("stream[%d] malformed packet", mSocket);
             return;
         }
         int offset = 12 + ((buffer[0] & 0x0F) << 2);

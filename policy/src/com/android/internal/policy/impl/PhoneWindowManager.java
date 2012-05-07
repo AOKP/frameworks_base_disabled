@@ -1309,6 +1309,7 @@ Configuration.HARDKEYBOARDHIDDEN_YES, Configuration.HARDKEYBOARDHIDDEN_NO);
             Context context = mContext;
             //Log.i(TAG, "addStartingWindow " + packageName + ": nonLocalizedLabel="
             //        + nonLocalizedLabel + " theme=" + Integer.toHexString(theme));
+
             try {
                 context = context.createPackageContext(packageName, 0);
                 if (theme != context.getThemeResId()) {

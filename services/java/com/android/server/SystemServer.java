@@ -608,6 +608,7 @@ class ServerThread extends Thread {
                 powerSaver = new PowerSaverService(context);
             } catch(Throwable e) {
                 reportWtf("starting PowerSaver service", e);
+            
             try {
                 Slog.i(TAG, "AssetRedirectionManager Service");
                 ServiceManager.addService("assetredirection", new AssetRedirectionManagerService(context));

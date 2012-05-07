@@ -23,6 +23,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:systemui="http://schemas.android.com/apk/res/com.android.systemui"
     android:id="@+id/phone_statusbar_view"
+
+
     android:background="@drawable/status_bar_background"
     android:orientation="vertical"
     android:layout_width="match_parent"

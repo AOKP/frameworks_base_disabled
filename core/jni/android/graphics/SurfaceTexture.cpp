@@ -239,6 +239,17 @@ static void SurfaceTexture_release(JNIEnv* env, jobject thiz)
     surfaceTexture->abandon();
 }
 
+static jstring SurfaceTexture_getMetadata(JNIEnv *env, jobject thiz)
+{
+    LOGV("getMetadata");
+    sp<SurfaceTexture> surfaceTexture(SurfaceTexture_getSurfaceTexture(env, thiz));
+#ifdef OMAP_ENHANCEMENT
+    return env->NewStringUTF(surfaceTexture->getMetadata());
+#else
+    return env->NewStringUTF(String8());
+#endif
+}
+
 // ----------------------------------------------------------------------------
 
 static JNINativeMethod gSurfaceTextureMethods[] = {
@@ -250,6 +261,7 @@ static JNINativeMethod gSurfaceTextureMethods[] = {
     {"nativeGetTransformMatrix", "([F)V", (void*)SurfaceTexture_getTransformMatrix },
     {"nativeGetTimestamp",       "()J",   (void*)SurfaceTexture_getTimestamp },
     {"nativeRelease",            "()V",   (void*)SurfaceTexture_release },
+    {"nativeGetMetadata",    "()Ljava/lang/String;", (void *)SurfaceTexture_getMetadata },
 };
 
 int register_android_graphics_SurfaceTexture(JNIEnv* env)

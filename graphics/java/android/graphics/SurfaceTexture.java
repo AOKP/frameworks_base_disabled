@@ -207,6 +207,18 @@ public class SurfaceTexture {
     }
 
     /**
+     * Retrieve the camera frame metadata.
+     *
+     * Returns the current camera frame metadata (cpcam feature)
+     * OMAP_ENHANCEMENT
+     *
+     * @hide
+     */
+    public String getMetadata() {
+        return nativeGetMetadata();
+    }
+
+    /**
      * release() frees all the buffers and puts the SurfaceTexture into the
      * 'abandoned' state. Once put in this state the SurfaceTexture can never
      * leave it. When in the 'abandoned' state, all methods of the
@@ -271,6 +283,7 @@ public class SurfaceTexture {
     private native int nativeUpdateTexImage();
     private native int nativeGetQueuedCount();
     private native void nativeRelease();
+    private native String nativeGetMetadata();
 
     /*
      * We use a class initializer to allow the native code to cache some

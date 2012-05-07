@@ -868,5 +868,4 @@ public class LGEQualcommRIL extends RIL implements CommandsInterface {
             super.getBasebandVersion(response);
         }
     }
-
 }

@@ -114,7 +114,6 @@ public class NotificationManagerService extends INotificationManager.Stub
     private boolean mWasScreenOn = false;
     private boolean mInCall = false;
     private boolean mNotificationPulseEnabled;
-    private HashMap<String, NotificationLedValues> mNotificationPulseCustomLedValues;
 
     private HashMap<String, NotificationLedValues> mNotificationPulseCustomLedValues;
     private Map<String, String> mPackageNameMappings;
@@ -258,9 +257,6 @@ public class NotificationManagerService extends INotificationManager.Stub
     }
 
     private StatusBarManagerService.NotificationCallbacks mNotificationCallbacks = new StatusBarManagerService.NotificationCallbacks() {
-    private StatusBarManagerService.NotificationCallbacks mNotificationCallbacks
-            = new StatusBarManagerService.NotificationCallbacks() {
-
 
         public void onSetDisabled(int status) {
             synchronized (mNotificationList) {
@@ -414,19 +410,11 @@ public class NotificationManagerService extends INotificationManager.Stub
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.NOTIFICATION_LIGHT_PULSE), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
-
                     Settings.System.NOTIFICATION_LIGHT_OFF), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.NOTIFICATION_LIGHT_ON), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.NOTIFICATION_LIGHT_COLOR), false, this);
-                    Settings.System.NOTIFICATION_LIGHT_PULSE_DEFAULT_COLOR), false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.NOTIFICATION_LIGHT_PULSE_DEFAULT_LED_ON), false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.NOTIFICATION_LIGHT_PULSE_DEFAULT_LED_OFF), false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.NOTIFICATION_LIGHT_PULSE_CUSTOM_ENABLE), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.NOTIFICATION_LIGHT_PULSE_CUSTOM_VALUES), false, this);
             update();
@@ -435,7 +423,6 @@ public class NotificationManagerService extends INotificationManager.Stub
         @Override
         public void onChange(boolean selfChange) {
             update();
-            updateNotificationPulse();
         }
 
         public void update() {
@@ -445,22 +432,7 @@ public class NotificationManagerService extends INotificationManager.Stub
             if (mNotificationPulseEnabled != pulseEnabled) {
                 mNotificationPulseEnabled = pulseEnabled;
                 updateNotificationPulse();
-
-            // LED enabled
-            mNotificationPulseEnabled = Settings.System.getInt(resolver,
-                    Settings.System.NOTIFICATION_LIGHT_PULSE, 0) != 0;
-
-            // LED default color
-            mDefaultNotificationColor = Settings.System.getInt(resolver,
-                    Settings.System.NOTIFICATION_LIGHT_PULSE_DEFAULT_COLOR, mDefaultNotificationColor);
-
-            // LED default on MS
-            mDefaultNotificationLedOn = Settings.System.getInt(resolver,
-                    Settings.System.NOTIFICATION_LIGHT_PULSE_DEFAULT_LED_ON, mDefaultNotificationLedOn);
-
-            // LED default off MS
-            mDefaultNotificationLedOff = Settings.System.getInt(resolver,
-                    Settings.System.NOTIFICATION_LIGHT_PULSE_DEFAULT_LED_OFF, mDefaultNotificationLedOff);
+            }
 
             Resources resources = mContext.getResources();
             mDefaultNotificationColor = Settings.System.getInt(mContext.getContentResolver(), Settings.System.NOTIFICATION_LIGHT_COLOR,
@@ -1285,9 +1257,6 @@ public class NotificationManagerService extends INotificationManager.Stub
                 ledARGB = ledValues.color != 0 ? ledValues.color : mDefaultNotificationColor;
                 ledOnMS = ledValues.onMS >= 0 ? ledValues.onMS : mDefaultNotificationLedOn;
                 ledOffMS = ledValues.offMS >= 0 ? ledValues.offMS : mDefaultNotificationLedOn;
-                ledARGB = ledValues.color;
-                ledOnMS = ledValues.onMS;
-                ledOffMS = ledValues.offMS;
             } else {
                 if ((mLedNotification.notification.defaults & Notification.DEFAULT_LIGHTS) != 0) {
                     ledARGB = mDefaultNotificationColor;
@@ -1312,7 +1281,7 @@ public class NotificationManagerService extends INotificationManager.Stub
             return;
         }
 
-        for (String packageValuesString : customLedValuesString.split("|")) {
+        for (String packageValuesString : customLedValuesString.split("\\|")) {
             String[] packageValues = packageValuesString.split("=");
             if (packageValues.length != 2) {
                 Log.e(TAG, "Error parsing custom led values for unknown package");
@@ -1346,7 +1315,6 @@ public class NotificationManagerService extends INotificationManager.Stub
             return pkg;
         }
         return mPackageNameMappings.get(pkg);
-        return mNotificationPulseCustomLedValues.get(ledNotification.pkg);
     }
 
     // lock on mNotificationList

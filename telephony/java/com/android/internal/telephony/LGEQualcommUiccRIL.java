@@ -280,6 +280,7 @@ public class LGEQualcommUiccRIL extends LGEQualcommRIL implements CommandsInterf
     }
 
     @Override
+<<<<<<< HEAD:telephony/java/com/android/internal/telephony/LGEQualcommUiccRIL.java
     protected Object
     responseIccCardStatus(Parcel p) {
         IccCardApplication ca;
@@ -406,6 +407,8 @@ public class LGEQualcommUiccRIL extends LGEQualcommRIL implements CommandsInterf
     }
 
     @Override
+=======
+>>>>>>> 4174458... do not override getDataCallState or responseSetupDataCall:telephony/java/com/android/internal/telephony/HercSkyQualcommUiccRIL.java
     public void getNeighboringCids(Message response) {
         if (!getRadioState().isOn())
             return;

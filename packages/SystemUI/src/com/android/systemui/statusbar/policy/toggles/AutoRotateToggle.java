@@ -41,7 +41,8 @@ public class AutoRotateToggle extends Toggle {
 
     private boolean mAutoRotation;
 
-    private ContentObserver mAccelerometerRotationObserver = new ContentObserver(new Handler()) {
+    private ContentObserver mAccelerometerRotationObserver = new ContentObserver(
+            new Handler()) {
         @Override
         public void onChange(boolean selfChange) {
             updateState();
@@ -51,17 +52,14 @@ public class AutoRotateToggle extends Toggle {
     public AutoRotateToggle(Context context) {
         super(context);
         mAutoRotation = getAutoRotation();
-        updateState();
         setLabel(R.string.toggle_rotate);
-        if (mToggle.isChecked())
-        	setIcon(R.drawable.toggle_rotate);
-        else
-        	setIcon(R.drawable.toggle_rotate_off);
+        updateState();
     }
 
     private boolean getAutoRotation() {
         ContentResolver cr = mContext.getContentResolver();
-        return 0 != Settings.System.getInt(cr, Settings.System.ACCELEROMETER_ROTATION, 0);
+        return 0 != Settings.System.getInt(cr,
+                Settings.System.ACCELEROMETER_ROTATION, 0);
     }
 
     private void setAutoRotation(final boolean autorotate) {
@@ -69,8 +67,9 @@ public class AutoRotateToggle extends Toggle {
         AsyncTask.execute(new Runnable() {
             public void run() {
                 try {
-                    IWindowManager wm = IWindowManager.Stub.asInterface(
-                            ServiceManager.getService(Context.WINDOW_SERVICE));
+                    IWindowManager wm = IWindowManager.Stub
+                            .asInterface(ServiceManager
+                                    .getService(Context.WINDOW_SERVICE));
                     if (autorotate) {
                         wm.thawRotation();
                     } else {
@@ -88,28 +87,27 @@ public class AutoRotateToggle extends Toggle {
         if (isChecked != mAutoRotation) {
             setAutoRotation(isChecked);
         }
-        if (isChecked)
-        	setIcon(R.drawable.toggle_rotate);
-        else
-        	setIcon(R.drawable.toggle_rotate_off);
+        updateState();
     }
 
     @Override
-    protected void updateInternalToggleState() {
+    protected boolean updateInternalToggleState() {
         mToggle.setChecked(Settings.System.getInt(
                 mContext.getContentResolver(),
                 Settings.System.ACCELEROMETER_ROTATION, 0) != 0);
         if (mToggle.isChecked())
-        	setIcon(R.drawable.toggle_rotate);
+            setIcon(R.drawable.toggle_rotate);
         else
-        	setIcon(R.drawable.toggle_rotate_off);
+            setIcon(R.drawable.toggle_rotate_off);
+        return mToggle.isChecked();
     }
-    
+
     @Override
     protected boolean onLongPress() {
-    	Intent intent = new Intent(android.provider.Settings.ACTION_DISPLAY_SETTINGS);
+        Intent intent = new Intent(
+                android.provider.Settings.ACTION_DISPLAY_SETTINGS);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         mContext.startActivity(intent);
-    	return true;
+        return true;
     }
 }

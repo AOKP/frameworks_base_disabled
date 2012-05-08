@@ -106,9 +106,12 @@
     
     <style name="brucekey_icon">
        <item name="android:disabledAlpha">?android:disabledAlpha</item>
-       <item name="android:background">@drawable/togglebtn_bg</item>
        <item name="android:layout_width">wrap_content</item>
        <item name="android:layout_height">wrap_content</item>
+    </style>
+    
+    <style name="Text">
+        <item name="android:textColor">@android:color/holo_blue_light</item>
     </style>
     
 </resources>

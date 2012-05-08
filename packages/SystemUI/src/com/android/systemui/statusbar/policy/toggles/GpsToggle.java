@@ -30,7 +30,6 @@ import android.provider.Settings;
 import android.view.View;
 import android.content.Intent;
 
-
 public class GpsToggle extends Toggle {
 
     public GpsToggle(Context context) {
@@ -54,10 +53,6 @@ public class GpsToggle extends Toggle {
             mContentQueryMap.addObserver(mSettingsObserver);
         }
         setLabel(R.string.toggle_gps);
-        if (mToggle.isChecked())
-        	setIcon(R.drawable.toggle_gps);
-        else
-        	setIcon(R.drawable.toggle_gps_off);
         updateState();
     }
 
@@ -68,30 +63,28 @@ public class GpsToggle extends Toggle {
     protected void onCheckChanged(boolean isChecked) {
         Settings.Secure.setLocationProviderEnabled(mContext.getContentResolver(),
                 LocationManager.GPS_PROVIDER, isChecked ? true : false);
-        if (isChecked)
-        	setIcon(R.drawable.toggle_gps);
-        else
-        	setIcon(R.drawable.toggle_gps_off);
+        updateState();
     }
 
     @Override
-    protected void updateInternalToggleState() {
+    protected boolean updateInternalToggleState() {
         ContentResolver res = mContext.getContentResolver();
         boolean gpsEnabled = Settings.Secure.isLocationProviderEnabled(
                 res, LocationManager.GPS_PROVIDER);
         mToggle.setChecked(gpsEnabled);
         if (mToggle.isChecked())
-        	setIcon(R.drawable.toggle_gps);
+            setIcon(R.drawable.toggle_gps);
         else
-        	setIcon(R.drawable.toggle_gps_off);
+            setIcon(R.drawable.toggle_gps_off);
+        return mToggle.isChecked();
     }
-    
+
     @Override
     protected boolean onLongPress() {
-    	Intent intent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+        Intent intent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         mContext.startActivity(intent);
-    	return true;
+        return true;
     }
 
 }

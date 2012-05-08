@@ -574,7 +574,6 @@
          Format: [triggering package]|[user package] -->
     <string-array name="notification_light_package_mapping" translatable="false">
         <item>com.google.android.gsf|com.google.android.talk</item>
-        <item>com.android.phone|com.android.contacts</item>
     </string-array>
 
 </resources>

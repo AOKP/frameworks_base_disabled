@@ -61,9 +61,9 @@
                         android:id="@+id/high_temp"
                         android:textSize="10.0sp"
                         android:textStyle="normal"
-                        android:textColor="#ff2789af"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:textAppearance="@style/Text" />
 
                     <TextView
                         android:text="@string/weatherpanel_slash"
@@ -71,17 +71,17 @@
                         android:paddingLeft="1dp"
                         android:paddingRight="1dp"
                         android:textStyle="normal"
-                        android:textColor="#ff555555"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:textAppearance="@style/Text" />
 
                     <TextView
                         android:id="@+id/low_temp"
                         android:textSize="10.0sp"
                         android:textStyle="normal"
-                        android:textColor="#ff2789af"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:textAppearance="@style/Text" />
 
 
                 </LinearLayout>
@@ -151,13 +151,13 @@
                         android:id="@+id/condition"
                         android:textSize="14.0sp"
                         android:textStyle="normal"
-                        android:textColor="#ff2789af"
                         android:singleLine="true"
                         android:paddingTop="4dp"
                         android:paddingBottom="4dp"
                         android:gravity="center"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:textAppearance="@style/Text" />
 
 
                 </LinearLayout>

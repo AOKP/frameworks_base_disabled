@@ -10,37 +10,44 @@
     <TextView
         android:id="@+id/high_temp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/Text" />
 
     <TextView
         android:id="@+id/low_temp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/Text" />
 
     <TextView
         android:id="@+id/current_temp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/Text" />
 
     <TextView
         android:id="@+id/city"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/Text" />
 
     <TextView
         android:id="@+id/humidity"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/Text" />
 
     <TextView
         android:id="@+id/winds"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/Text" />
         
     <TextView
         android:id="@+id/condition"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/Text" />
 
     <ImageView
         android:id="@+id/condition_image"

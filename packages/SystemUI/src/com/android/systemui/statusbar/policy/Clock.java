@@ -94,13 +94,17 @@ public class Clock extends TextView {
             filter.addAction(Intent.ACTION_TIMEZONE_CHANGED);
             filter.addAction(Intent.ACTION_CONFIGURATION_CHANGED);
 
-            getContext().registerReceiver(mIntentReceiver, filter, null, getHandler());
+            getContext().registerReceiver(mIntentReceiver, filter, null,
+                    getHandler());
         }
 
-        // NOTE: It's safe to do these after registering the receiver since the receiver always runs
-        // in the main thread, therefore the receiver can't run before this method returns.
+        // NOTE: It's safe to do these after registering the receiver since the
+        // receiver always runs
+        // in the main thread, therefore the receiver can't run before this
+        // method returns.
 
-        // The time zone may have changed while the receiver wasn't registered, so update the Time
+        // The time zone may have changed while the receiver wasn't registered,
+        // so update the Time
         mCalendar = Calendar.getInstance(TimeZone.getDefault());
 
         SettingsObserver settingsObserver = new SettingsObserver(new Handler());
@@ -190,7 +194,8 @@ public class Clock extends TextView {
                 while (a > 0 && Character.isWhitespace(format.charAt(a - 1))) {
                     a--;
                 }
-                format = format.substring(0, a) + MAGIC1 + format.substring(a, b) + "a" + MAGIC2
+                format = format.substring(0, a) + MAGIC1
+                        + format.substring(a, b) + "a" + MAGIC2
                         + format.substring(b + 1);
             }
         }
@@ -216,7 +221,7 @@ public class Clock extends TextView {
             }
         }
         if (mWeekday != WEEKDAY_STYLE_NORMAL) {
-            //always in front of am/pm
+            // always in front of am/pm
             int magic3 = result.indexOf(MAGIC3);
             int magic4 = result.indexOf(MAGIC4);
             if (magic3 >= 0 && magic4 > magic3) {
@@ -249,18 +254,22 @@ public class Clock extends TextView {
 
         void observe() {
             ContentResolver resolver = mContext.getContentResolver();
-            resolver.registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.STATUSBAR_CLOCK_AM_PM_STYLE), false,
+            resolver.registerContentObserver(Settings.System
+                    .getUriFor(Settings.System.STATUSBAR_CLOCK_AM_PM_STYLE),
+                    false, this);
+            resolver.registerContentObserver(Settings.System
+                    .getUriFor(Settings.System.STATUSBAR_CLOCK_STYLE), false,
+                    this);
+            resolver.registerContentObserver(Settings.System
+                    .getUriFor(Settings.System.STATUSBAR_CLOCK_COLOR), false,
                     this);
             resolver.registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.STATUSBAR_CLOCK_STYLE), false, this);
-            resolver.registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.STATUSBAR_CLOCK_COLOR), false, this);
-            resolver.registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.STATUSBAR_CLOCK_LOCKSCREEN_HIDE),
+                    Settings.System
+                            .getUriFor(Settings.System.STATUSBAR_CLOCK_LOCKSCREEN_HIDE),
                     false, this);
-            resolver.registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.STATUSBAR_CLOCK_WEEKDAY), false, this);
+            resolver.registerContentObserver(Settings.System
+                    .getUriFor(Settings.System.STATUSBAR_CLOCK_WEEKDAY), false,
+                    this);
             updateSettings();
         }
 
@@ -272,20 +281,24 @@ public class Clock extends TextView {
 
     protected void updateSettings() {
         ContentResolver resolver = mContext.getContentResolver();
+        int defaultColor = getResources().getColor(
+                com.android.internal.R.color.holo_blue_light);
 
-        mAmPmStyle = Settings.System.getInt(resolver, Settings.System.STATUSBAR_CLOCK_AM_PM_STYLE,
-                AM_PM_STYLE_GONE);
+        mAmPmStyle = Settings.System.getInt(resolver,
+                Settings.System.STATUSBAR_CLOCK_AM_PM_STYLE, AM_PM_STYLE_GONE);
 
-        mClockColor = Settings.System.getInt(resolver, Settings.System.STATUSBAR_CLOCK_COLOR,
-                0xFF33B5E5);
+        mClockColor = Settings.System.getInt(resolver,
+                Settings.System.STATUSBAR_CLOCK_COLOR, defaultColor);
         if (mClockColor == Integer.MIN_VALUE) {
             // flag to reset the color
-            mClockColor = 0xFF33B5E5;
+            mClockColor = defaultColor;
         }
         setTextColor(mClockColor);
 
-        mClockStyle = Settings.System.getInt(resolver, Settings.System.STATUSBAR_CLOCK_STYLE, 1);
-        mWeekday = Settings.System.getInt(resolver, Settings.System.STATUSBAR_CLOCK_WEEKDAY, 0);
+        mClockStyle = Settings.System.getInt(resolver,
+                Settings.System.STATUSBAR_CLOCK_STYLE, 1);
+        mWeekday = Settings.System.getInt(resolver,
+                Settings.System.STATUSBAR_CLOCK_WEEKDAY, 0);
         updateClockVisibility();
 
         mShowClockDuringLockscreen = (Settings.System.getInt(resolver,

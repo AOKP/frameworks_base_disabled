@@ -8,20 +8,15 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.Resources;
 import android.database.ContentObserver;
-import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Handler;
-import android.os.Message;
 import android.provider.Settings;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.CharacterStyle;
 import android.text.style.RelativeSizeSpan;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.view.View;
 import android.widget.TextView;
 
 public class WifiText extends TextView {
@@ -36,7 +31,7 @@ public class WifiText extends TextView {
     private Handler mHandler;
     private Context mContext;
     private WifiManager mWifiManager;
-    protected int mSignalColor = com.android.internal.R.color.holo_blue_light;
+    protected int mSignalColor;
     
     /** pulled the below values directly from the WifiManager.Java.  I don't like the idea of 
      *  this, as it could change and we may not know about it.
@@ -120,12 +115,14 @@ public class WifiText extends TextView {
 
     private void updateSettings() {
         ContentResolver resolver = getContext().getContentResolver();
+        int defaultColor = getResources().getColor(
+                com.android.internal.R.color.holo_blue_light);
         mSignalColor = Settings.System.getInt(resolver,
                 Settings.System.STATUSBAR_WIFI_SIGNAL_TEXT_COLOR,
-                0xFF33B5E5);
+                defaultColor);
         if (mSignalColor == Integer.MIN_VALUE) {
             // flag to reset the color
-            mSignalColor = 0xFF33B5E5;
+            mSignalColor = defaultColor;
         }
         setTextColor(mSignalColor);
         updateSignalText();

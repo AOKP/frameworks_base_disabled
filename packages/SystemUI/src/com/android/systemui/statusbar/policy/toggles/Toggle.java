@@ -17,18 +17,20 @@
 package com.android.systemui.statusbar.policy.toggles;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
+import android.os.RemoteException;
+import android.os.ServiceManager;
 import android.provider.Settings;
 import android.view.View;
 import android.view.View.OnLongClickListener;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
-import com.android.internal.statusbar.IStatusBarService;
-import android.os.ServiceManager;
-import android.os.RemoteException;
-
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.internal.statusbar.IStatusBarService;
 import com.android.systemui.R;
 
 /**
@@ -47,29 +49,32 @@ public abstract class Toggle implements OnCheckedChangeListener {
     protected CompoundButton mToggle;
 
     protected boolean mSystemChange = false;
+    final boolean useAltButtonLayout;
+    final int defaultColor;
 
     public Toggle(Context context) {
         mContext = context;
 
-        boolean useAltButtonLayout = Settings.System.getInt(context.getContentResolver(),
+        useAltButtonLayout = Settings.System.getInt(
+                context.getContentResolver(),
                 Settings.System.STATUSBAR_TOGGLES_USE_BUTTONS, 0) == 1;
 
-        mView = View.inflate(mContext, useAltButtonLayout ? R.layout.toggle_button
-                : R.layout.toggle, null);
+        float[] hsv = new float[3];
+        int color = context.getResources().getColor(
+                com.android.internal.R.color.holo_blue_light);
+        Color.colorToHSV(color, hsv);
+        hsv[2] *= 0.7f; // value component
+        defaultColor = Color.HSVToColor(hsv);
+
+        mView = View.inflate(mContext,
+                useAltButtonLayout ? R.layout.toggle_button : R.layout.toggle,
+                null);
 
         mIcon = (ImageView) mView.findViewById(R.id.icon);
         mToggle = (CompoundButton) mView.findViewById(R.id.toggle);
         mText = (TextView) mView.findViewById(R.id.label);
 
-        mToggle.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-            @Override
-            public final void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (mSystemChange)
-                    return;
-                onCheckChanged(isChecked);
-            }
-        });
-
+        mToggle.setOnCheckedChangeListener(this);
         mToggle.setOnLongClickListener(new OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -82,14 +87,30 @@ public abstract class Toggle implements OnCheckedChangeListener {
         });
     }
 
-    /**
-     * this method is called when we need to update the state of the toggle due to outside
-     * interactions.
-     */
-    protected abstract void updateInternalToggleState();
+    public void updateDrawable(boolean toggle) {
+        if (!useAltButtonLayout)
+            return;
+
+        Drawable bg = mContext.getResources().getDrawable(
+                toggle ? R.drawable.btn_on : R.drawable.btn_off);
+        if (toggle)
+            bg.setColorFilter(defaultColor, PorterDuff.Mode.SRC_ATOP);
+        else
+            bg.setColorFilter(null);
+        mToggle.setBackgroundDrawable(bg);
+    }
 
     /**
-     * this method is called when the user manually toggles, update states as needed
+     * this method is called when we need to update the state of the toggle due
+     * to outside interactions.
+     * 
+     * @return returns the on/off state of the toggle
+     */
+    protected abstract boolean updateInternalToggleState();
+
+    /**
+     * this method is called when the user manually toggles, update states as
+     * needed
      */
     protected abstract void onCheckChanged(boolean isChecked);
 
@@ -100,21 +121,23 @@ public abstract class Toggle implements OnCheckedChangeListener {
 
     public void updateState() {
         mSystemChange = true;
-        updateInternalToggleState();
+        updateDrawable(updateInternalToggleState());
         mSystemChange = false;
     }
 
     public void collapseStatusBar() {
         try {
-            IStatusBarService sb = IStatusBarService.Stub.asInterface(
-                    ServiceManager.getService(Context.STATUS_BAR_SERVICE));
+            IStatusBarService sb = IStatusBarService.Stub
+                    .asInterface(ServiceManager
+                            .getService(Context.STATUS_BAR_SERVICE));
             sb.collapse();
         } catch (RemoteException e) {
         }
     }
 
     @Override
-    public final void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+    public final void onCheckedChanged(CompoundButton buttonView,
+            boolean isChecked) {
         if (mSystemChange)
             return;
         onCheckChanged(isChecked);

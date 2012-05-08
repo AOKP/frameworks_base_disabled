@@ -62,7 +62,7 @@ public final class ShutdownThread extends Thread {
     private static boolean sIsStarted = false;
     
     private static boolean mReboot;
-    private static String mRebootReason;
+    private static String mRebootReason = "";
 
     // Provides shutdown assurance in case the system_server is killed
     public static final String SHUTDOWN_ACTION_PROPERTY = "sys.shutdown.requested";
@@ -109,6 +109,7 @@ public final class ShutdownThread extends Thread {
 
         if (confirm) {
             final AlertDialog dialog;
+	    mRebootReason = "";
             // Set different dialog message based on whether or not we're rebooting
             if (mReboot) {
                 dialog = new AlertDialog.Builder(context)
@@ -116,12 +117,12 @@ public final class ShutdownThread extends Thread {
                         .setTitle(com.android.internal.R.string.reboot_system)
                         .setSingleChoiceItems(com.android.internal.R.array.shutdown_reboot_options, 0, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-                                if (which < 0)
+                                if (which < 1)
                                     return;
 
                                 String actions[] = context.getResources().getStringArray(com.android.internal.R.array.shutdown_reboot_actions);
 
-                                if (actions != null && which < actions.length)
+                                if (which < actions.length)
                                     mRebootReason = actions[which];
                             }
                         })
@@ -291,7 +292,7 @@ public final class ShutdownThread extends Thread {
          * the beginning of the SystemServer startup.
          */
         {
-            String reason = (mReboot ? "1" : "0") + (mRebootReason != null ? mRebootReason : "");
+            String reason = (mReboot ? "1" : "0") + (!mRebootReason.equals("") ? mRebootReason : "");
             SystemProperties.set(SHUTDOWN_ACTION_PROPERTY, reason);
         }
 

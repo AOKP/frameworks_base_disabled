@@ -121,7 +121,11 @@ void API_ENTRY(glAlphaFuncx)(GLenum func, GLclampx ref) {
 void API_ENTRY(glBindBuffer)(GLenum target, GLuint buffer) {
     CALL_GL_API(glBindBuffer, target, buffer);
 }
+#ifdef HOOK_MISSING_EGL_EXTERNAL_IMAGE
+void API_ENTRY(__glBindTexture)(GLenum target, GLuint texture) {
+#else
 void API_ENTRY(glBindTexture)(GLenum target, GLuint texture) {
+#endif
     CALL_GL_API(glBindTexture, target, texture);
 }
 void API_ENTRY(glBlendFunc)(GLenum sfactor, GLenum dfactor) {
@@ -193,7 +197,11 @@ void API_ENTRY(glDepthMask)(GLboolean flag) {
 void API_ENTRY(glDepthRangex)(GLclampx zNear, GLclampx zFar) {
     CALL_GL_API(glDepthRangex, zNear, zFar);
 }
+#ifdef HOOK_MISSING_EGL_EXTERNAL_IMAGE
+void API_ENTRY(__glDisable)(GLenum cap) {
+#else
 void API_ENTRY(glDisable)(GLenum cap) {
+#endif
     CALL_GL_API(glDisable, cap);
 }
 void API_ENTRY(glDisableClientState)(GLenum array) {
@@ -205,7 +213,11 @@ void API_ENTRY(glDrawArrays)(GLenum mode, GLint first, GLsizei count) {
 void API_ENTRY(glDrawElements)(GLenum mode, GLsizei count, GLenum type, const GLvoid *indices) {
     CALL_GL_API(glDrawElements, mode, count, type, indices);
 }
+#ifdef HOOK_MISSING_EGL_EXTERNAL_IMAGE
+void API_ENTRY(__glEnable)(GLenum cap) {
+#else
 void API_ENTRY(glEnable)(GLenum cap) {
+#endif
     CALL_GL_API(glEnable, cap);
 }
 void API_ENTRY(glEnableClientState)(GLenum array) {
@@ -406,6 +418,20 @@ void API_ENTRY(glTexEnvxv)(GLenum target, GLenum pname, const GLfixed *params) {
 void API_ENTRY(glTexImage2D)(GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, const GLvoid *pixels) {
     CALL_GL_API(glTexImage2D, target, level, internalformat, width, height, border, format, type, pixels);
 }
+#ifdef HOOK_MISSING_EGL_EXTERNAL_IMAGE
+void API_ENTRY(__glTexParameteri)(GLenum target, GLenum pname, GLint param) {
+    CALL_GL_API(glTexParameteri, target, pname, param);
+}
+void API_ENTRY(__glTexParameterx)(GLenum target, GLenum pname, GLfixed param) {
+    CALL_GL_API(glTexParameterx, target, pname, param);
+}
+void API_ENTRY(__glTexParameteriv)(GLenum target, GLenum pname, const GLint *params) {
+    CALL_GL_API(glTexParameteriv, target, pname, params);
+}
+void API_ENTRY(__glTexParameterxv)(GLenum target, GLenum pname, const GLfixed *params) {
+    CALL_GL_API(glTexParameterxv, target, pname, params);
+}
+#else
 void API_ENTRY(glTexParameteri)(GLenum target, GLenum pname, GLint param) {
     CALL_GL_API(glTexParameteri, target, pname, param);
 }
@@ -418,6 +444,7 @@ void API_ENTRY(glTexParameteriv)(GLenum target, GLenum pname, const GLint *param
 void API_ENTRY(glTexParameterxv)(GLenum target, GLenum pname, const GLfixed *params) {
     CALL_GL_API(glTexParameterxv, target, pname, params);
 }
+#endif
 void API_ENTRY(glTexSubImage2D)(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, const GLvoid *pixels) {
     CALL_GL_API(glTexSubImage2D, target, level, xoffset, yoffset, width, height, format, type, pixels);
 }

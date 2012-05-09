@@ -170,13 +170,108 @@ extern "C" {
  * These GL calls are special because they need to EGL to retrieve some
  * informations before they can execute.
  */
-
+#ifdef HOOK_MISSING_EGL_EXTERNAL_IMAGE
+// extern "C" const GLubyte* __glGetString(GLenum name);
+extern "C" void __glEnable(GLenum cap);
+extern "C" void __glDisable(GLenum cap);
+extern "C" void __glTexParameterx(GLenum target, GLenum pname, GLfixed param);
+extern "C" void __glTexParameterxv(GLenum target, GLenum pname, const GLfixed *params);
+extern "C" void __glTexParameteri(GLenum target, GLenum pname, GLint param);
+extern "C" void __glTexParameteriv(GLenum target, GLenum pname, const GLint* params);
+extern "C" void __glBindTexture(GLenum target, GLuint texture);
+#endif
 extern "C" void __glEGLImageTargetTexture2DOES(GLenum target, GLeglImageOES image);
 extern "C" void __glEGLImageTargetRenderbufferStorageOES(GLenum target, GLeglImageOES image);
 
+#ifdef HOOK_MISSING_EGL_EXTERNAL_IMAGE
+/*
+const GLubyte* glGetString(GLenum name)
+{
+    if (name == GL_EXTENSIONS) {
+        char *exts = (char *)__glGetString(GL_EXTENSIONS);
+        char *extensions;
+        extensions = new char[850];
+        strcpy(extensions, exts);
+        strcat(extensions, "GL_OES_EGL_image_external ");
+        LOGW("glGetString(GL_EXTENSIONS): GL_OES_EGL_image_external added");
+        return (GLubyte*)extensions;
+    }
+    return __glGetString(name);
+}
+*/
+
+void glTexParameterx(GLenum target, GLenum pname, GLfixed param)
+{
+    if (target == GL_TEXTURE_EXTERNAL_OES) {
+        target = GL_TEXTURE_2D;
+//        LOGW("glTexParameterx: EXTERNAL_OES > 2D");
+    }
+    __glTexParameterx(target, pname, param);
+}
+
+void glTexParameterxv(GLenum target, GLenum pname, const GLfixed *params)
+{
+    if (target == GL_TEXTURE_EXTERNAL_OES) {
+        target = GL_TEXTURE_2D;
+//        LOGW("glTexParameterxv: EXTERNAL_OES > 2D");
+    }
+    __glTexParameterxv(target, pname, params);
+}
+
+void glTexParameteri(GLenum target, GLenum pname, GLint param)
+{
+    if (target == GL_TEXTURE_EXTERNAL_OES) {
+        target = GL_TEXTURE_2D;
+//        LOGW("glTexParameteri: EXTERNAL_OES > 2D");
+    }
+    __glTexParameteri(target, pname, param);
+}
+
+void glTexParameteriv(GLenum target, GLenum pname, const GLint* params)
+{
+    if (target == GL_TEXTURE_EXTERNAL_OES) {
+        target = GL_TEXTURE_2D;
+//        LOGW("glTexParameteriv: EXTERNAL_OES > 2D");
+    }
+    __glTexParameteriv(target, pname, params);
+}
+
+void glEnable(GLenum cap)
+{
+    if (cap == GL_TEXTURE_EXTERNAL_OES) {
+        cap = GL_TEXTURE_2D;
+//        LOGW("glEnable: EXTERNAL_OES > 2D");
+    }
+    __glEnable(cap);
+}
+
+void glDisable(GLenum cap)
+{
+    if (cap == GL_TEXTURE_EXTERNAL_OES) {
+        cap = GL_TEXTURE_2D;
+//        LOGW("glDisable: EXTERNAL_OES > 2D");
+    }
+    __glDisable(cap);
+}
+
+void glBindTexture(GLenum target, GLuint texture)
+{
+    if (target == GL_TEXTURE_EXTERNAL_OES) {
+        target = GL_TEXTURE_2D;
+//        LOGW("glBindTexture: EXTERNAL_OES > 2D");
+    }
+    __glBindTexture(target, texture);
+}
+#endif // HOOK_MISSING_EGL_EXTERNAL_IMAGE
 
 void glEGLImageTargetTexture2DOES(GLenum target, GLeglImageOES image)
 {
+#ifdef HOOK_MISSING_EGL_EXTERNAL_IMAGE
+    if (target == GL_TEXTURE_EXTERNAL_OES) {
+        target = GL_TEXTURE_2D;
+//        LOGW("glEGLImageTargetTexture2DOES: EXTERNAL_OES > 2D");
+    }
+#endif
     GLeglImageOES implImage = 
         (GLeglImageOES)egl_get_image_for_current_context((EGLImageKHR)image);
     __glEGLImageTargetTexture2DOES(target, implImage);

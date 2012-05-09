@@ -90,12 +90,6 @@ public class PhoneStatusBarView extends FrameLayout {
         return mEndAlpha
                 - (int)(((mEndAlpha-mStartAlpha) * (mEndTime-time) / DIM_ANIM_TIME));
     }
-	
-	@Override
-	protected void onDetachedFromWindow() {
-	    super.onDetachedFromWindow();
-		mService.onBarViewDetached();
-	}
     
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {

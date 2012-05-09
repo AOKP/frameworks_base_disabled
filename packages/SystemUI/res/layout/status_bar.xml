@@ -22,11 +22,14 @@
 <com.android.systemui.statusbar.phone.PhoneStatusBarView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:systemui="http://schemas.android.com/apk/res/com.android.systemui"
+<<<<<<< HEAD
     android:id="@+id/phone_statusbar_view"
     android:background="@drawable/status_bar_background"
     android:orientation="vertical"
+=======
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+>>>>>>> 6ecfab0... added tmobile theme support - credit CM9 and rmcc
     android:focusable="true"
     android:descendantFocusability="afterDescendants"
     >

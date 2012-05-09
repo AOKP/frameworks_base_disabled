@@ -26,6 +26,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.os.Parcel;
 import android.telephony.SmsMessage;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.android.internal.telephony.RILConstants;
@@ -54,6 +55,84 @@ public class HTCQualcommRIL extends RIL implements CommandsInterface {
 
     public HTCQualcommRIL(Context context, int networkMode, int cdmaSubscription) {
         super(context, networkMode, cdmaSubscription);
+    }
+
+
+    @Override
+    public void
+    changeIccPin(String oldPin, String newPin, Message result) {
+        //Note: This RIL request has not been renamed to ICC,
+        //       but this request is also valid for SIM and RUIM
+        RILRequest rr = RILRequest.obtain(RIL_REQUEST_CHANGE_SIM_PIN, result);
+
+        if (RILJ_LOGD) riljLog(rr.serialString() + "> " + requestToString(rr.mRequest));
+
+        rr.mp.writeInt(3);
+        rr.mp.writeString(oldPin);
+        rr.mp.writeString(newPin);
+        rr.mp.writeString(mAid);
+
+        send(rr);
+    }
+
+    @Override
+    public void
+    changeIccPin2(String oldPin2, String newPin2, Message result) {
+        //Note: This RIL request has not been renamed to ICC,
+        //       but this request is also valid for SIM and RUIM
+        RILRequest rr = RILRequest.obtain(RIL_REQUEST_CHANGE_SIM_PIN2, result);
+
+        if (RILJ_LOGD) riljLog(rr.serialString() + "> " + requestToString(rr.mRequest));
+
+        rr.mp.writeInt(3);
+        rr.mp.writeString(oldPin2);
+        rr.mp.writeString(newPin2);
+        rr.mp.writeString(mAid);
+
+        send(rr);
+    }
+
+    @Override
+    protected DataCallState
+    getDataCallState(Parcel p, int version) {
+        DataCallState dataCall = new DataCallState();
+        dataCall.version = version;
+
+        if (version < 5) {
+            dataCall.cid = p.readInt();
+            dataCall.active = p.readInt();
+            dataCall.type = p.readString();
+            String addresses = p.readString();
+            if (!TextUtils.isEmpty(addresses)) {
+                dataCall.addresses = addresses.split(" ");
+            }
+        } else {
+            dataCall.status = p.readInt();
+            dataCall.suggestedRetryTime = p.readInt();
+            dataCall.cid = p.readInt();
+            dataCall.active = p.readInt();
+            dataCall.type = p.readString();
+            dataCall.ifname = p.readString();
+            if (dataCall.status == DataConnection.FailCause.NONE.getErrorCode()
+                && TextUtils.isEmpty(dataCall.ifname)
+                && dataCall.active != 0) {
+                throw new RuntimeException("getDataCallState, no ifname");
+            }
+            String addresses = p.readString();
+            if (!TextUtils.isEmpty(addresses)) {
+                dataCall.addresses = addresses.split(" ");
+            }
+            String dnses = p.readString();
+            if (!TextUtils.isEmpty(dnses)) {
+                dataCall.dnses = dnses.split(" ");
+            }
+            String gateways = p.readString();
+            if (!TextUtils.isEmpty(gateways)) {
+                dataCall.gateways = gateways.split(" ");
+            }
+        }
+
+        return dataCall;
     }
 
     @Override
@@ -98,9 +177,29 @@ public class HTCQualcommRIL extends RIL implements CommandsInterface {
     }
 
     @Override
+    public void
+    queryFacilityLock (String facility, String password, int serviceClass,
+                       Message response) {
+        RILRequest rr =
+            RILRequest.obtain(RIL_REQUEST_QUERY_FACILITY_LOCK, response);
+
+        if (RILJ_LOGD) riljLog(rr.serialString() + "> " + requestToString(rr.mRequest)
+                               + " aid: " + mAid + " facility: " + facility);
+
+        rr.mp.writeInt(4);
+
+        rr.mp.writeString(facility);
+        rr.mp.writeString(password);
+        rr.mp.writeString(Integer.toString(serviceClass));
+        rr.mp.writeString(mAid);
+
+        send(rr);
+    }
+
+    @Override
     protected Object
     responseIccCardStatus(Parcel p) {
-         IccCardApplication ca;
+        IccCardApplication ca;
 
         boolean oldRil = needsOldRilFeature("icccardstatus");
 
@@ -182,6 +281,101 @@ public class HTCQualcommRIL extends RIL implements CommandsInterface {
         }
 
         return response;
+    }
+
+    @Override
+    public void
+    setFacilityLock (String facility, boolean lockState, String password,
+                        int serviceClass, Message response) {
+        String lockString;
+        RILRequest rr
+                = RILRequest.obtain(RIL_REQUEST_SET_FACILITY_LOCK, response);
+
+        if (RILJ_LOGD) riljLog(rr.serialString() + "> " + requestToString(rr.mRequest)
+                               + " aid: " + mAid + " facility: " + facility
+                               + " lockstate: " + lockState);
+
+        lockString = (lockState) ? "1" : "0";
+
+        rr.mp.writeInt(5);
+
+        rr.mp.writeString(facility);
+        rr.mp.writeString(lockString);
+        rr.mp.writeString(password);
+        rr.mp.writeString(Integer.toString(serviceClass));
+        rr.mp.writeString(mAid);
+
+        send(rr);
+    }
+
+    @Override
+    public void
+    supplyIccPin(String pin, Message result) {
+        //Note: This RIL request has not been renamed to ICC,
+        //       but this request is also valid for SIM and RUIM
+        RILRequest rr = RILRequest.obtain(RIL_REQUEST_ENTER_SIM_PIN, result);
+
+        if (RILJ_LOGD) riljLog(rr.serialString() + "> " + requestToString(rr.mRequest));
+
+        rr.mp.writeInt(2);
+
+        rr.mp.writeString(pin);
+        rr.mp.writeString(mAid);
+
+        send(rr);
+    }
+
+    @Override
+    public void
+    supplyIccPin2(String pin, Message result) {
+        //Note: This RIL request has not been renamed to ICC,
+        //       but this request is also valid for SIM and RUIM
+        RILRequest rr = RILRequest.obtain(RIL_REQUEST_ENTER_SIM_PIN2, result);
+
+        if (RILJ_LOGD) riljLog(rr.serialString() + "> " + requestToString(rr.mRequest));
+
+        rr.mp.writeInt(2);
+
+        rr.mp.writeString(pin);
+        rr.mp.writeString(mAid);
+
+        send(rr);
+    }
+
+    @Override
+    public void
+    supplyIccPuk(String puk, String newPin, Message result) {
+        //Note: This RIL request has not been renamed to ICC,
+        //       but this request is also valid for SIM and RUIM
+        RILRequest rr = RILRequest.obtain(RIL_REQUEST_ENTER_SIM_PUK, result);
+
+        if (RILJ_LOGD) riljLog(rr.serialString() + "> " + requestToString(rr.mRequest));
+
+        rr.mp.writeInt(3);
+
+        rr.mp.writeString(puk);
+        rr.mp.writeString(newPin);
+        rr.mp.writeString(mAid);
+
+        send(rr);
+    }
+
+    @Override
+    public void
+    supplyIccPuk2(String puk, String newPin2, Message result) {
+        //Note: This RIL request has not been renamed to ICC,
+        //       but this request is also valid for SIM and RUIM
+        RILRequest rr = RILRequest.obtain(RIL_REQUEST_ENTER_SIM_PUK2, result);
+
+        if (RILJ_LOGD) riljLog(rr.serialString() + "> " + requestToString(rr.mRequest));
+
+        rr.mp.writeInt(3);
+
+        rr.mp.writeString(puk);
+        rr.mp.writeString(newPin2);
+        rr.mp.writeString(mAid);
+
+        send(rr);
     }
 
     @Override

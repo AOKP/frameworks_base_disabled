@@ -670,7 +670,6 @@ void AssetManager::updateResTableFromAssetPath(ResTable *rt, const asset_path& a
                         mZipSet.setZipResourceTableAsset(ap.path, ass);
                 }
             }
->>>>>>> 6ecfab0... added tmobile theme support - credit CM9 and rmcc
 
             if (cookiePos == 0 && ass != NULL) {
                 // If this is the first resource table in the asset

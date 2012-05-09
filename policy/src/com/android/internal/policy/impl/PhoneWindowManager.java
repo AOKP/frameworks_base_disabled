@@ -1346,7 +1346,6 @@ Configuration.HARDKEYBOARDHIDDEN_YES, Configuration.HARDKEYBOARDHIDDEN_NO);
             if (!compatInfo.supportsScreen()) {
                 win.addFlags(WindowManager.LayoutParams.FLAG_COMPATIBLE_WINDOW);
             }
->>>>>>> 6ecfab0... added tmobile theme support - credit CM9 and rmcc
 
 if (config.navigation == Configuration.NAVIGATION_NONAV) {
 config.navigationHidden = Configuration.NAVIGATIONHIDDEN_YES;

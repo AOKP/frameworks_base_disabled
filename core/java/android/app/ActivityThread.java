@@ -73,6 +73,7 @@ import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.os.StrictMode;
 import android.os.SystemClock;
+import android.os.SystemProperties;
 import android.text.TextUtils;
 import android.util.AndroidRuntimeException;
 import android.util.DisplayMetrics;
@@ -3899,6 +3900,13 @@ public final class ActivityThread {
         Process.setArgV0(data.processName);
         android.ddm.DdmHandleAppName.setAppName(data.processName);
 
+        // hwui.whitelist allows to restrict the hw renderer usage
+        // only to certain processes (0 - any)
+        // hwui.blacklist allows to disable the hw renderer usage
+        // for certain processes
+        String hwuiWhitelist = SystemProperties.get("hwui.whitelist", "0");
+        String hwuiBlacklist = SystemProperties.get("hwui.blacklist", "0");
+
         if (data.persistent) {
             // Persistent processes on low-memory devices do not get to
             // use hardware accelerated drawing, since this can add too much
@@ -3907,6 +3915,12 @@ public final class ActivityThread {
             if (!ActivityManager.isHighEndGfx(display)) {
                 HardwareRenderer.disable(false);
             }
+        } else if ((!hwuiWhitelist.equals("0") && !hwuiWhitelist.contains(data.processName))
+                    || hwuiBlacklist.contains(data.processName)
+                    || data.processName.contains("com.android.systemui")
+                    || data.processName.contains("launcher")
+                    || data.processName.contains("trebuchet")) {
+            HardwareRenderer.disable(false);
         }
         
         if (mProfiler.profileFd != null) {

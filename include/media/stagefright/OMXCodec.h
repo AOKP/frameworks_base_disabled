@@ -188,7 +188,7 @@ private:
         void *mData;
         MediaBuffer *mMediaBuffer;
         OMX_U8 *mAllocatedBuffer;
-        OMX_U32 mAllocatedSize;
+        size_t mAllocatedSize;
     };
 
     struct CodecSpecificData {

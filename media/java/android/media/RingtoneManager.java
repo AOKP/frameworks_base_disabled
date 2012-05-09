@@ -549,6 +549,7 @@ public class RingtoneManager {
         }
     }
 
+>>>>>>> 6ecfab0... added tmobile theme support - credit CM9 and rmcc
     private void setFilterColumnsList(int type) {
         List<String> columns = mFilterColumns;
         columns.clear();

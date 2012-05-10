@@ -30,7 +30,6 @@ commonSources:= \
 	LinearTransform.cpp \
 	ObbFile.cpp \
 	PropertyMap.cpp \
-    PackageRedirectionMap.cpp \
 	RefBase.cpp \
 	ResourceTypes.cpp \
 	SharedBuffer.cpp \
@@ -50,8 +49,6 @@ commonSources:= \
 	ZipFileCRO.cpp \
 	ZipFileRO.cpp \
 	ZipUtils.cpp \
-	../../tools/aapt/ZipFile.cpp \
-	../../tools/aapt/ZipEntry.cpp \
 	misc.cpp
 
 host_commonCflags := -DLIBUTILS_NATIVE=1 $(TOOL_CFLAGS)

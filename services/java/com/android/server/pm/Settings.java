@@ -2010,7 +2010,7 @@ final class Settings {
             if (pkgSetting.notLaunched) {
                 if (pkgSetting.installerPackageName != null) {
                     PackageManagerService.sendPackageBroadcast(Intent.ACTION_PACKAGE_FIRST_LAUNCH,
-                            pkgSetting.name, null, null,
+                            pkgSetting.name, null,
                             pkgSetting.installerPackageName, null);
                 }
                 pkgSetting.notLaunched = false;

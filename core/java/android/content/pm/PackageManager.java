@@ -1,6 +1,5 @@
 /*
  * Copyright (C) 2006 The Android Open Source Project
- * This code has been modified.  Portions copyright (C) 2010, T-Mobile USA, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -761,19 +760,6 @@ public abstract class PackageManager {
     public static final int PER_USER_RANGE = 100000;
 
     /**
-    * Feature for {@link #getSystemAvailableFeatures} and
-    * {@link #hasSystemFeature}: The device has a keyboard dock.
-    */
-    public static final String FEATURE_TF101_KB_DOCK = "asus.hardware.dock";
-
-    /**
-    * Feature for {@link #getSystemAvailableFeatures} and
-    * {@link #hasSystemFeature}: The device uses a hall effect
-    * sensor to change the value of the lid switch.
-    */
-    public static final String FEATURE_TF101_HALL_SENSOR = "asus.hardware.hall_sensor";
-	
-    /**
      * Feature for {@link #getSystemAvailableFeatures} and {@link #hasSystemFeature}: The device's
      * audio pipeline is low-latency, more suitable for audio applications sensitive to delays or
      * lag in sound input or output.
@@ -1419,17 +1405,6 @@ public abstract class PackageManager {
      *
      */
     public abstract List<PackageInfo> getInstalledPackages(int flags);
-
-    /**
-     * Return a List of all theme packages that are installed
-     * on the device.
-     *
-     * @return A List of PackageInfo objects, one for each theme package
-     *         that is installed on the device.
-     *
-     * @hide
-     */
-    public abstract List<PackageInfo> getInstalledThemePackages();
 
     /**
      * Check whether a particular package has been granted a particular

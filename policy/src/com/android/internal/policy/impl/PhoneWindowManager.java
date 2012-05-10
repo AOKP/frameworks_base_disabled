@@ -1409,20 +1409,6 @@ public int getConfigDisplayHeight(int fullWidth, int fullHeight, int rotation) {
 return getNonDecorDisplayHeight(fullWidth, fullHeight, rotation)
 - (mStatusBarCanHide ? mStatusBarHeight : 0);
 }
-        try {
-            Context context = mContext;
-            //Log.i(TAG, "addStartingWindow " + packageName + ": nonLocalizedLabel="
-            //        + nonLocalizedLabel + " theme=" + Integer.toHexString(theme));
-
-
-            try {
-                context = context.createPackageContext(packageName, 0);
-                if (theme != context.getThemeResId()) {
-                    context.setTheme(theme);
-                }
-            } catch (PackageManager.NameNotFoundException e) {
-                // Ignore
-            }
 
 public boolean doesForceHide(WindowState win, WindowManager.LayoutParams attrs) {
 return attrs.type == WindowManager.LayoutParams.TYPE_KEYGUARD;

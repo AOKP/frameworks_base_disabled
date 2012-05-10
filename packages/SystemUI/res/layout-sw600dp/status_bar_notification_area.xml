@@ -78,22 +78,6 @@
         android:layout_height="match_parent"
         android:gravity="center"
         >
-        <com.android.systemui.statusbar.tablet.HoloClock
-            android:id="@+id/clock"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="3dip"
-            android:layout_marginLeft="8dip"
-            android:layout_marginRight="4dip"
-            >
-            <TextView android:id="@+id/time_solid"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.StatusBar.Clock"
-                android:singleLine="true"
-                android:textSize="40sp"
-                />
-        </com.android.systemui.statusbar.tablet.HoloClock>
 
         <TextView
             android:id="@+id/network_text"
@@ -112,7 +96,7 @@
             android:id="@+id/signal_battery_cluster"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_marginRight="16dp"
+            android:layout_marginRight="4dp"
             android:orientation="horizontal"
             android:gravity="center"
             >
@@ -140,5 +124,21 @@
                 android:visibility="gone"
                 />
         </LinearLayout>
+        <com.android.systemui.statusbar.tablet.HoloClock
+            android:id="@+id/clock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="3dip"
+            android:layout_marginLeft="2dip"
+            android:layout_marginRight="4dip"
+            >
+            <TextView android:id="@+id/time_solid"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.StatusBar.Clock"
+                android:singleLine="true"
+                android:textSize="40sp"
+                />
+        </com.android.systemui.statusbar.tablet.HoloClock>
     </LinearLayout>
 </com.android.systemui.statusbar.tablet.NotificationArea>

@@ -49,5 +49,8 @@
 
     <!-- When true, show 1/2G networks as 3G. -->
     <bool name="config_showMin3G">false</bool>
+
+    <!-- Whether to hide the signal bars by default or not. Useful for WiFi only tablets -->
+    <bool name="config_hideSignalBars">false</bool>
 </resources>
 

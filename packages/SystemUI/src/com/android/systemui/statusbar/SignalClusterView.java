@@ -236,8 +236,10 @@ public class SignalClusterView
                 Settings.System.STATUSBAR_SIGNAL_TEXT, 0) != 0;
         showingWiFiText = Settings.System.getInt(resolver,
                 Settings.System.STATUSBAR_WIFI_SIGNAL_TEXT, 0) != 0;
+
+        int hideSignalBarsByDefault = getContext().getResources().getBoolean(R.bool.config_hideSignalBars) ? 1 : 0;
         mHideSignal = (Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.STATUSBAR_HIDE_SIGNAL_BARS, 0) == 1);
+                Settings.System.STATUSBAR_HIDE_SIGNAL_BARS, hideSignalBarsByDefault) == 1);
         int fontSize = Settings.System.getInt(resolver,
                 Settings.System.STATUSBAR_FONT_SIZE, 16);
         if (mMobileText != null)

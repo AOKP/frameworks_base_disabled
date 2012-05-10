@@ -512,6 +512,8 @@ public class Tethering extends INetworkManagementEventObserver.Stub {
                     // start tethering if we have a request pending
                     if (usbConnected && mRndisEnabled && mUsbTetherRequested) {
                         tetherUsb(true);
+                    } else if (!usbConnected) {
+                        tetherUsb(false);
                     }
                     mUsbTetherRequested = false;
                 }
@@ -534,6 +536,15 @@ public class Tethering extends INetworkManagementEventObserver.Stub {
         }
         for (String iface : ifaces) {
             if (isUsb(iface)) {
+                /* If the interface was present at boot, we might never have got
+                 * an interface added notification. Make sure we keep track of the
+                 * interface here; as the interface was listed by the
+                 * NetworkManagementService, we can be sure it exists anyway.
+                 */
+                if (mIfaces.get(iface) == null) {
+                    interfaceAdded(iface);
+                }
+
                 int result = (enable ? tether(iface) : untether(iface));
                 if (result == ConnectivityManager.TETHER_ERROR_NO_ERROR) {
                     return;

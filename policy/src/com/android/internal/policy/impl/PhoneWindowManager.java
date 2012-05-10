@@ -1285,67 +1285,6 @@ config.hardKeyboardHidden = determineHiddenState(mLidKeyboardAccessibility,
 Configuration.HARDKEYBOARDHIDDEN_YES, Configuration.HARDKEYBOARDHIDDEN_NO);
 }
 
-    public boolean doesForceHide(WindowState win, WindowManager.LayoutParams attrs) {
-        return attrs.type == WindowManager.LayoutParams.TYPE_KEYGUARD;
-    }
-    
-    public boolean canBeForceHidden(WindowState win, WindowManager.LayoutParams attrs) {
-        return attrs.type != WindowManager.LayoutParams.TYPE_STATUS_BAR
-                && attrs.type != WindowManager.LayoutParams.TYPE_WALLPAPER;
-    }
-    
-    /** {@inheritDoc} */
-    public View addStartingWindow(IBinder appToken, String packageName, int theme,
-            CompatibilityInfo compatInfo, CharSequence nonLocalizedLabel, int labelRes,
-            int icon, int windowFlags) {
-        if (!SHOW_STARTING_ANIMATIONS) {
-            return null;
-        }
-        if (packageName == null) {
-            return null;
-        }
-        
-        try {
-            Context context = mContext;
-            //Log.i(TAG, "addStartingWindow " + packageName + ": nonLocalizedLabel="
-            //        + nonLocalizedLabel + " theme=" + Integer.toHexString(theme));
-            try {
-                context = context.createPackageContext(packageName, 0);
-                if (theme != context.getThemeResId()) {
-                    context.setTheme(theme);
-                }
-            } catch (PackageManager.NameNotFoundException e) {
-                // Ignore
-            }
-            
-            Window win = PolicyManager.makeNewWindow(context);
-            if (win.getWindowStyle().getBoolean(
-                    com.android.internal.R.styleable.Window_windowDisablePreview, false)) {
-                return null;
-            }
-            
-            Resources r = context.getResources();
-            win.setTitle(r.getText(labelRes, nonLocalizedLabel));
-    
-            win.setType(
-                WindowManager.LayoutParams.TYPE_APPLICATION_STARTING);
-            // Force the window flags: this is a fake window, so it is not really
-            // touchable or focusable by the user.  We also add in the ALT_FOCUSABLE_IM
-            // flag because we do know that the next window will take input
-            // focus, so we want to get the IME window up on top of us right away.
-            win.setFlags(
-                windowFlags|
-                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE|
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE|
-                WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM,
-                windowFlags|
-                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE|
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE|
-                WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
-    
-            if (!compatInfo.supportsScreen()) {
-                win.addFlags(WindowManager.LayoutParams.FLAG_COMPATIBLE_WINDOW);
-            }
 
 if (config.navigation == Configuration.NAVIGATION_NONAV) {
 config.navigationHidden = Configuration.NAVIGATIONHIDDEN_YES;

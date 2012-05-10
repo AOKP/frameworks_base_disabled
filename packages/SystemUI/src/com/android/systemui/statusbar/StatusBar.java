@@ -60,8 +60,6 @@ public abstract class StatusBar extends SystemUI implements CommandQueue.Callbac
         // First set up our views and stuff.
         View sb = makeStatusBarView();
 
-        mStatusBarContainer.addView(sb);
-
         // Connect in to the status bar manager service
         StatusBarIconList iconList = new StatusBarIconList();
         ArrayList<IBinder> notificationKeys = new ArrayList<IBinder>();
@@ -136,7 +134,7 @@ public abstract class StatusBar extends SystemUI implements CommandQueue.Callbac
         lp.setTitle("StatusBar");
         lp.packageName = mContext.getPackageName();
         lp.windowAnimations = R.style.Animation_StatusBar;
-        WindowManagerImpl.getDefault().addView(mStatusBarContainer, lp);
+        WindowManagerImpl.getDefault().addView(sb, lp);
 
         if (SPEW) {
             Slog.d(TAG, "Added status bar view: gravity=0x" + Integer.toHexString(lp.gravity) 

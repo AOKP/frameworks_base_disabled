@@ -1,4 +1,3 @@
-
 # Copyright (C) 2008 The Android Open Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,7 +30,7 @@ commonSources:= \
 	LinearTransform.cpp \
 	ObbFile.cpp \
 	PropertyMap.cpp \
-        PackageRedirectionMap.cpp \
+    PackageRedirectionMap.cpp \
 	RefBase.cpp \
 	ResourceTypes.cpp \
 	SharedBuffer.cpp \

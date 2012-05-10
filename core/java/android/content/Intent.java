@@ -2330,7 +2330,6 @@ public class Intent implements Parcelable, Cloneable {
      * Used to indicate that the activity can be used in a car environment.
      */
     @SdkConstant(SdkConstantType.INTENT_CATEGORY)
-
     public static final String CATEGORY_CAR_MODE = "android.intent.category.CAR_MODE";
 
     /**

@@ -51,5 +51,8 @@
     <bool name="config_showMin3G">false</bool>
     
     <bool name="config_forcefullyDisableHardwareKeyboard">false</bool>
-</resources>
 
+    <!-- Whether to hide the signal bars by default or not. Useful for WiFi only tablets -->
+    <bool name="config_hideSignalBars">false</bool>
+
+</resources>

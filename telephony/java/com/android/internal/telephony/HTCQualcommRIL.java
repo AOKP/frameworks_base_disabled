@@ -151,25 +151,33 @@ public class HTCQualcommRIL extends RIL implements CommandsInterface {
     @Override
     protected Object
     responseSignalStrength(Parcel p) {
-        int numInts = 12;
+        int numInts = 14;
         int response[];
 
-        boolean oldRil = needsOldRilFeature("signalstrength");
-        boolean noLte = false;
+        /* HTC signal strength format:
+         * 0: GW_SignalStrength
+         * 1: GW_SignalStrength.bitErrorRate
+         * 2: CDMA_SignalStrength.dbm
+         * 3: CDMA_SignalStrength.ecio
+         * 4: EVDO_SignalStrength.dbm
+         * 5: EVDO_SignalStrength.ecio
+         * 6: EVDO_SignalStrength.signalNoiseRatio
+         * 7: ATT_SignalStrength.dbm
+         * 8: ATT_SignalStrength.ecno
+         * 9: LTE_SignalStrength.signalStrength
+         * 10: LTE_SignalStrength.rsrp
+         * 11: LTE_SignalStrength.rsrq
+         * 12: LTE_SignalStrength.rssnr
+         * 13: LTE_SignalStrength.cqi
+         */
 
         response = new int[numInts];
         for (int i = 0; i < numInts; i++) {
-            if ((oldRil || noLte) && i > 6 && i < 12) {
+            if (i > 8) {
+                response[i-2] = p.readInt();
                 response[i] = -1;
             } else {
                 response[i] = p.readInt();
-            }
-            if (i == 7 && response[i] == 99) {
-                response[i] = -1;
-                noLte = true;
-            }
-            if (i == 8 && !noLte) {
-                response[i] *= -1;
             }
         }
 

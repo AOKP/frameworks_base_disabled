@@ -32,6 +32,14 @@ ifeq ($(OMAP_ENHANCEMENT), true)
     LOCAL_SRC_FILES += AudioResamplerSpeex.cpp.arm
     LOCAL_C_INCLUDES += external/speex/include
     LOCAL_SHARED_LIBRARIES += libspeexresampler
+
+    POST_PRO_DIR := $(wildcard $(LOCAL_PATH)/../srs_processing/Android.mk)
+    ifndef POST_PRO_DIR
+        POSTPRO_PATH := $(LOCAL_PATH)
+    else
+        POSTPRO_PATH := $(LOCAL_PATH)/../srs_processing
+        include $(POSTPRO_PATH)/AF_PATCH.mk
+    endif
 endif
 
 LOCAL_MODULE:= libaudioflinger

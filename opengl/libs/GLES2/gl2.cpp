@@ -149,9 +149,14 @@ const GLubyte* glGetString(GLenum name)
 
 void glShaderSource(GLuint shader, GLsizei count, const GLchar** string, const GLint* length)
 {
+    bool needRewrite = false;
+
     LOGW("Shader source dump:");
     for (GLsizei i = 0; i < count; i++) {
         LOGW("%s", string[i]);
+        if (strstr(string[i], "GL_OES_EGL_image_external")) {
+            needRewrite = true;
+        }
     }
 
 /* TODO
@@ -162,38 +167,53 @@ is currently very dumb:
   (the first line is then replaced with an empty one)
 - it assumes only one appearence of "samplerExternalOES" in the shader code
   (and replaces this first appearence with "sampler2D")
-- it's actually valid only for count equal to 1
 
 Despite the mentioned limitations, it seems to capture
 all real cases encountered so far.
 */
 
-    if (strstr(string[0], "GL_OES_EGL_image_external")) {
-        LOGW("Shader source rewrite:");
-        GLchar **shaderstr;
-        shaderstr = new GLchar*[count];
-        GLchar *p;
-        GLchar *n;
-        for (GLsizei i = 0; i < count; i++) {
-            n = strstr(string[i], "\n");
-            shaderstr[i] = new GLchar[strlen(n)+1];
-            if (p = strstr(n, "samplerExternalOES")) {
-                strncpy(shaderstr[i], n, p-n);
-                shaderstr[i][p-n] = '\0';
-                sprintf(shaderstr[i]+(p-n), "%s%s", "sampler2D", p+strlen("samplerExternalOES"));
-            } else {
-                strcpy(shaderstr[i],string[i]);
-            }
-            LOGW("%s", shaderstr[i]);
-        }
-        __glShaderSource(shader, count, const_cast<const GLchar **>(shaderstr), length);
-        for (GLsizei i = 0; i < count; i++) {
-            delete [] shaderstr[i];
-        }
-        delete [] shaderstr;
-    } else {
+    if (!needRewrite) {
         __glShaderSource(shader, count, string, length);
+        return;
     }
+
+    LOGW("Shader source rewrite:");
+
+    GLchar **newStrings = new GLchar*[count];
+    const GLchar *start, *pos;
+
+    for (GLsizei i = 0; i < count; i++) {
+        start = strstr(string[i], "\n");
+        if (!start) {
+            start = string[i];
+        } else {
+            /* skip '\n' */
+            start++;
+        }
+
+        newStrings[i] = new GLchar[strlen(start) + 1];
+        pos = strstr(start, "samplerExternalOES");
+        if (pos) {
+            /* copy part before 'samplerExternalOES' */
+            strncpy(newStrings[i], start, pos - start);
+            /* ensure NUL termination */
+            newStrings[i][pos - start] = '\0';
+            strcat(newStrings[i], "sampler2D");
+            /* copy remainder */
+            pos += strlen("samplerExternalOES");
+            strcat(newStrings[i], pos);
+        } else {
+            strcpy(newStrings[i], start);
+        }
+        LOGW("%s", newStrings[i]);
+    }
+
+    __glShaderSource(shader, count, const_cast<const GLchar **>(newStrings), length);
+
+    for (GLsizei i = 0; i < count; i++) {
+        delete [] newStrings[i];
+    }
+    delete [] newStrings;
 }
 
 void glTexParameterf(GLenum target, GLenum pname, GLfloat param)

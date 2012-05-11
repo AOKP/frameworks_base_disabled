@@ -21,6 +21,9 @@
 #include <media/stagefright/MediaExtractor.h>
 
 #include <utils/Vector.h>
+#ifdef OMAP_ENHANCEMENT
+#include "include/APE.h"
+#endif
 
 namespace android {
 
@@ -43,6 +46,10 @@ protected:
 private:
     sp<DataSource> mDataSource;
     sp<MetaData> mMeta;
+#ifdef OMAP_ENHANCEMENT
+    APE ape;
+    sp<MetaData> mApeMeta;
+#endif
     status_t mInitCheck;
 
     Vector<uint64_t> mOffsetVector;

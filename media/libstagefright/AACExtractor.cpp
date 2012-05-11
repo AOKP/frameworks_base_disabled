@@ -134,7 +134,12 @@ static size_t getAdtsFrameLength(const sp<DataSource> &source, off64_t offset, s
 AACExtractor::AACExtractor(const sp<DataSource> &source)
     : mDataSource(source),
       mInitCheck(NO_INIT),
+#ifdef OMAP_ENHANCEMENT
+      mFrameDurationUs(0),
+      mApeMeta(new MetaData){
+#else
       mFrameDurationUs(0) {
+#endif
     String8 mimeType;
     float confidence;
     if (!SniffAAC(mDataSource, &mimeType, &confidence, NULL)) {
@@ -160,11 +165,33 @@ AACExtractor::AACExtractor(const sp<DataSource> &source)
     off64_t streamSize, numFrames = 0;
     size_t frameSize = 0;
     int64_t duration = 0;
+#ifdef OMAP_ENHANCEMENT
+    uint8_t apeTag[8];
+#endif
 
     if (mDataSource->getSize(&streamSize) == OK) {
          while (offset < streamSize) {
+#ifdef OMAP_ENHANCEMENT
+            mDataSource->readAt(offset, &apeTag, 8);
+            if (ape.isAPE(apeTag)){
+                size_t apeSize = 0;
+                mDataSource->readAt(offset + 8 + 4, &apeSize, 1);
+
+                if (ape.parceAPE(source, offset, &apeSize, mApeMeta) == false){
+                    break;
+                }
+
+                mOffsetVector.push(offset);
+                offset += apeSize;
+                continue;
+            }
+#endif
             if ((frameSize = getAdtsFrameLength(source, offset, NULL)) == 0) {
+#ifdef OMAP_ENHANCEMENT
+                break;
+#else
                 return;
+#endif
             }
 
             mOffsetVector.push(offset);
@@ -186,15 +213,26 @@ AACExtractor::~AACExtractor() {
 }
 
 sp<MetaData> AACExtractor::getMetaData() {
+#ifndef OMAP_ENHANCEMENT
     sp<MetaData> meta = new MetaData;
+#endif
 
     if (mInitCheck != OK) {
+#ifdef OMAP_ENHANCEMENT
+        return mApeMeta;
+#else
         return meta;
+#endif
     }
+#ifdef OMAP_ENHANCEMENT
+    mApeMeta->setCString(kKeyMIMEType, MEDIA_MIMETYPE_AUDIO_AAC_ADTS);
 
+    return mApeMeta;
+#else
     meta->setCString(kKeyMIMEType, MEDIA_MIMETYPE_AUDIO_AAC_ADTS);
 
     return meta;
+#endif
 }
 
 size_t AACExtractor::countTracks() {

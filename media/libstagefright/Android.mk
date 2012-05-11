@@ -78,6 +78,7 @@ LOCAL_SRC_FILES:=                         \
         WVMExtractor.cpp                  \
         XINGSeeker.cpp                    \
         avc_utils.cpp                     \
+        APE.cpp                           \
 
 ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
         LOCAL_SRC_FILES += ExtendedExtractor.cpp

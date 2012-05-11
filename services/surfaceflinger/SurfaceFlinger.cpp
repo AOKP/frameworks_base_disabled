@@ -2864,8 +2864,16 @@ void GraphicPlane::setDisplayHardware(DisplayHardware *hw)
         }
     }
 
+#ifdef OVERRIDE_FB0_WIDTH
+    const float w = OVERRIDE_FB0_WIDTH;
+#else
     const float w = hw->getWidth();
+#endif
+#ifdef OVERRIDE_FB0_HEIGHT
+    const float h = OVERRIDE_FB0_HEIGHT;
+#else
     const float h = hw->getHeight();
+#endif
     GraphicPlane::orientationToTransfrom(displayOrientation, w, h,
             &mDisplayTransform);
     if (displayOrientation & ISurfaceComposer::eOrientationSwapMask) {

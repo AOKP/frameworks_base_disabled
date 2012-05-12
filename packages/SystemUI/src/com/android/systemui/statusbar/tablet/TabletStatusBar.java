@@ -61,6 +61,7 @@ import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Pair;
 import android.util.Slog;
+import android.util.TypedValue;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.IWindowManager;
@@ -2265,10 +2266,11 @@ public class TabletStatusBar extends StatusBar implements
         Resources r = mContext.getResources();
 
         int btnWidth = 48;
-
+        int pad = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, r.getDisplayMetrics());
         v = new ExtensibleKeyButtonView(mContext, null, ClickAction, Longpress);
         v.setLayoutParams(getLayoutParams(landscape, btnWidth));
         v.setGlowBackground(R.drawable.ic_sysbar_highlight);
+        v.setPadding(pad, 0, pad, 0);
 
         // the rest is for setting the icon (or custom icon)
         if (IconUri != null && IconUri.length() > 0) {

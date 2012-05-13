@@ -43,10 +43,7 @@ public class TwoGToggle extends Toggle {
         SettingsObserver obs = new SettingsObserver(new Handler());
         obs.observe();
         setLabel(R.string.toggle_2g);
-        if (mToggle.isChecked())
-        	setIcon(R.drawable.toggle_2g_1);
-        else
-        	setIcon(R.drawable.toggle_2g_1_off);
+        updateState();
     }
 
     @Override
@@ -54,11 +51,7 @@ public class TwoGToggle extends Toggle {
         TelephonyManager tm = (TelephonyManager) mView.getContext()
                 .getSystemService(Context.TELEPHONY_SERVICE);
         tm.toggle2G(isChecked);
-        if (mToggle.isChecked())
-        	setIcon(R.drawable.toggle_2g_1);
-        else
-        	setIcon(R.drawable.toggle_2g_1_off);
-
+        updateState();
     }
 
     class SettingsObserver extends ContentObserver {
@@ -68,8 +61,8 @@ public class TwoGToggle extends Toggle {
 
         void observe() {
             ContentResolver resolver = mContext.getContentResolver();
-            resolver.registerContentObserver(
-                    Settings.Secure.getUriFor(Settings.Secure.PREFERRED_NETWORK_MODE), false,
+            resolver.registerContentObserver(Settings.Secure
+                    .getUriFor(Settings.Secure.PREFERRED_NETWORK_MODE), false,
                     this);
             updateState();
         }
@@ -77,7 +70,6 @@ public class TwoGToggle extends Toggle {
         @Override
         public void onChange(boolean selfChange) {
             mNetworkMode = getCurrentPreferredNetworkMode(mContext);
-
             updateState();
         }
     }
@@ -95,12 +87,14 @@ public class TwoGToggle extends Toggle {
 
     private void requestPhoneStateChange(int newState) {
         if (!isValidNetwork(newState)) {
-            Log.e(TAG, "attempting to switch to an invalid network type: " + newState);
+            Log.e(TAG, "attempting to switch to an invalid network type: "
+                    + newState);
             Log.e(TAG, "Phone CDMA status: " + isCdma);
             return;
         }
 
-        Log.i(TAG, "Sending request to change phone network mode to: " + newState);
+        Log.i(TAG, "Sending request to change phone network mode to: "
+                + newState);
         Intent i = new Intent(PowerSaverService.ACTION_MODIFY_NETWORK_MODE);
         i.putExtra(PowerSaverService.EXTRA_NETWORK_MODE, newState);
         mContext.sendBroadcast(i);
@@ -129,19 +123,21 @@ public class TwoGToggle extends Toggle {
     }
 
     @Override
-    protected void updateInternalToggleState() {
+    protected boolean updateInternalToggleState() {
         mNetworkMode = getCurrentPreferredNetworkMode(mContext);
         if (mToggle != null)
             mToggle.setChecked(mNetworkMode == Phone.NT_MODE_GSM_ONLY);
         if (mToggle.isChecked())
-        	setIcon(R.drawable.toggle_2g_1);
+            setIcon(R.drawable.toggle_2g_1);
         else
-        	setIcon(R.drawable.toggle_2g_1_off);
+            setIcon(R.drawable.toggle_2g_1_off);
+        return mToggle.isChecked();
     }
 
     @Override
     protected boolean onLongPress() {
-        Intent intent = new Intent(android.provider.Settings.ACTION_WIRELESS_SETTINGS);
+        Intent intent = new Intent(
+                android.provider.Settings.ACTION_WIRELESS_SETTINGS);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         mContext.startActivity(intent);
         return true;

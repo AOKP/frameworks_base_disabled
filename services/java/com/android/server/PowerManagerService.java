@@ -25,13 +25,6 @@ import static android.provider.Settings.System.STAY_ON_WHILE_PLUGGED_IN;
 import static android.provider.Settings.System.TRANSITION_ANIMATION_SCALE;
 import static android.provider.Settings.System.WINDOW_ANIMATION_SCALE;
 
-import java.io.FileDescriptor;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Observable;
-import java.util.Observer;
-
 import android.R;
 import android.app.ActivityManagerNative;
 import android.app.IActivityManager;
@@ -75,6 +68,14 @@ import android.view.WindowManagerPolicy;
 import com.android.internal.app.IBatteryStats;
 import com.android.internal.app.ShutdownThread;
 import com.android.server.am.BatteryStatsService;
+import com.android.internal.app.ThemeUtils;
+
+import java.io.FileDescriptor;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Observable;
+import java.util.Observer;
 
 public class PowerManagerService extends IPowerManager.Stub
         implements LocalPowerManager, Watchdog.Monitor {
@@ -200,6 +201,7 @@ public class PowerManagerService extends IPowerManager.Stub
     private Intent mScreenOnIntent;
     private LightsService mLightsService;
     private Context mContext;
+    private Context mUiContext;
     private LightsService.Light mLcdLight;
     private LightsService.Light mButtonLight;
     private LightsService.Light mKeyboardLight;
@@ -2169,10 +2171,17 @@ public class PowerManagerService extends IPowerManager.Stub
             mLastLcdValue = value;
         }
         if ((mask & BUTTON_BRIGHT_BIT) != 0) {
-            mButtonLight.setBrightness(value);
+            // Use sensor-determined brightness values when the button (or keyboard)
+            // light is on, since users may want to specify a custom brightness setting
+            // that disables the button (or keyboard) backlight entirely in low-ambient
+            // light situations.
+            mButtonLight.setBrightness(mLightSensorButtonBrightness >= 0 && value > 0 ?
+                                       mLightSensorButtonBrightness : value);
+
         }
         if ((mask & KEYBOARD_BRIGHT_BIT) != 0) {
-            mKeyboardLight.setBrightness(value);
+            mKeyboardLight.setBrightness(mLightSensorKeyboardBrightness >= 0 && value > 0 ?
+                                         mLightSensorKeyboardBrightness : value);
         }
     }
 
@@ -2766,10 +2775,10 @@ public class PowerManagerService extends IPowerManager.Stub
                     }
                     mLastLcdValue = value;
                 }
-                if (mButtonBrightnessOverride < 0) {
+                if (mButtonBrightnessOverride < 0 && mAutoBrightnessButtonKeyboard) {
                     mButtonLight.setBrightness(buttonValue);
                 }
-                if (mButtonBrightnessOverride < 0 || !mKeyboardVisible) {
+                if ((mButtonBrightnessOverride < 0 || !mKeyboardVisible) && mAutoBrightnessButtonKeyboard) {
                     mKeyboardLight.setBrightness(keyboardValue);
                 }
             }
@@ -2813,7 +2822,7 @@ public class PowerManagerService extends IPowerManager.Stub
         Runnable runnable = new Runnable() {
             public void run() {
                 synchronized (this) {
-                    ShutdownThread.reboot(mContext, finalReason, false);
+                    ShutdownThread.reboot(getUiContext(), finalReason, false);
                 }
                 
             }
@@ -2848,6 +2857,13 @@ public class PowerManagerService extends IPowerManager.Stub
         } catch (InterruptedException e) {
             Log.wtf(TAG, e);
         }
+    }
+
+    private Context getUiContext() {
+        if (mUiContext == null) {
+            mUiContext = ThemeUtils.createUiContext(mContext);
+        }
+        return mUiContext != null ? mUiContext : mContext;
     }
 
     private void goToSleepLocked(long time, int reason) {
@@ -3532,18 +3548,12 @@ public class PowerManagerService extends IPowerManager.Stub
                     return;
                 }
 
-                if (mLightSensorValue == -1 ||
-                        milliseconds < mLastScreenOnTime + mLightSensorWarmupTime) {
-                    // process the value immediately if screen has just turned on
-                    mHandler.removeCallbacks(mAutoBrightnessTask);
-                    mLightSensorPendingDecrease = false;
-                    mLightSensorPendingIncrease = false;
-                    lightSensorChangedLocked(value);
-                } else {
-                    if ((value > mLightSensorValue && mLightSensorPendingDecrease) ||
-                            (value < mLightSensorValue && mLightSensorPendingIncrease) ||
-                            (value == mLightSensorValue) ||
-                            (!mLightSensorPendingDecrease && !mLightSensorPendingIncrease)) {
+                if (mLightSensorValue != value) {
+                    if (mLightSensorValue == -1 ||
+                            milliseconds < mLastScreenOnTime + mLightSensorWarmupTime) {
+                        // process the value immediately if screen has just turned on
+                        lightSensorChangedLocked(value);
+                    } else {
                         // delay processing to debounce the sensor
                         mHandler.removeCallbacks(mAutoBrightnessTask);
                         mLightSensorPendingDecrease = (value < mLightSensorValue);
@@ -3552,9 +3562,9 @@ public class PowerManagerService extends IPowerManager.Stub
                             mLightSensorPendingValue = value;
                             mHandler.postDelayed(mAutoBrightnessTask, LIGHT_SENSOR_DELAY);
                         }
-                    } else {
+                    }                    
+                } else {
                         mLightSensorPendingValue = value;
-                    }
                 }
             }
         }

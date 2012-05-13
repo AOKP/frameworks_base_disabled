@@ -21,7 +21,6 @@ import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
-import android.animation.ObjectAnimator;
 import android.app.ActivityManager;
 import android.app.ActivityManagerNative;
 import android.app.Dialog;
@@ -39,6 +38,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.content.res.CustomTheme;
 import android.database.ContentObserver;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -59,6 +59,7 @@ import android.provider.Settings.SettingNotFoundException;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.Pair;
 import android.util.Slog;
 import android.view.Display;
 import android.view.Gravity;
@@ -186,6 +187,9 @@ public class PhoneStatusBar extends StatusBar {
     // top bar
     TextView mNoNotificationsTitle;
     View mClearButton;
+
+    RelativeLayout.LayoutParams mClearParams;
+
     View mSettingsButton;
     View mLiquidButton;
 
@@ -254,6 +258,11 @@ public class PhoneStatusBar extends StatusBar {
     
     LinearLayout mCenterClockLayout;
 
+    // last theme that was applied in order to detect theme change (as opposed
+    // to some other configuration change).
+    CustomTheme mCurrentTheme;
+    private boolean mRecreating = false;
+
     // for disabling the status bar
     int mDisabled = 0;
 
@@ -307,6 +316,11 @@ public class PhoneStatusBar extends StatusBar {
 
         mWindowManager = IWindowManager.Stub.asInterface(
                 ServiceManager.getService(Context.WINDOW_SERVICE));
+
+        CustomTheme currentTheme = mContext.getResources().getConfiguration().customTheme;
+        if (currentTheme != null) {
+            mCurrentTheme = (CustomTheme)currentTheme.clone();
+        }
 
         super.start(); // calls makeStatusBarView()
 
@@ -378,12 +392,19 @@ public class PhoneStatusBar extends StatusBar {
         mCenterClockLayout = (LinearLayout) sb.findViewById(R.id.center_clock_layout);
         mTickerView = sb.findViewById(R.id.ticker);
 
+        /* Destroy the old widget before recreating the expanded dialog
+           to make sure there are no context issues */
+        if (mRecreating)
+            mPowerWidget.destroyWidget();
+
         mExpandedDialog = new ExpandedDialog(context);
         mExpandedView = expanded;
         mPile = (NotificationRowLayout) expanded.findViewById(R.id.latestItems);
         mNoNotificationsTitle = (TextView) expanded.findViewById(R.id.noNotificationsTitle);
         mNoNotificationsTitle.setVisibility(View.GONE); // disabling for now
 
+        mTxtLayout = (LinearLayout) expanded.findViewById(R.id.txtlayout);
+        mTxtParams = (RelativeLayout.LayoutParams) mTxtLayout.getLayoutParams();
         mClearButton = expanded.findViewById(R.id.clear_all_button);
         mClearButton.setOnClickListener(mClearButtonListener);
         mClearButton.setAlpha(0f);
@@ -554,14 +575,23 @@ public class PhoneStatusBar extends StatusBar {
 
         // Provide RecentsPanelView with a temporary parent to allow layout params to work.
         LinearLayout tmpRoot = new LinearLayout(mContext);
-        if (Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.HORIZONTAL_RECENTS_TASK_PANEL, 0) == 1) {
+
+        int recent_style = Settings.System.getInt(mContext.getContentResolver(),
+                      Settings.System.RECENT_APP_SWITCHER,0);
+
+        if (recent_style == 1) {
             mRecentsPanel = (RecentsPanelView) LayoutInflater.from(mContext).inflate(
                     R.layout.status_bar_recent_panel_webaokp, tmpRoot, false);
-        } else {
+        }
+        else if (recent_style == 2) {
+            mRecentsPanel = (RecentsPanelView) LayoutInflater.from(mContext).inflate(
+                    R.layout.status_bar_recent_panel_sense4, tmpRoot, false);
+        }
+        else {
             mRecentsPanel = (RecentsPanelView) LayoutInflater.from(mContext).inflate(
                     R.layout.status_bar_recent_panel, tmpRoot, false);
         }
+
         mRecentsPanel.setRecentTasksLoader(mRecentTasksLoader);
         mRecentTasksLoader.setRecentsPanel(mRecentsPanel);
         mRecentsPanel.setOnTouchListener(new TouchOutsideListener(MSG_CLOSE_RECENTS_PANEL,
@@ -618,6 +648,12 @@ public class PhoneStatusBar extends StatusBar {
         if (mNavigationBarView == null)
             return;
 
+        CustomTheme newTheme = mContext.getResources().getConfiguration().customTheme;
+        if (newTheme != null &&
+                (mCurrentTheme == null || !mCurrentTheme.equals(newTheme))) {
+            // Nevermind, this will be re-created
+            return;
+        }
         prepareNavigationBarView();
 
         WindowManagerImpl.getDefault().updateViewLayout(
@@ -738,7 +774,7 @@ public class PhoneStatusBar extends StatusBar {
                 notification.notification.fullScreenIntent.send();
             } catch (PendingIntent.CanceledException e) {
             }
-        } else {
+        } else if (!mRecreating) {
             // usual case: status bar visible & not immersive
 
             // show the ticker
@@ -2090,6 +2126,10 @@ public class PhoneStatusBar extends StatusBar {
         WindowManagerImpl.getDefault().addView(mTrackingView, lp);
     }
 
+    void onBarViewDetached() {
+        WindowManagerImpl.getDefault().removeView(mTrackingView);
+    }
+
     void onTrackingViewAttached() {
         WindowManager.LayoutParams lp;
         int pixelFormat;
@@ -2123,6 +2163,9 @@ public class PhoneStatusBar extends StatusBar {
                         ViewGroup.LayoutParams.MATCH_PARENT));
         mExpandedDialog.getWindow().setBackgroundDrawable(null);
         mExpandedDialog.show();
+    }
+
+    void onTrackingViewDetached() {
     }
 
     void setNotificationIconVisibility(boolean visible, int anim) {
@@ -2260,7 +2303,8 @@ public class PhoneStatusBar extends StatusBar {
         if (DEBUG) {
             Slog.d(TAG, "updateDisplaySize: " + mDisplayMetrics);
         }
-        updateExpandedSize();
+        if (!mRecreating)
+            updateExpandedSize();
     }
 
     void updateExpandedSize() {
@@ -2614,7 +2658,7 @@ public class PhoneStatusBar extends StatusBar {
     private void updateSettings() {
         // Check all our settings and respond accordingly
         // Slog.i(TAG, "updated settings values");
-    	
+
     	int fontSize = 16;
 
         ContentResolver cr = mContext.getContentResolver();
@@ -2627,7 +2671,15 @@ public class PhoneStatusBar extends StatusBar {
         mDropdownDateBehavior = Settings.System.getInt(cr,
                 Settings.System.STATUSBAR_DATE_BEHAVIOR, 0) == 1;
 
-        fontSize = Settings.System.getInt(cr, Settings.System.STATUSBAR_FONT_SIZE, 16) ;
+        mWeatherPanelEnabled = (Settings.System.getInt(cr, Settings.System.WEATHER_STATUSBAR_STYLE, 0) == 1) &&
+                (Settings.System.getInt(cr, Settings.System.USE_WEATHER, 0) == 1);
+
+        mIsStatusBarBrightNess = Settings.System.getInt(mStatusBarView.getContext()
+                .getContentResolver(),
+                Settings.System.STATUS_BAR_BRIGHTNESS_TOGGLE, 0) == 1;
+
+        loadDimens();
+        fontSize = Settings.System.getInt(cr, Settings.System.STATUSBAR_FONT_SIZE, 16);
         
         Clock clock = (Clock) mStatusBarView.findViewById(R.id.clock);
         if (clock != null) {
@@ -2646,7 +2698,6 @@ public class PhoneStatusBar extends StatusBar {
         mShowDate = Settings.System.getInt(cr, Settings.System.STATUSBAR_SHOW_DATE, 0) == 1;
         mControlAospSettingsIcon = Settings.System.getInt(cr,
                 Settings.System.STATUSBAR_REMOVE_AOSP_SETTINGS_LINK, 0) == 1;
-
         mUserStatusbarBackground = Settings.System.getInt(cr, Settings.System.STATUSBAR_WINDOWSHADE_USER_BACKGROUND, 0) == 1;
 
         if (DEBUG) Log.d(TAG, "mUserStatusbarBackground: " + mUserStatusbarBackground);
@@ -2839,6 +2890,63 @@ public class PhoneStatusBar extends StatusBar {
         mIntruderAlertView.setVisibility(vis ? View.VISIBLE : View.GONE);
     }
 
+    private static void copyNotifications(ArrayList<Pair<IBinder, StatusBarNotification>> dest,
+            NotificationData source) {
+        int N = source.size();
+        for (int i = 0; i < N; i++) {
+            NotificationData.Entry entry = source.get(i);
+            dest.add(Pair.create(entry.key, entry.notification));
+        }
+    }
+
+    private void recreateStatusBar() {
+        mRecreating = true;
+        mStatusBarContainer.removeAllViews();
+
+        // extract icons from the soon-to-be recreated viewgroup.
+        int nIcons = mStatusIcons.getChildCount();
+        ArrayList<StatusBarIcon> icons = new ArrayList<StatusBarIcon>(nIcons);
+        ArrayList<String> iconSlots = new ArrayList<String>(nIcons);
+        for (int i = 0; i < nIcons; i++) {
+            StatusBarIconView iconView = (StatusBarIconView)mStatusIcons.getChildAt(i);
+            icons.add(iconView.getStatusBarIcon());
+            iconSlots.add(iconView.getStatusBarSlot());
+        }
+
+        // extract notifications.
+        int nNotifs = mNotificationData.size();
+        ArrayList<Pair<IBinder, StatusBarNotification>> notifications =
+                new ArrayList<Pair<IBinder, StatusBarNotification>>(nNotifs);
+        copyNotifications(notifications, mNotificationData);
+        mNotificationData.clear();
+
+        if (mNavigationBarView != null) {
+            WindowManagerImpl.getDefault().removeView(mNavigationBarView);
+        }
+        View newStatusBarView = makeStatusBarView();
+        addNavigationBar();
+
+        // recreate StatusBarIconViews.
+        for (int i = 0; i < nIcons; i++) {
+            StatusBarIcon icon = icons.get(i);
+            String slot = iconSlots.get(i);
+            addIcon(slot, i, i, icon);
+        }
+
+        // recreate notifications.
+        for (int i = 0; i < nNotifs; i++) {
+            Pair<IBinder, StatusBarNotification> notifData = notifications.get(i);
+            addNotificationViews(notifData.first, notifData.second);
+        }
+
+        setAreThereNotifications();
+
+        mStatusBarContainer.addView(newStatusBarView);
+
+        updateExpandedViewPos(EXPANDED_LEAVE_ALONE);
+        mRecreating = false;
+    }
+
     /**
      * Reload some of our resources when the configuration changes. We don't reload everything when
      * the configuration changes -- we probably should, but getting that smooth is tough. Someday
@@ -2848,13 +2956,26 @@ public class PhoneStatusBar extends StatusBar {
         final Context context = mContext;
         final Resources res = context.getResources();
 
-        if (mClearButton instanceof TextView) {
-            ((TextView) mClearButton)
-                    .setText(context.getText(R.string.status_bar_clear_all_button));
-        }
-        mNoNotificationsTitle.setText(context.getText(R.string.status_bar_no_notifications_title));
+        // detect theme change.
+        CustomTheme newTheme = res.getConfiguration().customTheme;
+        if (newTheme != null &&
+                (mCurrentTheme == null || !mCurrentTheme.equals(newTheme))) {
+            mCurrentTheme = (CustomTheme)newTheme.clone();
+            StatusBar.resetColors(mContext);
+            if(mNavigationBarView != null)
+                mNavigationBarView.updateSettings();
+            recreateStatusBar();
+            Intent weatherintent = new Intent("com.aokp.romcontrol.INTENT_WEATHER_REQUEST");
+            weatherintent.putExtra(android.content.Intent.EXTRA_TEXT, "updateweather");
+            mContext.sendBroadcast(weatherintent);
+        } else {
+            if (mClearButton instanceof TextView) {
+                ((TextView)mClearButton).setText(context.getText(R.string.status_bar_clear_all_button));
+            }
+            mNoNotificationsTitle.setText(context.getText(R.string.status_bar_no_notifications_title));
 
-        loadDimens();
+            loadDimens();
+        }
     }
 
     protected void loadDimens() {
@@ -2865,6 +2986,10 @@ public class PhoneStatusBar extends StatusBar {
 
         int newIconSize = res.getDimensionPixelSize(
                 com.android.internal.R.dimen.status_bar_icon_size);
+
+        sbSizeOffset = (int) (newIconSize - sbOffsetpx);
+        newIconSize = (int) (sbSizeOffset + fontSizepx);
+
         int newIconHPadding = res.getDimensionPixelSize(
                 R.dimen.status_bar_icon_padding);
 

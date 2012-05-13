@@ -68,7 +68,7 @@ public class KeyButtonView extends ImageView {
 
     int durationSpeedOn = 500;
     int durationSpeedOff = 50;
-    int mGlowBGColor = 0;
+    int mGlowBGColor = Integer.MIN_VALUE;
 
     Runnable mCheckLongPress = new Runnable() {
         public void run() {
@@ -154,8 +154,13 @@ public class KeyButtonView extends ImageView {
     public void setGlowBackground(int id) {
         mGlowBG = getResources().getDrawable(id);
         if (mGlowBG != null) {
-            if (mGlowBGColor != Integer.MIN_VALUE)
-                mGlowBG.setColorFilter(mGlowBGColor, PorterDuff.Mode.SRC_ATOP);
+            int defaultColor = mContext.getResources().getColor(
+                    com.android.internal.R.color.holo_blue_light);
+            if (mGlowBGColor == Integer.MIN_VALUE) {
+                mGlowBGColor = defaultColor;
+            }
+            mGlowBG.setColorFilter(null);
+            mGlowBG.setColorFilter(mGlowBGColor, PorterDuff.Mode.SRC_ATOP);
 
             mDrawingAlpha = BUTTON_QUIESCENT_ALPHA;
         }
@@ -366,30 +371,26 @@ public class KeyButtonView extends ImageView {
         ContentResolver resolver = mContext.getContentResolver();
 
         durationSpeedOff = Settings.System.getInt(resolver,
-                Settings.System.NAVIGATION_BAR_GLOW_DURATION[0], 50);
+                Settings.System.NAVIGATION_BAR_GLOW_DURATION[0], 10);
         durationSpeedOn = Settings.System.getInt(resolver,
-                Settings.System.NAVIGATION_BAR_GLOW_DURATION[1], 500);
+                Settings.System.NAVIGATION_BAR_GLOW_DURATION[1], 100);
         BUTTON_QUIESCENT_ALPHA = Settings.System.getFloat(resolver,
                 Settings.System.NAVIGATION_BAR_BUTTON_ALPHA,
                 0.6f);
         setDrawingAlpha(BUTTON_QUIESCENT_ALPHA);
-
-        try {
+        
+        if (mGlowBG != null) {
+            int defaultColor = mContext.getResources().getColor(
+                    com.android.internal.R.color.holo_blue_light);
             mGlowBGColor = Settings.System.getInt(resolver,
-                    Settings.System.NAVIGATION_BAR_GLOW_TINT);
-            if (mGlowBG != null) { 
-            	if (mGlowBGColor == Integer.MIN_VALUE) {
-            		mGlowBG.setColorFilter(null);
-            	} else {
-                mGlowBG.setColorFilter(null);
-                mGlowBG.setColorFilter(mGlowBGColor, PorterDuff.Mode.SRC_ATOP);
-            	}
+                    Settings.System.NAVIGATION_BAR_GLOW_TINT, defaultColor);
+            
+            if (mGlowBGColor == Integer.MIN_VALUE) {
+                mGlowBGColor = defaultColor;
             }
-        } catch (SettingNotFoundException e1) {
-            mGlowBGColor = Integer.MIN_VALUE;
+            mGlowBG.setColorFilter(null);
+            mGlowBG.setColorFilter(mGlowBGColor, PorterDuff.Mode.SRC_ATOP);
         }
-
-        invalidate();
 
         try {
             int color = Settings.System.getInt(resolver,
@@ -404,5 +405,6 @@ public class KeyButtonView extends ImageView {
             }
         } catch (SettingNotFoundException e) {
         }
+        invalidate();
     }
 }

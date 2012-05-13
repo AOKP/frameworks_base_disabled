@@ -3,28 +3,21 @@ package com.android.systemui.statusbar.policy;
 
 import java.lang.ref.WeakReference;
 
-import com.android.internal.telephony.PhoneStateIntentReceiver;
-
-import android.R.integer;
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.res.Resources;
 import android.database.ContentObserver;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
-import android.telephony.PhoneStateListener;
-import android.telephony.ServiceState;
 import android.telephony.SignalStrength;
-import android.telephony.TelephonyManager;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.CharacterStyle;
 import android.text.style.RelativeSizeSpan;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.view.View;
 import android.widget.TextView;
+
+import com.android.internal.telephony.PhoneStateIntentReceiver;
 
 public class SignalText extends TextView {
 
@@ -41,7 +34,7 @@ public class SignalText extends TextView {
     private int style;
     private Handler mHandler;
     private Context mContext;
-    protected int mSignalColor = com.android.internal.R.color.holo_blue_light;
+    protected int mSignalColor;
     private PhoneStateIntentReceiver mPhoneStateReceiver;
     
     private SignalText mSignalText;
@@ -126,12 +119,14 @@ public class SignalText extends TextView {
 
     private void updateSettings() {
         ContentResolver resolver = getContext().getContentResolver();
+        int defaultColor = getResources().getColor(
+                com.android.internal.R.color.holo_blue_light);
         mSignalColor = Settings.System.getInt(resolver,
                 Settings.System.STATUSBAR_SIGNAL_TEXT_COLOR,
-                0xFF33B5E5);
+                defaultColor);
         if (mSignalColor == Integer.MIN_VALUE) {
             // flag to reset the color
-            mSignalColor = 0xFF33B5E5;
+            mSignalColor = defaultColor;
         }
         setTextColor(mSignalColor);
         updateSignalText();

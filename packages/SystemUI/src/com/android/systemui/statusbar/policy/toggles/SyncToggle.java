@@ -27,55 +27,53 @@ import android.view.KeyEvent;
 import com.android.systemui.R;
 
 public class SyncToggle extends Toggle {
-	
-	private Handler mHandler = new Handler();
+
+    private Handler mHandler = new Handler();
 
     private SyncStatusObserver mSyncObserver = new SyncStatusObserver() {
         public void onStatusChanged(int which) {
-        	mHandler.post(onSyncUpdated);
-        	// View cannot be updated outside UI thread.  use handler to run update
+            mHandler.post(onSyncUpdated);
+            // View cannot be updated outside UI thread. use handler to run
+            // update
         }
     };
 
     final Runnable onSyncUpdated = new Runnable() {
-    	public void run() {
-    		updateState();
-    	}
+        public void run() {
+            updateState();
+        }
     };
-    
+
     public SyncToggle(Context context) {
         super(context);
         updateState();
-        ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_SETTINGS,
-                mSyncObserver);
+        ContentResolver.addStatusChangeListener(
+                ContentResolver.SYNC_OBSERVER_TYPE_SETTINGS, mSyncObserver);
         setLabel(R.string.toggle_sync);
-        if (mToggle.isChecked())
-        	setIcon(R.drawable.toggle_sync);
-        else
-        	setIcon(R.drawable.toggle_sync_off);
+        updateState();
     }
 
     @Override
     protected void onCheckChanged(boolean isChecked) {
         ContentResolver.setMasterSyncAutomatically(isChecked);
-        if (mToggle.isChecked())
-        	setIcon(R.drawable.toggle_sync);
-        else
-        	setIcon(R.drawable.toggle_sync_off);
+        updateState();
     }
 
     @Override
-    protected void updateInternalToggleState() {
+    protected boolean updateInternalToggleState() {
         mToggle.setChecked(ContentResolver.getMasterSyncAutomatically());
-        if (mToggle.isChecked())
-        	setIcon(R.drawable.toggle_sync);
-        else
-        	setIcon(R.drawable.toggle_sync_off);
+        if (mToggle.isChecked()) {
+            setIcon(R.drawable.toggle_sync);
+        } else {
+            setIcon(R.drawable.toggle_sync_off);
+        }
+        return mToggle.isChecked();
     }
 
     @Override
     protected boolean onLongPress() {
-        Intent intent = new Intent(android.provider.Settings.ACTION_SYNC_SETTINGS);
+        Intent intent = new Intent(
+                android.provider.Settings.ACTION_SYNC_SETTINGS);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         mContext.startActivity(intent);
         return true;

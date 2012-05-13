@@ -60,6 +60,8 @@ public abstract class StatusBar extends SystemUI implements CommandQueue.Callbac
         // First set up our views and stuff.
         View sb = makeStatusBarView();
 
+        mStatusBarContainer.addView(sb);
+
         // Connect in to the status bar manager service
         StatusBarIconList iconList = new StatusBarIconList();
         ArrayList<IBinder> notificationKeys = new ArrayList<IBinder>();
@@ -134,7 +136,7 @@ public abstract class StatusBar extends SystemUI implements CommandQueue.Callbac
         lp.setTitle("StatusBar");
         lp.packageName = mContext.getPackageName();
         lp.windowAnimations = R.style.Animation_StatusBar;
-        WindowManagerImpl.getDefault().addView(sb, lp);
+        WindowManagerImpl.getDefault().addView(mStatusBarContainer, lp);
 
         if (SPEW) {
             Slog.d(TAG, "Added status bar view: gravity=0x" + Integer.toHexString(lp.gravity) 
@@ -147,6 +149,21 @@ public abstract class StatusBar extends SystemUI implements CommandQueue.Callbac
         }
 
         mDoNotDisturb = new DoNotDisturb(mContext);
+    }
+
+    public static void resetColors(Context c) {
+        Settings.System.putInt(c.getContentResolver(), Settings.System.STATUSBAR_CLOCK_COLOR,
+                Integer.MIN_VALUE);
+        Settings.System.putInt(c.getContentResolver(), Settings.System.STATUSBAR_BATTERY_BAR_COLOR,
+                Integer.MIN_VALUE);
+        Settings.System.putInt(c.getContentResolver(), Settings.System.STATUSBAR_SIGNAL_TEXT_COLOR,
+                Integer.MIN_VALUE);
+        Settings.System.putInt(c.getContentResolver(), Settings.System.STATUSBAR_WIFI_SIGNAL_TEXT_COLOR,
+                Integer.MIN_VALUE);
+        Settings.System.putInt(c.getContentResolver(), Settings.System.NAVIGATION_BAR_GLOW_TINT,
+                Integer.MIN_VALUE);
+        Settings.System.putInt(c.getContentResolver(), Settings.System.NAVIGATION_BAR_TINT,
+                Integer.MIN_VALUE);
     }
 
     protected View updateNotificationVetoButton(View row, StatusBarNotification n) {

@@ -32,13 +32,10 @@ public class NetworkToggle extends Toggle {
 
     public NetworkToggle(Context context) {
         super(context);
+
+        setLabel(R.string.toggle_data);
         context.registerReceiver(getBroadcastReceiver(), getIntentFilter());
         updateState();
-        setLabel(R.string.toggle_data);
-        if (mToggle.isChecked())
-        	setIcon(R.drawable.toggle_data);
-        else
-        	setIcon(R.drawable.toggle_data_off);
     }
 
     private boolean isMobileDataEnabled() {
@@ -55,14 +52,8 @@ public class NetworkToggle extends Toggle {
 
     @Override
     protected void onCheckChanged(boolean isChecked) {
-        final BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
-        if (adapter != null) {
-            setMobileDataEnabled(isChecked);
-        }
-        if (isChecked)
-        	setIcon(R.drawable.toggle_data);
-        else
-        	setIcon(R.drawable.toggle_data_off);
+        setMobileDataEnabled(isChecked);
+        updateState();
     }
 
     protected BroadcastReceiver getBroadcastReceiver() {
@@ -86,19 +77,22 @@ public class NetworkToggle extends Toggle {
     }
 
     @Override
-    protected void updateInternalToggleState() {
+    protected boolean updateInternalToggleState() {
         mToggle.setChecked(isMobileDataEnabled());
-        if (mToggle.isChecked())
-        	setIcon(R.drawable.toggle_data);
-        else
-        	setIcon(R.drawable.toggle_data_off);
+        if (mToggle.isChecked()) {
+            setIcon(R.drawable.toggle_data);
+        } else {
+            setIcon(R.drawable.toggle_data_off);
+        }
+        return mToggle.isChecked();
     }
-    
+
     @Override
     protected boolean onLongPress() {
-    	Intent intent = new Intent(android.provider.Settings.ACTION_WIRELESS_SETTINGS);
+        Intent intent = new Intent(
+                android.provider.Settings.ACTION_WIRELESS_SETTINGS);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         mContext.startActivity(intent);
-    	return true;
+        return true;
     }
 }

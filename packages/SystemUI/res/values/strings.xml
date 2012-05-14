@@ -385,8 +385,7 @@
     <string name="accessibility_clear_all">Clear all notifications.</string>
 
     <!-- for Sense 4.0 style multitasking mod -->
-    <string name="recent_apps_title">Recent apps</string>
-
+    <string name="recent_apps_title">Recent Apps</string>
     <string name="battery_test">99</string>
     <string name="status_bar_settings_gps_button">GPS</string>
     <string name="toggle_bt">BT</string>
@@ -407,4 +406,16 @@
     <string name="toggle_navbar">Toggle NavBar</string>    
     <string name="toggle_tether">Tether</string>
     <string name="widgets">Widgets</string>
+
+    <!-- Dialog title for navigation bar button selection -->
+    <string name="navbar_dialog_title">Choose Action</string>
+    <string name="navbar_home_button">Home Button</string>
+    <string name="navbar_recent_button">Recent Button</string>
+    <string name="navbar_search_button">Search Button</string>
+    <string name="navbar_back_button">Back Button</string>
+    <string name="navbar_empty_button">Empty Button</string>
+    <string name="navbar_menu_conditional_button">Menu (AutoHide)</string>
+    <string name="navbar_menu_always_button">Menu (AlwaysShow)</string>
+    <string name="navbar_menu_big_button">Menu Button</string>
+    <string name="powerwidget_screen_timeout_toast">Screen Timeout: %1$d %2$s</string>
 </resources>

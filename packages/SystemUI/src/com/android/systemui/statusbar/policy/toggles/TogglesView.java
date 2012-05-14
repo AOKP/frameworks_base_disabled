@@ -56,6 +56,7 @@ public class TogglesView extends LinearLayout {
     private static final String TOGGLE_SYNC = "SYNC";
     private static final String TOGGLE_SWAGGER = "SWAGGER";
     private static final String TOGGLE_FCHARGE = "FCHARGE";
+    private static final String TOGGLE_TETHER = "TETHER";
     private int mWidgetsPerRow = 2;
 
     private boolean useAltButtonLayout = false;
@@ -124,6 +125,8 @@ public class TogglesView extends LinearLayout {
                 newToggle = new SwaggerToggle(mContext);
             else if (splitToggle.equals(TOGGLE_FCHARGE))
                 newToggle = new FChargeToggle(mContext);
+            else if (splitToggle.equals(TOGGLE_TETHER))
+                newToggle = new USBTetherToggle(mContext);
 
             if (newToggle != null)
                 toggles.add(newToggle);

@@ -2775,10 +2775,10 @@ public class PowerManagerService extends IPowerManager.Stub
                     }
                     mLastLcdValue = value;
                 }
-                if (mButtonBrightnessOverride < 0 && mAutoBrightnessButtonKeyboard) {
+                if (mButtonBrightnessOverride < 0) {
                     mButtonLight.setBrightness(buttonValue);
                 }
-                if ((mButtonBrightnessOverride < 0 || !mKeyboardVisible) && mAutoBrightnessButtonKeyboard) {
+                if (mButtonBrightnessOverride < 0 || !mKeyboardVisible) {
                     mKeyboardLight.setBrightness(keyboardValue);
                 }
             }

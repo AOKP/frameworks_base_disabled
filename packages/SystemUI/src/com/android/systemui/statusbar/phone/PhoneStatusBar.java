@@ -21,6 +21,7 @@ import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
+import android.animation.ObjectAnimator;
 import android.app.ActivityManager;
 import android.app.ActivityManagerNative;
 import android.app.Dialog;
@@ -187,8 +188,6 @@ public class PhoneStatusBar extends StatusBar {
     // top bar
     TextView mNoNotificationsTitle;
     View mClearButton;
-
-    RelativeLayout.LayoutParams mClearParams;
 
     View mSettingsButton;
     View mLiquidButton;
@@ -403,8 +402,6 @@ public class PhoneStatusBar extends StatusBar {
         mNoNotificationsTitle = (TextView) expanded.findViewById(R.id.noNotificationsTitle);
         mNoNotificationsTitle.setVisibility(View.GONE); // disabling for now
 
-        mTxtLayout = (LinearLayout) expanded.findViewById(R.id.txtlayout);
-        mTxtParams = (RelativeLayout.LayoutParams) mTxtLayout.getLayoutParams();
         mClearButton = expanded.findViewById(R.id.clear_all_button);
         mClearButton.setOnClickListener(mClearButtonListener);
         mClearButton.setAlpha(0f);
@@ -2671,14 +2668,6 @@ public class PhoneStatusBar extends StatusBar {
         mDropdownDateBehavior = Settings.System.getInt(cr,
                 Settings.System.STATUSBAR_DATE_BEHAVIOR, 0) == 1;
 
-        mWeatherPanelEnabled = (Settings.System.getInt(cr, Settings.System.WEATHER_STATUSBAR_STYLE, 0) == 1) &&
-                (Settings.System.getInt(cr, Settings.System.USE_WEATHER, 0) == 1);
-
-        mIsStatusBarBrightNess = Settings.System.getInt(mStatusBarView.getContext()
-                .getContentResolver(),
-                Settings.System.STATUS_BAR_BRIGHTNESS_TOGGLE, 0) == 1;
-
-        loadDimens();
         fontSize = Settings.System.getInt(cr, Settings.System.STATUSBAR_FONT_SIZE, 16);
         
         Clock clock = (Clock) mStatusBarView.findViewById(R.id.clock);
@@ -2940,9 +2929,7 @@ public class PhoneStatusBar extends StatusBar {
         }
 
         setAreThereNotifications();
-
         mStatusBarContainer.addView(newStatusBarView);
-
         updateExpandedViewPos(EXPANDED_LEAVE_ALONE);
         mRecreating = false;
     }
@@ -2956,26 +2943,13 @@ public class PhoneStatusBar extends StatusBar {
         final Context context = mContext;
         final Resources res = context.getResources();
 
-        // detect theme change.
-        CustomTheme newTheme = res.getConfiguration().customTheme;
-        if (newTheme != null &&
-                (mCurrentTheme == null || !mCurrentTheme.equals(newTheme))) {
-            mCurrentTheme = (CustomTheme)newTheme.clone();
-            StatusBar.resetColors(mContext);
-            if(mNavigationBarView != null)
-                mNavigationBarView.updateSettings();
-            recreateStatusBar();
-            Intent weatherintent = new Intent("com.aokp.romcontrol.INTENT_WEATHER_REQUEST");
-            weatherintent.putExtra(android.content.Intent.EXTRA_TEXT, "updateweather");
-            mContext.sendBroadcast(weatherintent);
-        } else {
-            if (mClearButton instanceof TextView) {
-                ((TextView)mClearButton).setText(context.getText(R.string.status_bar_clear_all_button));
-            }
-            mNoNotificationsTitle.setText(context.getText(R.string.status_bar_no_notifications_title));
-
-            loadDimens();
+        if (mClearButton instanceof TextView) {
+            ((TextView) mClearButton)
+                    .setText(context.getText(R.string.status_bar_clear_all_button));
         }
+        mNoNotificationsTitle.setText(context.getText(R.string.status_bar_no_notifications_title));
+
+        loadDimens();
     }
 
     protected void loadDimens() {
@@ -2986,9 +2960,6 @@ public class PhoneStatusBar extends StatusBar {
 
         int newIconSize = res.getDimensionPixelSize(
                 com.android.internal.R.dimen.status_bar_icon_size);
-
-        sbSizeOffset = (int) (newIconSize - sbOffsetpx);
-        newIconSize = (int) (sbSizeOffset + fontSizepx);
 
         int newIconHPadding = res.getDimensionPixelSize(
                 R.dimen.status_bar_icon_padding);
@@ -3012,7 +2983,6 @@ public class PhoneStatusBar extends StatusBar {
 
         mExpandAccelPx = res.getDimension(R.dimen.expand_accel);
         mCollapseAccelPx = res.getDimension(R.dimen.collapse_accel);
-
         mFlingGestureMaxXVelocityPx = res.getDimension(R.dimen.fling_gesture_max_x_velocity);
 
         if (false)

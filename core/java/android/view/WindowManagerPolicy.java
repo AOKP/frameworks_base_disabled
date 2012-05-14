@@ -966,6 +966,7 @@ public interface WindowManagerPolicy {
      * name of package being worked on durring boot time message.
      */
     public void setPackageName(String pkgName);
+
     /**
      * Hide the UI for showing boot messages, never to be displayed again.
      */

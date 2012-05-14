@@ -37,7 +37,7 @@ import com.android.soundpooltest.R;
 public class SoundPoolTest extends Activity
 {
     private static final String LOG_TAG = "SoundPoolTest";
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
     private static final boolean VERBOSE = false;
     private TestThread mThread;
 

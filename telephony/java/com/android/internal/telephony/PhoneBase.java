@@ -60,7 +60,7 @@ import java.util.Locale;
 
 public abstract class PhoneBase extends Handler implements Phone {
     private static final String LOG_TAG = "PHONE";
-    private static final boolean LOCAL_DEBUG = true;
+    private static final boolean LOCAL_DEBUG = false;
 
     // Key used to read and write the saved network selection numeric value
     public static final String NETWORK_SELECTION_KEY = "network_selection_key";

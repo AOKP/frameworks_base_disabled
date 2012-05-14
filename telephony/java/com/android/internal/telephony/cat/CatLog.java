@@ -19,7 +19,7 @@ package com.android.internal.telephony.cat;
 import android.util.Log;
 
 public abstract class CatLog {
-    static final boolean DEBUG = true;
+    static final boolean DEBUG = false;
 
     public static void d(Object caller, String msg) {
         if (!DEBUG) {

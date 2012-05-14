@@ -51,7 +51,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class PackageManagerTests extends AndroidTestCase {
-    private static final boolean localLOGV = true;
+    private static final boolean localLOGV = false;
     public static final String TAG="PackageManagerTests";
     public final long MAX_WAIT_TIME = 25*1000;
     public final long WAIT_TIME_INCR = 5*1000;
@@ -174,7 +174,7 @@ public class PackageManagerTests extends AndroidTestCase {
         PackageInstallObserver observer = new PackageInstallObserver();
         final boolean received = false;
         mContext.registerReceiver(receiver, receiver.filter);
-        final boolean DEBUG = true;
+        final boolean DEBUG = false;
         try {
             // Wait on observer
             synchronized(observer) {

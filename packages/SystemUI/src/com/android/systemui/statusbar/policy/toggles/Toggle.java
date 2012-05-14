@@ -41,7 +41,7 @@ import com.android.systemui.R;
 public abstract class Toggle implements OnCheckedChangeListener {
 
     protected static final String TAG = "Toggle";
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     View mView;
     protected Context mContext;

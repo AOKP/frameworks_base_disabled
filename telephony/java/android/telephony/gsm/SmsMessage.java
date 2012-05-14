@@ -36,7 +36,7 @@ import static android.telephony.TelephonyManager.PHONE_TYPE_CDMA;
  */
 @Deprecated
 public class SmsMessage {
-    private static final boolean LOCAL_DEBUG = true;
+    private static final boolean LOCAL_DEBUG = false;
     private static final String LOG_TAG = "SMS";
 
     /**

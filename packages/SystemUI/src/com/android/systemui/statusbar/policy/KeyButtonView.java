@@ -51,7 +51,7 @@ import com.android.systemui.statusbar.policy.Clock.SettingsObserver;
 
 public class KeyButtonView extends ImageView {
     protected static final String TAG = "StatusBar.KeyButtonView";
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     final float GLOW_MAX_SCALE_FACTOR = 1.8f;
     float BUTTON_QUIESCENT_ALPHA = 1f;

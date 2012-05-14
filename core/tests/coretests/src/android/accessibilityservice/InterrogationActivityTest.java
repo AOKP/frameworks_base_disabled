@@ -48,7 +48,7 @@ import java.util.Queue;
  */
 public class InterrogationActivityTest
         extends ActivityInstrumentationTestCase2<InterrogationActivity> {
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     private static String LOG_TAG = "InterrogationActivityTest";
 

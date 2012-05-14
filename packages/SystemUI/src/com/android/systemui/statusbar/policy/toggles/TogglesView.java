@@ -23,7 +23,7 @@ import com.android.systemui.statusbar.StatusBar;
 public class TogglesView extends LinearLayout {
 
     private static final String TAG = "ToggleView";
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     ArrayList<LinearLayout> rows = new ArrayList<LinearLayout>();
     ArrayList<Toggle> toggles = new ArrayList<Toggle>();

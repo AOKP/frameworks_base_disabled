@@ -47,7 +47,7 @@ import java.util.regex.Pattern;
  */
 public class SipPhone extends SipPhoneBase {
     private static final String LOG_TAG = "SipPhone";
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
     private static final int TIMEOUT_MAKE_CALL = 15; // in seconds
     private static final int TIMEOUT_ANSWER_CALL = 8; // in seconds
     private static final int TIMEOUT_HOLD_CALL = 15; // in seconds

@@ -24,7 +24,7 @@ import java.util.Map;
 
 public abstract class PowerButton {
     public static final String TAG = "PowerButton";
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     public static final int STATE_ENABLED = 1;
     public static final int STATE_DISABLED = 2;

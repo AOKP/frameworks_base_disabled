@@ -87,7 +87,7 @@ public class GSMPhone extends PhoneBase {
     // from this file will go into the radio log rather than the main
     // log.  (Use "adb logcat -b radio" to see them.)
     static final String LOG_TAG = "GSM";
-    private static final boolean LOCAL_DEBUG = true;
+    private static final boolean LOCAL_DEBUG = false;
 
     // Key used to read/write current ciphering state
     public static final String CIPHERING_KEY = "ciphering_key";

@@ -264,6 +264,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     final Object mLock = new Object();
 
     Context mContext;
+    Context mUiContext;
     IWindowManager mWindowManager;
     WindowManagerFuncs mWindowManagerFuncs;
     LocalPowerManager mPowerManager;
@@ -3406,6 +3407,12 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             }
             updateRotation(true);
             updateOrientationListenerLp();
+        }
+    };
+
+    BroadcastReceiver mThemeChangeReceiver = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+            mUiContext = null;
         }
     };
 

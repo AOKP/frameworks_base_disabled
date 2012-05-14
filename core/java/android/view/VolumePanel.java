@@ -654,6 +654,10 @@ public class VolumePanel extends Handler implements OnSeekBarChangeListener,
             mDialog.show();
         }
 
+        if(mRingerAndNotificationStreamsLinked && sc.streamType != AudioManager.STREAM_VOICE_CALL) {
+            updateStates();
+        }
+
         // Do a little vibrate if applicable (only when going into vibrate mode)
         if ((flags & AudioManager.FLAG_VIBRATE) != 0
                 && mAudioService.isStreamAffectedByRingerMode(streamType)

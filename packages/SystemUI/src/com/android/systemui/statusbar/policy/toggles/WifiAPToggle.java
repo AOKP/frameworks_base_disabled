@@ -91,7 +91,6 @@ public class WifiAPToggle extends Toggle {
                 }
 
                 wifiManager.setWifiApEnabled(null, desiredState);
-                updateState();
                 return;
             }
         });

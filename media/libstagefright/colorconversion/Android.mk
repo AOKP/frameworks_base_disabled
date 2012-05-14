@@ -15,4 +15,8 @@ endif
 
 LOCAL_MODULE:= libstagefright_color_conversion
 
+ifneq ($(BOARD_WITHOUT_PIXEL_FORMAT_YV12),)
+    LOCAL_CFLAGS += -DMISSING_EGL_PIXEL_FORMAT_YV12
+endif
+
 include $(BUILD_STATIC_LIBRARY)

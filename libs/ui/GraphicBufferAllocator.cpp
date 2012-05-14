@@ -104,7 +104,6 @@ status_t GraphicBufferAllocator::alloc(uint32_t w, uint32_t h, PixelFormat forma
     if (format == HAL_PIXEL_FORMAT_YV12) {
         LOGD("%s: Override HAL_PIXEL_FORMAT_YV12", __FUNCTION__);
         format = HAL_PIXEL_FORMAT_RGB_565;
-        //format = HAL_PIXEL_FORMAT_RGBA_8888;
     }
     if (!(usage & GRALLOC_USAGE_SW_READ_MASK)) {
         usage |= GRALLOC_USAGE_SW_READ_RARELY;
@@ -127,8 +126,8 @@ status_t GraphicBufferAllocator::alloc(uint32_t w, uint32_t h, PixelFormat forma
 
     err = mAllocDev->alloc(mAllocDev, w, h, format, usage, handle, stride);
 
-    ALOGW_IF(err, "alloc(%u, %u, %d, %08x, ...) failed %d (%s)",
-            w, h, format, usage, err, strerror(-err));
+    LOGW_IF(err, "alloc(%u, %u, format %d (0x%x), %08x, ...) failed %d (%s)",
+            w, h, format, format, usage, err, strerror(-err));
 
     if (err == NO_ERROR) {
         Mutex::Autolock _l(sLock);

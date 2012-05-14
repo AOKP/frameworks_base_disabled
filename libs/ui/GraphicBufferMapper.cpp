@@ -15,6 +15,7 @@
  */
 
 #define LOG_TAG "GraphicBufferMapper"
+//#define LOG_NDEBUG 0
 
 #include <stdint.h>
 #include <errno.h>

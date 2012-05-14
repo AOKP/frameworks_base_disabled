@@ -114,9 +114,6 @@ Overlay::Overlay(uint32_t width, uint32_t height, Format format, QueueBufferHook
 }
 
 Overlay::~Overlay() {
-    if (mBuffers != NULL) {
-        LOGW("%s: Destructor called without freeing buffers...", __FUNCTION__);
-    }
 }
 
 status_t Overlay::dequeueBuffer(overlay_buffer_t* buffer)
@@ -241,18 +238,13 @@ void Overlay::destroy()
 {
     int fd = 0;
 
-<<<<<<< HEAD
     pthread_mutex_lock(&mQueueMutex);
 
     LOGD("%s", __FUNCTION__);
-=======
-    LOGV("%s", __FUNCTION__);
->>>>>>> 847c6e0... Provide format via getter.
 
     for (uint32_t i = 0; i < NUM_BUFFERS; i++) {
         if (mBuffers[i].ptr != NULL && munmap(mBuffers[i].ptr, mBuffers[i].length) < 0) {
             LOGW("%s: unmap of buffer %d failed", __FUNCTION__, i);
-<<<<<<< HEAD
         } else {
             mBuffers[i].ptr = NULL;
         }
@@ -263,22 +255,14 @@ void Overlay::destroy()
             }
             fd = mBuffers[i].fd;
             mBuffers[i].fd = 0;
-=======
-        }
-        if (mBuffers[i].fd > 0) {
-            fd = mBuffers[i].fd;
->>>>>>> 847c6e0... Provide format via getter.
         }
     }
     if (fd > 0) {
         close(fd);
     }
 
-<<<<<<< HEAD
     pthread_mutex_unlock(&mQueueMutex);
 
-=======
->>>>>>> 847c6e0... Provide format via getter.
     pthread_mutex_destroy(&mQueueMutex);
 }
 

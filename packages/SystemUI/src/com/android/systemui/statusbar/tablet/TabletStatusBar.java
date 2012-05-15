@@ -155,7 +155,9 @@ public class TabletStatusBar extends StatusBar implements
             "**null**", "**null**", "**null**", "**null**", "**null**"
     };
 
-    // The height of the bar, as definied by the build.  It may be taller if we're plugged
+    public Drawable mBackButtonDrawable;
+    
+    // The height of the bar, as defined by the build.  It may be taller if we're plugged
     // into hdmi.
     int mNaturalBarHeight = -1;
     int mIconSize = -1;
@@ -1373,6 +1375,8 @@ public class TabletStatusBar extends StatusBar implements
     }
 
     public void setImeWindowStatus(IBinder token, int vis, int backDisposition) {
+    	final boolean landscape;
+    	landscape = (mContext.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE);
         mInputMethodSwitchButton.setImeWindowStatus(token,
                 (vis & InputMethodService.IME_ACTIVE) != 0);
         updateNotificationIcons();
@@ -1380,7 +1384,7 @@ public class TabletStatusBar extends StatusBar implements
         int res;
         switch (backDisposition) {
             case InputMethodService.BACK_DISPOSITION_WILL_NOT_DISMISS:
-                res = R.drawable.ic_sysbar_back;
+                res = -1; // force us to do a look up when restoring back icon
                 break;
             case InputMethodService.BACK_DISPOSITION_WILL_DISMISS:
                 res = R.drawable.ic_sysbar_back_ime;
@@ -1390,12 +1394,15 @@ public class TabletStatusBar extends StatusBar implements
                 if ((vis & InputMethodService.IME_VISIBLE) != 0) {
                     res = R.drawable.ic_sysbar_back_ime;
                 } else {
-                    res = R.drawable.ic_sysbar_back;
+                    res = -1;// force us to do a look up when restoring back icon
                 }
                 break;
         }
         if (mBackButton != null) {
-        	mBackButton.setImageResource(res);
+        	if (res == -1)
+        		mBackButton.setImageDrawable(mBackButtonDrawable);
+        	else
+        		mBackButton.setImageResource(res);
         }
         if (FAKE_SPACE_BAR) {
             mFakeSpaceBar.setVisibility(((vis & InputMethodService.IME_VISIBLE) != 0)
@@ -2274,6 +2281,7 @@ public class TabletStatusBar extends StatusBar implements
     private ExtensibleKeyButtonView generateKey(boolean landscape, String ClickAction,
             String Longpress,
             String IconUri) {
+    	Drawable buttonIcon = null;
         ExtensibleKeyButtonView v = null;
         Resources r = mContext.getResources();
 
@@ -2288,7 +2296,7 @@ public class TabletStatusBar extends StatusBar implements
         if (IconUri != null && IconUri.length() > 0) {
             File f = new File(Uri.parse(IconUri).getPath());
             if (f.exists())
-                v.setImageDrawable(new BitmapDrawable(r, f.getAbsolutePath()));
+                buttonIcon = new BitmapDrawable(r, f.getAbsolutePath());
         }
 
         if (IconUri != null && !IconUri.equals("")
@@ -2296,13 +2304,13 @@ public class TabletStatusBar extends StatusBar implements
             // it's an icon the user chose from the gallery here
             File icon = new File(Uri.parse(IconUri).getPath());
             if (icon.exists())
-                v.setImageDrawable(new BitmapDrawable(mContext.getResources(), icon.getAbsolutePath()));
+            	buttonIcon = new BitmapDrawable(mContext.getResources(), icon.getAbsolutePath());
 
         } else if (IconUri != null && !IconUri.equals("")) {
             // here they chose another app icon
             try {
                 PackageManager pm = mContext.getPackageManager();
-                v.setImageDrawable(pm.getActivityIcon(Intent.parseUri(IconUri, 0)));
+                buttonIcon = pm.getActivityIcon(Intent.parseUri(IconUri, 0));
             } catch (NameNotFoundException e) {
                 e.printStackTrace();
             } catch (URISyntaxException e) {
@@ -2310,9 +2318,11 @@ public class TabletStatusBar extends StatusBar implements
             }
         } else {
             // ok use default icons here
-            v.setImageDrawable(getNavbarIconImage(landscape, ClickAction));
-        }
-
+        	buttonIcon = getNavbarIconImage(landscape, ClickAction);
+        }    
+        v.setImageDrawable(buttonIcon);
+        if (ACTION_BACK.equals(ClickAction))
+        		mBackButtonDrawable = buttonIcon;
         return v;
     }
 

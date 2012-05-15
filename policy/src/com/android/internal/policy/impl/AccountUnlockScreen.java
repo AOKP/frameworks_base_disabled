@@ -84,7 +84,7 @@ public class AccountUnlockScreen extends RelativeLayout implements KeyguardScree
         @Override
         public void onReceive(Context context, Intent intent) {
             mUiContext = null;
-            mCheckingDialog = null;
+            context.unregisterReceiver(this);
         }
     };
 
@@ -150,7 +150,10 @@ public class AccountUnlockScreen extends RelativeLayout implements KeyguardScree
 
     /** {@inheritDoc} */
     public void onPause() {
-        mContext.unregisterReceiver(mThemeChangeReceiver);
+        if (mUiContext != null) {
+            mContext.unregisterReceiver(mThemeChangeReceiver);
+            mUiContext = null;
+        }
         mKeyguardStatusViewManager.onPause();
     }
 
@@ -322,11 +325,19 @@ public class AccountUnlockScreen extends RelativeLayout implements KeyguardScree
         }
 
         if (mCheckingDialog == null) {
+            final Context uiContext;
+
             mUiContext = ThemeUtils.createUiContext(mContext);
 
-            final Context context = mUiContext != null ? mUiContext : mContext;
+            if (mUiContext != null) {
+                ThemeUtils.registerThemeChangeReceiver(mContext, mThemeChangeReceiver);
+                uiContext = mUiContext;
+            }
+            else {
+                uiContext = mContext;
+            }
 
-            mCheckingDialog = new ProgressDialog(context);
+            mCheckingDialog = new ProgressDialog(uiContext);
             mCheckingDialog.setMessage(
                     mContext.getString(R.string.lockscreen_glogin_checking_password));
             mCheckingDialog.setIndeterminate(true);

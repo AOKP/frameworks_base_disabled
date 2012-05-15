@@ -111,6 +111,9 @@ endif
 ifeq ($(TARGET_BOARD_PLATFORM),msm8660)
     LOCAL_CFLAGS += -DTARGET8x60
 endif
+ifeq ($(TARGET_BOARD_PLATFORM),msm8960)
+    LOCAL_CFLAGS += -DTARGET8x60
+endif
 
 LOCAL_SRC_FILES += \
         ExtendedExtractor.cpp             \

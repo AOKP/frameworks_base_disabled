@@ -141,10 +141,11 @@ public:
     //
     // This call may only be made while the OpenGL ES context to which the
     // target texture belongs is bound to the calling thread.
-#if defined(QCOM_HARDWARE) && !defined(LEGACY_QCOM)
-    status_t updateTexImage(bool isComposition  = false);
-#else
+#ifndef QCOM_HARDWARE
     status_t updateTexImage();
+#else
+    //
+    status_t updateTexImage(bool isComposition  = false);
 #endif
 
     // setBufferCountServer set the buffer count. If the client has requested

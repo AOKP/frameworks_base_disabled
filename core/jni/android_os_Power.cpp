@@ -86,7 +86,7 @@ static void android_os_Power_reboot(JNIEnv *env, jobject clazz, jstring reason)
     jniThrowIOException(env, errno);
 }
 
-#if defined(QCOM_HARDWARE) && !defined(LEGACY_QCOM)
+#ifdef QCOM_HARDWARE
 static int
 SetUnstableMemoryState(JNIEnv *env, jobject clazz, jboolean on)
 {
@@ -101,7 +101,7 @@ static JNINativeMethod method_table[] = {
     { "setScreenState", "(Z)I", (void*)setScreenState },
     { "shutdown", "()V", (void*)android_os_Power_shutdown },
     { "rebootNative", "(Ljava/lang/String;)V", (void*)android_os_Power_reboot },
-#if defined(QCOM_HARDWARE) && !defined(LEGACY_QCOM)
+#ifdef QCOM_HARDWARE
     { "SetUnstableMemoryState",  "(Z)I", (void*)SetUnstableMemoryState},
 #endif
 };

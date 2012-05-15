@@ -844,7 +844,7 @@ status_t SurfaceTexture::setScalingMode(int mode) {
     return OK;
 }
 
-#if defined(QCOM_HARDWARE) && !defined(LEGACY_QCOM)
+#ifdef QCOM_HARDWARE
 status_t SurfaceTexture::updateTexImage(bool isComposition) {
 #else
 status_t SurfaceTexture::updateTexImage() {

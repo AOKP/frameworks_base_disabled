@@ -501,7 +501,7 @@ void Layer::lockPageFlip(bool& recomputeVisibleRegions)
             mFlinger->signalEvent();
         }
 
-#if defined(QCOM_HARDWARE) && !defined(LEGACY_QCOM)
+#ifdef QCOM_HARDWARE
         // While calling updateTexImage() from SurfaceFlinger, let it know
         // by passing an extra parameter
         // This will be true always.

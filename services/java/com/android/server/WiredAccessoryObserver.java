@@ -25,6 +25,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
+import android.os.SystemProperties;
 import android.os.UEventObserver;
 import android.util.Slog;
 import android.media.AudioManager;
@@ -40,16 +41,15 @@ class WiredAccessoryObserver extends UEventObserver {
     private static final String TAG = WiredAccessoryObserver.class.getSimpleName();
     private static final boolean LOG = true;
     private static final int MAX_AUDIO_PORTS = 3; /* Headset_Sensor & H2W, USB Audio & HDMI */
-    if (BOARD_USES_QCOM_HARDWARE >= true) {
+    if (SystemProperties.BOARD_USES_QCOM_HARDWARE == true) {
     private static final String uEventInfo[][] = { {"DEVPATH=/devices/virtual/switch/headset_sensor",
                                                     "/sys/class/switch/headset_sensor/state",
                                                     "/sys/class/switch/headset_sensor/name"},
-                                                 }
-    else if (BOARD_USES_QCOM_HARDWARE >= false) {
+					   } else {
     private static final String uEventInfo[][] = { {"DEVPATH=/devices/virtual/switch/headset_sensor",
                                                     "/sys/class/switch/headset_sensor/state",
                                                     "/sys/class/switch/headset_sensor/name"},
-                                                 }
+					   }
                                                    {"DEVPATH=/devices/virtual/switch/usb_audio",
                                                     "/sys/class/switch/usb_audio/state",
                                                     "/sys/class/switch/usb_audio/name"},

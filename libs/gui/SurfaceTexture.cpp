@@ -878,6 +878,7 @@ status_t SurfaceTexture::updateTexImage() {
                 // fail. so we'd end up here.
                 return -EINVAL;
             }
+        }
 
         GLint error;
         while ((error = glGetError()) != GL_NO_ERROR) {

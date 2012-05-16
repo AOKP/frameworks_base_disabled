@@ -530,12 +530,20 @@ public class TabletStatusBar extends StatusBar implements
             StatusBar.resetColors(mContext);
             recreateStatusBar();
         }
+        if (mShowStatusBar) {
             mHeightReceiver.updateHeight(); // display size may have changed
             loadDimens();
             mNotificationPanelParams.height = getNotificationPanelHeight();
             WindowManagerImpl.getDefault().updateViewLayout(mNotificationPanel,
                     mNotificationPanelParams);
             mRecentsPanel.updateValuesFromResources();
+        } else { // statusbar hidden - so don't reset height on rotate/config change
+        	onBarHeightChanged(0);
+        	mNotificationPanelParams.height = getNotificationPanelHeight();
+            WindowManagerImpl.getDefault().updateViewLayout(mNotificationPanel,
+                    mNotificationPanelParams);
+            mRecentsPanel.updateValuesFromResources();
+        }
     }
 
     protected void loadDimens() {
@@ -2183,7 +2191,11 @@ public class TabletStatusBar extends StatusBar implements
         makeNavBar();
         mShowStatusBar = (Settings.System.getInt(resolver,
                 Settings.System.NAVIGATION_BAR_BUTTONS_SHOW, 1) == 1);
-        mStatusBarView.setVisibility(mShowStatusBar ? View.VISIBLE : View.GONE);
+       if (mShowStatusBar) {
+    	   mHeightReceiver.updateHeight(); // reset back to normal	   
+       } else {
+    	   onBarHeightChanged(0); // force StatusBar to 0 height.
+       }
     }
 
     private Drawable getNavbarIconImage(boolean landscape, String uri) {
@@ -2229,7 +2241,7 @@ public class TabletStatusBar extends StatusBar implements
 
     private void makeNavBar(){
 
-    	final boolean landscape;
+    	boolean landscape;
     	landscape = (mContext.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE);
     	if (mNavigationArea != null) {
     		mNavigationArea.removeAllViews();

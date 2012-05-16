@@ -41,22 +41,7 @@ class WiredAccessoryObserver extends UEventObserver {
     private static final String TAG = WiredAccessoryObserver.class.getSimpleName();
     private static final boolean LOG = true;
     private static final int MAX_AUDIO_PORTS = 3; /* Headset_Sensor & H2W, USB Audio & HDMI */
-    if (SystemProperties.BOARD_USES_QCOM_HARDWARE) {
-    private static final String uEventInfo[][] = { {"DEVPATH=/devices/virtual/switch/headset_sensor",
-                                                    "/sys/class/switch/headset_sensor/state",
-                                                    "/sys/class/switch/headset_sensor/name"},
-					   } else {
-    private static final String uEventInfo[][] = { {"DEVPATH=/devices/virtual/switch/h2w",
-                                                    "/sys/class/switch/h2w/state",
-                                                    "/sys/class/switch/h2w/name"},
-					   }
-                                                   {"DEVPATH=/devices/virtual/switch/usb_audio",
-                                                    "/sys/class/switch/usb_audio/state",
-                                                    "/sys/class/switch/usb_audio/name"},
-                                                   {"DEVPATH=/devices/virtual/switch/hdmi",
-                                                    "/sys/class/switch/hdmi/state",
-                                                    "/sys/class/switch/hdmi/name"} };
-
+    //private static String uEventInfo[][];
     private static final int BIT_HEADSET = (1 << 0);
     private static final int BIT_HEADSET_NO_MIC = (1 << 1);
     private static final int BIT_USB_HEADSET_ANLG = (1 << 2);
@@ -66,6 +51,38 @@ class WiredAccessoryObserver extends UEventObserver {
                                                    BIT_USB_HEADSET_ANLG|BIT_USB_HEADSET_DGTL|
                                                    BIT_HDMI_AUDIO);
     private static final int HEADSETS_WITH_MIC = BIT_HEADSET;
+    private static String[][] uEventInfo;
+    private static String setup_uEventInfo[][] = {
+            {
+                 "DEVPATH=/devices/virtual/switch/headset_sensor",
+                 "/sys/class/switch/headset_sensor/state",
+                 "/sys/class/switch/headset_sensor/name"},
+            {
+                 "DEVPATH=/devices/virtual/switch/usb_audio",
+                 "/sys/class/switch/usb_audio/state",
+                 "/sys/class/switch/usb_audio/name"},
+            {
+                 "DEVPATH=/devices/virtual/switch/hdmi",
+                 "/sys/class/switch/hdmi/state",
+                 "/sys/class/switch/hdmi/name"
+        }
+    };
+
+    private static String nonQCOM_uEventInfo[][] = {
+            {
+                 "DEVPATH=/devices/virtual/switch/h2w",
+                 "/sys/class/switch/h2w/state",
+                 "/sys/class/switch/h2w/name"},
+            {
+                 "DEVPATH=/devices/virtual/switch/usb_audio",
+                 "/sys/class/switch/usb_audio/state",
+                 "/sys/class/switch/usb_audio/name"},
+            {
+                 "DEVPATH=/devices/virtual/switch/hdmi",
+                 "/sys/class/switch/hdmi/state",
+                 "/sys/class/switch/hdmi/name"
+        }
+    };
 
     private int mHeadsetState;
     private int mPrevHeadsetState;
@@ -80,6 +97,12 @@ class WiredAccessoryObserver extends UEventObserver {
         PowerManager pm = (PowerManager)context.getSystemService(Context.POWER_SERVICE);
         mWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "WiredAccessoryObserver");
         mWakeLock.setReferenceCounted(false);
+
+        if (SystemProperties.QCOM_HARDWARE) {
+            uEventInfo = setup_uEventInfo;
+        } else {
+            uEventInfo = nonQCOM_uEventInfo;
+        }
 
         context.registerReceiver(new BootCompletedReceiver(),
             new IntentFilter(Intent.ACTION_BOOT_COMPLETED), null, null);

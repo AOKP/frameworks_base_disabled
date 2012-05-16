@@ -41,14 +41,14 @@ class WiredAccessoryObserver extends UEventObserver {
     private static final String TAG = WiredAccessoryObserver.class.getSimpleName();
     private static final boolean LOG = true;
     private static final int MAX_AUDIO_PORTS = 3; /* Headset_Sensor & H2W, USB Audio & HDMI */
-    if (SystemProperties.BOARD_USES_QCOM_HARDWARE == true) {
+    if (SystemProperties.BOARD_USES_QCOM_HARDWARE) {
     private static final String uEventInfo[][] = { {"DEVPATH=/devices/virtual/switch/headset_sensor",
                                                     "/sys/class/switch/headset_sensor/state",
                                                     "/sys/class/switch/headset_sensor/name"},
 					   } else {
-    private static final String uEventInfo[][] = { {"DEVPATH=/devices/virtual/switch/headset_sensor",
-                                                    "/sys/class/switch/headset_sensor/state",
-                                                    "/sys/class/switch/headset_sensor/name"},
+    private static final String uEventInfo[][] = { {"DEVPATH=/devices/virtual/switch/h2w",
+                                                    "/sys/class/switch/h2w/state",
+                                                    "/sys/class/switch/h2w/name"},
 					   }
                                                    {"DEVPATH=/devices/virtual/switch/usb_audio",
                                                     "/sys/class/switch/usb_audio/state",

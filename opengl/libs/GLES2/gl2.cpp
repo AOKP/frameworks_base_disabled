@@ -153,7 +153,7 @@ void glShaderSource(GLuint shader, GLsizei count, const GLchar** string, const G
 
     LOGW("Shader source dump:");
     for (GLsizei i = 0; i < count; i++) {
-        LOGW("%s", string[i]);
+//        LOGW("%s", string[i]);
         if (strstr(string[i], "GL_OES_EGL_image_external")) {
             needRewrite = true;
         }

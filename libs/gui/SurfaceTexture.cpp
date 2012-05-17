@@ -1151,6 +1151,11 @@ void SurfaceTexture::freeAllBuffersExceptCurrentLocked() {
     freeAllBuffersExceptHeadLocked();
 }
 
+void SurfaceTexture::freeAllBuffersExceptCurrentLocked() {
+    LOGW("freeAllBuffersExceptCurrentLocked is deprecated !");
+    freeAllBuffersExceptHeadLocked();
+}
+
 status_t SurfaceTexture::drainQueueLocked() {
     while (mSynchronousMode && !mQueue.isEmpty()) {
         mDequeueCondition.wait(mMutex);

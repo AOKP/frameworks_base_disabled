@@ -2312,7 +2312,9 @@ public class AudioService extends IAudioService.Stub {
                     break;
 
                 case MSG_PLAY_SOUND_EFFECT:
-                    playSoundEffect(msg.arg1, msg.arg2);
+                    if (!isStreamMute(AudioSystem.STREAM_SYSTEM)) {
+                        playSoundEffect(msg.arg1, msg.arg2);
+                    }
                     break;
 
                 case MSG_BTA2DP_DOCK_TIMEOUT:

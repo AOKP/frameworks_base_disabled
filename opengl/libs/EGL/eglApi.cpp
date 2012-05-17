@@ -947,6 +947,7 @@ EGLBoolean eglSwapBuffers(EGLDisplay dpy, EGLSurface draw)
     return EGL_TRUE;
 #else
     return s->cnx->egl.eglSwapBuffers(dp->disp[s->impl].dpy, s->surface);
+#endif
 }
 
 EGLBoolean eglCopyBuffers(  EGLDisplay dpy, EGLSurface surface,

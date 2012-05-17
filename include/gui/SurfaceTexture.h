@@ -249,6 +249,8 @@ protected:
     // and EGLImage) for all slots except the head of mQueue
     void freeAllBuffersExceptHeadLocked();
 
+    void freeAllBuffersExceptCurrentLocked();
+
     // drainQueueLocked drains the buffer queue if we're in synchronous mode
     // returns immediately otherwise. return NO_INIT if SurfaceTexture
     // became abandoned or disconnected during this call.

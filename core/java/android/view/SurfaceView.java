@@ -31,6 +31,7 @@ import android.os.Message;
 import android.os.RemoteException;
 import android.os.SystemClock;
 import android.os.ParcelFileDescriptor;
+import android.os.SystemProperties;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.os.SystemProperties;
@@ -535,8 +536,14 @@ public class SurfaceView extends View {
                             if (callbacks == null) {
                                 callbacks = getSurfaceCallbacks();
                             }
-                            for (SurfaceHolder.Callback c : callbacks) {
-                                if (mSurface.isValid()) {
+                            if (SystemProperties.OMAP_ENHANCEMENT) {
+                                for (SurfaceHolder.Callback c : callbacks) {
+                                    if (mSurface.isValid()) {
+                                        c.surfaceCreated(mSurfaceHolder);
+                                    }
+                                }
+                            } else {
+                                for (SurfaceHolder.Callback c : callbacks) {
                                     c.surfaceCreated(mSurfaceHolder);
                                 }
                             }
@@ -548,8 +555,14 @@ public class SurfaceView extends View {
                             if (callbacks == null) {
                                 callbacks = getSurfaceCallbacks();
                             }
-                            for (SurfaceHolder.Callback c : callbacks) {
-                                if (mSurface.isValid()) {
+                            if (SystemProperties.OMAP_ENHANCEMENT) {
+                                for (SurfaceHolder.Callback c : callbacks) {
+                                    if (mSurface.isValid()) {
+                                        c.surfaceChanged(mSurfaceHolder, mFormat, myWidth, myHeight);
+                                    }
+                                }
+                            } else {
+                                for (SurfaceHolder.Callback c : callbacks) {
                                     c.surfaceChanged(mSurfaceHolder, mFormat, myWidth, myHeight);
                                 }
                             }
@@ -559,9 +572,18 @@ public class SurfaceView extends View {
                             if (callbacks == null) {
                                 callbacks = getSurfaceCallbacks();
                             }
-                            for (SurfaceHolder.Callback c : callbacks) {
-                                if (c instanceof SurfaceHolder.Callback2) {
-                                    if (mSurface.isValid()) {
+                            if (SystemProperties.OMAP_ENHANCEMENT) {
+                                for (SurfaceHolder.Callback c : callbacks) {
+                                    if (c instanceof SurfaceHolder.Callback2) {
+                                        if (mSurface.isValid()) {
+                                            ((SurfaceHolder.Callback2)c).surfaceRedrawNeeded(
+                                                    mSurfaceHolder);
+                                        }
+                                    }
+                                }
+                            } else {
+                                for (SurfaceHolder.Callback c : callbacks) {
+                                    if (c instanceof SurfaceHolder.Callback2) {
                                         ((SurfaceHolder.Callback2)c).surfaceRedrawNeeded(
                                                 mSurfaceHolder);
                                     }

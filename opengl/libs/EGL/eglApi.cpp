@@ -980,10 +980,10 @@ const char* eglQueryString(EGLDisplay dpy, EGLint name)
         case EGL_VERSION:
             return dp->getVersionString();
         case EGL_EXTENSIONS:
-            if (NULL != dp->disp[IMPL_HARDWARE].queryString.extensions)
+            if (dp->disp[IMPL_HARDWARE].queryString.extensions) {
                 return dp->disp[IMPL_HARDWARE].queryString.extensions;
-            else
-                return dp->getExtensionString();
+            }
+            return dp->getExtensionString();
         case EGL_CLIENT_APIS:
             return dp->getClientApiString();
         case EGL_VERSION_HW_ANDROID: {

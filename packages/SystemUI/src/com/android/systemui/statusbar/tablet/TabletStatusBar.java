@@ -18,6 +18,7 @@ package com.android.systemui.statusbar.tablet;
 
 import java.io.File;
 import java.io.FileDescriptor;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -489,39 +490,6 @@ public class TabletStatusBar extends StatusBar implements
         settingsObserver.observe();
     }
 
-    private static void copyNotifications(ArrayList<Pair<IBinder, StatusBarNotification>> dest,
-            NotificationData source) {
-        int N = source.size();
-        for (int i = 0; i < N; i++) {
-            NotificationData.Entry entry = source.get(i);
-            dest.add(Pair.create(entry.key, entry.notification));
-        }
-    }
-
-    private void recreateStatusBar() {
-        mRecreating = true;
-        mStatusBarContainer.removeAllViews();
-
-        // extract notifications.
-        int nNotifs = mNotificationData.size();
-        ArrayList<Pair<IBinder, StatusBarNotification>> notifications =
-                new ArrayList<Pair<IBinder, StatusBarNotification>>(nNotifs);
-        copyNotifications(notifications, mNotificationData);
-        mNotificationData.clear();
-
-        mStatusBarContainer.addView(makeStatusBarView());
-
-        // recreate notifications.
-        for (int i = 0; i < nNotifs; i++) {
-            Pair<IBinder, StatusBarNotification> notifData = notifications.get(i);
-            addNotificationViews(notifData.first, notifData.second);
-        }
-
-        setAreThereNotifications();
-
-        mRecreating = false;
-    }
-
     @Override
     protected void onConfigurationChanged(Configuration newConfig) {
         // detect theme change.
@@ -530,7 +498,13 @@ public class TabletStatusBar extends StatusBar implements
                 (mCurrentTheme == null || !mCurrentTheme.equals(newTheme))) {
             mCurrentTheme = (CustomTheme)newTheme.clone();
             StatusBar.resetColors(mContext);
-            recreateStatusBar();
+
+            // restart systemui
+            try {
+                Runtime.getRuntime().exec("pkill -TERM -f  com.android.systemui");
+            } catch (IOException e) {
+                // we're screwed here fellas
+            }
         }
         if (mShowStatusBar) {
             mHeightReceiver.updateHeight(); // display size may have changed

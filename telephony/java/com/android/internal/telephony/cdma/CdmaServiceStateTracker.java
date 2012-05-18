@@ -377,16 +377,12 @@ public class CdmaServiceStateTracker extends ServiceStateTracker {
 
             if (ar.exception == null) {
                 String cdmaSubscription[] = (String[])ar.result;
-                if (cdmaSubscription != null && cdmaSubscription.length >= 4) {
+                if (cdmaSubscription != null && cdmaSubscription.length >= 5) {
                     mMdn = cdmaSubscription[0];
                     parseSidNid(cdmaSubscription[1], cdmaSubscription[2]);
 
                     mMin = cdmaSubscription[3];
-                    String prl = SystemProperties.get("ro.telephony.ril_prl");
-                    if ((prl != null) || (cdmaSubscription.length == 4))
-                        mPrlVersion = prl;
-                    else
-                        mPrlVersion = cdmaSubscription[4];
+                    mPrlVersion = cdmaSubscription[4];
                     if (DBG) log("GET_CDMA_SUBSCRIPTION: MDN=" + mMdn);
 
                     mIsMinInfoReady = true;

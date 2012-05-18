@@ -1,6 +1,33 @@
 LOCAL_PATH:= $(call my-dir)
 include $(CLEAR_VARS)
 
+ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
+ifeq ($(TARGET_BOARD_PLATFORM),msm7x27a)
+    LOCAL_CFLAGS += -DUSE_AAC_HW_DEC
+endif
+
+ifeq ($(TARGET_BOARD_PLATFORM),msm7x27)
+    LOCAL_CFLAGS += -DTARGET7x27
+endif
+ifeq ($(TARGET_BOARD_PLATFORM),msm7x27a)
+    LOCAL_CFLAGS += -DTARGET7x27A
+endif
+ifeq ($(TARGET_BOARD_PLATFORM),msm7x30)
+    LOCAL_CFLAGS += -DTARGET7x30
+endif
+ifeq ($(TARGET_BOARD_PLATFORM),qsd8k)
+    LOCAL_CFLAGS += -DTARGET8x50
+endif
+ifeq ($(TARGET_BOARD_PLATFORM),msm8660)
+    LOCAL_CFLAGS += -DTARGET8x60
+endif
+ifeq ($(TARGET_BOARD_PLATFORM),msm8960)
+    LOCAL_CFLAGS += -DTARGET8x60
+endif
+ifeq ($(BOARD_CAMERA_USE_MM_HEAP),true)
+    LOCAL_CFLAGS += -DCAMERA_MM_HEAP
+endif
+endif
 include frameworks/base/media/libstagefright/codecs/common/Config.mk
 
 LOCAL_SRC_FILES:=                         \
@@ -52,12 +79,18 @@ LOCAL_SRC_FILES:=                         \
         XINGSeeker.cpp                    \
         avc_utils.cpp                     \
 
-LOCAL_C_INCLUDES:= \
+ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
+        LOCAL_SRC_FILES += ExtendedExtractor.cpp
+        LOCAL_SRC_FILES += ExtendedWriter.cpp
+	LOCAL_C_INCLUDES += $(TOP)/hardware/qcom/display/libqcomui
+endif
+
+LOCAL_C_INCLUDES+= \
 	$(JNI_H_INCLUDE) \
         $(TOP)/frameworks/base/include/media/stagefright/openmax \
         $(TOP)/external/flac/include \
         $(TOP)/external/tremolo \
-        $(TOP)/external/openssl/include \
+        $(TOP)/external/openssl/include
 
 LOCAL_SHARED_LIBRARIES := \
         libbinder         \
@@ -73,8 +106,6 @@ LOCAL_SHARED_LIBRARIES := \
         libcrypto        \
         libssl           \
         libgui           \
-        libhardware_legacy \
-        libpowermanager
 
 LOCAL_STATIC_LIBRARIES := \
         libstagefright_color_conversion \
@@ -90,49 +121,6 @@ LOCAL_STATIC_LIBRARIES := \
         libstagefright_httplive \
         libstagefright_id3 \
         libFLAC \
-
-ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
-
-ifeq ($(TARGET_BOARD_PLATFORM),msm7x27a)
-    LOCAL_CFLAGS += -DUSE_AAC_HW_DEC
-endif
-ifeq ($(TARGET_BOARD_PLATFORM),msm7x27)
-    LOCAL_CFLAGS += -DTARGET7x27
-endif
-ifeq ($(TARGET_BOARD_PLATFORM),msm7x27a)
-    LOCAL_CFLAGS += -DTARGET7x27A
-endif
-ifeq ($(TARGET_BOARD_PLATFORM),msm7x30)
-    LOCAL_CFLAGS += -DTARGET7x30
-endif
-ifeq ($(TARGET_BOARD_PLATFORM),qsd8k)
-    LOCAL_CFLAGS += -DTARGET8x50
-endif
-ifeq ($(TARGET_BOARD_PLATFORM),msm8660)
-    LOCAL_CFLAGS += -DTARGET8x60
-endif
-ifeq ($(TARGET_BOARD_PLATFORM),msm8960)
-    LOCAL_CFLAGS += -DTARGET8x60
-endif
-
-LOCAL_SRC_FILES += \
-        ExtendedExtractor.cpp             \
-        ExtendedWriter.cpp                \
-        FMA2DPWriter.cpp
-
-LOCAL_C_INCLUDES += \
-        $(TOP)/external/alsa-lib/include/sound \
-        $(TOP)/hardware/qcom/display/libgralloc \
-        $(TOP)/hardware/qcom/display/libqcomui \
-        $(TOP)/vendor/qcom/opensource/omx/mm-core/omxcore/inc \
-        $(TOP)/system/core/include \
-        $(TOP)/hardware/libhardware_legacy/include
-
-LOCAL_STATIC_LIBRARIES += \
-        libstagefright_aacdec \
-        libstagefright_mp3dec
-  	
-endif
 
 ifeq ($(BOARD_HAVE_CODEC_SUPPORT),SAMSUNG_CODEC_SUPPORT)
 LOCAL_CFLAGS     += -DSAMSUNG_CODEC_SUPPORT

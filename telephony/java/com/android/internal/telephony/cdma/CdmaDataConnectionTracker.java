@@ -941,6 +941,14 @@ public final class CdmaDataConnectionTracker extends DataConnectionTracker {
                 default:
                     log("onDataStateChanged: IGNORE unexpected DataCallState.active="
                             + connectionState);
+//
+// KD 2011-10-14 If we find ourselves here the connection we're using
+// is no good as it has an unknown state.  This typically means the radio
+// hung the data connection and is not responding.  Tear it down and log the 
+// reason; the system should re-initialize it.
+//
+        Log.v(LOG_TAG, "KD: Tear Down bad connection; reset");
+            cleanUpConnection(true, "Hung data detected; reset");
             }
         } else {
             // TODO: Do we need to do anything?

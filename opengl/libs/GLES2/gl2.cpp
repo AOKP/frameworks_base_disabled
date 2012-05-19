@@ -156,6 +156,7 @@ void glShaderSource(GLuint shader, GLsizei count, const GLchar** string, const G
         LOGD("%s", string[i]);
         if (strstr(string[i], "GL_OES_EGL_image_external")) {
             needRewrite = true;
+            break;
         }
     }
 

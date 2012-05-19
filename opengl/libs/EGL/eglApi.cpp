@@ -942,12 +942,7 @@ EGLBoolean eglSwapBuffers(EGLDisplay dpy, EGLSurface draw)
         return setError(EGL_BAD_SURFACE, EGL_FALSE);
 
     egl_surface_t const * const s = get_surface(draw);
-#ifdef HOOK_MISSING_EGL_EXTERNAL_IMAGE
-    s->cnx->egl.eglSwapBuffers(dp->disp[s->impl].dpy, s->surface);
-    return EGL_TRUE;
-#else
     return s->cnx->egl.eglSwapBuffers(dp->disp[s->impl].dpy, s->surface);
-#endif
 }
 
 EGLBoolean eglCopyBuffers(  EGLDisplay dpy, EGLSurface surface,

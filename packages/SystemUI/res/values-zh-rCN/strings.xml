@@ -140,4 +140,27 @@
     <string name="gps_notification_searching_text" msgid="8574247005642736060">"正在搜索 GPS"</string>
     <string name="gps_notification_found_text" msgid="4619274244146446464">"已通过 GPS 确定位置"</string>
     <string name="accessibility_clear_all" msgid="5235938559247164925">"清除所有通知。"</string>
+    <string name="recent_apps_title">最近应用</string>
+    <string name="status_bar_settings_gps_button">GPS</string>
+    <string name="toggle_bt">蓝牙</string>
+    <string name="toggle_data">数据</string>
+    <string name="toggle_lte">LTE</string>
+    <string name="toggle_rotate">旋转</string>
+    <string name="toggle_wifi">WiFi</string>
+    <string name="toggle_gps">GPS</string>
+    <string name="toggle_2g">2G</string>
+    <string name="toggle_wifiap">热点</string>
+    <string name="toggle_airplane">飞行</string>
+    <string name="toggle_vibrate">振动</string>
+    <string name="toggle_silent">静音</string>
+    <string name="toggle_torch">手电</string>
+    <string name="toggle_sync">同步</string>
+    <string name="toggle_swagger">自爆</string>
+    <string name="toggle_fcharge">快充</string>
+    <string name="toggle_tether">共享</string>
+    <string name="status_bar_settings_toggles">开关</string>
+    <string name="weatherpanel_slash">/</string>
+    <string name="toggle_navbar">导航栏开关</string>
+    <string name="notifications_off_title">关闭通知</string>
+    <string name="notifications_off_text">触摸这里回到通知。</string>
 </resources>

@@ -182,27 +182,26 @@ all real cases encountered so far.
 
     GLchar **newStrings = new GLchar*[count];
     const GLchar *start, *pos;
+    size_t blen = 0;
 
     for (GLsizei i = 0; i < count; i++) {
-        start = strstr(string[i], "\n");
+        start = strchr(string[i], '\n');
         if (!start) {
             start = string[i];
         } else {
-            /* skip '\n' */
-            start++;
+            start++; /* skip '\n' */
         }
 
+        /* Substring replacement of 'samplerExternalOES'
+         * to 'sampler2D' */
         newStrings[i] = new GLchar[strlen(start) + 1];
         pos = strstr(start, "samplerExternalOES");
         if (pos) {
-            /* copy part before 'samplerExternalOES' */
-            strncpy(newStrings[i], start, pos - start);
-            /* ensure NUL termination */
-            newStrings[i][pos - start] = '\0';
+            blen = (pos - start);
+            strncpy(newStrings[i], start, blen);
+            newStrings[i][blen] = '\0';
             strcat(newStrings[i], "sampler2D");
-            /* copy remainder */
-            pos += strlen("samplerExternalOES");
-            strcat(newStrings[i], pos);
+            strcat(newStrings[i], pos + 18);
         } else {
             strcpy(newStrings[i], start);
         }

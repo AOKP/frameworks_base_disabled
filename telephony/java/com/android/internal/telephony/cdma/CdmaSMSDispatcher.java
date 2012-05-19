@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+/*
+ * KD 9/4 - Modifications cribbed from inferiorhumanorgans' code that runs on
+ * the Optimus.  Thank God for small favors and actual shared repositories!
+ */
+
 package com.android.internal.telephony.cdma;
 
 
@@ -25,6 +30,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.SQLException;
+import android.os.AsyncResult;
 import android.os.Message;
 import android.os.SystemProperties;
 import android.preference.PreferenceManager;
@@ -32,6 +38,7 @@ import android.provider.Telephony;
 import android.provider.Telephony.Sms.Intents;
 import android.telephony.SmsManager;
 import android.telephony.SmsMessage.MessageClass;
+import android.util.Config;
 import android.util.Log;
 
 import com.android.internal.telephony.CommandsInterface;
@@ -49,14 +56,25 @@ import com.android.internal.util.BitwiseInputStream;
 import com.android.internal.util.HexDump;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import junit.framework.Assert;
 import android.content.res.Resources;
 
 
 final class CdmaSMSDispatcher extends SMSDispatcher {
     private static final String TAG = "CDMA";
+/*
+ * KD 9/4 - See comment at the top for origin
+ */
+        private static final String VIRGIN_MOBILE_MMS_ORIGINATING_ADDRESS = "9999999999";
+        private static final String VIRGIN_DEBUG_TAG = "SMSSMSSMSSMS[VM670]";
+        private static final String SMS_DEBUG_TAG = "SMSSMSSMSSMS";
+// End 
 
     private byte[] mLastDispatchedSmsFingerprint;
     private byte[] mLastAcknowledgedSmsFingerprint;
@@ -132,6 +150,8 @@ final class CdmaSMSDispatcher extends SMSDispatcher {
         int teleService = sms.getTeleService();
         boolean handled = false;
 
+                Log.d(SMS_DEBUG_TAG, "TeleService: " + teleService);
+
         if ((SmsEnvelope.TELESERVICE_VMN == teleService) ||
                 (SmsEnvelope.TELESERVICE_MWI == teleService)) {
             // handling Voicemail
@@ -149,6 +169,8 @@ final class CdmaSMSDispatcher extends SMSDispatcher {
                 (SmsEnvelope.TELESERVICE_WEMT == teleService)) &&
                 sms.isStatusReportMessage()) {
             handleCdmaStatusReport(sms);
+		Log.d(SMS_DEBUG_TAG, "isStausReport = " + sms.isStatusReportMessage());
+
             handled = true;
         } else if ((sms.getUserData() == null)) {
             if (false) {
@@ -182,77 +204,83 @@ final class CdmaSMSDispatcher extends SMSDispatcher {
                 (SmsEnvelope.MESSAGE_TYPE_BROADCAST != sms.getMessageType())) {
             return Intents.RESULT_SMS_UNSUPPORTED;
         }
-	/*
+
+        /* 
+         * 2/4
          * Check to see if we have a Virgin Mobile MMS
          * If so, do extra processsing for Virgin Mobile's non-standard format.
          * Otherwise, dispatch normal message.
-         */
-        if (sms.getOriginatingAddress().equals("9999999999")) {
-            Log.d(TAG, "Got a suspect SMS from the Virgin MMS originator");
+         */       
+        if (sms.getOriginatingAddress().equals(VIRGIN_MOBILE_MMS_ORIGINATING_ADDRESS)) {
+	        Log.d(SMS_DEBUG_TAG, "Got a suspect SMS from the Virgin MMS originator");
                 byte virginMMSPayload[] = null;
                 try {
-                    int[] ourMessageRef = new int[1];
-                    virginMMSPayload = getVirginMMS(sms.getUserData(), ourMessageRef);
-                    if (virginMMSPayload == null) {
-                        Log.e(TAG, "Not a virgin MMS like we were expecting");
-                        throw new Exception("Not a Virgin MMS like we were expecting");
-                    } else {
-                        Log.d(TAG, "Sending our deflowered MMS to processCdmaWapPdu");
-                        return processCdmaWapPdu(virginMMSPayload, ourMessageRef[0], "9999999999");
-                    }
+         	       int[] ourMessageRef = new int[1];
+                       virginMMSPayload = getVirginMMS(sms.getUserData(), ourMessageRef);
+                       if (virginMMSPayload == null) {
+                	       Log.d(SMS_DEBUG_TAG, "Not a virgin MMS like we were expecting");
+                               throw new Exception("Not a Virgin MMS like we were expecting");
+                       } else {
+                               Log.d(SMS_DEBUG_TAG, "Sending our deflowered MMS to processCdmaWapPdu");
+                               return processCdmaWapPdu(virginMMSPayload, ourMessageRef[0], VIRGIN_MOBILE_MMS_ORIGINATING_ADDRESS);
+                       }
                 } catch (Exception ourException) {
-                    Log.e(TAG, "Got an exception trying to get VMUS MMS data " + ourException);
+                       Log.d(SMS_DEBUG_TAG, "Got an exception trying to get VMUS MMS data " + ourException);
+                       //Logger.getLogger(SMS_DEBUG_TAG).log(Level.SEVERE, null, ourException);
                 }
         }
-        return dispatchNormalMessage(smsb);
+
+	return dispatchNormalMessage(smsb);
+        
     }
 
-private synchronized byte[] getVirginMMS(final byte[] someEncodedMMSData, int[] aMessageRef) throws Exception {
-        if ((aMessageRef == null) || (aMessageRef.length != 1)) {
-            throw new Exception("aMessageRef is not usable. Must be an int array with one element.");
-        }
-        BitwiseInputStream ourInputStream;
-        int i1=0;
-        int desiredBitLength;
-        Log.d(TAG, "mmsVirginGetMsgId");
-        Log.d(TAG, "EncodedMMS: " + someEncodedMMSData);
-        try {
-            ourInputStream = new BitwiseInputStream(someEncodedMMSData);
-            ourInputStream.skip(20);
-            final int j = ourInputStream.read(8) << 8;
-            final int k = ourInputStream.read(8);
-            aMessageRef[0] = j | k;
-            Log.d(TAG, "MSGREF IS : " + aMessageRef[0]);
-            ourInputStream.skip(12);
-            i1 = ourInputStream.read(8) + -2;
-            ourInputStream.skip(13);
-            byte abyte1[] = new byte[i1];
-            for (int j1 = 0; j1 < i1; j1++) {
-                abyte1[j1] = 0;
-            }
+        private synchronized byte[] getVirginMMS(final byte[] someEncodedMMSData, int[] aMessageRef) throws Exception {
+                if ((aMessageRef == null) || (aMessageRef.length != 1)) {
+                        throw new Exception("aMessageRef is not usable. Must be an int array with one element.");
+                }
+                BitwiseInputStream ourInputStream;
+                int i1=0;
+                int desiredBitLength;
+                Log.d(VIRGIN_DEBUG_TAG, "mmsVirginGetMsgId");
+                Log.d(VIRGIN_DEBUG_TAG, "EncodedMMS: " + someEncodedMMSData);
+                try {
+                    ourInputStream = new BitwiseInputStream(someEncodedMMSData);
+                    ourInputStream.skip(20);
+                    final int j = ourInputStream.read(8) << 8;
+                    final int k = ourInputStream.read(8);
+                    aMessageRef[0] = j | k;
+                    Log.d(VIRGIN_DEBUG_TAG, "MSGREF IS : " + aMessageRef[0]);
+                    ourInputStream.skip(12);
+                    i1 = ourInputStream.read(8) + -2;
+                    ourInputStream.skip(13);
+                    byte abyte1[] = new byte[i1];
+                    for (int j1 = 0; j1 < i1; j1++) {
+                    abyte1[j1] = 0;
+                }
+
             desiredBitLength = i1 * 8;
             if (ourInputStream.available() < desiredBitLength) {
                 int availableBitLength = ourInputStream.available();
-                Log.e(TAG, "mmsVirginGetMsgId inStream.available() = " + availableBitLength + " wantedBits = " + desiredBitLength);
+			Log.v(VIRGIN_DEBUG_TAG, "mmsVirginGetMsgId inStream.available() = " + availableBitLength + " wantedBits = " + desiredBitLength);
                 throw new Exception("insufficient data (wanted " + desiredBitLength + " bits, but only have " + availableBitLength + ")");
             }
         } catch (com.android.internal.util.BitwiseInputStream.AccessException ourException) {
-            final String ourExceptionText = "mmsVirginGetMsgId failed: " + ourException;
-            Log.e(TAG, ourExceptionText);
+                        final String ourExceptionText = "mmsVirginGetMsgId failed: " + ourException;
+                        Log.v(VIRGIN_DEBUG_TAG, ourExceptionText);
             throw new Exception(ourExceptionText);
         }
         byte ret[] = null;
-            try {
-            ret = ourInputStream.readByteArray(desiredBitLength);
-            Log.d(TAG, "mmsVirginGetMsgId user_length = " + i1 + " msgid = " + aMessageRef[0]);
-                Log.d(TAG, "mmsVirginGetMsgId userdata = " + ret.toString());
-            } catch (com.android.internal.util.BitwiseInputStream.AccessException ourException) {
-                final String ourExceptionText = "mmsVirginGetMsgId failed: " + ourException;
-                Log.e(TAG, ourExceptionText);
-                throw new Exception(ourExceptionText);
-            }
-            return ret;
-    }
+                try {
+                ret = ourInputStream.readByteArray(desiredBitLength);
+                Log.v(VIRGIN_DEBUG_TAG, "mmsVirginGetMsgId user_length = " + i1 + " msgid = " + aMessageRef[0]);
+                        Log.v(VIRGIN_DEBUG_TAG, "mmsVirginGetMsgId userdata = " + ret.toString());
+                } catch (com.android.internal.util.BitwiseInputStream.AccessException ourException) {
+                        final String ourExceptionText = "mmsVirginGetMsgId failed: " + ourException;
+                        Log.v(VIRGIN_DEBUG_TAG, ourExceptionText);
+            throw new Exception(ourExceptionText);
+                }
+        return ret;
+        }
 
     /**
      * Processes inbound messages that are in the WAP-WDP PDU format. See

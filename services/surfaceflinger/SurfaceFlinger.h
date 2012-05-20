@@ -184,7 +184,7 @@ public:
 
 #ifdef QCOM_HDMI_OUT
     //HDMI Specific
-    virtual void                        enableExternalDisplay(int disp_type, int externaltype);
+    virtual void                        enableHDMIOutput(int externaltype);
     virtual void                        setActionSafeWidthRatio(float asWidthRatio);
     virtual void                        setActionSafeHeightRatio(float asHeightRatio);
 #endif
@@ -356,7 +356,7 @@ private:
 
 #ifdef QCOM_HDMI_OUT
             //HDMI Specific
-            void updateHwcExternalDisplay(int externaltype);
+            void updateHwcHDMI(int externaltype);
 #endif
 #ifdef QCOM_HARDWARE
             bool isGPULayerPresent();
@@ -416,8 +416,8 @@ private:
 
 #ifdef QCOM_HDMI_OUT
                 //HDMI specific
-                int                         mExtDispOutput;
-                Mutex                       mExtDispLock;
+                int                         mHDMIOutput;
+                Mutex                       mHDMILock;
                 bool                        mOrientationChanged;
 #endif
 #ifdef QCOM_HARDWARE

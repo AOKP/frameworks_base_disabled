@@ -666,7 +666,7 @@ public class VolumePanel extends Handler implements OnSeekBarChangeListener,
 
     protected void onPlaySound(int streamType, int flags) {
         // If preference is no sound - just exit here
-        if (System.getInt(mContext.getContentResolver(),
+        if (Settings.System.getInt(mContext.getContentResolver(),
              Settings.System.VOLUME_ADJUST_SOUNDS_ENABLED, 1) == 0) {
              return;
         }

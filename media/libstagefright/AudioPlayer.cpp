@@ -50,6 +50,9 @@ AudioPlayer::AudioPlayer(
       mFirstBufferResult(OK),
       mFirstBuffer(NULL),
       mAudioSink(audioSink),
+#ifdef QCOM_HARDWARE
+      mSourcePaused(false),
+#endif
       mObserver(observer) {
 }
 
@@ -70,6 +73,9 @@ status_t AudioPlayer::start(bool sourceAlreadyStarted) {
 
     status_t err;
     if (!sourceAlreadyStarted) {
+#ifdef QCOM_HARDWARE
+        mSourcePaused = false;
+#endif
         err = mSource->start();
 
         if (err != OK) {
@@ -92,15 +98,11 @@ status_t AudioPlayer::start(bool sourceAlreadyStarted) {
 
     mFirstBufferResult = mSource->read(&mFirstBuffer, &options);
     if (mFirstBufferResult == INFO_FORMAT_CHANGED) {
-        ALOGV("INFO_FORMAT_CHANGED!!!");
+        LOGV("INFO_FORMAT_CHANGED!!!");
 
         CHECK(mFirstBuffer == NULL);
         mFirstBufferResult = OK;
         mIsFirstBuffer = false;
-    } else if(mFirstBufferResult != OK) {
-        mReachedEOS = true;
-        mFinalStatus = mFirstBufferResult;
-        return mFirstBufferResult;
     } else {
         mIsFirstBuffer = true;
     }
@@ -193,11 +195,23 @@ void AudioPlayer::pause(bool playPendingSamples) {
             mAudioTrack->pause();
         }
     }
+#ifdef QCOM_HARDWARE
+    CHECK(mSource != NULL);
+    if (mSource->pause() == OK) {
+        mSourcePaused = true;
+    }
+#endif
 }
 
 void AudioPlayer::resume() {
     CHECK(mStarted);
-
+#ifdef QCOM_HARDWARE
+    CHECK(mSource != NULL);
+    if (mSourcePaused == true) {
+        mSourcePaused = false;
+        mSource->start();
+    }
+#endif
     if (mAudioSink.get() != NULL) {
         mAudioSink->start();
     } else {
@@ -227,12 +241,14 @@ void AudioPlayer::reset() {
     }
 
     if (mInputBuffer != NULL) {
-        ALOGV("AudioPlayer releasing input buffer.");
+        LOGV("AudioPlayer releasing input buffer.");
 
         mInputBuffer->release();
         mInputBuffer = NULL;
     }
-
+#ifdef QCOM_HARDWARE
+    mSourcePaused = false;
+#endif
     mSource->stop();
 
     // The following hack is necessary to ensure that the OMX
@@ -314,7 +330,7 @@ uint32_t AudioPlayer::getNumFramesPendingPlayout() const {
 
 size_t AudioPlayer::fillBuffer(void *data, size_t size) {
     if (mNumFramesPlayed == 0) {
-        ALOGV("AudioCallback");
+        LOGV("AudioCallback");
     }
 
     if (mReachedEOS) {
@@ -394,12 +410,12 @@ size_t AudioPlayer::fillBuffer(void *data, size_t size) {
                     int64_t timeToCompletionUs =
                         (1000000ll * numFramesPendingPlayout) / mSampleRate;
 
-                    ALOGV("total number of frames played: %lld (%lld us)",
+                    LOGV("total number of frames played: %lld (%lld us)",
                             (mNumFramesPlayed + numAdditionalFrames),
                             1000000ll * (mNumFramesPlayed + numAdditionalFrames)
                                 / mSampleRate);
 
-                    ALOGV("%d frames left to play, %lld us (%.2f secs)",
+                    LOGV("%d frames left to play, %lld us (%.2f secs)",
                          numFramesPendingPlayout,
                          timeToCompletionUs, timeToCompletionUs / 1E6);
 
@@ -425,7 +441,7 @@ size_t AudioPlayer::fillBuffer(void *data, size_t size) {
                 ((mNumFramesPlayed + size_done / mFrameSize) * 1000000)
                     / mSampleRate;
 
-            ALOGV("buffer->size() = %d, "
+            LOGV("buffer->size() = %d, "
                  "mPositionTimeMediaUs=%.2f mPositionTimeRealUs=%.2f",
                  mInputBuffer->range_length(),
                  mPositionTimeMediaUs / 1E6, mPositionTimeRealUs / 1E6);

@@ -1,7 +1,10 @@
 LOCAL_PATH:= $(call my-dir)
+
+ifeq ($(TARGET_USES_QCOM_LPA),true)
 include $(CLEAR_VARS)
 
 LOCAL_SRC_FILES := \
+        MP3Decoder.cpp \
 	src/pvmp3_normalize.cpp \
  	src/pvmp3_alias_reduction.cpp \
  	src/pvmp3_crc.cpp \
@@ -27,11 +30,6 @@ LOCAL_SRC_FILES := \
  	src/pvmp3_seek_synch.cpp \
  	src/pvmp3_stereo_proc.cpp \
  	src/pvmp3_reorder.cpp \
-
-ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
-LOCAL_SRC_FILES += \
-    MP3Decoder.cpp
-endif
 
 ifeq ($(TARGET_ARCH),arm)
 LOCAL_SRC_FILES += \
@@ -59,8 +57,9 @@ LOCAL_MODULE := libstagefright_mp3dec
 
 include $(BUILD_STATIC_LIBRARY)
 
+endif
 
-ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
+
 #LOCAL_PATH:= $(call my-dir)
 include $(CLEAR_VARS)
 
@@ -118,7 +117,6 @@ LOCAL_MODULE := libstagefright_mp3dec_omx
 LOCAL_ARM_MODE := arm
 
 include $(BUILD_STATIC_LIBRARY)
-endif
 
 ################################################################################
 
@@ -136,13 +134,8 @@ LOCAL_C_INCLUDES := \
 LOCAL_SHARED_LIBRARIES := \
         libstagefright libstagefright_omx libstagefright_foundation libutils
 
-ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
 LOCAL_STATIC_LIBRARIES := \
         libstagefright_mp3dec_omx
-else
-LOCAL_STATIC_LIBRARIES := \
-        libstagefright_mp3dec
-endif
 
 LOCAL_MODULE := libstagefright_soft_mp3dec
 LOCAL_MODULE_TAGS := optional

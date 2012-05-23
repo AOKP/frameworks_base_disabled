@@ -356,11 +356,21 @@ public class KeyguardViewMediator implements KeyguardViewCallback,
             mScreenOn = false;
             if (DEBUG) Log.d(TAG, "onScreenTurnedOff(" + why + ")");
 
-            // Lock immediately based on setting if secure (user has a pin/pattern/password).
-            // This also "locks" the device when not secure to provide easy access to the
-            // camera while preventing unwanted input.
-            final boolean lockImmediately =
-                mLockPatternUtils.getPowerButtonInstantlyLocks() || !mLockPatternUtils.isSecure();
+            // Prepare for handling Lock/Slide lock delay and timeout
+            boolean lockImmediately = false;
+            final ContentResolver cr = mContext.getContentResolver();
+            boolean separateSlideLockTimeoutEnabled = Settings.System.getInt(cr,
+                    Settings.System.SCREEN_LOCK_SLIDE_DELAY_TOGGLE, 0) == 1;
+            if (mLockPatternUtils.isSecure()) {
+                // Lock immediately based on setting if secure (user has a pin/pattern/password)
+                // This is retained as-is to ensue AOSP security integrity is maintained
+                lockImmediately = mLockPatternUtils.getPowerButtonInstantlyLocks();
+            } else {
+                // Unless a separate slide lock timeout is enabled, this "locks" the device when
+                // not secure to provide easy access to the camera while preventing unwanted input
+                lockImmediately = separateSlideLockTimeoutEnabled ? false
+                        : mLockPatternUtils.getPowerButtonInstantlyLocks();
+            }
 
             if (mExitSecureCallback != null) {
                 if (DEBUG) Log.d(TAG, "pending exit secure callback cancelled");

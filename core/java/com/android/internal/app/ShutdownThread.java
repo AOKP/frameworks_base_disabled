@@ -126,8 +126,10 @@ public final class ShutdownThread extends Thread {
                         .setTitle(com.android.internal.R.string.reboot_system)
                         .setSingleChoiceItems(com.android.internal.R.array.shutdown_reboot_options, 0, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-                                if (which < 1)
+                                if (which < 1) {
+                                    mRebootReason = "";
                                     return;
+                                }
 
                                 String actions[] = context.getResources().getStringArray(com.android.internal.R.array.shutdown_reboot_actions);
 

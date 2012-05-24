@@ -3915,10 +3915,10 @@ public final class ActivityThread {
         }
 
         // hwui.blacklist override
-        if (HardwareRenderer.isEnabled) {
+        if (!HardwareRenderer.sRendererDisabled) {
             hwuiBlacklist = SystemProperties.get("hwui.blacklist", "0");
             if (hwuiBlacklist.equals("0") || hwuiBlacklist.contains(data.processName)) {
-                HardwareRenderer.disable(true);
+                HardwareRenderer.disable(false);
             }
         }
         

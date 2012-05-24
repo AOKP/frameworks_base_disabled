@@ -17,105 +17,100 @@
 */
 -->
 
-<!-- This is the general lock screen which shows information about the
+<!--
+  This is the general lock screen which shows information about the
   state of the device, as well as instructions on how to get past it
-  depending on the state of the device.-->
-<RelativeLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent">
+  depending on the state of the device.
+-->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
 
     <com.android.internal.policy.impl.LockscreenWallpaper
-	android:id="@+id/lockscreen_wallpaper"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent" />
+        android:id="@+id/lockscreen_wallpaper"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
     <!-- vvv ? vvv -->
-    <GridLayout
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:orientation="vertical"
-	android:rowCount="3"
-	android:id="@+id/root"
-	android:clipChildren="false">
 
-    <!-- Column 0 -->
+    <GridLayout
+        android:id="@+id/root"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipChildren="false"
+        android:orientation="vertical"
+        android:rowCount="4" >
+
+        <!-- Column 0 -->
+
         <include
             android:id="@+id/screen_info"
-            android:layout_column="0"
-            android:layout_row="0"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-                layout="@layout/keyguard_screen_info" />
+            layout="@layout/keyguard_screen_info" />
 
+        <Space android:layout_gravity="fill" />
 
-    <Space
-        android:layout_gravity="fill"
-        android:layout_column="0"
-        android:layout_row="1" />
+        <TextView
+            android:id="@+id/carrier"
+            android:layout_width="0dip"
+            android:layout_gravity="fill_horizontal"
+            android:ellipsize="marquee"
+            android:gravity="right"
+            android:singleLine="true"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="?android:attr/textColorSecondary"
+            android:textSize="@dimen/keyguard_lockscreen_status_line_font_size" />
 
-    <TextView
-        android:id="@+id/carrier"
-        android:layout_width="0dip"
-        android:layout_gravity="fill_horizontal"
-        android:layout_marginBottom="12dip"
-        android:gravity="right"
-        android:singleLine="true"
-        android:ellipsize="marquee"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textSize="@dimen/keyguard_lockscreen_status_line_font_size"
-        android:textColor="?android:attr/textColorSecondary"
-        />
+        <Button
+            android:id="@+id/emergencyCallButton"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_gravity="right"
+            android:drawableLeft="@drawable/lockscreen_emergency_button"
+            android:drawablePadding="8dip"
+            android:text="@string/lockscreen_emergency_call"
+            android:visibility="visible" />
 
-    <Button
-        android:id="@+id/emergencyCallButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="right"
-        android:drawableLeft="@*android:drawable/lockscreen_emergency_button"
-        android:text="@*android:string/lockscreen_emergency_call"
-        style="?android:attr/buttonBarButtonStyle"
-        android:drawablePadding="8dip"
-        android:visibility="gone"
-        />
+        <!-- Column 1 -->
 
-    <!-- Column 1 -->
-    <Space android:layout_width="16dip" android:layout_rowSpan="3" />
+        <Space
+            android:layout_width="64dip"
+            android:layout_rowSpan="4" />
 
-    <!-- Column 2 -->
-    <com.android.internal.widget.multiwaveview.GlowPadView
-        android:id="@+id/unlock_widget"
-        android:layout_width="302dip"
-        android:layout_height="match_parent"
-        android:layout_rowSpan="3"
-        android:gravity="left|center_vertical"
-        android:focusable="true"
+        <!-- Column 2 -->
 
-        android:targetDrawables="@array/lockscreen_targets_with_camera"
-        android:targetDescriptions="@array/lockscreen_target_descriptions_with_camera"
-        android:directionDescriptions="@array/lockscreen_direction_descriptions"
-        android:handleDrawable="@drawable/ic_lockscreen_handle"
-        android:outerRingDrawable="@drawable/ic_lockscreen_outerring"
-        android:outerRadius="@dimen/glowpadview_target_placement_radius"
-        android:innerRadius="@dimen/glowpadview_inner_radius"
-        android:snapMargin="@dimen/glowpadview_snap_margin"
-        android:feedbackCount="1"
-        android:vibrationDuration="20"
-        android:glowRadius="@dimen/glowpadview_glow_radius"
-        android:pointDrawable="@drawable/ic_lockscreen_glowdot"
-        />
+        <com.android.internal.widget.multiwaveview.GlowPadView
+            android:id="@+id/unlock_widget"
+            android:layout_width="302dip"
+            android:layout_height="match_parent"
+            android:layout_rowSpan="3"
+            android:directionDescriptions="@array/lockscreen_direction_descriptions"
+            android:feedbackCount="1"
+            android:focusable="true"
+            android:glowRadius="@dimen/glowpadview_glow_radius"
+            android:gravity="left|center_vertical"
+            android:handleDrawable="@drawable/ic_lockscreen_handle"
+            android:innerRadius="@dimen/glowpadview_inner_radius"
+            android:outerRadius="@dimen/glowpadview_target_placement_radius"
+            android:outerRingDrawable="@drawable/ic_lockscreen_outerring"
+            android:pointDrawable="@drawable/ic_lockscreen_glowdot"
+            android:snapMargin="@dimen/glowpadview_snap_margin"
+            android:targetDescriptions="@array/lockscreen_target_descriptions_with_camera"
+            android:targetDrawables="@array/lockscreen_targets_with_camera"
+            android:vibrationDuration="20" />
 
-    <!-- Music transport control -->
-    <include android:id="@+id/transport"
-        layout="@layout/keyguard_transport_control"
-        android:layout_row="0"
-        android:layout_column="0"
-        android:layout_rowSpan="3"
-        android:layout_columnSpan="2"
-        android:layout_gravity="fill"
-        android:layout_width="0dip"
-        android:layout_height="0dip"
-        />
+        <!-- Music transport control -->
 
-</GridLayout>
+        <include
+            android:id="@+id/transport"
+            android:layout_width="0dip"
+            android:layout_height="0dip"
+            android:layout_column="0"
+            android:layout_columnSpan="2"
+            android:layout_gravity="fill"
+            android:layout_row="0"
+            android:layout_rowSpan="3"
+            layout="@layout/keyguard_transport_control" />
+    </GridLayout>
+
 </RelativeLayout>

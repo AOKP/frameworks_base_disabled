@@ -40,16 +40,16 @@
   <java-symbol type="id" name="action_menu_presenter" />
   <java-symbol type="id" name="action_mode_close_button" />
   <java-symbol type="id" name="activity_chooser_view_content" />
-  <java-symbol type="id" name="albumart" />
+  <!-- <java-symbol type="id" name="albumart" /> -->
   <java-symbol type="id" name="alertTitle" />
   <java-symbol type="id" name="allow_button" />
   <java-symbol type="id" name="alwaysUse" />
   <java-symbol type="id" name="amPm" />
   <java-symbol type="id" name="authtoken_type" />
   <java-symbol type="id" name="back_button" />
-  <java-symbol type="id" name="btn_next" />
+  <!-- <java-symbol type="id" name="btn_next" />
   <java-symbol type="id" name="btn_play" />
-  <java-symbol type="id" name="btn_prev" />
+  <java-symbol type="id" name="btn_prev" /> -->
   <java-symbol type="id" name="button_bar" />
   <java-symbol type="id" name="buttonPanel" />
   <java-symbol type="id" name="by_common" />
@@ -3785,5 +3785,21 @@
   <!-- Power Menu -->
   <java-symbol type="drawable" name="ic_lock_screenshot" />
   <java-symbol type="string" name="global_action_screenshot" />
+
+  <!-- Lockscreen Music Layout -->
+  <java-symbol type="id" name="album_aokp" />
+  <java-symbol type="id" name="albumart_aokp" />
+  <java-symbol type="id" name="albumart_stock" />
+  <java-symbol type="id" name="artist_aokp" />
+  <java-symbol type="id" name="btn_next_aokp" />
+  <java-symbol type="id" name="btn_next_stock" />
+  <java-symbol type="id" name="btn_play_aokp" />
+  <java-symbol type="id" name="btn_play_stock" />
+  <java-symbol type="id" name="btn_prev_aokp" />
+  <java-symbol type="id" name="btn_prev_stock" />
+  <java-symbol type="id" name="layout_aokp" />
+  <java-symbol type="id" name="layout_stock" />
+  <java-symbol type="id" name="title_aokp" />
+  <java-symbol type="id" name="title_stock" />
 
 </resources>

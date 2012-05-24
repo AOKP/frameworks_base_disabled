@@ -2862,6 +2862,12 @@ public final class Settings {
         public static final String LOCKSCREEN_CALENDAR_INTERVAL = "lockscreen_calendar_interval";
 
         /**
+         * Whether to show the stock music layout on the lockscreen
+         * @hide
+         */
+        public static final String LOCKSCREEN_STOCK_MUSIC_LAYOUT = "lockscreen_stock_music_layout";
+
+        /**
          * How to show weather on the statusbar
          *
          * @hide

@@ -17,137 +17,141 @@
 */
 -->
 
-<!-- This is the screen that shows the 9 circle unlock widget and instructs
+<!--
+     This is the screen that shows the 9 circle unlock widget and instructs
      the user how to unlock their device, or make an emergency call.  This
-     is the portrait layout.  -->
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+     is the portrait layout.
+-->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center_horizontal">
+    android:gravity="center_horizontal" >
+
     <com.android.internal.policy.impl.LockscreenWallpaper
         android:id="@+id/lockscreen_wallpaper"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
     <GridLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center_horizontal">
+        android:gravity="center_horizontal"
+        android:orientation="vertical" >
 
-                <include
+        <include
             android:id="@+id/screen_info"
-            android:layout_column="0"
-            android:layout_row="0"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-                layout="@layout/keyguard_screen_info"
-            android:layout_marginRight="@dimen/keyguard_lockscreen_status_line_font_right_margin" />
+            android:layout_column="0"
+            android:layout_marginRight="@dimen/keyguard_lockscreen_status_line_font_right_margin"
+            android:layout_row="0"
+            layout="@layout/keyguard_screen_info" />
 
         <Space android:layout_gravity="fill" />
 
-        <!-- We need MATCH_PARENT here only to force the size of the parent to be passed to
+        <!--
+        We need MATCH_PARENT here only to force the size of the parent to be passed to
         the pattern view for it to compute its size. This is an unusual case, caused by
         LockPatternView's requirement to maintain a square aspect ratio based on the width
-        of the screen. -->
+        of the screen.
+        -->
+
         <com.android.internal.widget.LockPatternView
             android:id="@+id/lockPattern"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginRight="15dip"
-            android:layout_marginLeft="15dip"
             android:layout_gravity="center_horizontal"
-        />
-
-        
+            android:layout_marginLeft="15dip"
+            android:layout_marginRight="15dip" />
 
         <!-- Footer: an emergency call button and an initially hidden "Forgot pattern" button -->
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            style="?android:attr/buttonBarStyle"
-            android:gravity="center"
-            android:weightSum="3">
 
-            <Button android:id="@+id/emergencyCallButton"
-                android:layout_gravity="center_horizontal"
+        <LinearLayout
+            style="?android:attr/buttonBarStyle"
+            android:layout_width="match_parent"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:weightSum="3" >
+
+            <Button
+                android:id="@+id/emergencyCallButton"
+                style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="0dip"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
                 android:layout_weight="1"
-                style="?android:attr/buttonBarButtonStyle"
-                android:textSize="@dimen/keyguard_lockscreen_status_line_font_size"
-                android:text="@string/lockscreen_emergency_call"
                 android:drawableLeft="@drawable/lockscreen_emergency_button"
                 android:drawablePadding="0dip"
-            />
+                android:text="@string/lockscreen_emergency_call"
+                android:textSize="@dimen/keyguard_lockscreen_status_line_font_size" />
 
             <TextView
-	            android:id="@+id/carrier"
-	            android:gravity="center"
-	            android:layout_width="0dp"
-	            android:layout_height="wrap_content"
-	            android:layout_weight="1"
-	            android:singleLine="true"
-	            android:ellipsize="marquee"
-	            android:textSize="@dimen/keyguard_lockscreen_status_line_font_size"
-	            android:textAppearance="?android:attr/textAppearanceMedium" />
-
-            <Button android:id="@+id/forgotPatternButton"
-                android:layout_gravity="center_horizontal"
-                android:layout_width="0dip"
+                android:id="@+id/carrier"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:ellipsize="marquee"
+                android:gravity="center"
+                android:singleLine="true"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textSize="@dimen/keyguard_lockscreen_status_line_font_size" />
+
+            <Button
+                android:id="@+id/forgotPatternButton"
                 style="?android:attr/buttonBarButtonStyle"
-                android:textSize="@dimen/keyguard_lockscreen_status_line_font_size"
-                android:text="@string/lockscreen_forgot_pattern_button_text"
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="1"
                 android:drawableLeft="@drawable/lockscreen_forgot_password_button"
                 android:drawablePadding="0dip"
-            />
-
+                android:text="@string/lockscreen_forgot_pattern_button_text"
+                android:textSize="@dimen/keyguard_lockscreen_status_line_font_size" />
         </LinearLayout>
 
         <!-- Music transport control -->
-        <include android:id="@+id/transport"
-            layout="@layout/keyguard_transport_control"
-            android:layout_row="0"
-            android:layout_column="0"
-            android:layout_rowSpan="2"
-            android:layout_columnSpan="1"
-            android:layout_gravity="fill"
+
+        <include
+            android:id="@+id/transport"
             android:layout_width="0dip"
             android:layout_height="0dip"
-            />
+            android:layout_column="0"
+            android:layout_columnSpan="1"
+            android:layout_gravity="fill"
+            android:layout_row="0"
+            android:layout_rowSpan="1"
+            layout="@layout/keyguard_transport_control" />
 
         <!-- Area to overlay FaceLock -->
+
         <RelativeLayout
             android:id="@+id/faceLockAreaView"
-            android:visibility="invisible"
-            android:layout_row="2"
+            android:layout_width="0dip"
+            android:layout_height="0dip"
             android:layout_column="0"
-            android:layout_rowSpan="1"
             android:layout_columnSpan="1"
             android:layout_gravity="fill"
             android:layout_marginBottom="4dip"
-            android:layout_width="0dip"
-            android:layout_height="0dip"
-            android:background="@drawable/intro_bg">
+            android:layout_row="2"
+            android:layout_rowSpan="1"
+            android:background="@drawable/intro_bg"
+            android:visibility="invisible" >
 
             <View
                 android:id="@+id/spotlightMask"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/facelock_spotlight_mask"
-            />
+                android:background="@color/facelock_spotlight_mask" />
 
             <ImageView
                 android:id="@+id/cancel_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="5dip"
-                android:layout_alignParentTop="true"
                 android:layout_alignParentRight="true"
-                android:src="@drawable/ic_facial_backup"
-            />
+                android:layout_alignParentTop="true"
+                android:padding="5dip"
+                android:src="@drawable/ic_facial_backup" />
         </RelativeLayout>
     </GridLayout>
+
 </RelativeLayout>

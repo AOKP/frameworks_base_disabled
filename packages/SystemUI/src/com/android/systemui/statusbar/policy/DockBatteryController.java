@@ -33,7 +33,6 @@ import android.os.BatteryManager;
 import android.os.Handler;
 import android.provider.Settings;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -81,7 +80,6 @@ public class DockBatteryController extends LinearLayout {
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        Log.d(TAG,"Entering AttachedToWindow");
         init();
         mBatteryGroup = (ViewGroup) findViewById(R.id.dock_combo);
         mBatteryIcon = (ImageView) findViewById(R.id.dock_battery);
@@ -126,14 +124,10 @@ public class DockBatteryController extends LinearLayout {
                         BatteryManager.EXTRA_DOCK_STATUS, 0) == BatteryManager.DOCK_STATE_CHARGING;
                 final boolean dockstatus = intent.getIntExtra(
                         BatteryManager.EXTRA_DOCK_STATUS, 0) != BatteryManager.DOCK_STATE_UNDOCKED;
-                Log.d(TAG,"End of mBatteryBroadcastReceiver");
-                Log.d(TAG,"Dock State = " + BatteryManager.DOCK_STATE_UNDOCKED);
-                Log.d(TAG,"onRecive Dock Status = " + BatteryManager.EXTRA_DOCK_STATUS);
                 setBatteryIcon(level, plugged, dockstatus);
             } else if (action.equals(Intent.ACTION_DOCK_EVENT)) {
                 state = intent.getIntExtra(Intent.EXTRA_DOCK_STATE,
                         Intent.EXTRA_DOCK_STATE_UNDOCKED);
-                if (DBG) Log.v(TAG, "Received ACTIN_DOCK_EVENT with State:" + state);
                 updateSettings();
             }
         }
@@ -145,8 +139,6 @@ public class DockBatteryController extends LinearLayout {
         mDockStatus = dockstatus;
         int mShow = View.GONE;
         boolean mText = false;
-        Log.d(TAG,"Entering setBatteryIcon");
-        Log.d(TAG,"mDockStatus = " + mDockStatus);
 
         ContentResolver cr = mContext.getContentResolver();
         mBatteryStyle = Settings.System.getInt(cr,
@@ -232,8 +224,6 @@ public class DockBatteryController extends LinearLayout {
         ContentResolver cr = mContext.getContentResolver();
         mBatteryStyle = Settings.System.getInt(cr,
                 Settings.System.STATUSBAR_BATTERY_ICON, 0);
-        Log.d(TAG,"Entering updateSettings");
-        Log.d(TAG,"updateSettings mDockStatus = " + mDockStatus);
 
         if (mHasDockBattery && mDockStatus && state != Intent.EXTRA_DOCK_STATE_UNDOCKED) {
             switch (mBatteryStyle) {

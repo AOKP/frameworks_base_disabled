@@ -2371,6 +2371,10 @@ public class PhoneStatusBar extends StatusBar {
         mHandler.sendEmptyMessage(msg);
     }
 
+    public void toggleWidgetView() {
+        mNavigationBarView.toggleWidgetView();
+    }
+
     /**
      * The LEDs are turned o)ff when the notification panel is shown, even just
      * a little bit. This was added last-minute and is inconsistent with the way

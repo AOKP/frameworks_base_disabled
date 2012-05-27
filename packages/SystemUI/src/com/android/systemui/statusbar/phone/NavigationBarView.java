@@ -17,19 +17,20 @@
 package com.android.systemui.statusbar.phone;
 
 import java.io.File;
-import java.io.FileDescriptor;
-import java.io.PrintWriter;
 import java.net.URISyntaxException;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.appwidget.AppWidgetManager;
+import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 import android.database.ContentObserver;
-import android.graphics.Rect;
+import android.graphics.PixelFormat;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -37,11 +38,14 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.ServiceManager;
 import android.provider.Settings;
+import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.Slog;
 import android.util.TypedValue;
 import android.view.Display;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.Surface;
@@ -52,9 +56,12 @@ import android.view.animation.AccelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.android.internal.statusbar.IStatusBarService;
 import com.android.systemui.R;
+import com.android.systemui.WidgetSelectActivity;
+import com.android.systemui.statusbar.WidgetPagerAdapter;
 import com.android.systemui.statusbar.policy.KeyButtonView;
 import com.android.systemui.statusbar.policy.buttons.ExtensibleKeyButtonView;
 
@@ -79,6 +86,8 @@ public class NavigationBarView extends LinearLayout {
 
     int mBarSize;
     boolean mVertical;
+
+    int originalHeight = 0;
 
     boolean mHidden, mLowProfile, mShowMenu;
     int mDisabledFlags = 0;
@@ -125,6 +134,9 @@ public class NavigationBarView extends LinearLayout {
     final static boolean WORKAROUND_INVALID_LAYOUT = true;
     final static int MSG_CHECK_INVALID_LAYOUT = 8686;
 
+    public FrameLayout mPopupView;
+    public WindowManager mWindowManager;
+
     private class H extends Handler {
         public void handleMessage(Message m) {
             switch (m.what) {
@@ -157,15 +169,15 @@ public class NavigationBarView extends LinearLayout {
     public View getRightMenuButton() {
         return mCurrentView.findViewById(R.id.menu);
     }
-    
+
     public View getSearchButton() {
         return mCurrentView.findViewById(R.id.search);
     }
-	
+
     public View getRecentsButton() {
         return mCurrentView.findViewById(R.id.recent_apps);
     }
-    
+
     public View getBackButton() {
         return mCurrentView.findViewById(R.id.back);
     }
@@ -177,7 +189,7 @@ public class NavigationBarView extends LinearLayout {
     public View getBigMenuButton() {
         return mCurrentView.findViewById(R.id.menu_big);
     }
-	
+
     public NavigationBarView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
@@ -193,6 +205,13 @@ public class NavigationBarView extends LinearLayout {
         mVertical = false;
         mShowMenu = false;
         originalHeight = getHeight();
+        mWindowManager = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(WidgetReceiver.ACTION_ALLOCATE_ID);
+        filter.addAction(WidgetReceiver.ACTION_DEALLOCATE_ID);
+        filter.addAction(WidgetReceiver.ACTION_TOGGLE_WIDGETS);
+        context.registerReceiver(new WidgetReceiver(), filter);
     }
 
     FrameLayout rot0;
@@ -249,7 +268,7 @@ public class NavigationBarView extends LinearLayout {
                 addLightsOutButton(lightsOut, rightMenuKey, landscape, true);
             }
         }
-
+        createWidgetView();
     }
 
     private void addLightsOutButton(LinearLayout root, View v, boolean landscape, boolean empty) {
@@ -341,10 +360,12 @@ public class NavigationBarView extends LinearLayout {
                     drawableSet = true;
                 }
             }
-            if(!drawableSet && clickAction != null && !clickAction.startsWith("**")) {
-                // here it's not a system action (**action**), so it must be an app intent
+            if (!drawableSet && clickAction != null && !clickAction.startsWith("**")) {
+                // here it's not a system action (**action**), so it must be an
+                // app intent
                 try {
-                    Drawable d = mContext.getPackageManager().getActivityIcon(Intent.parseUri(clickAction, 0));
+                    Drawable d = mContext.getPackageManager().getActivityIcon(
+                            Intent.parseUri(clickAction, 0));
                     final int[] appIconPadding = getAppIconPadding();
                     if (landscape)
                         v.setPaddingRelative(appIconPadding[1], appIconPadding[0],
@@ -456,8 +477,6 @@ public class NavigationBarView extends LinearLayout {
             }
         }
     }
-
-    int originalHeight = 0;
 
     public void setMenuVisibility(final boolean show) {
         setMenuVisibility(show, false);
@@ -620,7 +639,7 @@ public class NavigationBarView extends LinearLayout {
             group.setMotionEventSplittingEnabled(false);
         }
         mCurrentView = mRotatedViews[Surface.ROTATION_0];
-        
+
         // this takes care of making the buttons
         SettingsObserver settingsObserver = new SettingsObserver(new Handler());
         settingsObserver.observe();
@@ -689,6 +708,11 @@ public class NavigationBarView extends LinearLayout {
                     Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_GLOW_TINT), false,
                     this);
 
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_WIDGETS),
+                    false,
+                    this);
+
             for (int j = 0; j < 5; j++) { // watch all 5 settings for changes.
                 resolver.registerContentObserver(
                         Settings.System.getUriFor(Settings.System.NAVIGATION_CUSTOM_ACTIVITIES[j]),
@@ -727,19 +751,19 @@ public class NavigationBarView extends LinearLayout {
 
         mNumberOfButtons = Settings.System.getInt(resolver,
                 Settings.System.NAVIGATION_BAR_BUTTONS_QTY, 0);
-        if (mNumberOfButtons == 0){
-        	mNumberOfButtons = StockButtonsQty;
-        	Settings.System.putInt(resolver,
-            		Settings.System.NAVIGATION_BAR_BUTTONS_QTY, StockButtonsQty);    	
+        if (mNumberOfButtons == 0) {
+            mNumberOfButtons = StockButtonsQty;
+            Settings.System.putInt(resolver,
+                    Settings.System.NAVIGATION_BAR_BUTTONS_QTY, StockButtonsQty);
         }
 
         for (int j = 0; j < 5; j++) {
             mClickActions[j] = Settings.System.getString(resolver,
                     Settings.System.NAVIGATION_CUSTOM_ACTIVITIES[j]);
-            if (mClickActions[j] == null){
+            if (mClickActions[j] == null) {
                 mClickActions[j] = StockClickActions[j];
                 Settings.System.putString(resolver,
-                		Settings.System.NAVIGATION_CUSTOM_ACTIVITIES[j], mClickActions[j]);
+                        Settings.System.NAVIGATION_CUSTOM_ACTIVITIES[j], mClickActions[j]);
             }
 
             mLongpressActions[j] = Settings.System.getString(resolver,
@@ -747,16 +771,28 @@ public class NavigationBarView extends LinearLayout {
             if (mLongpressActions[j] == null) {
                 mLongpressActions[j] = StockLongpress[j];
                 Settings.System.putString(resolver,
-                		Settings.System.NAVIGATION_LONGPRESS_ACTIVITIES[j], mLongpressActions[j]);
+                        Settings.System.NAVIGATION_LONGPRESS_ACTIVITIES[j], mLongpressActions[j]);
             }
             mPortraitIcons[j] = Settings.System.getString(resolver,
                     Settings.System.NAVIGATION_CUSTOM_APP_ICONS[j]);
             if (mPortraitIcons[j] == null) {
                 mPortraitIcons[j] = "";
                 Settings.System.putString(resolver,
-                		Settings.System.NAVIGATION_CUSTOM_APP_ICONS[j], "");
+                        Settings.System.NAVIGATION_CUSTOM_APP_ICONS[j], "");
             }
         }
+
+        String settingWidgets = Settings.System.getString(resolver,
+                Settings.System.NAVIGATION_BAR_WIDGETS);
+        if (settingWidgets != null && settingWidgets.length() > 0) {
+            String[] split = settingWidgets.split("\\|");
+            widgetIds = new int[split.length];
+            for (int i = 0; i < widgetIds.length; i++) {
+                widgetIds[i] = Integer.parseInt(split[i]);
+            }
+            Log.d(TAG,"Made Widgets:"+ widgetIds.length);
+        }
+
         makeBar();
 
     }
@@ -794,4 +830,117 @@ public class NavigationBarView extends LinearLayout {
         return getResources().getDrawable(R.drawable.ic_sysbar_null);
     }
 
+    boolean showing = false;
+
+    public void toggleWidgetView() {
+        if (showing) {
+            if (mPopupView != null) {
+                mAdapter.onHide();
+                mWindowManager.removeView(mPopupView);
+                showing = false;
+            }
+        } else {
+            WindowManager.LayoutParams params = new WindowManager.LayoutParams(
+                    WindowManager.LayoutParams.MATCH_PARENT,
+                    WindowManager.LayoutParams.WRAP_CONTENT,
+                    WindowManager.LayoutParams.TYPE_SYSTEM_ALERT,
+                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                            | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+                            | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH,
+                    PixelFormat.TRANSLUCENT);
+            params.gravity = Gravity.BOTTOM;
+            params.setTitle("Widgets");
+            if (mWindowManager != null && mAdapter !=null){
+            	mWindowManager.addView(mPopupView, params);
+            	mAdapter.onShow();
+            	showing = true;
+            } else {
+            	Log.e(TAG,"WTF - ToggleWidget when no pager or window manager exist?");
+            }
+        }
+    }
+
+    ViewPager mWidgetPager;
+    WidgetPagerAdapter mAdapter;
+    int widgetIds[];
+
+    public void createWidgetView() {
+        mPopupView = new FrameLayout(mContext);
+        View widgetView = View.inflate(mContext, R.layout.navigation_bar_expanded, null);
+        mPopupView.addView(widgetView);
+        mWidgetPager = (ViewPager) widgetView.findViewById(R.id.pager);
+        mWidgetPager.setAdapter(mAdapter = new WidgetPagerAdapter(mContext, widgetIds));
+        mWidgetPager.setOnPageChangeListener(mNewPageListener);
+
+        int dp = mAdapter.getHeight(mWidgetPager.getCurrentItem());
+        float px = dp * getResources().getDisplayMetrics().density;
+        mWidgetPager.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, (int) px));
+
+        mPopupView.setOnTouchListener(new View.OnTouchListener() {
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_OUTSIDE) {
+                    toggleWidgetView();
+                    return true;
+                }
+                return false;
+            }
+        });
+
+    }
+
+    public OnPageChangeListener mNewPageListener = new OnPageChangeListener() {
+
+        @Override
+        public void onPageSelected(int page) {
+            int dp = mAdapter.getHeight(page);
+            float px = dp * getResources().getDisplayMetrics().density;
+            mWidgetPager.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, (int) px));
+            TextView tv = (TextView) mPopupView.findViewById(R.id.widgetlabel);
+            if (tv != null) {
+            	tv.setText(mAdapter.getLabel(page));
+            }
+        }
+
+        @Override
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+        }
+
+        @Override
+        public void onPageScrollStateChanged(int arg0) {
+
+        }
+    };
+
+    public class WidgetReceiver extends BroadcastReceiver {
+
+        public static final String ACTION_ALLOCATE_ID = "com.android.systemui.ACTION_ALLOCATE_ID";
+        public static final String ACTION_DEALLOCATE_ID = "com.android.systemui.ACTION_DEALLOCATE_ID";
+        public static final String ACTION_TOGGLE_WIDGETS = "com.android.systemui.ACTION_TOGGLE_WIDGETS";
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+
+            if (ACTION_ALLOCATE_ID.equals(action)) {
+                int appWidgetId = mAdapter.mAppWidgetHost.allocateAppWidgetId();
+
+                Intent select = new Intent(context, WidgetSelectActivity.class);
+                select.putExtra("selected_widget_id", appWidgetId);
+                select.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(select);
+
+            } else if (ACTION_DEALLOCATE_ID.equals(action)) {
+                int appWidgetId =
+                        intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, -1);
+                if (appWidgetId != -1) {
+                    mAdapter.mAppWidgetHost.deleteAppWidgetId(appWidgetId);
+                }
+            } else if (ACTION_TOGGLE_WIDGETS.equals(action)) {
+                toggleWidgetView();
+            }
+        }
+    }
 }

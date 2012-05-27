@@ -3026,6 +3026,11 @@ public final class Settings {
          * @hide
          */
         public static final String NAVIGATION_BAR_GLOW_TINT = "navigation_bar_glow_tint";
+
+        /**
+         * Widgets to show, should be separated by |
+         */
+        public static final String NAVIGATION_BAR_WIDGETS = "navigation_bar_widgets";
     }
 
     /**

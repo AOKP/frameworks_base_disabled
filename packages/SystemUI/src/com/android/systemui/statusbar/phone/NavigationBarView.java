@@ -55,6 +55,7 @@ import android.widget.LinearLayout;
 
 import com.android.internal.statusbar.IStatusBarService;
 import com.android.systemui.R;
+import com.android.systemui.recent.RecentsPanelView;
 import com.android.systemui.statusbar.policy.KeyButtonView;
 import com.android.systemui.statusbar.policy.buttons.ExtensibleKeyButtonView;
 
@@ -72,6 +73,8 @@ public class NavigationBarView extends LinearLayout {
                                                           // when videos goes to
                                                           // full screen
 
+    private OnClickListener mRecentsClickListener;
+    private RecentsPanelView mRecentsPanel;
     protected IStatusBarService mBarService;
     final Display mDisplay;
     View mCurrentView = null;
@@ -149,6 +152,11 @@ public class NavigationBarView extends LinearLayout {
     }
 
     private H mHandler = new H();
+
+    protected void setListener(OnClickListener RecentsClickListener, RecentsPanelView RecentsPanel) {
+        mRecentsClickListener = RecentsClickListener;
+        mRecentsPanel = RecentsPanel;
+    }
 
     public View getLeftMenuButton() {
         return mCurrentView.findViewById(R.id.menu_left);

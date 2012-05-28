@@ -389,7 +389,6 @@ public class KeyguardViewMediator implements KeyguardViewCallback,
                 // to enable it a little bit later (i.e, give the user a chance
                 // to turn the screen back on within a certain window without
                 // having to unlock the screen)
-                final ContentResolver cr = mContext.getContentResolver();
 
                 // From DisplaySettings
                 long displayTimeout = Settings.System.getInt(cr, SCREEN_OFF_TIMEOUT,
@@ -431,7 +430,6 @@ public class KeyguardViewMediator implements KeyguardViewCallback,
             } else if (why == WindowManagerPolicy.OFF_BECAUSE_OF_PROX_SENSOR) {
                 // Do not enable the keyguard if the prox sensor forced the screen off.
             } else {
-                final ContentResolver cr = mContext.getContentResolver();
                 // user turned the screen off likely
                 // we wanna check if the user wants to use the timeout setting here too
                 boolean userOverride = Settings.Secure.getInt(cr,

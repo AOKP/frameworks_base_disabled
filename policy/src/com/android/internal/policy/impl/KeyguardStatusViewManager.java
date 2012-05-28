@@ -430,7 +430,7 @@ class KeyguardStatusViewManager implements OnClickListener {
 
         if (mWeatherPanel != null) {
             if (mWeatherCity != null) {
-                mWeatherCity.setText("CM Weather");  //Hard coding this on purpose
+                mWeatherCity.setText("Weather");  //Hard coding this on purpose
                 mWeatherCity.setVisibility(View.VISIBLE);
             }
             if (mWeatherCondition != null) {

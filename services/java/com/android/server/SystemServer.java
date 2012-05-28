@@ -130,6 +130,7 @@ class ServerThread extends Thread {
 
         LightsService lights = null;
         PowerManagerService power = null;
+        DynamicMemoryManagerService dmm = null;
         BatteryService battery = null;
         AlarmManagerService alarm = null;
         NetworkManagementService networkManagement = null;
@@ -149,6 +150,7 @@ class ServerThread extends Thread {
         RecognitionManagerService recognition = null;
         ThrottleService throttle = null;
         NetworkTimeUpdateService networkTimeUpdater = null;
+        CpuGovernorService cpuGovernorManager = null;
 
         // Critical services...
         try {

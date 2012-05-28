@@ -2337,35 +2337,16 @@ public final class Settings {
         public static final String SCREEN_LOCK_SLIDE_SCREENOFF_DELAY = "screen_lock_slide_screenoff_delay";
 
         /**
-         * Whether to use the custom quick unlock screen control
-         * @hide
-         */
-        public static final String LOCKSCREEN_QUICK_UNLOCK_CONTROL = "lockscreen_quick_unlock_control";
-
-        /**
          * Stores values for custom lockscreen targets
          * @hide
          */
         public static final String LOCKSCREEN_TARGETS = "lockscreen_targets";
 
         /**
-         * Boolean value whether to link ringtone and notification volumes
-         * 
-         * @hide
-         */
-        public static final String VOLUME_LINK_NOTIFICATION = "volume_link_notification";
-
-        /**
          * Whether to unlock the menu key.  The value is boolean (1 or 0).
          * @hide
          */
         public static final String MENU_UNLOCK_SCREEN = "menu_unlock_screen";
-
-        /**
-         * Whether to wake the screen with the volume keys, the value is boolean.
-         * @hide
-         */
-        public static final String VOLUME_WAKE_SCREEN = "volume_wake_screen";
 
         /**
          * Whether or not volume button music controls should be enabled to seek media tracks
@@ -2378,48 +2359,6 @@ public final class Settings {
          * @hide
          */
         public static final String MVNO_ROAMING = "mvno_roaming";
-
-        /**
-         * Whether to enable quiet hours.
-         * @hide
-         */
-        public static final String QUIET_HOURS_ENABLED = "quiet_hours_enabled";
-
-        /**
-         * Sets when quiet hours starts. This is stored in minutes from the start of the day.
-         * @hide
-         */
-        public static final String QUIET_HOURS_START = "quiet_hours_start";
-
-        /**
-         * Sets when quiet hours end. This is stored in minutes from the start of the day.
-         * @hide
-         */
-        public static final String QUIET_HOURS_END = "quiet_hours_end";
-
-        /**
-         * Whether to remove the sound from outgoing notifications during quiet hours.
-         * @hide
-         */
-        public static final String QUIET_HOURS_MUTE = "quiet_hours_mute";
-
-        /**
-         * Whether to disable haptic feedback during quiet hours.
-         * @hide
-         */
-        public static final String QUIET_HOURS_HAPTIC = "quiet_hours_haptic";
-
-        /**
-         * Whether to remove the vibration from outgoing notifications during quiet hours.
-         * @hide
-         */
-        public static final String QUIET_HOURS_STILL = "quiet_hours_still";
-
-        /**
-         * Whether to attempt to dim the LED color during quiet hours.
-         * @hide
-         */
-        public static final String QUIET_HOURS_DIM = "quiet_hours_dim";
 
         /**
          * Show the weather on the lock screen
@@ -2464,7 +2403,6 @@ public final class Settings {
         public static final String WEATHER_USE_METRIC = "weather_use_metric";
 
         /**
->>>>>>> b0a4ed8... Framework: Lock screen weather (Part 2 of 2)
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
          *
@@ -3254,40 +3192,6 @@ public final class Settings {
          * @hide
          */
         public static final String LOCKSCREEN_CUSTOM_APP_ACTIVITY = "lockscreen_custom_app_activity";
-
-        /**
-         * Lockscreen custom app array 1 [0] - Left 2 [1] - Right 3 [2] - Top
-         * 
-         * @hide
-         */
-        public static final String[] LOCKSCREEN_CUSTOM_APP_ACTIVITIES = new String[] {
-                "lockscreen_custom_app_intent_0",
-                "lockscreen_custom_app_intent_1",
-                "lockscreen_custom_app_intent_2",
-                "lockscreen_custom_app_intent_3",
-                "lockscreen_custom_app_intent_4",
-                "lockscreen_custom_app_intent_5",
-                "lockscreen_custom_app_intent_6",
-                "lockscreen_custom_app_intent_7",
-        };
-
-        /**
-         * Drawable URIs, each index needs to be matched up to LOCKSCREEN_CUSTOM_APP_ACTIVITIES
-         *
-         * OR ELSE
-         *
-         * @hide
-         */
-        public static final String[] LOCKSCREEN_CUSTOM_APP_ICONS = new String[] {
-                "lockscreen_custom_app_icon_0",
-                "lockscreen_custom_app_icon_1",
-                "lockscreen_custom_app_icon_2",
-                "lockscreen_custom_app_icon_3",
-                "lockscreen_custom_app_icon_4",
-                "lockscreen_custom_app_icon_5",
-                "lockscreen_custom_app_icon_6",
-                "lockscreen_custom_app_icon_7",
-        };
 
         /**
          * Whether volume up/down can be long pressed to skip tracks

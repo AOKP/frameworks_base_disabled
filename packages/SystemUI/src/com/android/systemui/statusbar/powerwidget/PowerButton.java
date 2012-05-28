@@ -14,6 +14,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.RemoteException;
 import android.util.Log;
+import android.widget.LinearLayout;
 import android.widget.ImageView;
 import android.provider.Settings;
 import android.view.View;

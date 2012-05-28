@@ -111,9 +111,6 @@ SurfaceFlinger::SurfaceFlinger()
 #ifdef QCOM_HARDWARE
         mCanSkipComposition(false),
 #endif
-#ifdef QCOM_HDMI_OUT
-	mHDMIOutput(EXT_DISPLAY_OFF),
-#endif
         mConsoleSignals(0),
         mSecureFrameBuffer(0),
         mUseDithering(false)

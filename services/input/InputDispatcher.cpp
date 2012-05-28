@@ -1406,7 +1406,7 @@ int32_t InputDispatcher::findTouchedWindowTargetsLocked(nsecs_t currentTime,
                 if (maskedAction == AMOTION_EVENT_ACTION_DOWN
                         && mFocusedApplicationHandle != NULL) {
 #if DEBUG_FOCUS
-                    ALOGD("Waiting because there is no touched window but there is a "
+                    LOGD("Waiting because there is no touched window but there is a "
                             "focused application that may eventually add a new window: %s.",
                             getApplicationWindowLabelLocked(
                                     mFocusedApplicationHandle, NULL).string());
@@ -1415,7 +1415,7 @@ int32_t InputDispatcher::findTouchedWindowTargetsLocked(nsecs_t currentTime,
                             mFocusedApplicationHandle, NULL, nextWakeupTime);
                     goto Unresponsive;
                 }
-                ALOGI("Dropping event because there is no touched window.");
+                LOGI("Dropping event because there is no touched window.");
                 injectionResult = INPUT_EVENT_INJECTION_FAILED;
                 goto Failed;
             }

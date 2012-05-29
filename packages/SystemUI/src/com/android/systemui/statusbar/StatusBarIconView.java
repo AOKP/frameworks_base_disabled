@@ -36,6 +36,7 @@ import android.util.Log;
 import android.view.ViewDebug;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.ImageView;
+
 import java.text.NumberFormat;
 
 import com.android.internal.statusbar.StatusBarIcon;
@@ -54,8 +55,7 @@ public class StatusBarIconView extends AnimatedImageView {
     private Notification mNotification;
     private Handler mHandler;
     private static final Mode SCREEN_MODE = Mode.MULTIPLY;
-    private boolean mShowNotificationCount;
-
+    
     public StatusBarIconView(Context context, String slot, Notification notification) {
         super(context);
         final Resources res = context.getResources();
@@ -65,12 +65,7 @@ public class StatusBarIconView extends AnimatedImageView {
         mNumberPain.setColor(res.getColor(R.drawable.notification_number_text_color));
         mNumberPain.setAntiAlias(true);
         mNotification = notification;
-        mShowNotificationCount = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.STATUS_BAR_NOTIF_COUNT, 0) == 1;
         setContentDescription(notification);
-
-        SettingsObserver observer = new SettingsObserver(new Handler());
-        observer.observe();
 
         // We do not resize and scale system icons (on the right), only notification icons (on the
         // left).
@@ -122,10 +117,6 @@ public class StatusBarIconView extends AnimatedImageView {
      * Returns whether the set succeeded.
      */
     public boolean set(StatusBarIcon icon) {
-        return set(icon, false);
-    }
-
-    private boolean set(StatusBarIcon icon, boolean force) {
         final boolean iconEquals = mIcon != null
                 && streq(mIcon.iconPackage, icon.iconPackage)
                 && mIcon.iconId == icon.iconId;
@@ -137,7 +128,7 @@ public class StatusBarIconView extends AnimatedImageView {
                 && mIcon.number == icon.number;
         mIcon = icon.clone();
         setContentDescription(icon.contentDescription);
-        if (!iconEquals || force) {
+        if (!iconEquals) {
             Drawable drawable = getIcon(icon);
             if (drawable == null) {
                 Slog.w(StatusBar.TAG, "No icon for slot " + mSlot);
@@ -145,12 +136,13 @@ public class StatusBarIconView extends AnimatedImageView {
             }
             setImageDrawable(drawable);
         }
-        if (!levelEquals || force) {
+        if (!levelEquals) {
             setImageLevel(icon.iconLevel);
         }
 
-        if (!numberEquals || force) {
-            if (icon.number > 0 && mShowNotificationCount) {
+        if (!numberEquals) {
+            if (icon.number > 0 && mContext.getResources().getBoolean(
+                        R.bool.config_statusBarShowNumber)) {
                 if (mNumberBackground == null) {
                     mNumberBackground = getContext().getResources().getDrawable(
                             R.drawable.ic_notification_overlay);
@@ -162,7 +154,7 @@ public class StatusBarIconView extends AnimatedImageView {
             }
             invalidate();
         }
-        if (!visibilityEquals || force) {
+        if (!visibilityEquals) {
             setVisibility(icon.visible ? VISIBLE : GONE);
         }
         return true;
@@ -306,8 +298,6 @@ public class StatusBarIconView extends AnimatedImageView {
                     Settings.System.STATUSBAR_NOTIFICATION_ALPHA), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUSBAR_NOTIFICATION_COLOR), false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.STATUS_BAR_NOTIF_COUNT), false, this);
         }
 
         @Override
@@ -322,11 +312,7 @@ public class StatusBarIconView extends AnimatedImageView {
                 Settings.System.STATUSBAR_NOTIFICATION_ALPHA, 0.8f);
         int mColor = Settings.System.getInt(resolver,
                 Settings.System.STATUSBAR_NOTIFICATION_COLOR, 0xFFFFFFFF);
-        mShowNotificationCount = Settings.System.getInt(resolver,
-                Settings.System.STATUS_BAR_NOTIF_COUNT, 0) == 1;
-
         setAlpha(mAlpha);
         setColorFilter(mColor, SCREEN_MODE);
-        set(mIcon, true);
     }
 }

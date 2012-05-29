@@ -56,11 +56,16 @@ public abstract class StatusBar extends SystemUI implements CommandQueue.Callbac
 
     private DoNotDisturb mDoNotDisturb;
 
+    private boolean mShowNotificationCounts;
+
     public void start() {
         // First set up our views and stuff.
         View sb = makeStatusBarView();
 
         mStatusBarContainer.addView(sb);
+
+        mShowNotificationCounts = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.STATUS_BAR_NOTIF_COUNT, 0) == 1;
 
         // Connect in to the status bar manager service
         StatusBarIconList iconList = new StatusBarIconList();

@@ -2650,7 +2650,7 @@ public class PhoneStatusBar extends StatusBar {
 
         mIsStatusBarBrightNess = Settings.System.getInt(mStatusBarView.getContext()
                 .getContentResolver(),
-                Settings.System.STATUS_BAR_BRIGHTNESS_TOGGLE, 0) == 1;
+                Settings.System.STATUS_BAR_BRIGHTNESS_TOGGLE, 1) == 1;
 
         loadDimens();
         fontSize = Settings.System.getInt(cr, Settings.System.STATUSBAR_FONT_SIZE, 16) ;

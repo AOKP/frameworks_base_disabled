@@ -1,6 +1,9 @@
 package com.android.systemui.statusbar.powerwidget;
 
-import com.android.systemui.R;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import android.app.ActivityManagerNative;
 import android.content.ContentResolver;
@@ -9,8 +12,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
-import android.graphics.drawable.Drawable;
 import android.graphics.PorterDuff.Mode;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
@@ -20,10 +23,16 @@ import android.util.Log;
 import android.widget.LinearLayout;
 import android.widget.ImageView;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.View;
-import java.util.ArrayList;
-import java.util.List;
 
+import com.android.systemui.R;
+
+/**
+ * THIS CLASS'S DATA MUST BE KEPT UP-TO-DATE WITH THE DATA IN
+ * com.android.systemui.statusbar.powerwidget.PowerWidget AND
+ * com.android.settings.cyanogenmod.PowerWidgetUtil
+ */
 public abstract class PowerButton {
     public static final String TAG = "PowerButton";
     public static final boolean DEBUG = false;
@@ -56,7 +65,7 @@ public abstract class PowerButton {
     public static final String BUTTON_WIMAX = "toggleWimax";
     public static final String BUTTON_LTE = "toggleLte";
     public static final String BUTTON_UNKNOWN = "unknown";
-
+    public static final String BUTTON_PROFILE = "toggleProfile";
     private static final Mode MASK_MODE = Mode.SCREEN;
 
     protected int mIcon;
@@ -181,7 +190,6 @@ public abstract class PowerButton {
     private View.OnLongClickListener mLongClickListener = new View.OnLongClickListener() {
         public boolean onLongClick(View v) {
             boolean result = handleLongClick(v.getContext());
-
             if (result && mHapticFeedback && mLongClickPattern != null) {
                 mVibrator.vibrate(mLongClickPattern, -1);
             }

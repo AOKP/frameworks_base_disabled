@@ -56,6 +56,7 @@ public abstract class StatusBar extends SystemUI implements CommandQueue.Callbac
     public abstract void animateCollapse();
     public abstract boolean isTablet();
 
+    private boolean mShowNotificationCounts;
     private DoNotDisturb mDoNotDisturb;
 
     public void start() {
@@ -63,6 +64,9 @@ public abstract class StatusBar extends SystemUI implements CommandQueue.Callbac
         View sb = makeStatusBarView();
 
         mStatusBarContainer.addView(sb);
+
+        mShowNotificationCounts = Settings.System.getInt(mContext.getContentResolver(),
+	                Settings.System.STATUS_BAR_NOTIF_COUNT, 0) == 1;
 
         // Connect in to the status bar manager service
         StatusBarIconList iconList = new StatusBarIconList();

@@ -22,28 +22,32 @@
   state of the device, as well as instructions on how to get past it
   depending on the state of the device.  It is the same for landscape
   and portrait.-->
-<RelativeLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:gravity="center_horizontal">
+<GridLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/root"
+    android:gravity="center_horizontal">
 
-	<com.android.internal.policy.impl.LockscreenWallpaper
-		android:id="@+id/lockscreen_wallpaper"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent" />
+    <com.android.internal.widget.DigitalClock android:id="@+id/time"
+        android:layout_marginTop="@dimen/keyguard_lockscreen_status_line_clockfont_top_margin"
+        android:layout_marginBottom="12dip"
+        android:layout_marginRight="@dimen/keyguard_lockscreen_status_line_font_right_margin"
+        android:layout_gravity="right">
 
-	<GridLayout
-		android:orientation="vertical"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:gravity="center_horizontal">
-
-        <com.android.internal.widget.DigitalClock android:id="@+id/time"
-            android:layout_marginTop="@dimen/keyguard_lockscreen_status_line_clockfont_top_margin"
-            android:layout_marginBottom="12dip"
-            android:layout_marginRight="@dimen/keyguard_lockscreen_status_line_font_right_margin"
-            android:layout_gravity="right">
+        <!-- Because we can't have multi-tone fonts, we render two TextViews, one on
+        top of the other. Hence the redundant layout... -->
+        <TextView android:id="@+id/timeDisplayBackground"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:ellipsize="none"
+            android:textSize="@dimen/keyguard_lockscreen_clock_font_size"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_marginBottom="6dip"
+            android:textColor="@color/lockscreen_clock_background"
+            />
 
             <!-- Because we can't have multi-tone fonts, we render two TextViews, one on
             top of the other. Hence the redundant layout... -->
@@ -293,7 +297,6 @@
 
     </LinearLayout>
 
-
         <com.android.internal.widget.multiwaveview.MultiWaveView
             android:id="@+id/unlock_widget"
             android:orientation="horizontal"
@@ -366,5 +369,4 @@
         android:layout_height="0dip"
         />
 
-    </GridLayout>
-</RelativeLayout>
+</GridLayout>

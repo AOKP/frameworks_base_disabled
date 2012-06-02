@@ -429,9 +429,10 @@ class KeyguardStatusViewManager implements OnClickListener {
                 Settings.System.WEATHER_SHOW_LOCATION, 1) == 1;
         boolean showTimestamp = Settings.System.getInt(resolver,
                 Settings.System.WEATHER_SHOW_TIMESTAMP, 1) == 1;
+        boolean invertLowhigh = Settings.System.getInt(resolver,
+                Settings.System.WEATHER_INVERT_LOWHIGH, 0) == 1;
 
         if (mWeatherPanel != null) {
-
             if (mWeatherImage != null) {
                 String conditionCode = w.condition_code;
                 String condition_filename = "weather_" + conditionCode;
@@ -464,7 +465,7 @@ class KeyguardStatusViewManager implements OnClickListener {
             }
             if (mWeatherTempsPanel != null && mWeatherTemp != null && mWeatherLowHigh != null) {
                 mWeatherTemp.setText(w.temp);
-                mWeatherLowHigh.setText(w.low + " | " + w.high);
+                mWeatherLowHigh.setText(invertLowhigh ? w.high + " | " + w.low : w.low + " | " + w.high);
                 mWeatherTempsPanel.setVisibility(View.VISIBLE);
             }
 
@@ -1083,7 +1084,6 @@ class KeyguardStatusViewManager implements OnClickListener {
         ContentResolver resolver = getContext().getContentResolver();
         int color = Settings.System.getInt(resolver,
                 Settings.System.LOCKSCREEN_CUSTOM_TEXT_COLOR, COLOR_WHITE);
-        // XXX: EACH CAN THROW NULL POINTER SO WATCH YOUR ASS
  
         // carrier view
         try {

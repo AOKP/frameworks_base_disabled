@@ -23,8 +23,7 @@
 <RelativeLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:gravity="center_horizontal">
+	android:layout_height="match_parent">
 
 <com.android.internal.policy.impl.LockscreenWallpaper
 	android:id="@+id/lockscreen_wallpaper"
@@ -157,7 +156,9 @@
         />
 
     <!-- Column 1 -->
-    <Space android:layout_width="64dip" android:layout_rowSpan="9" />
+		<Space
+			android:layout_width="16dip"
+			android:layout_rowSpan="9" />
 
     <!-- Column 2 -->
     <com.android.internal.widget.multiwaveview.MultiWaveView

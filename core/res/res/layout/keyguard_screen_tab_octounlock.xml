@@ -150,7 +150,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="342dip">
+        android:layout_height="335dip">
 
         <com.android.internal.widget.multiwaveview.MultiWaveView
             android:id="@+id/unlock_widget"
@@ -179,7 +179,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_marginBottom="72dip"
+            android:layout_marginBottom="50dip"
             android:gravity="center_horizontal"
             android:singleLine="true"
             android:ellipsize="marquee"

@@ -1227,4 +1227,21 @@
     <string name="sending" msgid="8715108995741758718">"Odesílání..."</string>
     <string name="launchBrowserDefault" msgid="2057951947297614725">"Spustit prohlížeč?"</string>
     <string name="SetupCallDefault" msgid="6870275517518479651">"Přijmout hovor?"</string>
+    <!-- AOKP special strings -->
+    <string name="reboot_system" product="tablet">Restartovat tablet</string>
+    <string name="reboot_system" product="default">Restartovat telefon</string>
+    <string name="global_action_screenshot">Snímek obrazovky</string>
+    <string name="reboot_reboot">Restartovat</string>
+    <string name="reboot_progress">Restartuji\u2026</string>
+    <string name="reboot_confirm">Telefon bude restartován.</string>
+    <string name="global_action_reboot">Restartovat</string>
+    <string name="app_killed_message">Aplikace ukončena</string>
+    <string name="lockscreen_calendar_tomorrow">Zítra</string>
+    <string name="global_actions_toggle_power_saver">Režim spořiče energie</string>
+    <string name="global_actions_power_saver_on_status">Spořič energie je zapnutý</string>
+    <string name="global_actions_power_saver_off_status">Spořič energie je vypnutý</string>
+    <string name="global_actions_toggle_torch">Svítilna</string>
+    <string name="global_actions_torch_on_status">Svítilna je zapnutá</string>
+    <string name="global_actions_torch_off_status">Svítilna je vypnutá</string>
+    <string name="global_actions_toggle_navbar_hide">Ovládání navigační lišty</string>
 </resources>

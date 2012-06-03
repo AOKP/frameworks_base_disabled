@@ -3138,6 +3138,9 @@ public class WifiStateMachine extends StateMachine {
                      * and handle the rest of the events there
                      */
                     deferMessage(message);
+                    if(SystemProperties.OMAP_ENHANCEMENT) {
+                        handlePostDhcpSetup();
+                    }
                     handleNetworkDisconnect();
                     transitionTo(mDisconnectedState);
                     break;

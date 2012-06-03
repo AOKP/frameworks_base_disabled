@@ -65,8 +65,26 @@ LOCAL_MODULE_PATH := $(TARGET_OUT)/lib/egl
 LOCAL_SRC_FILES := ../../../../$(BOARD_EGL_CFG)
 include $(BUILD_PREBUILT)
 
-# make sure we depend on egl.cfg, so it gets installed
-$(installed_libEGL): | egl.cfg
+
+
+ifdef OMAP_ENHANCEMENT
+
+ifeq ($(TARGET_BOARD_PLATFORM), omap4)
+   # Only applicable for omap4 at the moment:
+   # Do not install egl.cfg to system/lib/egl/egl.cfg
+   # instead create symlink to sysfs entry that is created
+   # dynamicaly
+   $(shell mkdir -p $(ANDROID_PRODUCT_OUT)/system/lib/egl/)
+   $(shell ln -f -s /sys/egl/egl.cfg $(ANDROID_PRODUCT_OUT)/system/lib/egl/egl.cfg)
+else
+   # make sure we depend on egl.cfg, so it gets installed
+   $(installed_libEGL): | egl.cfg
+endif #omap4
+
+else
+  # make sure we depend on egl.cfg, so it gets installed
+  $(installed_libEGL): | egl.cfg
+endif #OMAP_ENHANCEMENT
 
 endif
 

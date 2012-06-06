@@ -2484,7 +2484,7 @@ public class PhoneStatusBar extends StatusBar {
             } catch (RemoteException e) {
             }
             try {
-                v.getContext().startActivity(new Intent("android.liquid.CONTROL")
+                v.getContext().startActivity(new Intent("android.settings.liquid.fragments")
                     .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                 animateCollapse();
             } catch (ActivityNotFoundException anfe) {

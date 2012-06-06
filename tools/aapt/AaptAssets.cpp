@@ -56,6 +56,12 @@ static bool validateFileName(const char* fileName)
     return true;
 }
 
+// The default to use if no other ignore pattern is defined.
+const char * const gDefaultIgnoreAssets =
+    "!.svn:!.git:!.ds_store:!*.scc:.*:<dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~";
+// The ignore pattern that can be passed via --ignore-assets in Main.cpp
+const char * gUserIgnoreAssets = NULL;
+
 static bool isHidden(const char *root, const char *path)
 {
     const char *ext  = NULL;

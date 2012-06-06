@@ -464,7 +464,7 @@ class KeyguardStatusViewManager implements OnClickListener {
             }
             if (mWeatherTempsPanel != null && mWeatherTemp != null && mWeatherLowHigh != null) {
                 mWeatherTemp.setText(w.temp);
-                mWeatherLowHigh.setText(invertLowhigh ? w.high + " | " + w.low : w.low + " | " + w.high);
+                mWeatherLowHigh.setText(w.low + " | " + w.high);
                 mWeatherTempsPanel.setVisibility(View.VISIBLE);
             }
 

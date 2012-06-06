@@ -27,7 +27,7 @@ public class FChargeToggle extends Toggle {
 
         setLabel(R.string.toggle_fcharge);
         IntentFilter f = new IntentFilter();
-        f.addAction("com.liquid.control.FCHARGE_CHANGED");
+        f.addAction("com.android.settings.liquid.FCHARGE_CHANGED");
         context.registerReceiver(mIntentReceiver, f);
         updateState();
     }

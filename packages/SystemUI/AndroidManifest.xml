@@ -167,17 +167,17 @@
         </activity>
 
         <!-- started from PhoneStatusBar -->
-        <activity android:name="com.liquid.control.LiquidActivity">
+        <activity android:name="com.android.settings.liquid.fragments.AboutLiquid">
             <intent-filter>
-                <action android:name="com.liquid.control" />
+                <action android:name="com.android.settings" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
 
         <!-- started from PhoneStatusBar -->
-        <activity android:name="com.liquid.control.fragments.Performance">
+        <activity android:name="com.android.settings.liquid.fragments.Performance">
             <intent-filter>
-                <action android:name="com.liquid.control" />
+                <action android:name="com.android.settings" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>

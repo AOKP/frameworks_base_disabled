@@ -76,8 +76,13 @@ int SurfaceTextureLayer::query(int what, int* value) {
 status_t SurfaceTextureLayer::queueBuffer(int buf, int64_t timestamp,
         uint32_t* outWidth, uint32_t* outHeight, uint32_t* outTransform) {
 
+#ifdef OMAP_ENHANCEMENT
+    status_t res = SurfaceTexture::queueBuffer(buf, timestamp,
+            outWidth, outHeight, outTransform, String8());
+#else
     status_t res = SurfaceTexture::queueBuffer(buf, timestamp,
             outWidth, outHeight, outTransform);
+#endif
     sp<Layer> layer(mLayer.promote());
     if (layer != NULL) {
         *outTransform = layer->getTransformHint();

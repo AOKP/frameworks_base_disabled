@@ -26,6 +26,10 @@
 
 #include <OMX_Video.h>
 
+#ifdef OMAP_ENHANCEMENT
+#include <OMX_TI_Video.h>
+#endif
+
 namespace android {
 
 struct ColorConverter {
@@ -43,6 +47,18 @@ struct ColorConverter {
             size_t dstWidth, size_t dstHeight,
             size_t dstCropLeft, size_t dstCropTop,
             size_t dstCropRight, size_t dstCropBottom);
+#ifdef OMAP_ENHANCEMENT
+    status_t convertInterlacedBuffer(
+            const void *srcBits,
+            size_t srcWidth, size_t srcHeight,
+            size_t srcCropLeft, size_t srcCropTop,
+            size_t srcCropRight, size_t srcCropBottom,
+            OMX_TI_INTERLACETYPE buff_layout,
+            void *dstBits,
+            size_t dstWidth, size_t dstHeight,
+            size_t dstCropLeft, size_t dstCropTop,
+            size_t dstCropRight, size_t dstCropBottom);
+#endif
 
 private:
     struct BitmapParams {
@@ -79,6 +95,10 @@ private:
 
     status_t convertTIYUV420PackedSemiPlanar(
             const BitmapParams &src, const BitmapParams &dst);
+#ifdef OMAP_ENHANCEMENT
+    status_t convertTIYUV420PackedSemiPlanarInterlaced(
+            const BitmapParams &src, const BitmapParams &dst);
+#endif
 
     ColorConverter(const ColorConverter &);
     ColorConverter &operator=(const ColorConverter &);

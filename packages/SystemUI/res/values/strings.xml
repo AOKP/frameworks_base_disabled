@@ -406,4 +406,5 @@
     <string name="status_bar_settings_toggles">Toggles</string>    
     <string name="toggle_navbar">Toggle NavBar</string>    
     <string name="toggle_tether">Tether</string>
+    <string name="widgets">Widgets</string>
 </resources>

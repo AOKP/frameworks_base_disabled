@@ -8,7 +8,7 @@ LOCAL_SRC_FILES := $(call all-java-files-under, src) \
 
 LOCAL_JAVA_LIBRARIES := services
 
-LOCAL_STATIC_JAVA_LIBRARIES := android-common-carousel
+LOCAL_STATIC_JAVA_LIBRARIES := android-common-carousel android-support-v4
 
 LOCAL_PACKAGE_NAME := SystemUI
 LOCAL_CERTIFICATE := platform

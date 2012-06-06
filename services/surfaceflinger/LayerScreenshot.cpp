@@ -106,6 +106,21 @@ uint32_t LayerScreenshot::doTransaction(uint32_t flags)
     return LayerBaseClient::doTransaction(flags);
 }
 
+#ifdef OMAP_ENHANCEMENT_S3D
+void LayerScreenshot::drawRegion(const Region& clip, int hw_w, int hw_h) const
+{
+    glTexCoordPointer(2, GL_FLOAT, 0, mTexCoords);
+    Region::const_iterator it = clip.begin();
+    Region::const_iterator const end = clip.end();
+    while (it != end) {
+        const Rect& r = *it++;
+        const GLint sy = hw_h - (r.top + r.height());
+        glScissor(r.left, sy, r.width(), r.height());
+        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+    }
+}
+#endif
+
 void LayerScreenshot::onDraw(const Region& clip) const
 {
     const State& s(drawingState());
@@ -140,15 +155,21 @@ void LayerScreenshot::onDraw(const Region& clip) const
         glMatrixMode(GL_MODELVIEW);
 
         glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+#ifndef OMAP_ENHANCEMENT_S3D
         glTexCoordPointer(2, GL_FLOAT, 0, mTexCoords);
+#endif
         glVertexPointer(2, GL_FLOAT, 0, mVertices);
 
+#ifdef OMAP_ENHANCEMENT_S3D
+        drawRegion(clip, hw.getWidth(), fbHeight);
+#else
         while (it != end) {
             const Rect& r = *it++;
             const GLint sy = fbHeight - (r.top + r.height());
             glScissor(r.left, sy, r.width(), r.height());
             glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
         }
+#endif
 
         glDisable(GL_BLEND);
         glDisable(GL_TEXTURE_2D);

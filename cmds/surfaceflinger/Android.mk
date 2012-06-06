@@ -1,6 +1,12 @@
 LOCAL_PATH:= $(call my-dir)
 include $(CLEAR_VARS)
 
+ifeq ($(MAKECMDGOALS), sdk_addon)
+ifeq ($(TARGET_PRODUCT), s3d)
+LOCAL_CPPFLAGS += -DOMAP_ENHANCEMENT_S3D
+endif
+endif
+
 LOCAL_SRC_FILES:= \
 	main_surfaceflinger.cpp 
 

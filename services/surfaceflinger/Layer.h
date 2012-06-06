@@ -90,6 +90,9 @@ protected:
 
 private:
     friend class SurfaceTextureLayer;
+#ifdef OMAP_ENHANCEMENT_S3D
+    friend class OmapLayer;
+#endif
     void onFrameQueued();
     virtual sp<ISurface> createSurface();
     uint32_t getEffectiveUsage(uint32_t usage) const;
@@ -112,6 +115,9 @@ private:
     Rect mCurrentCrop;
     uint32_t mCurrentTransform;
     uint32_t mCurrentScalingMode;
+#ifdef OMAP_ENHANCEMENT
+    uint32_t mCurrentLayout;
+#endif
     bool mCurrentOpacity;
 
     // constants
@@ -131,6 +137,10 @@ private:
 #ifdef QCOM_HARDWARE
     // Qcom specific flags for this layer.
     int mLayerQcomFlags;
+#endif
+
+#ifdef OMAP_ENHANCEMENT
+    bool mTextureSizeTooLarge;
 #endif
 };
 

@@ -162,6 +162,9 @@ void DisplayHardware::init(uint32_t dpy)
     // initialize EGL
     EGLint attribs[] = {
             EGL_SURFACE_TYPE,       EGL_WINDOW_BIT,
+#ifdef OMAP_ENHANCEMENT_S3D
+            EGL_STENCIL_SIZE,       1,
+#endif
             EGL_NONE,               0,
             EGL_NONE
     };
@@ -171,8 +174,14 @@ void DisplayHardware::init(uint32_t dpy)
     if (property_get("debug.sf.hw", property, NULL) > 0) {
         if (atoi(property) == 0) {
             ALOGW("H/W composition disabled");
+#ifdef OMAP_ENHANCEMENT_S3D
+            attribs[4] = EGL_CONFIG_CAVEAT;
+            attribs[5] = EGL_SLOW_CONFIG;
+#else
             attribs[2] = EGL_CONFIG_CAVEAT;
             attribs[3] = EGL_SLOW_CONFIG;
+#endif
+
 #ifdef QCOM_HARDWARE
         } else {
             // We have hardware composition enabled. Check the composition type

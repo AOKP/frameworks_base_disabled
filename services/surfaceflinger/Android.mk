@@ -10,22 +10,36 @@ ifeq ($(BOARD_FORCE_DITHERING),true)
 LOCAL_CFLAGS     += -DFORCE_DITHERING
 endif
 
+ifeq ($(MAKECMDGOALS), sdk_addon)
+ifeq ($(TARGET_PRODUCT), s3d)
+OMAP_ENHANCEMENT_S3D := true
+LOCAL_CPPFLAGS += -DOMAP_ENHANCEMENT_S3D
+endif
+endif
 
 LOCAL_SRC_FILES:= \
-    Layer.cpp 								\
-    LayerBase.cpp 							\
-    LayerDim.cpp 							\
-    LayerScreenshot.cpp						\
-    DdmConnection.cpp						\
-    DisplayHardware/DisplayHardware.cpp 	\
+    Layer.cpp \
+    LayerBase.cpp \
+    LayerDim.cpp \
+    LayerScreenshot.cpp	\
+    DdmConnection.cpp \
+    DisplayHardware/DisplayHardware.cpp \
     DisplayHardware/DisplayHardwareBase.cpp \
-    DisplayHardware/HWComposer.cpp 			\
-    GLExtensions.cpp 						\
-    MessageQueue.cpp 						\
-    SurfaceFlinger.cpp 						\
-    SurfaceTextureLayer.cpp 				\
-    Transform.cpp 							\
+    DisplayHardware/HWComposer.cpp \
+    GLExtensions.cpp \
+    MessageQueue.cpp \
+    SurfaceFlinger.cpp \
+    SurfaceTextureLayer.cpp \
+    Transform.cpp \
     
+
+ifdef OMAP_ENHANCEMENT_S3D
+LOCAL_SRC_FILES += \
+    S3DSurfaceFlinger.cpp \
+    OmapLayer.cpp \
+    OmapLayerScreenshot.cpp \
+    DisplayHardware/S3DHardware.cpp
+endif
 
 LOCAL_CFLAGS:= -DLOG_TAG=\"SurfaceFlinger\"
 LOCAL_CFLAGS += -DGL_GLEXT_PROTOTYPES -DEGL_EGLEXT_PROTOTYPES

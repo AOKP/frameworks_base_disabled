@@ -32,8 +32,15 @@ namespace android {
 class LayerScreenshot : public LayerBaseClient
 {
     GLuint mTextureName;
+#ifndef OMAP_ENHANCEMENT_S3D
     GLfloat mTexCoords[8];
+#endif
     sp<SurfaceFlinger> mFlinger;
+#ifdef OMAP_ENHANCEMENT_S3D
+protected:
+    GLfloat mTexCoords[8];
+    virtual void drawRegion(const Region& clip, int hw_w, int hw_h) const;
+#endif
 public:    
             LayerScreenshot(SurfaceFlinger* flinger, DisplayID display,
                         const sp<Client>& client);

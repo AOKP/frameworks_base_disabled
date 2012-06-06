@@ -17,9 +17,17 @@
 #include <binder/BinderService.h>
 #include <SurfaceFlinger.h>
 
+#ifdef OMAP_ENHANCEMENT_S3D
+#include <S3DSurfaceFlinger.h>
+#endif
+
 using namespace android;
 
 int main(int argc, char** argv) {
+#ifdef OMAP_ENHANCEMENT_S3D
+    BinderService<S3DSurfaceFlinger>::publishAndJoinThreadPool();
+#else
     SurfaceFlinger::publishAndJoinThreadPool();
+#endif
     return 0;
 }

@@ -914,6 +914,7 @@ please see styles_device_defaults.xml.
         <item name="android:divider">?android:attr/dividerVertical</item>
         <item name="android:showDividers">middle</item>
         <item name="android:dividerPadding">6dip</item>
+        <item name="android:minHeight">?attr/actionBarSize</item>
     </style>
 
      <style name="TextAppearance.SuggestionHighlight">

@@ -117,8 +117,14 @@ public:
     // nanoseconds, and must be monotonically increasing. Its other semantics
     // (zero point, etc) are client-dependent and should be documented by the
     // client.
+#ifdef OMAP_ENHANCEMENT
+    virtual status_t queueBuffer(int buf, int64_t timestamp,
+            uint32_t* outWidth, uint32_t* outHeight, uint32_t* outTransform,
+            const String8& metadata);
+#else
     virtual status_t queueBuffer(int buf, int64_t timestamp,
             uint32_t* outWidth, uint32_t* outHeight, uint32_t* outTransform);
+#endif
     virtual void cancelBuffer(int buf);
 
     // onFrameReceivedLocked informs the buffer consumers (StageFrightRecorder)
@@ -208,6 +214,15 @@ public:
     // isMetaDataStoredInVideoBuffers tells the encoder whether we will
     // pass metadata through the buffers. Currently, it is force set to true
     bool isMetaDataStoredInVideoBuffers() const;
+
+#ifdef OMAP_ENHANCEMENT
+    // Just confirming to the ISurfaceTexture interface as of now
+    virtual status_t setLayout(uint32_t layout) { return OK; }
+
+    // updateAndGetCurrent updates to the current image and gives the ownership
+    // of the buffer to the client
+    virtual status_t updateAndGetCurrent(sp<GraphicBuffer>* buf);
+#endif
 
 protected:
 

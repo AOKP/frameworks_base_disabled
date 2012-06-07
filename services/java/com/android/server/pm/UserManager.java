@@ -140,8 +140,6 @@ public class UserManager {
             fallbackToSingleUser();
         } catch (XmlPullParserException pe) {
             fallbackToSingleUser();
-        } finally {
-            fis.close();
         }
     }
 

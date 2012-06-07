@@ -806,7 +806,7 @@ public class NavigationBarView extends LinearLayout {
     private Drawable getNavbarIconImage(boolean landscape, String uri) {
 
         if (uri == null)
-            return getResources().getDrawable(R.drawable.ic_sysbar_null);
+            return getResources().getDrawable(R.drawable.ic_notify_liquid);
 
         if (uri.startsWith("**")) {
             if (uri.equals(ACTION_HOME)) {

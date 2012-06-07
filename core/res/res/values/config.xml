@@ -779,7 +779,13 @@
     <!-- Whether to even allow system settings for crt animations
     		setting this to false will completely disable them -->
     <bool name="config_enableCrtAnimations">true</bool>
+   
+    <!-- Path to the library that contains the device specifiy key handler -->
+    <string name="config_deviceKeyHandlerLib"></string>
     
+    <!-- Name of that key handler class -->
+    <string name="config_deviceKeyHandlerClass"></string>
+
     <!-- LUN file to be used by legacy USB manager.
           The existence of this file will be used to determine in the
           legacy USB manager should be started. -->

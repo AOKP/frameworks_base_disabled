@@ -592,24 +592,15 @@ public class KeyEvent extends InputEvent implements Parcelable {
      * Used to launch a calculator application. */
     public static final int KEYCODE_CALCULATOR      = 210;
     /** Key codes  for Asus dock keyboard */
-    public static final int KEYCODE_HANKAKU_ZENKAKU = 211;
-    public static final int KEYCODE_EISU            = 212;
-    public static final int KEYCODE_MUHENKAN        = 213;
-    public static final int KEYCODE_HENKAN          = 214;
-    public static final int KEYCODE_HIRAGANA_KATAKANA = 215;
-    public static final int KEYCODE_YEN             = 216;
-    public static final int KEYCODE_EUROPE_1        = 217;
-    public static final int KEYCODE_EUROPE_2        = 218;
-    public static final int KEYCODE_SLEEP           = 219;
-    public static final int KEYCODE_WIRELESS        = 220;
-    public static final int KEYCODE_BLUETOOTH       = 221;
-    public static final int KEYCODE_TOUCHPAD        = 222;
-    public static final int KEYCODE_BRIGHTNESS_UP   = 223;
-    public static final int KEYCODE_BRIGHTNESS_DOWN = 224;
-    public static final int KEYCODE_BRIGHTNESS_AUTO = 225;
-    public static final int KEYCODE_CAPTURE         = 226;
+    public static final int KEYCODE_TOGGLE_WIFI     = 211;
+    public static final int KEYCODE_TOGGLE_BT       = 212;
+    public static final int KEYCODE_TOGGLE_TOUCHPAD = 213;
+    public static final int KEYCODE_BRIGHTNESS_DOWN = 214;
+    public static final int KEYCODE_BRIGHTNESS_UP   = 215;
+    public static final int KEYCODE_BRIGHTNESS_AUTO = 216;
+    public static final int KEYCODE_SCREENSHOT      = 217;
 
-    private static final int LAST_KEYCODE           = KEYCODE_CAPTURE;
+    private static final int LAST_KEYCODE           = KEYCODE_SCREENSHOT;
 
     // NOTE: If you add a new keycode here you must also add it to:
     //  isSystem()
@@ -842,22 +833,13 @@ public class KeyEvent extends InputEvent implements Parcelable {
         names.append(KEYCODE_CALENDAR, "KEYCODE_CALENDAR");
         names.append(KEYCODE_MUSIC, "KEYCODE_MUSIC");
         names.append(KEYCODE_CALCULATOR, "KEYCODE_CALCULATOR");
-        names.append(KEYCODE_HANKAKU_ZENKAKU, "KEYCODE_HANKAKU_ZENKAKU");
-        names.append(KEYCODE_EISU, "KEYCODE_EISU");
-        names.append(KEYCODE_MUHENKAN, "KEYCODE_MUHENKAN");
-        names.append(KEYCODE_HENKAN, "KEYCODE_HENKAN");
-        names.append(KEYCODE_HIRAGANA_KATAKANA, "KEYCODE_HIRAGANA_KATAKANA");
-        names.append(KEYCODE_YEN, "KEYCODE_YEN");
-        names.append(KEYCODE_EUROPE_1, "KEYCODE_EUROPE_1");
-        names.append(KEYCODE_EUROPE_2, "KEYCODE_EUROPE_2");
-        names.append(KEYCODE_SLEEP, "KEYCODE_SLEEP");
-        names.append(KEYCODE_WIRELESS, "KEYCODE_WIRELESS");
-        names.append(KEYCODE_BLUETOOTH, "KEYCODE_BLUETOOTH");
-        names.append(KEYCODE_TOUCHPAD, "KEYCODE_TOUCHPAD");
-        names.append(KEYCODE_BRIGHTNESS_UP, "KEYCODE_BRIGHTNESS_UP");
+        names.append(KEYCODE_TOGGLE_WIFI, "KEYCODE_TOGGLE_WIFI");
+        names.append(KEYCODE_TOGGLE_BT, "KEYCODE_TOGGLE_BT");
+        names.append(KEYCODE_TOGGLE_TOUCHPAD, "KEYCODE_TOGGLE_TOUCHPAD");
         names.append(KEYCODE_BRIGHTNESS_DOWN, "KEYCODE_BRIGHTNESS_DOWN");
+        names.append(KEYCODE_BRIGHTNESS_UP, "KEYCODE_BRIGHTNESS_UP");
         names.append(KEYCODE_BRIGHTNESS_AUTO, "KEYCODE_BRIGHTNESS_AUTO");
-        names.append(KEYCODE_CAPTURE, "KEYCODE_CAPTURE");
+        names.append(KEYCODE_SCREENSHOT, "KEYCODE_SCREENSHOT");
     };
 
     // Symbolic names of all metakeys in bit order from least significant to most significant.

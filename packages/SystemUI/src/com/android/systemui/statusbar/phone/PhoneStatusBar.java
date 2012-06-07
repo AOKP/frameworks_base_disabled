@@ -2479,16 +2479,17 @@ public class PhoneStatusBar extends StatusBar {
     private View.OnClickListener mLiquidButtonListener = new View.OnClickListener() {
         public void onClick(View v) {
             try {
-                // Dismiss the lock screen when LiquidControl starts.
+                // Dismiss the lock screen when the new activity starts
                 ActivityManagerNative.getDefault().dismissKeyguardOnNextActivity();
             } catch (RemoteException e) {
             }
             try {
-                v.getContext().startActivity(new Intent("android.settings.liquid.fragments")
-                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                v.getContext().startActivity(new Intent(Intent.ACTION_MAIN).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                    | Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                .setClassName("com.android.settings", "com.android.settings.liquid.fragments.AboutLiquid"));
                 animateCollapse();
             } catch (ActivityNotFoundException anfe) {
-                Log.wtf(TAG, "...could not find Liquid Control");
+                Log.d(TAG, "...could not find About Liquid");
             }
         }
     };
@@ -2496,12 +2497,12 @@ public class PhoneStatusBar extends StatusBar {
     private View.OnClickListener mDateListener = new View.OnClickListener() {
         public void onClick(View v) {
             try {
-                // Dismiss the lock screen when LiquidControl starts.
+                // Dismiss the lock screen when the new activity starts
                 ActivityManagerNative.getDefault().dismissKeyguardOnNextActivity();
             } catch (RemoteException e) {
             }
             if (mDropdownDateBehavior) {
-                //launch calender
+                // launch calender
                 try{
                     v.getContext().startActivity(new Intent(Intent.ACTION_MAIN).setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
                         | Intent.FLAG_ACTIVITY_SINGLE_TOP
@@ -2513,7 +2514,7 @@ public class PhoneStatusBar extends StatusBar {
                     Log.d(TAG, "...could not find Calender");
                 }
             } else {
-                //launch alarm clock manageer
+                // launch alarm clock
                 try{
                     v.getContext().startActivity(new Intent(Intent.ACTION_MAIN).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
                         | Intent.FLAG_ACTIVITY_CLEAR_TASK)

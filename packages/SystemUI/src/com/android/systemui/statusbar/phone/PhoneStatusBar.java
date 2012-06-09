@@ -113,7 +113,7 @@ public class PhoneStatusBar extends StatusBar {
     public static final boolean DEBUG = false;
     public static final boolean DEBUG_TRACKINGVIEW = false;
     public static final boolean SPEW = false;
-    public static final boolean DUMPTRUCK = true; // extra dumpsys info
+    public static final boolean DUMPTRUCK = false; // extra dumpsys info
 
     // additional instrumentation for testing purposes; intended to be left on during development
     public static final boolean CHATTY = DEBUG;
@@ -2649,7 +2649,7 @@ public class PhoneStatusBar extends StatusBar {
     // only do windowshade color OR background drawable
     boolean mUseBackgroundDrawable = false;
     boolean mUserStatusbarBackground = false;
-    final String USER_IMAGE_NAME = "/data/data/com.liquid.control/files/windowshade_background.jpg";
+    final String USER_IMAGE_NAME = "/mnt/sdcard/Android/data/com.android.settings/cache/windowshade_background.jpg";
 
     private void updateSettings() {
         // Check all our settings and respond accordingly

@@ -188,6 +188,7 @@ public final class ActivityThread {
     String mInstrumentedAppDir = null;
     boolean mSystemThread = false;
     boolean mJitEnabled = false;
+    boolean mReadBlackList = false;
 
     // These can be accessed by multiple threads; mPackages is the lock.
     // XXX For now we keep around information about all packages we have
@@ -3897,6 +3898,7 @@ public final class ActivityThread {
             ApplicationHwuiBlacklist = new ArrayList<String>();
         }
 
+        mReadBlackList = true;
         FileInputStream fstream = null;
         try {
             fstream = new FileInputStream("/system/hwui-blacklist.txt");
@@ -3927,7 +3929,7 @@ public final class ActivityThread {
     }
 
     private boolean IsAppHwuiBlacklisted(String runningapp) {
-        if (ApplicationHwuiBlacklist == null) {
+        if (mReadBlackList == false) {
             ReadAppHwuiBlacklist();
         }
 

@@ -3916,9 +3916,8 @@ public final class ActivityThread {
                 ApplicationHwuiBlacklist.add(line);
             }
         } catch (FileNotFoundException e) {
-            Log.i(TAG, "No app blacklist file");
         } catch (IOException e) {
-            Log.e(TAG, "Error reading app blacklist file", e);
+            Log.e(TAG, "Error reading hardware acceleration blacklist file", e);
         } finally {
             if (fstream != null) {
                 try {
@@ -3961,7 +3960,9 @@ public final class ActivityThread {
         }
 
         // Hardware accelerated blacklist override
-        if (IsAppHwuiBlacklisted(data.processName)) {
+        if (!HardwareRenderer.sRendererDisabled &&
+            IsAppHwuiBlacklisted(data.processName))
+        {
             HardwareRenderer.disable(false);
         }
         

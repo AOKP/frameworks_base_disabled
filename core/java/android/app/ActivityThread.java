@@ -92,9 +92,14 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.WindowManagerImpl;
 
+import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileDescriptor;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.ref.WeakReference;
@@ -176,6 +181,7 @@ public final class ActivityThread {
     // set of instantiated backup agents, keyed by package name
     final HashMap<String, BackupAgent> mBackupAgents = new HashMap<String, BackupAgent>();
     static final ThreadLocal<ActivityThread> sThreadLocal = new ThreadLocal<ActivityThread>();
+    ArrayList<String> ApplicationHwuiBlacklist = null;
     Instrumentation mInstrumentation;
     String mInstrumentationAppDir = null;
     String mInstrumentationAppPackage = null;
@@ -3885,6 +3891,48 @@ public final class ActivityThread {
             // Ignore
         }
     }    
+
+    private void ReadAppHwuiBlacklist() {
+        if (ApplicationHwuiBlacklist == null) {
+            ApplicationHwuiBlacklist = new ArrayList<String>();
+        }
+
+        FileInputStream fstream = null;
+        try {
+            fstream = new FileInputStream("/system/hwui-blacklist.txt");
+            DataInputStream in = new DataInputStream(fstream);
+            BufferedReader file = new BufferedReader(new InputStreamReader(in));
+            String line;
+            while ((line = file.readLine()) != null) {
+                line = line.trim();
+
+                // Ignore comments and blank lines
+                if (line.length() == 0 || line.startsWith("#")) {
+                    continue;
+                }
+
+                ApplicationHwuiBlacklist.add(line);
+            }
+        } catch (FileNotFoundException e) {
+            Log.i(TAG, "No app blacklist file");
+        } catch (IOException e) {
+            Log.e(TAG, "Error reading app blacklist file", e);
+        } finally {
+            if (fstream != null) {
+                try {
+                    fstream.close();
+                } catch (IOException e) {}
+            }
+        }
+    }
+
+    private boolean IsAppHwuiBlacklisted(String runningapp) {
+        if (ApplicationHwuiBlacklist == null) {
+            ReadAppHwuiBlacklist();
+        }
+
+        return ApplicationHwuiBlacklist.contains(runningapp);
+    }
     
     private void handleBindApplication(AppBindData data) {
         mBoundApplication = data;
@@ -3900,10 +3948,6 @@ public final class ActivityThread {
         Process.setArgV0(data.processName);
         android.ddm.DdmHandleAppName.setAppName(data.processName);
 
-        // hwui.blacklist allows to disable the hw renderer usage
-        // for certain processes
-        String hwuiBlacklist = null;
-
         if (data.persistent) {
             // Persistent processes on low-memory devices do not get to
             // use hardware accelerated drawing, since this can add too much
@@ -3914,15 +3958,9 @@ public final class ActivityThread {
             }
         }
 
-        // hwui.blacklist override
-        if (HardwareRenderer.sRendererDisabled) {
-            Slog.d(TAG, "hwui is disabled, skipping blacklist check");
-        } else {
-            hwuiBlacklist = SystemProperties.get("hwui.blacklist", "");
-            if (hwuiBlacklist.equals("0") || hwuiBlacklist.contains(data.processName)) {
-                Slog.d(TAG, "hwui is blacklisted for " + data.processName);
-                HardwareRenderer.disable(false);
-            }
+        // Hardware accelerated blacklist override
+        if (IsAppHwuiBlacklisted(data.processName)) {
+            HardwareRenderer.disable(false);
         }
         
         if (mProfiler.profileFd != null) {

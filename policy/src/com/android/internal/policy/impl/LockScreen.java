@@ -51,6 +51,7 @@ import android.util.Log;
 import android.media.AudioManager;
 import android.provider.MediaStore;
 import android.provider.Settings;
+import android.provider.Settings.SettingNotFoundException;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -607,6 +608,8 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
     public void onPause() {
         mStatusViewManager.onPause();
         mUnlockWidgetMethods.reset(false);
+        // update the settings when we pause
+        updateSettings();
     }
 
     private final Runnable mOnResumePing = new Runnable() {

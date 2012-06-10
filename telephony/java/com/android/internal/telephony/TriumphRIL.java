@@ -326,7 +326,7 @@ public class TriumphRIL extends RIL implements CommandsInterface {
 
                     	mIccThread.start();
 
-                    looper = mIccThread.getLooper();
+                    llooper = mIccThread.getLooper();
                         mIccHandler = new IccHandler(this,looper);
                         mIccHandler.run();
                     }

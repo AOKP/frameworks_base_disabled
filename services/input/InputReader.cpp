@@ -1005,8 +1005,7 @@ void InputDevice::process(const RawEvent* rawEvents, size_t count) {
                     mapper->process(&event);
                 }
 
-                //ALOGD("Fake event sent, touch=%d !", touched);
-                LOGD("Fake event sent, touch=%d !", touched);
+                //LOGD("Fake event sent, touch=%d !", touched);
             }
             else
 #endif //LEGACY_TOUCHSCREEN

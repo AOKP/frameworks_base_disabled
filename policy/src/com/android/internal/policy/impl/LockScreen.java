@@ -540,6 +540,8 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 
         // Update widget with initial ring state
         mUnlockWidgetMethods.updateResources();
+        // Update the settings everytime we draw lockscreen
+        updateSettings();
 
         if (DBG) Log.v(TAG, "*** LockScreen accel is "
                 + (mUnlockWidget.isHardwareAccelerated() ? "on":"off"));
@@ -608,8 +610,6 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
     public void onPause() {
         mStatusViewManager.onPause();
         mUnlockWidgetMethods.reset(false);
-        // update the settings when we pause
-        updateSettings();
     }
 
     private final Runnable mOnResumePing = new Runnable() {

@@ -1005,8 +1005,7 @@ void InputDevice::process(const RawEvent* rawEvents, size_t count) {
                     mapper->process(&event);
                 }
 
-                //ALOGD("Fake event sent, touch=%d !", touched);
-                LOGD("Fake event sent, touch=%d !", touched);
+                //LOGD("Fake event sent, touch=%d !", touched);
             }
             else
 #endif //LEGACY_TOUCHSCREEN
@@ -2966,7 +2965,7 @@ void TouchInputMapper::configureSurface(nsecs_t when, bool* outResetNeeded) {
             mOrientedRanges.distance.min =
                     mRawPointerAxes.distance.minValue * mDistanceScale;
             mOrientedRanges.distance.max =
-                    mRawPointerAxes.distance.minValue * mDistanceScale;
+                    mRawPointerAxes.distance.maxValue * mDistanceScale;
             mOrientedRanges.distance.flat = 0;
             mOrientedRanges.distance.fuzz =
                     mRawPointerAxes.distance.fuzz * mDistanceScale;

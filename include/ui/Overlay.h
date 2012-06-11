@@ -28,30 +28,7 @@
 
 #include <ui/PixelFormat.h>
 
-typedef void (*overlay_queue_buffer_hook)(void *data,
-        void* buffer, size_t size);
-
 namespace android {
-
-struct mapping_data_t {
-    int fd;
-    size_t length;
-    uint32_t offset;
-    void *ptr;
-};
-
-enum OverlayFormats {
-    OVERLAY_FORMAT_YUV422SP,
-    OVERLAY_FORMAT_YUV420SP,
-    OVERLAY_FORMAT_YUV422I,
-    OVERLAY_FORMAT_YUV420P,
-    OVERLAY_FORMAT_RGB565,
-    OVERLAY_FORMAT_RGBA8888,
-    OVERLAY_FORMAT_UNKNOWN
-};
-
-int getBppFromOverlayFormat(OverlayFormats format);
-OverlayFormats getOverlayFormatFromString(const char* name);
 
 typedef void* overlay_buffer_t;
 typedef uint32_t overlay_handle_t;
@@ -59,7 +36,20 @@ typedef uint32_t overlay_handle_t;
 class Overlay : public virtual RefBase
 {
 public:
-    Overlay(uint32_t width, uint32_t height, OverlayFormats format, overlay_queue_buffer_hook queue_buffer, void* hook_data);
+    typedef void (*QueueBufferHook)(void *data, void* buffer, size_t size);
+
+    enum Format {
+        FORMAT_YUV422SP,
+        FORMAT_YUV420SP,
+        FORMAT_YUV422I,
+        FORMAT_YUV420P,
+        FORMAT_RGB565,
+        FORMAT_RGBA8888,
+        FORMAT_UNKNOWN
+    };
+
+public:
+    Overlay(uint32_t width, uint32_t height, Format format, QueueBufferHook queueBuffer, void* data);
 
     /* destroys this overlay */
     void destroy();
@@ -96,27 +86,39 @@ public:
     int32_t getBufferCount() const;
     status_t getStatus() const;
 
+public:
+    static int getBppFromFormat(Format format);
+    static Format getFormatFromString(const char* name);
+
 private:
     virtual ~Overlay();
 
     // C style hook
-    overlay_queue_buffer_hook queue_buffer_hook;
-    void* hook_data;
+    QueueBufferHook mQueueBufferHook;
+    void* mHookData;
 
     // overlay data
     static const uint32_t NUM_BUFFERS = 8;
     static const uint32_t NUM_MIN_FREE_BUFFERS = 2;
-    uint32_t numFreeBuffers;
+    uint32_t mNumFreeBuffers;
 
     status_t mStatus;
-    uint32_t width, height;
+    uint32_t mWidth, mHeight;
+    Format mFormat;
 
     // ashmem region
-    mapping_data_t *mBuffers;
-    bool *mQueued; // true if buffer is currently queued
+    struct MappingData {
+        int fd;
+        size_t length;
+        uint32_t offset;
+        void *ptr;
+    };
+
+    MappingData mBuffers[NUM_BUFFERS];
+    bool mQueued[NUM_BUFFERS]; // true if buffer is currently queued
 
     // queue/dequeue mutex
-    pthread_mutex_t queue_mutex;
+    pthread_mutex_t mQueueMutex;
 };
 
 // ----------------------------------------------------------------------------

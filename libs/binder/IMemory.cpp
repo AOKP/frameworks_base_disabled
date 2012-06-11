@@ -81,10 +81,6 @@ public:
     virtual void* getBase() const;
     virtual size_t getSize() const;
     virtual uint32_t getFlags() const;
-#ifndef BYPASS_OFFSET
-    virtual uint32_t getOffset() const;
-#endif
-
 #ifndef BINDER_COMPAT
     virtual uint32_t getOffset() const;
 #endif
@@ -114,10 +110,6 @@ private:
     mutable void*       mBase;
     mutable size_t      mSize;
     mutable uint32_t    mFlags;
-#ifndef BYPASS_OFFSET
-    mutable uint32_t    mOffset;
-#endif
-
 #ifndef BINDER_COMPAT
     mutable uint32_t    mOffset;
 #endif
@@ -243,10 +235,7 @@ status_t BnMemory::onTransact(
 
 BpMemoryHeap::BpMemoryHeap(const sp<IBinder>& impl)
     : BpInterface<IMemoryHeap>(impl),
-    mHeapId(-1), mBase(MAP_FAILED), mSize(0), mFlags(0), 
-#ifndef BYPASS_OFFSET
-    mOffset(0),
-#endif
+    mHeapId(-1), mBase(MAP_FAILED), mSize(0), mFlags(0),
 #ifndef BINDER_COMPAT
         mOffset(0),
 #endif
@@ -291,10 +280,6 @@ void BpMemoryHeap::assertMapped() const
             if (mHeapId == -1) {
                 mBase   = heap->mBase;
                 mSize   = heap->mSize;
-#ifndef BYPASS_OFFSET
-                mOffset = heap->mOffset;
-#endif
-
 #ifndef BINDER_COMPAT
                 mOffset = heap->mOffset;
 #endif
@@ -321,12 +306,6 @@ void BpMemoryHeap::assertReallyMapped() const
         int parcel_fd = reply.readFileDescriptor();
         ssize_t size = reply.readInt32();
         uint32_t flags = reply.readInt32();
-#ifndef BYPASS_OFFSET
-        uint32_t offset = reply.readInt32();
-#else
-        uint32_t offset = 0;
-#endif
-
 #ifndef BINDER_COMPAT
         uint32_t offset = reply.readInt32();
 #else
@@ -356,10 +335,6 @@ void BpMemoryHeap::assertReallyMapped() const
             } else {
                 mSize = size;
                 mFlags = flags;
-#ifndef BYPASS_OFFSET
-                mOffset = offset;
-#endif
-
 #ifndef BINDER_COMPAT
                 mOffset = offset;
 #endif
@@ -389,13 +364,6 @@ uint32_t BpMemoryHeap::getFlags() const {
     return mFlags;
 }
 
-#ifndef BYPASS_OFFSET
-uint32_t BpMemoryHeap::getOffset() const {
-    assertMapped();
-    return mOffset;
-}
-#endif
-
 #ifndef BINDER_COMPAT
 uint32_t BpMemoryHeap::getOffset() const {
     assertMapped();
@@ -422,9 +390,6 @@ status_t BnMemoryHeap::onTransact(
             reply->writeFileDescriptor(getHeapID());
             reply->writeInt32(getSize());
             reply->writeInt32(getFlags());
-#ifndef BYPASS_OFFSET
-            reply->writeInt32(getOffset());
-#endif
 
 #ifndef BINDER_COMPAT
             reply->writeInt32(getOffset());

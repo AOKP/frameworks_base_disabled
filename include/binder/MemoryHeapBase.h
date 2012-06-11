@@ -61,10 +61,6 @@ public:
     virtual void*       getBase() const;
     virtual size_t      getSize() const;
     virtual uint32_t    getFlags() const;
-#ifndef BYPASS_OFFSET
-    virtual uint32_t      getOffset() const;
-#endif
-
 #ifndef BINDER_COMPAT
     virtual uint32_t    getOffset() const;
 #endif
@@ -96,10 +92,6 @@ private:
     uint32_t    mFlags;
     const char* mDevice;
     bool        mNeedUnmap;
-#ifndef BYPASS_OFFSET
-    uint32_t    mOffset;
-#endif
-
 #ifndef BINDER_COMPAT
     uint32_t    mOffset;
 #endif

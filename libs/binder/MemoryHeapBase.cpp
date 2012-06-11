@@ -43,10 +43,6 @@ namespace android {
 MemoryHeapBase::MemoryHeapBase()
     : mFD(-1), mSize(0), mBase(MAP_FAILED),
       mDevice(NULL), mNeedUnmap(false)
-#ifndef BYPASS_OFFSET
-    , mOffset(0)
-#endif
-
 #ifndef BINDER_COMPAT
     , mOffset(0)
 #endif
@@ -56,9 +52,6 @@ MemoryHeapBase::MemoryHeapBase()
 MemoryHeapBase::MemoryHeapBase(size_t size, uint32_t flags, char const * name)
     : mFD(-1), mSize(0), mBase(MAP_FAILED), mFlags(flags),
       mDevice(0), mNeedUnmap(false)
-#ifndef BYPASS_OFFSET
-    , mOffset(0)
-#endif
 
 #ifndef BINDER_COMPAT
     , mOffset(0)
@@ -80,10 +73,6 @@ MemoryHeapBase::MemoryHeapBase(size_t size, uint32_t flags, char const * name)
 MemoryHeapBase::MemoryHeapBase(const char* device, size_t size, uint32_t flags)
     : mFD(-1), mSize(0), mBase(MAP_FAILED), mFlags(flags),
       mDevice(0), mNeedUnmap(false)
-#ifndef BYPASS_OFFSET
-    , mOffset(0)
-#endif
-
 #ifndef BINDER_COMPAT
     , mOffset(0)
 #endif
@@ -106,9 +95,6 @@ MemoryHeapBase::MemoryHeapBase(const char* device, size_t size, uint32_t flags)
 MemoryHeapBase::MemoryHeapBase(int fd, size_t size, uint32_t flags, uint32_t offset)
     : mFD(-1), mSize(0), mBase(MAP_FAILED), mFlags(flags),
       mDevice(0), mNeedUnmap(false)
-#ifndef BYPASS_OFFSET
-    , mOffset(0)
-#endif
 
 #ifndef BINDER_COMPAT
     , mOffset(0)
@@ -169,9 +155,6 @@ status_t MemoryHeapBase::mapfd(int fd, size_t size, uint32_t offset)
     }
     mFD = fd;
     mSize = size;
-#ifndef BYPASS_OFFSET
-    mOffset = offset;
-#endif
 
 #ifndef BINDER_COMPAT
     mOffset = offset;
@@ -217,12 +200,6 @@ uint32_t MemoryHeapBase::getFlags() const {
 const char* MemoryHeapBase::getDevice() const {
     return mDevice;
 }
-#ifndef BYPASS_OFFSET
-uint32_t MemoryHeapBase::getOffset() const {
-    return mOffset;
-}
-#endif
-
 #ifndef BINDER_COMPAT
 uint32_t MemoryHeapBase::getOffset() const {
     return mOffset;

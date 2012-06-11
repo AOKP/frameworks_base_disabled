@@ -261,21 +261,23 @@ public final class CallManager {
         int resultState = ServiceState.STATE_OUT_OF_SERVICE;
 
         for (Phone phone : mPhones) {
-            int serviceState = phone.getServiceState().getState();
-            if (serviceState == ServiceState.STATE_IN_SERVICE) {
-                // IN_SERVICE has the highest priority
-                resultState = serviceState;
-                break;
-            } else if (serviceState == ServiceState.STATE_OUT_OF_SERVICE) {
-                // OUT_OF_SERVICE replaces EMERGENCY_ONLY and POWER_OFF
-                // Note: EMERGENCY_ONLY is not in use at this moment
-                if ( resultState == ServiceState.STATE_EMERGENCY_ONLY ||
-                        resultState == ServiceState.STATE_POWER_OFF) {
+            if (phone.getServiceState() != null) {
+                int serviceState = phone.getServiceState().getState();
+                if (serviceState == ServiceState.STATE_IN_SERVICE) {
+                    // IN_SERVICE has the highest priority
                     resultState = serviceState;
-                }
-            } else if (serviceState == ServiceState.STATE_EMERGENCY_ONLY) {
-                if (resultState == ServiceState.STATE_POWER_OFF) {
-                    resultState = serviceState;
+                    break;
+                } else if (serviceState == ServiceState.STATE_OUT_OF_SERVICE) {
+                    // OUT_OF_SERVICE replaces EMERGENCY_ONLY and POWER_OFF
+                    // Note: EMERGENCY_ONLY is not in use at this moment
+                    if ( resultState == ServiceState.STATE_EMERGENCY_ONLY ||
+                            resultState == ServiceState.STATE_POWER_OFF) {
+                        resultState = serviceState;
+                    }
+                } else if (serviceState == ServiceState.STATE_EMERGENCY_ONLY) {
+                    if (resultState == ServiceState.STATE_POWER_OFF) {
+                        resultState = serviceState;
+                    }
                 }
             }
         }
@@ -350,20 +352,26 @@ public final class CallManager {
      * @return the phone associated with the foreground call
      */
     public Phone getFgPhone() {
-        return getActiveFgCall().getPhone();
+        Call response = getActiveFgCall();
+        if (response == null) return null;
+        return response.getPhone();
     }
 
     /**
      * @return the phone associated with the background call
      */
     public Phone getBgPhone() {
-        return getFirstActiveBgCall().getPhone();
+        Call response = getFirstActiveBgCall();
+        if (response == null) return null;
+        return response.getPhone();
     }
 
     /**
      * @return the phone associated with the ringing call
      */
     public Phone getRingingPhone() {
+        Call response = getFirstActiveRingingCall();
+        if (response == null) return null;
         return getFirstActiveRingingCall().getPhone();
     }
 

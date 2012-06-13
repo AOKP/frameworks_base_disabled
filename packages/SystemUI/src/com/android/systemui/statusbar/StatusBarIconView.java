@@ -125,10 +125,14 @@ public class StatusBarIconView extends AnimatedImageView {
      * Returns whether the set succeeded.
      */
     public boolean set(StatusBarIcon icon) {
-        return set(icon, false);
+        try {
+            return set(icon, false);
+        } catch (NullPointerException ne) {
+            return false;
+        }
     }
 
-    private boolean set(StatusBarIcon icon, boolean force) {
+    private boolean set(StatusBarIcon icon, boolean force) throws NullPointerException {
         final boolean iconEquals = mIcon != null
                 && streq(mIcon.iconPackage, icon.iconPackage)
                 && mIcon.iconId == icon.iconId;
@@ -330,6 +334,10 @@ public class StatusBarIconView extends AnimatedImageView {
 
         setAlpha(mAlpha);
         setColorFilter(mColor, SCREEN_MODE);
-        set(mIcon, true);
+        try {
+            set(mIcon, true);
+        } catch (NullPointerException npe) {
+            // icon was null move along
+        }
     }
 }

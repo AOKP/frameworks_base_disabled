@@ -143,6 +143,9 @@ public class PhoneStatusBar extends StatusBar {
     private boolean mBrightnessControl;
     private boolean mAutoBrightness;
 
+    // brightness panel
+    private BrightnessPanel mBrightnessPanel = null;
+
     // fling gesture tuning parameters, scaled to display density
     private float mSelfExpandVelocityPx; // classic value: 2000px/s
     private float mSelfCollapseVelocityPx; // classic value: 2000px/s (will be negated to collapse
@@ -1731,6 +1734,11 @@ public class PhoneStatusBar extends StatusBar {
                                         power.setBacklightBrightness(newBrightness);
                                         Settings.System.putInt(mContext.getContentResolver(), Settings.System.SCREEN_BRIGHTNESS,
                                                 newBrightness);
+
+                                        if (mBrightnessPanel == null)
+                                            mBrightnessPanel = new BrightnessPanel(mContext);
+                                        mBrightnessPanel.postBrightnessChanged(newBrightness, android.os.Power.BRIGHTNESS_ON);
+
                                     }
                                 } catch (RemoteException e) {
                                     Slog.w(TAG, "Setting Brightness failed: " + e);
@@ -1738,8 +1746,6 @@ public class PhoneStatusBar extends StatusBar {
                             } else {
                                 mLinger++;
                             }
-                        } else {
-                            mLinger = 0;
                         }
                     }
                 } else {
@@ -1748,6 +1754,7 @@ public class PhoneStatusBar extends StatusBar {
                 }
             } else if (action == MotionEvent.ACTION_UP
                     || action == MotionEvent.ACTION_CANCEL) {
+                mLinger = 0;
                 mVelocityTracker.computeCurrentVelocity(1000);
 
                 float yVel = mVelocityTracker.getYVelocity();

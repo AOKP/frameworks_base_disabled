@@ -110,7 +110,7 @@ import com.android.systemui.statusbar.policy.toggles.TogglesView;
 
 public class PhoneStatusBar extends StatusBar {
     static final String TAG = "PhoneStatusBar";
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
     public static final boolean DEBUG_TRACKINGVIEW = false;
     public static final boolean SPEW = false;
     public static final boolean DUMPTRUCK = false; // extra dumpsys info
@@ -2501,8 +2501,9 @@ public class PhoneStatusBar extends StatusBar {
             } catch (RemoteException e) {
             }
             try {
-                mContext.startActivity(new Intent(Settings.ACTION_SETTINGS)
-                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                mContext.startActivity(new Intent(Intent.ACTION_MAIN).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                        | Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                        .setClassName("com.android.launcher", "com.android.launcher2.preference.Preferences"));
                 animateCollapse();
             } catch (ActivityNotFoundException anfe) {
                 Log.d(TAG, "...could not find About Liquid");

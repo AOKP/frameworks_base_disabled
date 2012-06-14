@@ -66,8 +66,7 @@ import java.util.ArrayList;
 class LockScreen extends LinearLayout implements KeyguardScreen {
 
     private static final int ON_RESUME_PING_DELAY = 500; // delay first ping until the screen is on
-    private static final boolean DBG = false;
-    private static final boolean DEBUG = DBG;
+    private static final boolean DEBUG = false;
     private static final String TAG = "LockScreen";
     private static final String ENABLE_MENU_KEY_FILE = "/data/local/enable_menu_key";
     private static final int WAIT_FOR_ANIMATION_TIMEOUT = 0;
@@ -493,7 +492,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
         mSettingsObserver.observe();
 
         final LayoutInflater inflater = LayoutInflater.from(context);
-        if (DBG) Log.v(TAG, "Creation orientation = " + mCreationOrientation);
+        if (DEBUG) Log.v(TAG, "Creation orientation = " + mCreationOrientation);
         if (mCreationOrientation != Configuration.ORIENTATION_LANDSCAPE) {
             inflater.inflate(R.layout.keyguard_screen_tab_unlock, this, true);
         } else {
@@ -546,7 +545,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
         // Update the settings everytime we draw lockscreen
         updateSettings();
 
-        if (DBG) Log.v(TAG, "*** LockScreen accel is "
+        if (DEBUG) Log.v(TAG, "*** LockScreen accel is "
                 + (mUnlockWidget.isHardwareAccelerated() ? "on":"off"));
     }
 

@@ -478,22 +478,6 @@ int SurfaceTextureClient::dispatchUnlockAndPost(va_list args) {
     return unlockAndPost();
 }
 
-#ifdef OMAP_ENHANCEMENT
-int SurfaceTextureClient::dispatchSetBuffersLayout(va_list args) {
-    uint32_t bufLayout = va_arg(args, uint32_t);
-    return setBuffersLayout(bufLayout);
-}
-#endif
-#ifdef QCOM_HARDWARE
-int SurfaceTextureClient::performQcomOperation(int operation, int arg1,
-                                               int arg2, int arg3) {
-    LOGV("SurfaceTextureClient::performQcomOperation");
-    Mutex::Autolock lock(mMutex);
-    int err = mSurfaceTexture->performQcomOperation(operation, arg1, arg2, arg3);
-    return err;
-}
-#endif
-
 int SurfaceTextureClient::connect(int api) {
     ALOGV("SurfaceTextureClient::connect");
     Mutex::Autolock lock(mMutex);

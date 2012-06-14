@@ -223,19 +223,6 @@ public:
         return result;
     }
 
-#ifdef OMAP_ENHANCEMENT
-    virtual status_t setLayout(uint32_t layout) {
-        Parcel data, reply;
-        data.writeInterfaceToken(ISurfaceTexture::getInterfaceDescriptor());
-        data.writeInt32((int32_t)layout);
-        status_t result = remote()->transact(SET_LAYOUT, data, &reply);
-        if (result != NO_ERROR) {
-            return result;
-        }
-        result = reply.readInt32();
-        return result;
-    }
-#endif
 #ifdef QCOM_HARDWARE
     virtual status_t performQcomOperation(int operation, int arg1, int arg2, int arg3) {
         Parcel data, reply;

@@ -2721,7 +2721,13 @@ public final class Settings {
          * @hide
          */
         public static final String VOLUME_MUSIC_CONTROLS = "volume_music_controls";
-        
+
+        /**
+         * Whether to show the stock music layout on the lockscreen
+         * @hide
+         */
+        public static final String LOCKSCREEN_STOCK_MUSIC_LAYOUT = "lockscreen_stock_music_layout";
+
         /**
          * Setting to allow % on lockscreen always showing.
          * @hide

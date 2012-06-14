@@ -99,6 +99,7 @@ class KeyguardStatusViewManager implements OnClickListener {
     private TextView mWeatherCity, mWeatherCondition, mWeatherLowHigh, mWeatherTemp, mWeatherUpdateTime;
     private ImageView mWeatherImage;
     private LinearLayout mCalendarPanel;
+    private ImageView mCalendarImage;
     private TextView mCalendarEventTitle, mCalendarEventDetails;
 
     // Top-level container view for above views
@@ -230,6 +231,7 @@ class KeyguardStatusViewManager implements OnClickListener {
 
         // Calendar panel
         mCalendarPanel = (LinearLayout) findViewById(R.id.calendar_panel);
+        mCalendarImage = (ImageView) findViewById(R.id.calendar_image);
         mCalendarEventTitle = (TextView) findViewById(R.id.calendar_event_title);
         mCalendarEventDetails = (TextView) findViewById(R.id.calendar_event_details);
 
@@ -1123,6 +1125,29 @@ class KeyguardStatusViewManager implements OnClickListener {
             if (DEBUG) Log.d(TAG, String.format("Setting mAlarmStatusView DATE text color to %d", color));
         } catch (NullPointerException ne) {
             if (DEBUG) ne.printStackTrace();
+        }
+
+        // update weather text and image
+        try {
+            // text
+            mWeatherCity.setTextColor(color);
+            mWeatherCondition.setTextColor(color);
+            mWeatherLowHigh.setTextColor(color);
+            mWeatherTemp.setTextColor(color);
+            mWeatherUpdateTime.setTextColor(color);
+            // drawable
+            mWeatherImage.setColorFilter(color);
+        } catch (NullPointerException npe) {
+            if (DEBUG) Log.d(TAG, "Failed to update weather colors", npe);
+        }
+
+        // update calendar infomation
+        try {
+            mCalendarImage.setColorFilter(color);
+            mCalendarEventTitle.setTextColor(color);
+            mCalendarEventDetails.setTextColor(color);
+        } catch (NullPointerException ne) {
+            if (DEBUG) Log.e(TAG, "Failed to update calendar infomation", ne);
         }
     }
 }

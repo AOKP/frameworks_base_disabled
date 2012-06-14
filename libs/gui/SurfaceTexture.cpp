@@ -869,6 +869,15 @@ status_t SurfaceTexture::setScalingMode(int mode) {
     return OK;
 }
 
+#ifdef OMAP_ENHANCEMENT
+status_t SurfaceTexture::updateTexImage() {
+    return __updateTexImage(true);
+}
+
+status_t SurfaceTexture::__updateTexImage(bool lock) {
+    ST_LOGV("updateTexImage");
+    if (lock) Mutex::Autolock lock(mMutex);
+#else
 status_t SurfaceTexture::updateTexImage(bool isComposition) {
     ST_LOGV("updateTexImage");
     Mutex::Autolock lock(mMutex);

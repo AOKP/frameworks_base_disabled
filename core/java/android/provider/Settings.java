@@ -2363,6 +2363,13 @@ public final class Settings {
         public static final String MENU_LOCATION = "menu_location";
 
         /**
+         * NFC polling mode configuration key
+         *
+         * @hide
+         */
+        public static final String NFC_POLLING_MODE = "nfc_polling_mode";
+
+        /**
          * Whether to show CRT off animation
          * 
          * @hide

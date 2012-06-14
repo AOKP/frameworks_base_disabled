@@ -251,6 +251,8 @@ protected:
           virtual void drawWithOpenGL(const Region& clip) const;
 #else
           void drawWithOpenGL(const Region& clip) const;
+#endif
+
 #ifdef QCOM_HARDWARE
           void drawS3DUIWithOpenGL(const Region& clip) const;
 #endif

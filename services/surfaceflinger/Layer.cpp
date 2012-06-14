@@ -112,22 +112,6 @@ void Layer::onFirstRef()
 #else
     mSurfaceTexture->setBufferCountServer(2);
 #endif
-
-#ifdef OMAP_ENHANCEMENT
-    mSurfaceTexture->setBufferCountServer(2);
-#else
-    mSurfaceTexture->setBufferCountServer(2);
-    char value[PROPERTY_VALUE_MAX];
-    property_get("surfaceflingerclient.numbuffers", value, "2");
-    int numBuffers = atoi(value);
-    // clamp to valid range
-    if (numBuffers < SurfaceTexture::MIN_SURFACEFLINGERCLIENT_BUFFERS) {
-        numBuffers = SurfaceTexture::MIN_SURFACEFLINGERCLIENT_BUFFERS;
-    } else if (numBuffers > SurfaceTexture::MAX_SURFACEFLINGERCLIENT_BUFFERS) {
-        numBuffers = SurfaceTexture::MAX_SURFACEFLINGERCLIENT_BUFFERS;
-    }
-    mSurfaceTexture->setBufferCountServer(numBuffers);
-#endif // OMAP_ENHANCEMENT
 }
 
 Layer::~Layer()

@@ -134,10 +134,26 @@ size_t MediaBuffer::range_length() const {
 }
 
 void MediaBuffer::set_range(size_t offset, size_t length) {
-    if ((mGraphicBuffer == NULL) && (offset + length > mSize)) {
-        ALOGE("offset = %d, length = %d, mSize = %d", offset, length, mSize);
+#if defined(OMAP_ENHANCEMENT) && defined(TARGET_OMAP3)
+	if(offset) {
+        if (offset + length > mSize) {
+            LOGE("offset = %d, length = %d, mSize = %d", offset, length, mSize);
+        }
+        CHECK((mGraphicBuffer != NULL) || (offset + length <= mSize));
     }
+    else {
+        if (length > mSize) {
+            LOGE("offset = %d, length = %d, mSize = %d", offset, length, mSize);
+            length = mSize;
+        }
+    }
+#else
+    if ((mGraphicBuffer == NULL) && (offset + length > mSize)) {
+            LOGE("offset = %d, length = %d, mSize = %d", offset, length, mSize);
+        }
     CHECK((mGraphicBuffer != NULL) || (offset + length <= mSize));
+
+#endif
 
     mRangeOffset = offset;
     mRangeLength = length;

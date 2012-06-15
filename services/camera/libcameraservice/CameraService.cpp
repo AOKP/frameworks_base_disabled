@@ -337,10 +337,12 @@ void CameraService::loadSound() {
     if (mSoundRef++) return;
 
     char value[PROPERTY_VALUE_MAX];
-    property_get("persist.sys.camera-sound", value, "1");
-    int enableSound = atoi(value);
+    property_get("ro.camera.sound.disabled", value, "0");
+    int systemMute = atoi(value);
+    property_get("persist.sys.camera-mute", value, "0");
+    int userMute = atoi(value);
 
-    if(enableSound) {
+    if (!systemMute && !userMute) {
         mSoundPlayer[SOUND_SHUTTER] = newMediaPlayer("/system/media/audio/ui/camera_click.ogg");
         mSoundPlayer[SOUND_RECORDING] = newMediaPlayer("/system/media/audio/ui/VideoRecord.ogg");
     } else {

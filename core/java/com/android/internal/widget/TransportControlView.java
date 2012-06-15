@@ -67,6 +67,7 @@ public class TransportControlView extends FrameLayout implements OnClickListener
     protected static final boolean DEBUG = false;
     protected static final String TAG = "TransportControlView";
 
+    private View mLayout;
     private ImageView mAlbumArt;
     private TextView mTrackTitle;
     private TextView mTrackAlbum;
@@ -210,16 +211,33 @@ public class TransportControlView extends FrameLayout implements OnClickListener
     @Override
     public void onFinishInflate() {
         super.onFinishInflate();
-        mTrackTitle = (TextView) findViewById(R.id.title);
-        mTrackTitle.setSelected(true); // enable marquee
-        mTrackAlbum = (TextView) findViewById(R.id.album);
-        mTrackAlbum.setSelected(true); // enable marquee
-        mTrackArtist = (TextView) findViewById(R.id.artist);
-        mTrackArtist.setSelected(true); // enable marquee
-        mAlbumArt = (ImageView) findViewById(R.id.albumart);
-        mBtnPrev = (ImageView) findViewById(R.id.btn_prev);
-        mBtnPlay = (ImageView) findViewById(R.id.btn_play);
-        mBtnNext = (ImageView) findViewById(R.id.btn_next);
+        if (Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_STOCK_MUSIC_LAYOUT, 0) == 0) {
+            mLayout = (View) findViewById(R.id.layout_stock);
+            mLayout.setVisibility(View.GONE);
+
+            mTrackTitle = (TextView) findViewById(R.id.title_aokp);
+            mTrackTitle.setSelected(true); // enable marquee
+            mTrackAlbum = (TextView) findViewById(R.id.album_aokp);
+            mTrackAlbum.setSelected(true); // enable marquee
+            mTrackArtist = (TextView) findViewById(R.id.artist_aokp);
+            mTrackArtist.setSelected(true); // enable marquee
+            mAlbumArt = (ImageView) findViewById(R.id.albumart_aokp);
+            mBtnPrev = (ImageView) findViewById(R.id.btn_prev_aokp);
+            mBtnPlay = (ImageView) findViewById(R.id.btn_play_aokp);
+            mBtnNext = (ImageView) findViewById(R.id.btn_next_aokp);
+        }
+        else {
+            mLayout = (View) findViewById(R.id.layout_aokp);
+            mLayout.setVisibility(View.GONE);
+
+            mTrackTitle = (TextView) findViewById(R.id.title_stock);
+            mTrackTitle.setSelected(true); // enable marquee
+            mAlbumArt = (ImageView) findViewById(R.id.albumart_stock);
+            mBtnPrev = (ImageView) findViewById(R.id.btn_prev_stock);
+            mBtnPlay = (ImageView) findViewById(R.id.btn_play_stock);
+            mBtnNext = (ImageView) findViewById(R.id.btn_next_stock);
+        }
+
         final View buttons[] = { mBtnPrev, mBtnPlay, mBtnNext };
         for (View view : buttons) {
             view.setOnClickListener(this);
@@ -288,9 +306,42 @@ public class TransportControlView extends FrameLayout implements OnClickListener
      * Populates the given metadata into the view
      */
     private void populateMetadata() {
-        mTrackTitle.setText(mMetadata.trackTitle);
-        mTrackAlbum.setText(mMetadata.albumTitle);
-        mTrackArtist.setText(mMetadata.artist);
+        if (Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_STOCK_MUSIC_LAYOUT, 0) == 0) {
+            mTrackTitle.setText(mMetadata.trackTitle);
+            mTrackAlbum.setText(mMetadata.albumTitle);
+            mTrackArtist.setText(mMetadata.artist);
+        }
+        else {
+            StringBuilder sb = new StringBuilder();
+            int trackTitleLength = 0;
+            if (!TextUtils.isEmpty(mMetadata.trackTitle)) {
+                sb.append(mMetadata.trackTitle);
+                trackTitleLength = mMetadata.trackTitle.length();
+            }
+            if (!TextUtils.isEmpty(mMetadata.artist)) {
+                if (sb.length() != 0) {
+                    sb.append(" - ");
+                }
+                sb.append(mMetadata.artist);
+            }
+            if (!TextUtils.isEmpty(mMetadata.albumTitle)) {
+                if (sb.length() != 0) {
+                    sb.append(" - ");
+                }
+                sb.append(mMetadata.albumTitle);
+            }
+            mTrackTitle.setText(sb.toString(), TextView.BufferType.SPANNABLE);
+            Spannable str = (Spannable) mTrackTitle.getText();
+            if (trackTitleLength != 0) {
+                str.setSpan(new ForegroundColorSpan(0xffffffff), 0, trackTitleLength,
+                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                trackTitleLength++;
+            }
+            if (sb.length() > trackTitleLength) {
+                str.setSpan(new ForegroundColorSpan(0x7fffffff), trackTitleLength, sb.length(),
+                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            }
+        }
         mAlbumArt.setImageBitmap(mMetadata.bitmap);
         final int flags = mTransportControlFlags;
         setVisibilityBasedOnFlag(mBtnPrev, flags, RemoteControlClient.FLAG_KEY_MEDIA_PREVIOUS);

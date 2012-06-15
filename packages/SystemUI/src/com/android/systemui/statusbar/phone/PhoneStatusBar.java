@@ -493,7 +493,7 @@ public class PhoneStatusBar extends StatusBar {
 
         mIsStatusBarBrightNess = Settings.System.getInt(mStatusBarView.getContext()
                 .getContentResolver(),
-                Settings.System.STATUS_BAR_BRIGHTNESS_TOGGLE, 0) == 1;
+                Settings.System.STATUS_BAR_BRIGHTNESS_TOGGLE, 1) == 1;
         if (mIsStatusBarBrightNess) {
             mIsAutoBrightNess = checkAutoBrightNess();
             mContext.getContentResolver().registerContentObserver(

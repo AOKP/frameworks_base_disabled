@@ -17,16 +17,19 @@
 
 package com.android.internal.policy.impl;
 
-import android.content.BroadcastReceiver;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import libcore.util.MutableInt;
+
+import org.w3c.dom.Document;
+
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
-import android.net.ConnectivityManager;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
@@ -99,6 +102,7 @@ class KeyguardStatusViewManager implements OnClickListener {
     private TextView mWeatherCity, mWeatherCondition, mWeatherLowHigh, mWeatherTemp, mWeatherUpdateTime;
     private ImageView mWeatherImage;
     private LinearLayout mCalendarPanel;
+    private ImageView mCalendarImage;
     private TextView mCalendarEventTitle, mCalendarEventDetails;
 
     // Top-level container view for above views
@@ -230,6 +234,7 @@ class KeyguardStatusViewManager implements OnClickListener {
 
         // Calendar panel
         mCalendarPanel = (LinearLayout) findViewById(R.id.calendar_panel);
+        mCalendarImage = (ImageView) findViewById(R.id.calendar_image);
         mCalendarEventTitle = (TextView) findViewById(R.id.calendar_event_title);
         mCalendarEventDetails = (TextView) findViewById(R.id.calendar_event_details);
 
@@ -270,20 +275,10 @@ class KeyguardStatusViewManager implements OnClickListener {
         }
     }
 
-    private BroadcastReceiver mConnReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            boolean isConnected = intent.getBooleanExtra(ConnectivityManager.EXTRA_NO_CONNECTIVITY, false);
-            if (isConnected) {
-                mHandler.sendEmptyMessage(QUERY_WEATHER);
-                getContext().unregisterReceiver(mConnReceiver);
-            }
-        }
-    };
-
     /*
      * CyanogenMod Lock screen Weather related functionality
      */
+    private static final String URL_YAHOO_API_WEATHER = "http://weather.yahooapis.com/forecastrss?w=%s&u=";
     private static WeatherInfo mWeatherInfo = new WeatherInfo();
     private static final int QUERY_WEATHER = 0;
     private static final int UPDATE_WEATHER = 1;
@@ -353,8 +348,7 @@ class KeyguardStatusViewManager implements OnClickListener {
                     }
                     WeatherInfo w = null;
                     try {
-                        WeatherXmlParser wParser = new WeatherXmlParser(getContext());
-                        w = wParser.parseXml(wParser.getDocument(woeid));
+                        w = parseXml(getDocument(woeid));
                     } catch (Exception e) {
                     }
                     if (w == null) {
@@ -385,30 +379,10 @@ class KeyguardStatusViewManager implements OnClickListener {
         if (showWeather) {
             final long interval = Settings.System.getLong(resolver,
                     Settings.System.WEATHER_UPDATE_INTERVAL, 60); // Default to hourly
-            boolean manualSync = (interval == 0);
-            if (!manualSync && (((System.currentTimeMillis() - mWeatherInfo.last_sync) / 60000) >= interval)) {
-                if (mWeatherInfo.last_sync != 0) {
-                    mHandler.sendEmptyMessage(QUERY_WEATHER);
-                } else {
-                    ConnectivityManager cm = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-                    if (cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnected()) {
-                        mHandler.sendEmptyMessage(QUERY_WEATHER);
-                    } else {
-                        getContext().registerReceiver(mConnReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
-                        setNoWeatherData();
-                    }
-                }
-            } else if (manualSync && mWeatherInfo.last_sync == 0) {
-                setNoWeatherData();
+            if (((System.currentTimeMillis() - mWeatherInfo.last_sync) / 60000) >= interval) {
+                mHandler.sendEmptyMessage(QUERY_WEATHER);
             } else {
-                boolean useCustomLoc = Settings.System.getInt(resolver,
-                        Settings.System.WEATHER_USE_CUSTOM_LOCATION, 0) == 1;
-                String customLoc = Settings.System.getString(resolver,
-                            Settings.System.WEATHER_CUSTOM_LOCATION);
                 setWeatherData(mWeatherInfo);
-                if (useCustomLoc && !customLoc.toLowerCase().contains(mWeatherInfo.city.toLowerCase())) {
-                    mHandler.sendEmptyMessage(QUERY_WEATHER);
-                }
             }
         } else {
             // Hide the Weather panel view
@@ -501,6 +475,46 @@ class KeyguardStatusViewManager implements OnClickListener {
             // Show the Weather panel view
             mWeatherPanel.setVisibility(View.VISIBLE);
         }
+    }
+
+    /**
+     * Get the weather forecast XML document for a specific location
+     * @param woeid
+     * @return
+     */
+    private Document getDocument(String woeid) {
+        try {
+            boolean celcius = Settings.System.getInt(getContext().getContentResolver(),
+                    Settings.System.WEATHER_USE_METRIC, 1) == 1;
+            String urlWithDegreeUnit;
+
+            if (celcius) {
+                urlWithDegreeUnit = URL_YAHOO_API_WEATHER + "c";
+            } else {
+                urlWithDegreeUnit = URL_YAHOO_API_WEATHER + "f";
+            }
+
+            return new HttpRetriever().getDocumentFromURL(String.format(urlWithDegreeUnit, woeid));
+        } catch (IOException e) {
+            Log.e(TAG, "Error querying Yahoo weather");
+        }
+
+        return null;
+    }
+
+    /**
+     * Parse the weather XML document
+     * @param wDoc
+     * @return
+     */
+    private WeatherInfo parseXml(Document wDoc) {
+        try {
+            return new WeatherXmlParser(getContext()).parseWeatherResponse(wDoc);
+        } catch (Exception e) {
+            Log.e(TAG, "Error parsing Yahoo weather XML document");
+            e.printStackTrace();
+        }
+        return null;
     }
 
     /*
@@ -1123,6 +1137,29 @@ class KeyguardStatusViewManager implements OnClickListener {
             if (DEBUG) Log.d(TAG, String.format("Setting mAlarmStatusView DATE text color to %d", color));
         } catch (NullPointerException ne) {
             if (DEBUG) ne.printStackTrace();
+        }
+
+        // update weather text and image
+        try {
+            // text
+            mWeatherCity.setTextColor(color);
+            mWeatherCondition.setTextColor(color);
+            mWeatherLowHigh.setTextColor(color);
+            mWeatherTemp.setTextColor(color);
+            mWeatherUpdateTime.setTextColor(color);
+            // drawable
+            mWeatherImage.setColorFilter(color);
+        } catch (NullPointerException npe) {
+            if (DEBUG) Log.d(TAG, "Failed to update weather colors", npe);
+        }
+
+        // update calendar infomation
+        try {
+            mCalendarImage.setColorFilter(color);
+            mCalendarEventTitle.setTextColor(color);
+            mCalendarEventDetails.setTextColor(color);
+        } catch (NullPointerException ne) {
+            if (DEBUG) Log.e(TAG, "Failed to update calendar infomation", ne);
         }
     }
 }

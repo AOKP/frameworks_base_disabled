@@ -246,6 +246,7 @@
         android:paddingRight="12dip" >
 
         <ImageView
+            android:id="@+id/calendar_image"
             android:layout_width="36dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"

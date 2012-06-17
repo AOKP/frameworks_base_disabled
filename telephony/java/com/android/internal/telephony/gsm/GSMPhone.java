@@ -251,17 +251,14 @@ public class GSMPhone extends PhoneBase {
 
     public ServiceState
     getServiceState() {
-        if (mSST == null) return null;
         return mSST.ss;
     }
 
     public CellLocation getCellLocation() {
-        if (mSST == null) return null;
         return mSST.cellLoc;
     }
 
     public Phone.State getState() {
-        if (mCT == null) return null;
         return mCT.state;
     }
 
@@ -274,7 +271,6 @@ public class GSMPhone extends PhoneBase {
     }
 
     public SignalStrength getSignalStrength() {
-        if (mSST == null) return null;
         return mSST.mSignalStrength;
     }
 
@@ -467,9 +463,7 @@ public class GSMPhone extends PhoneBase {
     }
 
     public void clearDisconnected() {
-        if (mCT != null) {
-            mCT.clearDisconnected();
-        }
+        mCT.clearDisconnected();
     }
 
     public boolean canTransfer() {
@@ -482,19 +476,16 @@ public class GSMPhone extends PhoneBase {
 
     public GsmCall
     getForegroundCall() {
-        if (mCT == null) return null;
         return mCT.foregroundCall;
     }
 
     public GsmCall
     getBackgroundCall() {
-        if (mCT == null) return null;
         return mCT.backgroundCall;
     }
 
     public GsmCall
     getRingingCall() {
-        if (mCT == null) return null;
         return mCT.ringingCall;
     }
 
@@ -987,9 +978,7 @@ public class GSMPhone extends PhoneBase {
     }
 
     public void setCallWaiting(boolean enable, Message onComplete) {
-        if (mCM != null) {
-            mCM.setCallWaiting(enable, CommandsInterface.SERVICE_CLASS_VOICE, onComplete);
-        }
+        mCM.setCallWaiting(enable, CommandsInterface.SERVICE_CLASS_VOICE, onComplete);
     }
 
     public void
@@ -1053,13 +1042,10 @@ public class GSMPhone extends PhoneBase {
     }
 
     public void setMute(boolean muted) {
-        if (mCT != null) {
-            mCT.setMute(muted);
-        }
+        mCT.setMute(muted);
     }
 
     public boolean getMute() {
-        if (mCT == null) return false;
         return mCT.getMute();
     }
 

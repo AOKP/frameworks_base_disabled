@@ -338,10 +338,8 @@ public final class RuimRecords extends IccRecords {
         }
         recordsLoadedRegistrants.notifyRegistrants(
             new AsyncResult(null, null, null));
-        if (phone.mIccCard != null) {
-            phone.mIccCard.broadcastIccStateChangedIntent(
-                    RuimCard.INTENT_VALUE_ICC_LOADED, null);
-        }
+        phone.mIccCard.broadcastIccStateChangedIntent(
+                RuimCard.INTENT_VALUE_ICC_LOADED, null);
     }
 
     private void onRuimReady() {

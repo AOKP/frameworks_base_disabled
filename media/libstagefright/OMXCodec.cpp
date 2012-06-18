@@ -6470,8 +6470,29 @@ status_t QueryCodecs(
                 break;
             }
 
-            CodecProfileLevel profileLevel;
-            profileLevel.mProfile = param.eProfile;
+	    CodecProfileLevel profileLevel;
+#if defined(OMAP_ENHANCEMENT) && defined(TARGET_OMAP3)
+            if (!strcmp(componentName, "OMX.TI.Video.Decoder")) {
+ 	        //OMX defined profile levels for Baselevel (OMX_VIDEO_AVCProfileBaseline = 0x1 don't match Anddroid's definition for base profile
+                //kAVCProfileBaseline = 0x42. TI 36xx decoder support only base profile and level 31
+		profileLevel.mProfile = kAVCProfileBaseline;
+	    }	
+	    
+            if(!strcmp(componentName, "OMX.TI.720P.Decoder")) {
+		switch(param.eProfile)
+		{
+		    case OMX_VIDEO_AVCProfileBaseline:
+			profileLevel.mProfile = kAVCProfileBaseline;
+			break;
+
+		    default:
+			LOGE("QueryCodecs:unsupported profile:%d",param.eProfile);
+			break;
+		}
+	    }
+#else
+	    profileLevel.mProfile = param.eProfile;
+#endif
             profileLevel.mLevel = param.eLevel;
 
             caps->mProfileLevels.push(profileLevel);
@@ -6479,9 +6500,17 @@ status_t QueryCodecs(
 
         // Color format query
         OMX_VIDEO_PARAM_PORTFORMATTYPE portFormat;
+#if defined(OMAP_ENHANCEMENT) && defined(TARGET_OMAP3)
+	int16_t nIndex = 0;
+#endif
         InitOMXParams(&portFormat);
         portFormat.nPortIndex = queryDecoders ? 1 : 0;
+#if defined(OMAP_ENHANCEMENT) && defined(TARGET_OMAP3)
+        for (nIndex = 0;; ++nIndex)  {
+	        portFormat.nIndex = nIndex;
+#else
         for (portFormat.nIndex = 0;; ++portFormat.nIndex)  {
+#endif
             err = omx->getParameter(
                     node, OMX_IndexParamVideoPortFormat,
                     &portFormat, sizeof(portFormat));

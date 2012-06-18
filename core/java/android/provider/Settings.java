@@ -2836,13 +2836,6 @@ public final class Settings {
         public static final String SHOW_STATUSBAR_IME_SWITCHER = "show_statusbar_ime_switcher";
 
         /**
-         * Setting to enable volume options.
-         * 
-         * @hide
-         */
-        public static final String ENABLE_VOLUME_OPTIONS = "enable_volume_options";
-
-        /**
          * Which layout to use to display the navigation menu at the bottom.
          * 0 = default
          * 1 = default w/search

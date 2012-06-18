@@ -683,6 +683,8 @@ class KeyguardStatusViewManager implements OnClickListener {
         updateOwnerInfo();
         updateStatus1();
         updateCarrierText();
+        alignLockscreen(Settings.System.getInt(getContext().getContentResolver(),
+                    Settings.System.LOCKSCREEN_CENTER, 1) == 1);
     }
 
     private void updateAlarmInfo() {

@@ -2961,6 +2961,14 @@ public final class Settings {
         public static final String WEATHER_STATUSBAR_STYLE = "weather_statusbar_style";
 
         /**
+         * Which weather view mode we're using (forecast versus updated date)
+         *
+         * @hide
+         */
+        public static final String WEATHER_PANEL_VIEW_MODE = "weather_panel_view_mode";
+
+
+        /**
          * Whether to enable torch by long pressing power from a screen-off state
          * 
          * @hide

@@ -104,7 +104,8 @@
                 android:layout_height="wrap_content"
                 android:paddingTop="4dp"
                 android:singleLine="true"
-                android:gravity="center" />
+                android:gravity="center"
+                android:visibility="gone" />
 
             <com.android.systemui.statusbar.policy.WeatherPanel
                 android:id="@+id/wp2"
@@ -119,6 +120,26 @@
                     android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:id="@+id/last_update"
+                        android:orientation="horizontal"
+                        android:gravity="center"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:id="@+id/datestamp"
+                            android:textAppearance="@style/TextAppearance.StatusBar.Date"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingTop="2dp"
+                            android:paddingBottom="2dp"
+                            android:singleLine="true"
+                            android:gravity="center"
+                            android:visibility="gone" />
+
+                    </LinearLayout>
 
                     <LinearLayout
                         android:id="@+id/cityandtemp"
@@ -152,13 +173,12 @@
                         android:textSize="14.0sp"
                         android:textStyle="normal"
                         android:singleLine="true"
-                        android:paddingTop="4dp"
-                        android:paddingBottom="4dp"
+                        android:paddingTop="2dp"
+                        android:paddingBottom="1dp"
                         android:gravity="center"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="@style/Text" />
-
 
                 </LinearLayout>
 

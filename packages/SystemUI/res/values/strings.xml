@@ -401,4 +401,7 @@
     <string name="notifications_off_text">Tap here to turn notifications back on.</string>
 
     <string name="widgets">Widgets</string>
+
+    <!-- for weather last updated mod -->
+    <string name="weather_last_updated">Updated</string>
 </resources>

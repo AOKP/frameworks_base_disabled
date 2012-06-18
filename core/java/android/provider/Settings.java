@@ -3253,12 +3253,6 @@ public final class Settings {
         public static final String LOCKSCREEN_CUSTOM_TEXT_COLOR = "lockscreen_custom_text_color";
 
         /**
-         * center lockscreen info
-         * @hide
-         */
-        public static final String LOCKSCREEN_CENTER = "lockscreen_center";
-
-        /**
          * Toggle to force multiwaveview lockscreen silent mode toggle even if
          * we have a camera.
          * 

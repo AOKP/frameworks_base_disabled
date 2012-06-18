@@ -5209,11 +5209,13 @@ public final class Settings {
         public static final String LONGPRESS_APP_TASKER_INTENT = "longpress_app_tasker_intent";
 
         /**
-         * The {@link ComponentName} string of the service to be used as the
-         * voice recognition service.
+         * The {@link ComponentName} string of the service to be used as the voice recognition
+         * service.
+         *
          * @hide
          */
         public static final String VOICE_RECOGNITION_SERVICE = "voice_recognition_service";
+
 
         /**
          * The {@link ComponentName} string of the selected spell checker service which is

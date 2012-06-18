@@ -800,6 +800,16 @@ public abstract class PhoneBase extends Handler implements Phone {
         mCM.invokeOemRilRequestStrings(strings, response);
     }
 
+    // OEMRIL_ENHANCEMENT
+    public void setOnUnsolOemHookRaw(Handler h, int what, Object obj) {
+        mCM.setOnUnsolOemHookRaw(h, what, obj);
+    }
+
+    // OEMRIL_ENHANCEMENT
+    public void unSetOnUnsolOemHookRaw(Handler h) {
+        mCM.unSetOnUnsolOemHookRaw(h);
+    }
+
     public void notifyDataActivity() {
         mNotifier.notifyDataActivity(this);
     }

@@ -578,6 +578,16 @@ public class PhoneProxy extends Handler implements Phone {
         mActivePhone.invokeOemRilRequestStrings(strings, response);
     }
 
+    // OEMRIL_ENHANCEMENT
+    public void setOnUnsolOemHookRaw(Handler h, int what, Object obj) {
+        mActivePhone.setOnUnsolOemHookRaw(h, what, obj);
+    }
+
+    // OEMRIL_ENHANCEMENT
+    public void unSetOnUnsolOemHookRaw(Handler h) {
+        mActivePhone.unSetOnUnsolOemHookRaw(h);
+    }
+
     public void getDataCallList(Message response) {
         mActivePhone.getDataCallList(response);
     }

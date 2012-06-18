@@ -36,6 +36,7 @@ import android.provider.Settings;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -52,6 +53,7 @@ import com.android.internal.util.weather.HttpRetriever;
 import com.android.internal.util.weather.WeatherInfo;
 import com.android.internal.util.weather.WeatherXmlParser;
 import com.android.internal.util.weather.YahooPlaceFinder;
+import com.android.internal.widget.DigitalClock;
 import com.android.internal.widget.LockPatternUtils;
 import com.android.internal.widget.TransportControlView;
 
@@ -92,6 +94,8 @@ class KeyguardStatusViewManager implements OnClickListener {
 
     // Views that this class controls.
     // NOTE: These may be null in some LockScreen screens and should protect from NPE
+    private DigitalClock mDigitalClock;
+    private LinearLayout mDateAndAlarmLayout;
     private TextView mCarrierView;
     private TextView mDateView;
     private TextView mStatus1View;
@@ -207,6 +211,8 @@ class KeyguardStatusViewManager implements OnClickListener {
         mUpdateMonitor = updateMonitor;
         mCallback = callback;
 
+        mDigitalClock = (DigitalClock) findViewById(R.id.time);
+        mDateAndAlarmLayout = (LinearLayout) findViewById(R.id.date_and_alarm_container);
         mCarrierView = (TextView) findViewById(R.id.carrier);
         mDateView = (TextView) findViewById(R.id.date);
         mStatus1View = (TextView) findViewById(R.id.status1);
@@ -262,6 +268,9 @@ class KeyguardStatusViewManager implements OnClickListener {
         refreshDate();
         updateOwnerInfo();
         updateColors();
+        // default to true because the xml specifies centered objects
+        alignLockscreen(Settings.System.getInt(getContext().getContentResolver(),
+                    Settings.System.LOCKSCREEN_CENTER, 1) == 1);
         refreshWeather();
         refreshCalendar();
 
@@ -1090,6 +1099,18 @@ class KeyguardStatusViewManager implements OnClickListener {
             return spn;
         } else {
             return "";
+        }
+    }
+
+    public void alignLockscreen(boolean center) {
+        if (center) {
+            mDateAndAlarmLayout.setGravity(Gravity.CENTER_HORIZONTAL);
+            mDigitalClock.setGravity(Gravity.CENTER_HORIZONTAL);
+            mCalendarPanel.setGravity(Gravity.CENTER_HORIZONTAL);
+        } else {
+            mDateAndAlarmLayout.setGravity(Gravity.RIGHT);
+            mDigitalClock.setGravity(Gravity.RIGHT);
+            mCalendarPanel.setGravity(Gravity.LEFT);
         }
     }
 

@@ -26,8 +26,6 @@
 #include <surfaceflinger/ISurfaceComposer.h>
 #include <surfaceflinger/SurfaceComposerClient.h>
 
-#include <media/mediaplayer.h>
-
 #include <EGL/egl.h>
 #include <GLES/gl.h>
 
@@ -46,7 +44,6 @@ public:
     virtual     ~BootAnimation();
 
     sp<SurfaceComposerClient> session() const;
-    sp<MediaPlayer> mediaplay;
 
 private:
     virtual bool        threadLoop();
@@ -96,7 +93,6 @@ private:
     EGLDisplay  mSurface;
     sp<SurfaceControl> mFlingerSurfaceControl;
     sp<Surface> mFlingerSurface;
-
     bool        mAndroidAnimation;
     ZipFileRO   mZip;
 };

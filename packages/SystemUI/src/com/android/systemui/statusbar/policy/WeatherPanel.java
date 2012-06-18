@@ -64,13 +64,13 @@ public class WeatherPanel extends FrameLayout {
             if (mConditionImage != null) {
                 String condition_filename = "weather_" + mCondition_code;
                 int resID = getResources().getIdentifier(condition_filename, "drawable",
-                        mContext.getPackageName());
+                        "android");
                 Log.d("Weather", "Condition:" + mCondition_code + " ID:" + resID);
                 if (resID != 0) {
                     mConditionImage.setImageDrawable(getResources().getDrawable(resID));
                 } else {
                     mConditionImage.setImageDrawable(getResources().getDrawable(
-                            R.drawable.weather_na));
+                            com.android.internal.R.drawable.weather_na));
                 }
             }
         }

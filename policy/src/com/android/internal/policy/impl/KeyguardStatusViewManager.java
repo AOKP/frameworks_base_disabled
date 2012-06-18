@@ -1106,15 +1106,11 @@ class KeyguardStatusViewManager implements OnClickListener {
 
     public void alignLockscreen(boolean center) {
         if (center) {
-            mDateView.setGravity(Gravity.CENTER_HORIZONTAL);
-            mStatus1View.setGravity(Gravity.CENTER_HORIZONTAL);
-            mAlarmStatusView.setGravity(Gravity.CENTER_HORIZONTAL);
+            mDateAndAlarmLayout.setGravity(Gravity.CENTER_HORIZONTAL);
             mDigitalClock.setGravity(Gravity.CENTER_HORIZONTAL);
             mCalendarPanel.setGravity(Gravity.CENTER_HORIZONTAL);
         } else {
-            mDateView.setGravity(Gravity.RIGHT);
-            mAlarmStatusView.setGravity(Gravity.RIGHT);
-            mStatus1View.setGravity(Gravity.RIGHT);
+            mDateAndAlarmLayout.setGravity(Gravity.RIGHT);
             mDigitalClock.setGravity(Gravity.RIGHT);
             mCalendarPanel.setGravity(Gravity.LEFT);
         }

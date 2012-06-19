@@ -975,9 +975,6 @@ const char* eglQueryString(EGLDisplay dpy, EGLint name)
         case EGL_VERSION:
             return dp->getVersionString();
         case EGL_EXTENSIONS:
-            if (dp->disp[IMPL_HARDWARE].queryString.extensions) {
-                return dp->disp[IMPL_HARDWARE].queryString.extensions;
-            }
             return dp->getExtensionString();
         case EGL_CLIENT_APIS:
             return dp->getClientApiString();

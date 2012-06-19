@@ -47,7 +47,6 @@ public class WifiToggle extends Toggle {
     }
 
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
-
         @Override
         public void onReceive(Context context, Intent intent) {
             if (!WifiManager.WIFI_STATE_CHANGED_ACTION.equals(intent
@@ -56,7 +55,6 @@ public class WifiToggle extends Toggle {
             }
             mWifiState = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, -1);
             updateState();
-
         }
     };
 
@@ -87,7 +85,8 @@ public class WifiToggle extends Toggle {
             public void run() {
                 int wifiApState = wifiManager.getWifiApState();
                 if (desiredState
-                        && ((wifiApState == WifiManager.WIFI_AP_STATE_ENABLING) || (wifiApState == WifiManager.WIFI_AP_STATE_ENABLED))) {
+                        && ((wifiApState == WifiManager.WIFI_AP_STATE_ENABLING)
+                        || (wifiApState == WifiManager.WIFI_AP_STATE_ENABLED))) {
                     wifiManager.setWifiApEnabled(null, false);
                 }
 
@@ -102,7 +101,6 @@ public class WifiToggle extends Toggle {
         final WifiManager wifiManager = (WifiManager) mContext
                 .getSystemService(Context.WIFI_SERVICE);
         mWifiState = wifiManager.getWifiState();
-
         switch (mWifiState) {
             case WifiManager.WIFI_STATE_ENABLED:
                 mIsWifiOn = true;
@@ -130,16 +128,17 @@ public class WifiToggle extends Toggle {
                 mToggle.setEnabled(false);
                 break;
         }
-        if (mToggle.isChecked()) {
-            setIcon(R.drawable.toggle_wifi);
-        } else {
-            setIcon(R.drawable.toggle_wifi_off);
-        }
         return mToggle.isChecked();
     }
 
     @Override
     protected void onCheckChanged(boolean isChecked) {
+        // update images first
+        if (isChecked) {
+            setIcon(R.drawable.toggle_wifi);
+        } else {
+            setIcon(R.drawable.toggle_wifi_off);
+        }
         if (isChecked != mIsWifiOn) {
             changeWifiState(isChecked);
         }

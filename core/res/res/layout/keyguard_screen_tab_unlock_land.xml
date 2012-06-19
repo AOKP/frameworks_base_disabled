@@ -98,6 +98,12 @@
         android:drawablePadding="4dip"
         />
 
+    <include
+        layout="@layout/weatherpanel"
+        android:layout_gravity="right"
+        android:layout_marginTop="4dip"
+		android:drawablePadding="4dip" />
+
     <Space android:layout_gravity="fill" />
 
     <TextView

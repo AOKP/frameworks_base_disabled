@@ -234,7 +234,6 @@ class KeyguardStatusViewManager implements OnClickListener {
 
         // Calendar panel
         mCalendarPanel = (LinearLayout) findViewById(R.id.calendar_panel);
-        mCalendarImage = (ImageView) findViewById(R.id.calendar_image);
         mCalendarEventTitle = (TextView) findViewById(R.id.calendar_event_title);
         mCalendarEventDetails = (TextView) findViewById(R.id.calendar_event_details);
 

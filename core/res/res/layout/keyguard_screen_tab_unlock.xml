@@ -102,6 +102,12 @@
         android:drawablePadding="4dip"
         />
 
+    <include
+        layout="@layout/weatherpanel"
+        android:layout_gravity="right"
+		android:layout_marginRight="@dimen/keyguard_lockscreen_status_line_font_right_margin"
+		android:drawablePadding="4dip" />
+
     <Space android:layout_gravity="fill" />
 
     <!-- emergency call button shown when sim is PUKd and tab_selector is hidden -->

@@ -120,4 +120,8 @@
         android:textColor="@color/lockscreen_owner_info"
         android:visibility="invisible"
         />
+
+    <include
+        layout="@layout/weatherpanel"
+        android:layout_gravity="right" />
 </LinearLayout>

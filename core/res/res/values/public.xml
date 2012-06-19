@@ -1684,6 +1684,67 @@
   <java-symbol type="drawable" name="no_tile_256" />
   <java-symbol type="drawable" name="reticle" />
 
+  <!-- Weather -->
+  <java-symbol type="drawable" name="weather_na" />
+  <java-symbol type="drawable" name="weather_0" />
+  <java-symbol type="drawable" name="weather_1" />
+  <java-symbol type="drawable" name="weather_2" />
+  <java-symbol type="drawable" name="weather_3" />
+  <java-symbol type="drawable" name="weather_4" />
+  <java-symbol type="drawable" name="weather_5" />
+  <java-symbol type="drawable" name="weather_6" />
+  <java-symbol type="drawable" name="weather_7" />
+  <java-symbol type="drawable" name="weather_8" />
+  <java-symbol type="drawable" name="weather_9" />
+  <java-symbol type="drawable" name="weather_10" />
+  <java-symbol type="drawable" name="weather_11" />
+  <java-symbol type="drawable" name="weather_12" />
+  <java-symbol type="drawable" name="weather_13" />
+  <java-symbol type="drawable" name="weather_14" />
+  <java-symbol type="drawable" name="weather_15" />
+  <java-symbol type="drawable" name="weather_16" />
+  <java-symbol type="drawable" name="weather_17" />
+  <java-symbol type="drawable" name="weather_18" />
+  <java-symbol type="drawable" name="weather_19" />
+  <java-symbol type="drawable" name="weather_20" />
+  <java-symbol type="drawable" name="weather_21" />
+  <java-symbol type="drawable" name="weather_22" />
+  <java-symbol type="drawable" name="weather_23" />
+  <java-symbol type="drawable" name="weather_24" />
+  <java-symbol type="drawable" name="weather_25" />
+  <java-symbol type="drawable" name="weather_26" />
+  <java-symbol type="drawable" name="weather_27" />
+  <java-symbol type="drawable" name="weather_28" />
+  <java-symbol type="drawable" name="weather_29" />
+  <java-symbol type="drawable" name="weather_30" />
+  <java-symbol type="drawable" name="weather_31" />
+  <java-symbol type="drawable" name="weather_32" />
+  <java-symbol type="drawable" name="weather_33" />
+  <java-symbol type="drawable" name="weather_34" />
+  <java-symbol type="drawable" name="weather_35" />
+  <java-symbol type="drawable" name="weather_36" />
+  <java-symbol type="drawable" name="weather_37" />
+  <java-symbol type="drawable" name="weather_38" />
+  <java-symbol type="drawable" name="weather_39" />
+  <java-symbol type="drawable" name="weather_40" />
+  <java-symbol type="drawable" name="weather_41" />
+  <java-symbol type="drawable" name="weather_42" />
+  <java-symbol type="drawable" name="weather_43" />
+  <java-symbol type="drawable" name="weather_44" />
+  <java-symbol type="drawable" name="weather_45" />
+  <java-symbol type="drawable" name="weather_46" />
+  <java-symbol type="drawable" name="weather_47" />
+  <java-symbol type="id" name="city" />
+  <java-symbol type="id" name="condition" />
+  <java-symbol type="id" name="condition_image" />
+  <java-symbol type="id" name="current_temp" />
+  <java-symbol type="id" name="high_temp" />
+  <java-symbol type="id" name="humidity" />
+  <java-symbol type="id" name="low_temp" />
+  <java-symbol type="id" name="weatherpanel" />
+  <java-symbol type="id" name="weatherpanel_slash" />
+  <java-symbol type="id" name="winds" />
+
   <!-- From PinyinIME(!!!) -->
   <java-symbol type="string" name="inputMethod" />
 

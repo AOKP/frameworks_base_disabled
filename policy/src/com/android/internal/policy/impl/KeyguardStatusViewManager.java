@@ -101,6 +101,7 @@ class KeyguardStatusViewManager implements OnClickListener {
     private TextView mAlarmStatusView;
     private TransportControlView mTransportView;
     private ViewFlipper mCalendarView;
+    private WeatherPanel mWeatherPanelView;
 
     // Top-level container view for above views
     private View mContainer;
@@ -224,6 +225,7 @@ class KeyguardStatusViewManager implements OnClickListener {
         mEmergencyCallButton = (Button) findViewById(R.id.emergencyCallButton);
         mEmergencyCallButtonEnabledInScreen = emergencyButtonEnabledInScreen;
         mCalendarView = (ViewFlipper) findViewById(R.id.calendar);
+        mWeatherPanelView = (WeatherPanel) findViewById(R.id.weatherpanel);
 
         // Hide transport control view until we know we need to show it.
         if (mTransportView != null) {
@@ -420,30 +422,59 @@ class KeyguardStatusViewManager implements OnClickListener {
 
     private void updateWeatherInfo() {
         final ContentResolver res = getContext().getContentResolver();
-        final boolean weatherInfoEnabled = Settings.System.getInt(res,
-                Settings.System.LOCKSCREEN_WEATHER, 0) == 1
-                && Settings.System.getInt(res, Settings.System.USE_WEATHER, 0) == 1;
-        ;
+        final boolean weatherInfoEnabled = (Settings.System.getInt(res,
+                Settings.System.LOCKSCREEN_WEATHER, 0) == 1)
+                && (Settings.System.getInt(res, Settings.System.USE_WEATHER, 0) == 1);
+
         final boolean weatherLocationEnabled = Settings.System.getInt(res,
                 Settings.System.WEATHER_SHOW_LOCATION, 0) == 1;
 
-        if (mWeatherView != null) {
-            String wText = "";
-            if (mWeatherInfo != null) {
-                if (mWeatherInfo.getCharSequenceExtra(EXTRA_CITY) != null) {
-                    wText = (weatherLocationEnabled) ? (mWeatherInfo
-                            .getCharSequenceExtra(EXTRA_CITY)
-                            + ", "
-                            + mWeatherInfo.getCharSequenceExtra(EXTRA_TEMP) + ", "
-                            + mWeatherInfo.getCharSequenceExtra(EXTRA_CONDITION)) : (mWeatherInfo
-                            .getCharSequenceExtra(EXTRA_TEMP) + ", "
-                            + mWeatherInfo.getCharSequenceExtra(EXTRA_CONDITION));
-                    mWeatherView.setText(wText);
-                    mWeatherView.setWidth((int) (findViewById(R.id.time).getWidth() * 1.2));
+        final int weatherInfoType = Settings.System.getInt(res,
+                Settings.System.LOCKSCREEN_WEATHER_TYPE, 0);
+
+        if (weatherInfoEnabled) {
+            if (weatherInfoType == 0) {
+                if (mWeatherView != null) {
+                    mWeatherView.setVisibility(View.GONE);
+                }
+                if (mWeatherPanelView != null) {
+                    if (mWeatherInfo != null) {
+                        mWeatherPanelView.updateWeather(mWeatherInfo);
+                        mWeatherPanelView.setVisibility(weatherInfoEnabled ? View.VISIBLE : View.GONE);
+                    }
                 }
             }
-            mWeatherView.setVisibility((weatherInfoEnabled && !wText.isEmpty()) ? View.VISIBLE
-                    : View.GONE);
+            else {
+                if (mWeatherPanelView != null) {
+                    mWeatherPanelView.setVisibility(View.GONE);
+                }
+                if (mWeatherView != null) {
+                    String wText = "";
+                    if (mWeatherInfo != null) {
+                        if (mWeatherInfo.getCharSequenceExtra(EXTRA_CITY) != null) {
+                            wText = (weatherLocationEnabled) ? (mWeatherInfo
+                                    .getCharSequenceExtra(EXTRA_CITY)
+                                    + ", "
+                                    + mWeatherInfo.getCharSequenceExtra(EXTRA_TEMP) + ", "
+                                    + mWeatherInfo.getCharSequenceExtra(EXTRA_CONDITION)) : (mWeatherInfo
+                                    .getCharSequenceExtra(EXTRA_TEMP) + ", "
+                                    + mWeatherInfo.getCharSequenceExtra(EXTRA_CONDITION));
+                            mWeatherView.setText(wText);
+                            mWeatherView.setWidth((int) (findViewById(R.id.time).getWidth() * 1.2));
+                        }
+                    }
+                    mWeatherView.setVisibility((weatherInfoEnabled && !wText.isEmpty()) ? View.VISIBLE
+                            : View.GONE);
+                }
+            }
+        }
+        else {
+            if (mWeatherView != null) {
+                mWeatherView.setVisibility(View.GONE);
+            }
+            if (mWeatherPanelView != null) {
+                mWeatherPanelView.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -980,6 +1011,15 @@ class KeyguardStatusViewManager implements OnClickListener {
             mWeatherView.setTextColor(color);
             if (DEBUG)
                 Log.d(TAG, String.format("Setting mWeatherView DATE text color to %d", color));
+        } catch (NullPointerException ne) {
+            if (DEBUG)
+                ne.printStackTrace();
+        }
+        // weatherpanel view
+        try {
+            mWeatherPanelView.setTextColor(color);
+            if (DEBUG)
+                Log.d(TAG, String.format("Setting mWeatherPanelView DATE text color to %d", color));
         } catch (NullPointerException ne) {
             if (DEBUG)
                 ne.printStackTrace();

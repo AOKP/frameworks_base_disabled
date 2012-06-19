@@ -141,4 +141,8 @@
         android:visibility="invisible"
         android:textColor="@color/lockscreen_owner_info"
         />
+
+    <include
+        layout="@layout/weatherpanel"
+        android:layout_gravity="right" />
 </LinearLayout>

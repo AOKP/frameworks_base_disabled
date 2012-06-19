@@ -2943,6 +2943,11 @@ public final class Settings {
         /**
          * @hide
          */
+        public static final String LOCKSCREEN_WEATHER_TYPE = "lockscreen_weather_type";
+
+        /**
+         * @hide
+         */
         public static final String USE_WEATHER = "use_weather";
         
         /**

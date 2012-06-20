@@ -34,6 +34,7 @@ import android.text.TextUtils;
 import android.util.Slog;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.net.NetworkInterface;
@@ -64,6 +65,56 @@ class TelephonyRegistry extends ITelephonyRegistry.Stub {
 
         int events;
     }
+
+    private static class DataStateNotification {
+        private int state;
+        private boolean isDataConnectivityPossible;
+        private String reason;
+        private String apn;
+        private LinkProperties linkProperties;
+        private LinkCapabilities linkCapabilities;
+        private int networkType;
+        private boolean roaming;
+
+        public DataStateNotification(int state, boolean isDataConnectivityPossible,
+                String reason, String apn, LinkProperties linkProperties,
+                LinkCapabilities linkCapabilities, int networkType, boolean roaming) {
+            if (DBG) Slog.i(TAG, "new DataStateNotification");
+            setValues(state, isDataConnectivityPossible, reason, apn, linkProperties,
+                    linkCapabilities, networkType, roaming);
+        }
+
+        // return true if notification needs be broadcasted
+        public boolean isNotificationNeeded(int state, boolean isDataConnectivityPossible,
+                String reason, String apn, LinkProperties linkProperties,
+                LinkCapabilities linkCapabilities, int networkType, boolean roaming) {
+            if ( state == TelephonyManager.DATA_DISCONNECTED && isDataConnectivityPossible ==
+                    this.isDataConnectivityPossible && state == this.state ) {
+                if (DBG) Slog.i(TAG, "toBeNotified = false");
+                return false;
+            } else {
+                if (DBG) Slog.i(TAG, "update dataStateNotification");
+                setValues(state, isDataConnectivityPossible, reason, apn, linkProperties,
+                        linkCapabilities, networkType, roaming);
+                return true;
+            }
+        }
+
+        private void setValues(int state, boolean isDataConnectivityPossible,
+                String reason, String apn, LinkProperties linkProperties,
+                LinkCapabilities linkCapabilities, int networkType, boolean roaming) {
+            this.state = state;
+            this.isDataConnectivityPossible = isDataConnectivityPossible;
+            this.reason = reason;
+            this.apn = apn;
+            this.linkProperties = linkProperties;
+            this.linkCapabilities = linkCapabilities;
+            this.networkType = networkType;
+            this.roaming = roaming;
+        }
+    }
+
+    private HashMap<String, DataStateNotification> mPreviousDataNotifications;
 
     private final Context mContext;
 
@@ -132,6 +183,7 @@ class TelephonyRegistry extends ITelephonyRegistry.Stub {
         mContext = context;
         mBatteryStats = BatteryStatsService.getService();
         mConnectedApns = new ArrayList<String>();
+        mPreviousDataNotifications = new HashMap<String, DataStateNotification>();
     }
 
     public void listen(String pkgForDebug, IPhoneStateListener callback, int events,
@@ -393,7 +445,24 @@ class TelephonyRegistry extends ITelephonyRegistry.Stub {
                 + isDataConnectivityPossible + " reason='" + reason
                 + "' apn='" + apn + "' apnType=" + apnType + " networkType=" + networkType);
         }
+
+        boolean toBeNotified = true;
         synchronized (mRecords) {
+            DataStateNotification dataStateNotification = mPreviousDataNotifications.get(apnType);
+            if (dataStateNotification == null) {
+                if (DBG) Slog.i(TAG, "dataStateNotification is null");
+                dataStateNotification = new DataStateNotification(state, isDataConnectivityPossible,
+                        reason, apn, linkProperties, linkCapabilities, networkType, roaming);
+                mPreviousDataNotifications.put(apnType, dataStateNotification);
+                if (DBG) Slog.i(TAG, "new DataStateNotification for type:" + apnType);
+            } else {
+                if (DBG) Slog.i(TAG, "dataStateNotification not null");
+                toBeNotified = dataStateNotification.isNotificationNeeded(state,
+                        isDataConnectivityPossible, reason, apn, linkProperties,
+                        linkCapabilities, networkType, roaming);
+            }
+            if (DBG) Slog.i(TAG, "toBeNotified=" + toBeNotified);
+
             boolean modified = false;
             if (state == TelephonyManager.DATA_CONNECTED) {
                 if (!mConnectedApns.contains(apnType)) {
@@ -441,8 +510,10 @@ class TelephonyRegistry extends ITelephonyRegistry.Stub {
                 handleRemoveListLocked();
             }
         }
-        broadcastDataConnectionStateChanged(state, isDataConnectivityPossible, reason, apn,
-                apnType, linkProperties, linkCapabilities, roaming);
+        if (toBeNotified) {
+            broadcastDataConnectionStateChanged(state, isDataConnectivityPossible, reason,
+                    apn, apnType, linkProperties, linkCapabilities, roaming);
+        }
     }
 
     public void notifyDataConnectionFailed(String reason, String apnType) {

@@ -236,4 +236,16 @@ public class TelephonyIntents {
      */
     public static final String ACTION_SHOW_NOTICE_ECM_BLOCK_OTHERS
             = "android.intent.action.ACTION_SHOW_NOTICE_ECM_BLOCK_OTHERS";
+
+    /* FIXME HASH: Added for Motorola Code */
+    public static final String ACTION_CALL_DISCONNECTED = "com.motorola.android.intent.action.ACTION_CALL_DISCONNECTED";
+    public static final String ACTION_CDMA_OTA_MDN_CHANGED = "android.intent.action.ACTION_MDN_STATE_CHANGED";
+    public static final String ACTION_CELLBROADCAST_STATUS_BAR_ENABLED = "android.intent.action.ACTION_CELLBROADCAST_STATUS_BAR_ENABLED";
+    public static final String ACTION_CHANGE_AIRPLANE_MODE_IN_ECM = "android.intent.action.ACTION_CHANGE_AIRPLANE_MODE_IN_ECM";
+    public static final String ACTION_CHANGE_DATA_SERVICE_SUPPORT = "android.intent.action.ACTION_CHANGE_DATA_SERVICE_SUPPORT";
+    public static final String ACTION_UNSOL_OEM_HOOK_RAW = "com.motorola.android.intent.action.ACTION_UNSOL_OEM_HOOK_RAW";
+    public static final String ACTION_DISPLAY_ROAMING_DIALOG = "com.motorola.intent.action.DISPLAY_ROAMING_DIALOG";
+    public static final String ACTION_MWI_CHANGED = "com.motorola.android.intent.action.ACTION_MWI_CHANGED";
+    public static final String ACTION_STATE_REJECT_CODE = "com.motorola.intent.action.GET_REJECT_CODE";
+
 }

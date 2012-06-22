@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-//#define LOG_NDEBUG 0
+#define LOG_NDEBUG 0
 #define LOG_TAG "Overlay"
 
 #include <binder/IMemory.h>
@@ -73,8 +73,9 @@ Overlay::Overlay(uint32_t width, uint32_t height, Format format, QueueBufferHook
     mHeight(height),
     mFormat(format)
 {
-    LOGD("%s: Init overlay", __FUNCTION__);
+    LOGD("%s: Init overlay, format=%d", __FUNCTION__, format);
 
+    unsigned int mapped = 0;
     int bpp = getBppFromFormat(format);
     /* round up to next multiple of 8 */
     if (bpp & 7) {
@@ -104,11 +105,12 @@ Overlay::Overlay(uint32_t width, uint32_t height, Format format, QueueBufferHook
             continue;
         }
         mQueued[i] = false;
+        mapped++;
     }
 
     pthread_mutex_init(&mQueueMutex, NULL);
 
-    LOGD("%s: Init overlay complete", __FUNCTION__);
+    LOGD("%s: Init overlay complete, %u mapped", __FUNCTION__, mapped);
 
     mStatus = NO_ERROR;
 }
@@ -124,7 +126,7 @@ status_t Overlay::dequeueBuffer(overlay_buffer_t* buffer)
     pthread_mutex_lock(&mQueueMutex);
 
     if (mNumFreeBuffers < NUM_MIN_FREE_BUFFERS) {
-        LOGV("%s: No free buffers", __FUNCTION__);
+        LOGV("%s: No enough free buffers (%d)", __FUNCTION__, mNumFreeBuffers);
         rv = NO_MEMORY;
     } else {
         int index = -1;
@@ -155,11 +157,11 @@ status_t Overlay::dequeueBuffer(overlay_buffer_t* buffer)
 status_t Overlay::queueBuffer(overlay_buffer_t buffer)
 {
     uint32_t index = (uint32_t) buffer;
-    int rv;
+    int rv = mStatus;
 
     LOGV("%s: %d", __FUNCTION__, index);
     if (index > NUM_BUFFERS) {
-        LOGE("%s: invalid buffer index %d", __FUNCTION__, index);
+        LOGE("%s: invalid buffer index %u", __FUNCTION__, index);
         return INVALID_OPERATION;
     }
 
@@ -170,8 +172,12 @@ status_t Overlay::queueBuffer(overlay_buffer_t buffer)
     pthread_mutex_lock(&mQueueMutex);
 
     if (mNumFreeBuffers < NUM_BUFFERS) {
-        mNumFreeBuffers++;
-        mQueued[index] = true;
+        if (mQueued[index]) {
+            LOGW("%s: The buffer was already in queue", __FUNCTION__);
+        } else {
+            mNumFreeBuffers++;
+            mQueued[index] = true;
+        }
         rv = NO_ERROR;
     } else {
         LOGW("%s: Attempt to queue more buffers than we have", __FUNCTION__);
@@ -180,7 +186,7 @@ status_t Overlay::queueBuffer(overlay_buffer_t buffer)
 
     pthread_mutex_unlock(&mQueueMutex);
 
-    return mStatus; 
+    return rv;
 }
 
 status_t Overlay::resizeInput(uint32_t width, uint32_t height)

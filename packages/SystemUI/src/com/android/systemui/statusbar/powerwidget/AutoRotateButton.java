@@ -28,8 +28,8 @@ public class AutoRotateButton extends PowerButton {
     public AutoRotateButton() { mType = BUTTON_AUTOROTATE; }
 
     @Override
-    protected void updateState(Context context) {
-        if (getAutoRotation(context)) {
+    protected void updateState() {
+        if (getAutoRotation()) {
             mIcon = R.drawable.stat_orientation_on;
             mState = STATE_ENABLED;
         } else {
@@ -39,16 +39,16 @@ public class AutoRotateButton extends PowerButton {
     }
 
     @Override
-    protected void toggleState(Context context) {
-        setAutoRotation(!getAutoRotation(context));
+    protected void toggleState() {
+        setAutoRotation(!getAutoRotation());
     }
 
     @Override
-    protected boolean handleLongClick(Context context) {
+    protected boolean handleLongClick() {
         Intent intent = new Intent("android.settings.DISPLAY_SETTINGS");
         intent.addCategory(Intent.CATEGORY_DEFAULT);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.startActivity(intent);
+        mView.getContext().startActivity(intent);
         return true;
     }
 
@@ -57,9 +57,9 @@ public class AutoRotateButton extends PowerButton {
         return OBSERVED_URIS;
     }
 
-    private boolean getAutoRotation(Context context) {
-        ContentResolver cr = context.getContentResolver();
-        return Settings.System.getInt(cr, Settings.System.ACCELEROMETER_ROTATION, 0) != 0;
+    private boolean getAutoRotation() {
+        ContentResolver cr = mView.getContext().getContentResolver();
+        return 0 != Settings.System.getInt(cr, Settings.System.ACCELEROMETER_ROTATION, 0);
     }
 
     private void setAutoRotation(final boolean autorotate) {

@@ -22,8 +22,8 @@ public class GPSButton extends PowerButton {
     public GPSButton() { mType = BUTTON_GPS; }
 
     @Override
-    protected void updateState(Context context) {
-        if (getGpsState(context)) {
+    protected void updateState() {
+        if(getGpsState(mView.getContext())) {
             mIcon = R.drawable.stat_gps_on;
             mState = STATE_ENABLED;
         } else {
@@ -33,7 +33,8 @@ public class GPSButton extends PowerButton {
     }
 
     @Override
-    protected void toggleState(Context context) {
+    protected void toggleState() {
+        Context context = mView.getContext();
         ContentResolver resolver = context.getContentResolver();
         boolean enabled = getGpsState(context);
         Settings.Secure.setLocationProviderEnabled(resolver,
@@ -41,11 +42,11 @@ public class GPSButton extends PowerButton {
     }
 
     @Override
-    protected boolean handleLongClick(Context context) {
+    protected boolean handleLongClick() {
         Intent intent = new Intent("android.settings.LOCATION_SOURCE_SETTINGS");
         intent.addCategory(Intent.CATEGORY_DEFAULT);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.startActivity(intent);
+        mView.getContext().startActivity(intent);
         return true;
     }
 
@@ -54,7 +55,7 @@ public class GPSButton extends PowerButton {
         return OBSERVED_URIS;
     }
 
-    private boolean getGpsState(Context context) {
+    private static boolean getGpsState(Context context) {
         ContentResolver resolver = context.getContentResolver();
         return Settings.Secure.isLocationProviderEnabled(resolver,
                 LocationManager.GPS_PROVIDER);

@@ -7,8 +7,8 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.IPowerManager;
 import android.os.Power;
-import android.os.PowerManager;
 import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.preference.ListPreferenceMultiSelect;
@@ -77,12 +77,12 @@ public class BrightnessButton extends PowerButton {
             Context context = mView.getContext();
             mAutoBrightnessSupported = context.getResources().getBoolean(
                     com.android.internal.R.bool.config_automatic_brightness_available);
-            updateSettings(context.getContentResolver());
+            updateSettings();
         }
     }
 
     @Override
-    protected void updateState(Context context) {
+    protected void updateState() {
         if (mAutoBrightness) {
             mIcon = R.drawable.stat_brightness_auto;
             mState = STATE_ENABLED;
@@ -99,37 +99,42 @@ public class BrightnessButton extends PowerButton {
     }
 
     @Override
-    protected void toggleState(Context context) {
-        PowerManager power = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
-        ContentResolver resolver = context.getContentResolver();
-
-        mCurrentBacklightIndex++;
-        if (mCurrentBacklightIndex > mBacklightValues.length - 1) {
-            mCurrentBacklightIndex = 0;
-        }
-
-        int backlightIndex = mBacklightValues[mCurrentBacklightIndex];
-        int brightness = BACKLIGHTS[backlightIndex];
-
-        if (brightness == AUTO_BACKLIGHT) {
-            Settings.System.putInt(resolver, Settings.System.SCREEN_BRIGHTNESS_MODE,
-                    Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC);
-        } else {
-            if (mAutoBrightnessSupported) {
-                Settings.System.putInt(resolver, Settings.System.SCREEN_BRIGHTNESS_MODE,
-                        Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL);
+    protected void toggleState() {
+        try {
+            IPowerManager power = IPowerManager.Stub
+                    .asInterface(ServiceManager.getService("power"));
+            if (power != null) {
+                ContentResolver resolver = mView.getContext().getContentResolver();
+                mCurrentBacklightIndex++;
+                if (mCurrentBacklightIndex > mBacklightValues.length - 1) {
+                    mCurrentBacklightIndex = 0;
+                }
+                int backlightIndex = mBacklightValues[mCurrentBacklightIndex];
+                int brightness = BACKLIGHTS[backlightIndex];
+                if (brightness == AUTO_BACKLIGHT) {
+                    Settings.System.putInt(resolver, Settings.System.SCREEN_BRIGHTNESS_MODE,
+                            Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC);
+                } else {
+                    if (mAutoBrightnessSupported) {
+                        Settings.System.putInt(resolver, Settings.System.SCREEN_BRIGHTNESS_MODE,
+                                Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL);
+                    }
+                    power.setBacklightBrightness(brightness);
+                    Settings.System.putInt(resolver, Settings.System.SCREEN_BRIGHTNESS, brightness);
+                }
             }
-            power.setBacklightBrightness(brightness);
-            Settings.System.putInt(resolver, Settings.System.SCREEN_BRIGHTNESS, brightness);
+        } catch (RemoteException e) {
+            Log.e(TAG, "toggleState()", e);
         }
+
     }
 
     @Override
-    protected boolean handleLongClick(Context context) {
+    protected boolean handleLongClick() {
         Intent intent = new Intent("android.settings.DISPLAY_SETTINGS");
         intent.addCategory(Intent.CATEGORY_DEFAULT);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.startActivity(intent);
+        mView.getContext().startActivity(intent);
         return true;
     }
 
@@ -139,7 +144,8 @@ public class BrightnessButton extends PowerButton {
     }
 
     @Override
-    protected void onChangeUri(ContentResolver resolver, Uri uri) {
+    protected void onChangeUri(Uri uri) {
+        ContentResolver resolver = mView.getContext().getContentResolver();
         if (BRIGHTNESS_URI.equals(uri)) {
             mCurrentBrightness = Settings.System.getInt(resolver,
                     Settings.System.SCREEN_BRIGHTNESS, 0);
@@ -147,19 +153,14 @@ public class BrightnessButton extends PowerButton {
             mAutoBrightness = (Settings.System.getInt(resolver,
                     Settings.System.SCREEN_BRIGHTNESS_MODE, 0) == Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC);
         } else {
-            updateSettings(resolver);
+            updateSettings();
         }
     }
 
-    private void updateSettings(ContentResolver resolver) {
-        boolean lightSensorCustom = (Settings.System.getInt(resolver,
-                Settings.System.LIGHT_SENSOR_CUSTOM, 0) != 0);
-        if (lightSensorCustom) {
-            BACKLIGHTS[1] = Settings.System.getInt(resolver, Settings.System.LIGHT_SCREEN_DIM,
-                    MIN_BACKLIGHT);
-        } else {
-            BACKLIGHTS[1] = MIN_BACKLIGHT;
-        }
+    private void updateSettings() {
+        ContentResolver resolver = mView.getContext().getContentResolver();
+
+        BACKLIGHTS[1] = MIN_BACKLIGHT;
 
         String[] modes = ListPreferenceMultiSelect.parseStoredValue(Settings.System.getString(
                 resolver, Settings.System.EXPANDED_BRIGHTNESS_MODE));
@@ -188,6 +189,7 @@ public class BrightnessButton extends PowerButton {
                 }
             }
         }
+        updateState();
     }
 }
 

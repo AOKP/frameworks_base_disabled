@@ -41,8 +41,6 @@ import com.android.systemui.R;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class PowerWidget extends FrameLayout {
     private static final String TAG = "PowerWidget";
@@ -69,50 +67,11 @@ public class PowerWidget extends FrameLayout {
 
     private static final int LAYOUT_SCROLL_BUTTON_THRESHOLD = 6;
 
-    // this is a list of all possible buttons and their corresponding classes
-    private static final HashMap<String, Class<? extends PowerButton>> sPossibleButtons =
-            new HashMap<String, Class<? extends PowerButton>>();
-
-    static {
-        sPossibleButtons.put(PowerButton.BUTTON_WIFI, WifiButton.class);
-        sPossibleButtons.put(PowerButton.BUTTON_GPS, GPSButton.class);
-        sPossibleButtons.put(PowerButton.BUTTON_BLUETOOTH, BluetoothButton.class);
-        sPossibleButtons.put(PowerButton.BUTTON_BRIGHTNESS, BrightnessButton.class);
-        sPossibleButtons.put(PowerButton.BUTTON_SOUND, SoundButton.class);
-        sPossibleButtons.put(PowerButton.BUTTON_SYNC, SyncButton.class);
-        sPossibleButtons.put(PowerButton.BUTTON_WIFIAP, WifiApButton.class);
-        sPossibleButtons.put(PowerButton.BUTTON_SCREENTIMEOUT, ScreenTimeoutButton.class);
-        sPossibleButtons.put(PowerButton.BUTTON_MOBILEDATA, MobileDataButton.class);
-        sPossibleButtons.put(PowerButton.BUTTON_LOCKSCREEN, LockScreenButton.class);
-        sPossibleButtons.put(PowerButton.BUTTON_NETWORKMODE, NetworkModeButton.class);
-        sPossibleButtons.put(PowerButton.BUTTON_AUTOROTATE, AutoRotateButton.class);
-        sPossibleButtons.put(PowerButton.BUTTON_AIRPLANE, AirplaneButton.class);
-        sPossibleButtons.put(PowerButton.BUTTON_FLASHLIGHT, FlashlightButton.class);
-        sPossibleButtons.put(PowerButton.BUTTON_SLEEP, SleepButton.class);
-        sPossibleButtons.put(PowerButton.BUTTON_MEDIA_PLAY_PAUSE, MediaPlayPauseButton.class);
-        sPossibleButtons.put(PowerButton.BUTTON_MEDIA_PREVIOUS, MediaPreviousButton.class);
-        sPossibleButtons.put(PowerButton.BUTTON_MEDIA_NEXT, MediaNextButton.class);
-        sPossibleButtons.put(PowerButton.BUTTON_WIMAX, WimaxButton.class);
-        sPossibleButtons.put(PowerButton.BUTTON_LTE, LTEButton.class);
-    }
-
-    // this is a list of our currently loaded buttons
-    private final HashMap<String, PowerButton> mButtons = new HashMap<String, PowerButton>();
-    private final ArrayList<String> mButtonNames = new ArrayList<String>();
-
-    private View.OnClickListener mAllButtonClickListener;
-    private View.OnLongClickListener mAllButtonLongClickListener;
-
     private Context mContext;
-    private Handler mHandler;
     private LayoutInflater mInflater;
     private WidgetBroadcastReceiver mBroadcastReceiver = null;
     private WidgetSettingsObserver mObserver = null;
 
-    private long[] mShortPressVibePattern;
-    private long[] mLongPressVibePattern;
-
-    private LinearLayout mButtonLayout;
     private HorizontalScrollView mScrollView;
     private View buttonView;
 
@@ -120,30 +79,12 @@ public class PowerWidget extends FrameLayout {
         super(context, attrs);
 
         mContext = context;
-        mHandler = new Handler();
         mInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-        mShortPressVibePattern = getLongIntArray(mContext.getResources(),
-                com.android.internal.R.array.config_virtualKeyVibePattern);
-        mLongPressVibePattern = getLongIntArray(mContext.getResources(),
-                com.android.internal.R.array.config_longPressVibePattern);
 
         // get an initial width
         updateButtonLayoutWidth();
         setupWidget();
         updateVisibility();
-    }
-
-    static long[] getLongIntArray(Resources r, int resid) {
-        int[] ar = r.getIntArray(resid);
-        if (ar == null) {
-            return null;
-        }
-        long[] out = new long[ar.length];
-        for (int i=0; i < ar.length; i++) {
-            out[i] = ar[i];
-        }
-        return out;
     }
 
     public void destroyWidget() {
@@ -152,16 +93,16 @@ public class PowerWidget extends FrameLayout {
         removeAllViews();
 
         // unregister our content receiver
-        if (mBroadcastReceiver != null) {
+        if(mBroadcastReceiver != null) {
             mContext.unregisterReceiver(mBroadcastReceiver);
         }
         // unobserve our content
-        if (mObserver != null) {
+        if(mObserver != null) {
             mObserver.unobserve();
         }
 
         // clear the button instances
-        unloadAllButtons();
+        PowerButton.unloadAllButtons();
     }
 
     public void setupWidget() {
@@ -170,7 +111,7 @@ public class PowerWidget extends FrameLayout {
         Log.i(TAG, "Setting up widget");
 
         String buttons = Settings.System.getString(mContext.getContentResolver(), Settings.System.WIDGET_BUTTONS);
-        if (buttons == null) {
+        if(buttons == null) {
             Log.i(TAG, "Default buttons being loaded");
             buttons = BUTTONS_DEFAULT;
             // Add the WiMAX button if it's supported
@@ -180,95 +121,28 @@ public class PowerWidget extends FrameLayout {
         }
         Log.i(TAG, "Button list: " + buttons);
 
-        for (String button : buttons.split("\\|")) {
-            if (loadButton(button)) {
-                mButtonNames.add(button);
+        // create a linearlayout to hold our buttons
+        LinearLayout ll = new LinearLayout(mContext);
+        ll.setOrientation(LinearLayout.HORIZONTAL);
+        ll.setGravity(Gravity.CENTER_HORIZONTAL);
+
+        int buttonCount = 0;
+        for(String button : buttons.split("\\|")) {
+            Log.i(TAG, "Setting up button: " + button);
+            // inflate our button, we don't add it to a parent and don't do any layout shit yet
+            buttonView = mInflater.inflate(R.layout.power_widget_button, null, false);
+
+            if(PowerButton.loadButton(button, buttonView)) {
+                // add the button here
+                ll.addView(buttonView, BUTTON_LAYOUT_PARAMS);
+                buttonCount++;
             } else {
                 Log.e(TAG, "Error setting up button: " + button);
             }
         }
-        recreateButtonLayout();
-        updateHapticFeedbackSetting();
-
-        // set up a broadcast receiver for our intents, based off of what our power buttons have been loaded
-        setupBroadcastReceiver();
-        IntentFilter filter = getMergedBroadcastIntentFilter();
-        // we add this so we can update views and such if the settings for our widget change
-        filter.addAction(Settings.SETTINGS_CHANGED);
-        // we need to detect orientation changes and update the static button width value appropriately
-        filter.addAction(Intent.ACTION_CONFIGURATION_CHANGED);
-        // register the receiver
-        mContext.registerReceiver(mBroadcastReceiver, filter);
-        // register our observer
-        mObserver = new WidgetSettingsObserver(mHandler);
-        mObserver.observe();
-    }
-
-    private boolean loadButton(String key) {
-        // first make sure we have a valid button
-        if (!sPossibleButtons.containsKey(key)) {
-            return false;
-        }
-
-        if (mButtons.containsKey(key)) {
-            return true;
-        }
-
-        try {
-            // we need to instantiate a new button and add it
-            PowerButton pb = sPossibleButtons.get(key).newInstance();
-            pb.setExternalClickListener(mAllButtonClickListener);
-            pb.setExternalLongClickListener(mAllButtonLongClickListener);
-            // save it
-            mButtons.put(key, pb);
-        } catch (Exception e) {
-            Log.e(TAG, "Error loading button: " + key, e);
-            return false;
-        }
-
-        return true;
-    }
-
-    private void unloadButton(String key) {
-        // first make sure we have a valid button
-        if (mButtons.containsKey(key)) {
-            // wipe out the button view
-            mButtons.get(key).setupButton(null);
-            // remove the button from our list of loaded ones
-            mButtons.remove(key);
-        }
-    }
-
-    private void unloadAllButtons() {
-        // cycle through setting the buttons to null
-        for (PowerButton pb : mButtons.values()) {
-            pb.setupButton(null);
-        }
-
-        // clear our list
-        mButtons.clear();
-        mButtonNames.clear();
-    }
-
-    private void recreateButtonLayout() {
-        removeAllViews();
-
-        // create a linearlayout to hold our buttons
-        mButtonLayout = new LinearLayout(mContext);
-        mButtonLayout.setOrientation(LinearLayout.HORIZONTAL);
-        mButtonLayout.setGravity(Gravity.CENTER_HORIZONTAL);
-
-        for (String button : mButtonNames) {
-            PowerButton pb = mButtons.get(button);
-            if (pb != null) {
-                View buttonView = mInflater.inflate(R.layout.power_widget_button, null, false);
-                pb.setupButton(buttonView);
-                mButtonLayout.addView(buttonView, BUTTON_LAYOUT_PARAMS);
-            }
-        }
 
         // we determine if we're using a horizontal scroll view based on a threshold of button counts
-        if (mButtonLayout.getChildCount() > LAYOUT_SCROLL_BUTTON_THRESHOLD) {
+        if(buttonCount > LAYOUT_SCROLL_BUTTON_THRESHOLD) {
             // we need our horizontal scroll view to wrap the linear layout
             mScrollView = new HorizontalScrollView(mContext);
             // make the fading edge the size of a button (makes it more noticible that we can scroll
@@ -276,78 +150,50 @@ public class PowerWidget extends FrameLayout {
             mScrollView.setScrollBarStyle(View.SCROLLBARS_INSIDE_INSET);
             mScrollView.setOverScrollMode(View.OVER_SCROLL_NEVER);
             // set the padding on the linear layout to the size of our scrollbar, so we don't have them overlap
-            mButtonLayout.setPadding(mButtonLayout.getPaddingLeft(),
-                    mButtonLayout.getPaddingTop(),
-                    mButtonLayout.getPaddingRight(),
-                    mScrollView.getVerticalScrollbarWidth());
-            mScrollView.addView(mButtonLayout, WIDGET_LAYOUT_PARAMS);
+            ll.setPadding(ll.getPaddingLeft(), ll.getPaddingTop(), ll.getPaddingRight(), mScrollView.getVerticalScrollbarWidth());
+            mScrollView.addView(ll, WIDGET_LAYOUT_PARAMS);
             updateScrollbar();
             addView(mScrollView, WIDGET_LAYOUT_PARAMS);
         } else {
             // not needed, just add the linear layout
-            addView(mButtonLayout, WIDGET_LAYOUT_PARAMS);
+            addView(ll, WIDGET_LAYOUT_PARAMS);
+        }
+
+        // set up a broadcast receiver for our intents, based off of what our power buttons have been loaded
+        setupBroadcastReceiver();
+        IntentFilter filter = PowerButton.getAllBroadcastIntentFilters();
+        // we add this so we can update views and such if the settings for our widget change
+        filter.addAction(Settings.SETTINGS_CHANGED);
+        // we need to detect orientation changes and update the static button width value appropriately
+        filter.addAction(Intent.ACTION_CONFIGURATION_CHANGED);
+        // register the receiver
+        mContext.registerReceiver(mBroadcastReceiver, filter);
+        // register our observer
+        if(mObserver != null) {
+            mObserver.observe();
         }
     }
 
-    public void updateAllButtons() {
-        // cycle through our buttons and update them
-        for (PowerButton pb : mButtons.values()) {
-            pb.update(mContext);
-        }
+    public void updateWidget() {
+        PowerButton.updateAllButtons();
     }
 
-    private IntentFilter getMergedBroadcastIntentFilter() {
-        IntentFilter filter = new IntentFilter();
-
-        for (PowerButton button : mButtons.values()) {
-            IntentFilter tmp = button.getBroadcastIntentFilter();
-
-            // cycle through these actions, and see if we need them
-            int num = tmp.countActions();
-            for (int i = 0; i < num; i++) {
-                String action = tmp.getAction(i);
-                if(!filter.hasAction(action)) {
-                    filter.addAction(action);
-                }
-            }
+    public void setupSettingsObserver(Handler handler) {
+        if(mObserver == null) {
+            mObserver = new WidgetSettingsObserver(handler);
         }
-
-        // return our merged filter
-        return filter;
-    }
-
-    private List<Uri> getAllObservedUris() {
-        List<Uri> uris = new ArrayList<Uri>();
-
-        for (PowerButton button : mButtons.values()) {
-            List<Uri> tmp = button.getObservedUris();
-
-            for (Uri uri : tmp) {
-                if (!uris.contains(uri)) {
-                    uris.add(uri);
-                }
-            }
-        }
-
-        return uris;
     }
 
     public void setGlobalButtonOnClickListener(View.OnClickListener listener) {
-        mAllButtonClickListener = listener;
-        for (PowerButton pb : mButtons.values()) {
-            pb.setExternalClickListener(listener);
-        }
+        PowerButton.setGlobalOnClickListener(listener);
     }
 
     public void setGlobalButtonOnLongClickListener(View.OnLongClickListener listener) {
-        mAllButtonLongClickListener = listener;
-        for (PowerButton pb : mButtons.values()) {
-            pb.setExternalLongClickListener(listener);
-        }
+        PowerButton.setGlobalOnLongClickListener(listener);
     }
 
     private void setupBroadcastReceiver() {
-        if (mBroadcastReceiver == null) {
+        if(mBroadcastReceiver == null) {
             mBroadcastReceiver = new WidgetBroadcastReceiver();
         }
     }
@@ -375,50 +221,19 @@ public class PowerWidget extends FrameLayout {
         mScrollView.setHorizontalScrollBarEnabled(!hideScrollBar);
     }
 
-    private void updateHapticFeedbackSetting() {
-        ContentResolver cr = mContext.getContentResolver();
-        int expandedHapticFeedback = Settings.System.getInt(cr,
-                Settings.System.EXPANDED_HAPTIC_FEEDBACK, 2);
-        long[] clickPattern = null, longClickPattern = null;
-        boolean hapticFeedback;
-
-        if (expandedHapticFeedback == 2) {
-             hapticFeedback = Settings.System.getInt(cr,
-                     Settings.System.HAPTIC_FEEDBACK_ENABLED, 1) == 1;
-        } else {
-            hapticFeedback = (expandedHapticFeedback == 1);
-        }
-
-        if (hapticFeedback) {
-            clickPattern = mShortPressVibePattern;
-            longClickPattern = mLongPressVibePattern;
-        }
-
-        for (PowerButton button : mButtons.values()) {
-            button.setHapticFeedback(hapticFeedback, clickPattern, longClickPattern);
-        }
-    }
-
     // our own broadcast receiver :D
     private class WidgetBroadcastReceiver extends BroadcastReceiver {
         public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-
-            if (action.equals(Intent.ACTION_CONFIGURATION_CHANGED)) {
+            if(intent.getAction().equals(Intent.ACTION_CONFIGURATION_CHANGED)) {
                 updateButtonLayoutWidth();
-                recreateButtonLayout();
+                setupWidget();
             } else {
                 // handle the intent through our power buttons
-                for (PowerButton button : mButtons.values()) {
-                    // call "onReceive" on those that matter
-                    if (button.getBroadcastIntentFilter().hasAction(action)) {
-                        button.onReceive(context, intent);
-                    }
-                }
+                PowerButton.handleOnReceive(context, intent);
             }
 
             // update our widget
-            updateAllButtons();
+            updateWidget();
         }
     };
 
@@ -445,9 +260,6 @@ public class PowerWidget extends FrameLayout {
             resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.EXPANDED_HAPTIC_FEEDBACK),
                             false, this);
-            resolver.registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.HAPTIC_FEEDBACK_ENABLED),
-                            false, this);
 
             // watch for changes in buttons
             resolver.registerContentObserver(
@@ -465,7 +277,7 @@ public class PowerWidget extends FrameLayout {
                             false, this);
 
             // watch for power-button specifc stuff that has been loaded
-            for(Uri uri : getAllObservedUris()) {
+            for(Uri uri : PowerButton.getAllObservedUris()) {
                 resolver.registerContentObserver(uri, false, this);
             }
         }
@@ -491,20 +303,11 @@ public class PowerWidget extends FrameLayout {
                 updateScrollbar();
             }
 
-            if (uri.equals(Settings.System.getUriFor(Settings.System.HAPTIC_FEEDBACK_ENABLED))
-                    || uri.equals(Settings.System.getUriFor(Settings.System.EXPANDED_HAPTIC_FEEDBACK))) {
-                updateHapticFeedbackSetting();
-            }
-
             // do whatever the individual buttons must
-            for (PowerButton button : mButtons.values()) {
-                if (button.getObservedUris().contains(uri)) {
-                    button.onChangeUri(resolver, uri);
-                }
-            }
+            PowerButton.handleOnChangeUri(uri);
 
             // something happened so update the widget
-            updateAllButtons();
+            updateWidget();
         }
     }
 }

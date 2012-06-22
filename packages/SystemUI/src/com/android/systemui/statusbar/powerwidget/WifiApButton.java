@@ -99,8 +99,8 @@ public class WifiApButton extends PowerButton {
     public WifiApButton() { mType = BUTTON_WIFIAP; }
 
     @Override
-    protected void updateState(Context context) {
-        mState = sWifiApState.getTriState(context);
+    protected void updateState() {
+        mState = sWifiApState.getTriState(mView.getContext());
         switch (mState) {
             case STATE_DISABLED:
                 mIcon = R.drawable.stat_wifi_ap_off;
@@ -124,18 +124,18 @@ public class WifiApButton extends PowerButton {
     }
 
     @Override
-    protected void toggleState(Context context) {
-        sWifiApState.toggleState(context);
+    protected void toggleState() {
+        sWifiApState.toggleState(mView.getContext());
     }
 
     @Override
-    protected boolean handleLongClick(Context context) {
+    protected boolean handleLongClick() {
         // it may be better to make an Intent action for the WifiAp settings
         // we may want to look at that option later
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.setClassName("com.android.settings", "com.android.settings.TetherSettings");
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.startActivity(intent);
+        mView.getContext().startActivity(intent);
         return true;
     }
 

@@ -16,9 +16,9 @@ public class MediaPlayPauseButton extends MediaKeyEventButton {
     private int mCurrentState = MEDIA_STATE_UNKNOWN;
 
     @Override
-    protected void updateState(Context context) {
+    protected void updateState() {
         mState = STATE_DISABLED;
-        if (isMusicActive(context)) {
+        if(isMusicActive()) {
             mIcon = R.drawable.stat_media_pause;
         } else {
             mIcon = R.drawable.stat_media_play;
@@ -26,24 +26,24 @@ public class MediaPlayPauseButton extends MediaKeyEventButton {
     }
 
     @Override
-    protected void toggleState(Context context) {
-        sendMediaKeyEvent(context, KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE);
+    protected void toggleState() {
+        sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE);
 
-        mCurrentState = (isMusicActive(context) ? MEDIA_STATE_INACTIVE : MEDIA_STATE_ACTIVE);
+        mCurrentState = (isMusicActive() ? MEDIA_STATE_INACTIVE : MEDIA_STATE_ACTIVE);
 
-        update(context);
+        update();
     }
 
     @Override
-    protected boolean handleLongClick(Context context) {
+    protected boolean handleLongClick() {
         return false;
     }
 
-    private boolean isMusicActive(Context context) {
-        if (mCurrentState == MEDIA_STATE_UNKNOWN) {
+    private boolean isMusicActive() {
+        if(mCurrentState == MEDIA_STATE_UNKNOWN) {
             mCurrentState = MEDIA_STATE_INACTIVE;
-            AudioManager am = getAudioManager(context);
-            if (am != null) {
+            AudioManager am = getAudioManager(mView.getContext());
+            if(am != null) {
                 mCurrentState = (am.isMusicActive() ? MEDIA_STATE_ACTIVE : MEDIA_STATE_INACTIVE);
             }
 

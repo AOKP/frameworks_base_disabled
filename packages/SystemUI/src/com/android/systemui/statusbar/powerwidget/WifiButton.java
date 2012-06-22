@@ -95,8 +95,8 @@ public class WifiButton extends PowerButton{
     public WifiButton() { mType = BUTTON_WIFI; }
 
     @Override
-    protected void updateState(Context context) {
-        mState = sWifiState.getTriState(context);
+    protected void updateState() {
+        mState = sWifiState.getTriState(mView.getContext());
         switch (mState) {
             case STATE_DISABLED:
                 mIcon = R.drawable.stat_wifi_off;
@@ -120,16 +120,16 @@ public class WifiButton extends PowerButton{
     }
 
     @Override
-    protected void toggleState(Context context) {
-        sWifiState.toggleState(context);
+    protected void toggleState() {
+        sWifiState.toggleState(mView.getContext());
     }
 
     @Override
-    protected boolean handleLongClick(Context context) {
+    protected boolean handleLongClick() {
         Intent intent = new Intent("android.settings.WIFI_SETTINGS");
         intent.addCategory(Intent.CATEGORY_DEFAULT);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.startActivity(intent);
+        mView.getContext().startActivity(intent);
         return true;
     }
 

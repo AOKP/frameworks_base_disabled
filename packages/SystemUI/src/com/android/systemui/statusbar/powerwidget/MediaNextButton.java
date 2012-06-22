@@ -9,18 +9,18 @@ public class MediaNextButton extends MediaKeyEventButton {
     public MediaNextButton() { mType = BUTTON_MEDIA_NEXT; }
 
     @Override
-    protected void updateState(Context context) {
+    protected void updateState() {
         mIcon = R.drawable.stat_media_next;
         mState = STATE_DISABLED;
     }
 
     @Override
-    protected void toggleState(Context context) {
-        sendMediaKeyEvent(context, KeyEvent.KEYCODE_MEDIA_NEXT);
+    protected void toggleState() {
+        sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_NEXT);
     }
 
     @Override
-    protected boolean handleLongClick(Context context) {
+    protected boolean handleLongClick() {
         return false;
     }
 }

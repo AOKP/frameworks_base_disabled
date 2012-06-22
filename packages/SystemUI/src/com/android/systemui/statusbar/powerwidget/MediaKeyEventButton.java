@@ -14,9 +14,10 @@ import android.view.View;
 public abstract class MediaKeyEventButton extends PowerButton {
     private static final String TAG = "MediaKeyEventButton";
 
-    private AudioManager mAM = null;
+    private static AudioManager AUDIO_MANAGER = null;
 
-    protected void sendMediaKeyEvent(Context context, int code) {
+    protected void sendMediaKeyEvent(int code) {
+        Context context = mView.getContext();
         long eventtime = SystemClock.uptimeMillis();
 
         Intent downIntent = new Intent(Intent.ACTION_MEDIA_BUTTON, null);
@@ -30,11 +31,11 @@ public abstract class MediaKeyEventButton extends PowerButton {
         context.sendOrderedBroadcast(upIntent, null);
     }
 
-    protected AudioManager getAudioManager(Context context) {
-        if (mAM == null) {
-            mAM = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+    protected static AudioManager getAudioManager(Context context) {
+        if(AUDIO_MANAGER == null) {
+            AUDIO_MANAGER = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         }
 
-        return mAM;
+        return AUDIO_MANAGER;
     }
 }

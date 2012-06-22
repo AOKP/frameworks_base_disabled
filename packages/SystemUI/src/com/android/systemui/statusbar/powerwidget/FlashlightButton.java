@@ -15,7 +15,7 @@ import java.util.List;
 public class FlashlightButton extends PowerButton {
 
 	private static final String TAG = "FlashlightButton";
-
+    
     private Torch mTorch;
 
     private static final List<Uri> OBSERVED_URIS = new ArrayList<Uri>();
@@ -26,8 +26,9 @@ public class FlashlightButton extends PowerButton {
     public FlashlightButton() { mType = BUTTON_FLASHLIGHT; }
 
     @Override
-    protected void updateState(Context context) {
-        boolean enabled = Settings.System.getInt(context.getContentResolver(), Settings.System.TORCH_STATE, 0) == 1;
+    protected void updateState() {
+        boolean enabled = Settings.System.getInt(mView.getContext().getContentResolver(), Settings.System.TORCH_STATE, 0) == 1;
+        
         if(enabled) {
             mIcon = R.drawable.stat_flashlight_on;
             mState = STATE_ENABLED;
@@ -38,27 +39,28 @@ public class FlashlightButton extends PowerButton {
     }
 
     @Override
-    protected void toggleState(Context context) {
-        boolean bright = Settings.System.getInt(context.getContentResolver(),
-                Settings.System.EXPANDED_FLASH_MODE, 0) == 1;
-        Intent i = new Intent("net.cactii.flash2.TOGGLE_FLASHLIGHT");
-        i.putExtra("bright", bright);
-        context.sendBroadcast(i);
+    protected void toggleState() {
+        Context context = mView.getContext();
+        boolean torchOn = (mState == STATE_ENABLED);
+        if (torchOn) {
+        	Settings.System.putInt(context.getContentResolver(), Settings.System.TORCH_STATE, 0);
+        	mTorch = Torch.getTorch();
+            mTorch.finish();
+        } else {
+        	Settings.System.putInt(context.getContentResolver(), Settings.System.TORCH_STATE, 1);
+        	Intent i = new Intent(context, Torch.class);
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(i);
+        }
     }
 
     @Override
-    protected boolean handleLongClick(Context context) {
-        // it may be better to make an Intent action for the Torch
-        // we may want to look at that option later
-        Intent intent = new Intent(Intent.ACTION_MAIN);
-        intent.setClassName("net.cactii.flash2", "net.cactii.flash2.MainActivity");
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.startActivity(intent);
-        return true;
+    protected boolean handleLongClick() {
+    	return false;
     }
-
+    
     @Override
     protected List<Uri> getObservedUris() {
         return OBSERVED_URIS;
-    }
+    }   
 }

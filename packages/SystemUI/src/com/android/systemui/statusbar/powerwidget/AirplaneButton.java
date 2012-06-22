@@ -21,8 +21,8 @@ public class AirplaneButton extends PowerButton {
     public AirplaneButton() { mType = BUTTON_AIRPLANE; }
 
     @Override
-    protected void updateState(Context context) {
-        if (getState(context)) {
+    protected void updateState() {
+        if (getState(mView.getContext())) {
             mIcon = R.drawable.stat_airplane_on;
             mState = STATE_ENABLED;
         } else {
@@ -32,7 +32,8 @@ public class AirplaneButton extends PowerButton {
     }
 
     @Override
-    protected void toggleState(Context context) {
+    protected void toggleState() {
+        Context context = mView.getContext();
         boolean state = getState(context);
         Settings.System.putInt(context.getContentResolver(),
             Settings.System.AIRPLANE_MODE_ON, state ? 0 : 1);
@@ -44,11 +45,11 @@ public class AirplaneButton extends PowerButton {
     }
 
     @Override
-    protected boolean handleLongClick(Context context) {
+    protected boolean handleLongClick() {
         Intent intent = new Intent("android.settings.AIRPLANE_MODE_SETTINGS");
         intent.addCategory(Intent.CATEGORY_DEFAULT);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.startActivity(intent);
+        mView.getContext().startActivity(intent);
         return true;
     }
 
@@ -57,7 +58,7 @@ public class AirplaneButton extends PowerButton {
         return OBSERVED_URIS;
     }
 
-    private boolean getState(Context context) {
+    private static boolean getState(Context context) {
         return Settings.System.getInt(context.getContentResolver(),
                  Settings.System.AIRPLANE_MODE_ON,0) == 1;
     }

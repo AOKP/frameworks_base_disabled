@@ -54,8 +54,12 @@ LOCAL_SRC_FILES:= \
 	Region.cpp
 
 ifeq ($(BOARD_OVERLAY_BASED_CAMERA_HAL),true)
-        LOCAL_CFLAGS += -DUSE_OVERLAY_CPP
-        LOCAL_SRC_FILES += Overlay.cpp
+    # to clean, tegra hack
+    LOCAL_CFLAGS += -DUSE_OVERLAY_CPP
+endif
+
+ifneq ($(BOARD_WITHOUT_PIXEL_FORMAT_YV12),)
+    LOCAL_CFLAGS += -DMISSING_EGL_PIXEL_FORMAT_YV12
 endif
 
 ifneq ($(BOARD_CUSTOM_OMX_16BPP_YUV),)

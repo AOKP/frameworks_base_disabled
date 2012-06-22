@@ -23,7 +23,7 @@
 #include <binder/MemoryHeapBase.h>
 #include <cutils/ashmem.h>
 
-#include <ui/Overlay.h>
+#include <camera/Overlay.h>
 
 namespace android {
 

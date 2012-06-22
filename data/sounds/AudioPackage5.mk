@@ -57,6 +57,7 @@ PRODUCT_COPY_FILES += \
 	$(LOCAL_PATH)/ringtones/Machina.ogg:system/media/audio/ringtones/Machina.ogg \
 	$(LOCAL_PATH)/ringtones/Orion.ogg:system/media/audio/ringtones/Orion.ogg \
 	$(LOCAL_PATH)/ringtones/Pegasus.ogg:system/media/audio/ringtones/Pegasus.ogg \
+	$(LOCAL_PATH)/ringtones/ProTekk.ogg:system/media/audio/ringtones/ProTekk.ogg \
 	$(LOCAL_PATH)/ringtones/Pyxis.ogg:system/media/audio/ringtones/Pyxis.ogg \
 	$(LOCAL_PATH)/ringtones/Rigel.ogg:system/media/audio/ringtones/Rigel.ogg \
 	$(LOCAL_PATH)/ringtones/Scarabaeus.ogg:system/media/audio/ringtones/Scarabaeus.ogg \

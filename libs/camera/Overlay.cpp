@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#define LOG_NDEBUG 0
+//#define LOG_NDEBUG 0
 #define LOG_TAG "Overlay"
 
 #include <binder/IMemory.h>
@@ -233,9 +233,6 @@ void* Overlay::getBufferAddress(overlay_buffer_t buffer)
     if (index >= NUM_BUFFERS) {
         index = index % NUM_BUFFERS;
     }
-
-    //LOGD("%s: fd=%d, length=%d. offset=%d, ptr=%p", __FUNCTION__, mBuffers[index].fd,
-    //        mBuffers[index].length, mBuffers[index].offset, mBuffers[index].ptr);
 
     return &mBuffers[index];
 }

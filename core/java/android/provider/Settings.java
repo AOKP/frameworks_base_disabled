@@ -3061,6 +3061,7 @@ public final class Settings {
 
         /**
          * Widgets to show, should be separated by |
+         * @hide
          */
         public static final String NAVIGATION_BAR_WIDGETS = "navigation_bar_widgets";
 

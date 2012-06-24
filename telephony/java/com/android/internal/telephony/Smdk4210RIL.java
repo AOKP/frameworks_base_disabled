@@ -90,7 +90,7 @@ public class Smdk4210RIL extends RIL implements CommandsInterface {
          */
     }
 
-    private boolean NeedReconnect(int networkType)
+    private boolean NeedReconnect()
     {
         ConnectivityManager cm =
             (ConnectivityManager)mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -108,7 +108,7 @@ public class Smdk4210RIL extends RIL implements CommandsInterface {
         HandlerThread handlerThread;
         Looper looper;
 
-        if(NeedReconnect(networkType))
+        if(NeedReconnect())
         {
             if (mSmdk4210Handler == null) {
 
@@ -645,5 +645,5 @@ public class Smdk4210RIL extends RIL implements CommandsInterface {
 
         return response;
     }
-
 }
+>>>>>>> 90d35f4... Smdk4210Ril: fix bad file format

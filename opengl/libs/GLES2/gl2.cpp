@@ -131,53 +131,20 @@ extern "C" void __glEGLImageTargetTexture2DOES(GLenum target, GLeglImageOES imag
 extern "C" void __glEGLImageTargetRenderbufferStorageOES(GLenum target, GLeglImageOES image);
 
 #ifdef HOOK_MISSING_EGL_EXTERNAL_IMAGE
-/*
-const GLubyte* glGetString(GLenum name)
-{
-    if (name == GL_EXTENSIONS) {
-        char *exts = (char *)__glGetString(GL_EXTENSIONS);
-        char *extensions;
-        extensions = new char[850];
-        strcpy(extensions, exts);
-        strcat(extensions, "GL_OES_EGL_image_external ");
-        //LOGD("glGetString(GL_EXTENSIONS): GL_OES_EGL_image_external added");
-        return (GLubyte*)extensions;
-    }
-    return __glGetString(name);
-}
-*/
-
 void glShaderSource(GLuint shader, GLsizei count, const GLchar** string, const GLint* length)
 {
     bool needRewrite = false;
-
-    LOGD("Shader source dump:");
     for (GLsizei i = 0; i < count; i++) {
-        //LOGD("%s", string[i]);
         if (strstr(string[i], "GL_OES_EGL_image_external")) {
             needRewrite = true;
             break;
         }
     }
 
-/* TODO
-The following code (made to replace "samplerExternalOES" with "sampler2D")
-is currently very dumb:
-- it assumes that "#extension GL_OES_EGL_image_external : require"
-  is present and appears before the first newline in the shader source
-  (the first line is then replaced with an empty one)
-- it assumes only one appearence of "samplerExternalOES" in the shader code
-  (and replaces this first appearence with "sampler2D")
-
-Despite the mentioned limitations, it seems to capture
-all real cases encountered so far.
-*/
-
     if (!needRewrite) {
         __glShaderSource(shader, count, string, length);
         return;
     }
-
     //LOGD("Shader source rewrite:");
 
     GLchar **newStrings = new GLchar*[count];
@@ -189,7 +156,7 @@ all real cases encountered so far.
         if (!start) {
             start = string[i];
         } else {
-            start++; /* skip '\n' */
+            start++;
         }
 
         /* Substring replacement of 'samplerExternalOES'
@@ -205,7 +172,6 @@ all real cases encountered so far.
         } else {
             strcpy(newStrings[i], start);
         }
-        LOGD("%s", newStrings[i]);
     }
 
     __glShaderSource(shader, count, const_cast<const GLchar **>(newStrings), length);

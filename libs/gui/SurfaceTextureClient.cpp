@@ -213,8 +213,7 @@ int SurfaceTextureClient::getSlotFromBufferLocked(
         // a buffer.
 #ifdef OMAP_ENHANCEMENT
         // OMAP graphic buffers are interlaced, proceed to the next buffer.
-        if (mSlots[i] == NULL)
-            i++;
+        if (mSlots[i] == NULL) i++;
 #endif
         if (mSlots[i] == NULL) {
             if (!dumpedState) {

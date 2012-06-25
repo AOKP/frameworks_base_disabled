@@ -123,8 +123,8 @@ public class DockBatteryController extends LinearLayout {
                 mDockStatus = intent.getIntExtra(
                     BatteryManager.EXTRA_DOCK_STATUS, 0) != BatteryManager.DOCK_STATE_UNDOCKED;
 
-                if (action.equals(Intent.ACTION_BATTERY_CHANGED) ||
-                    (action.equals(Intent.ACTION_DOCK_EVENT) && mDockStatus)) {
+                if (action.equals(Intent.ACTION_BATTERY_CHANGED))
+                {
 
                     mLevel = intent.getIntExtra(
                             BatteryManager.EXTRA_DOCK_LEVEL, 0);
@@ -295,7 +295,6 @@ public class DockBatteryController extends LinearLayout {
             mBatteryTextOnly.setVisibility(View.GONE);
             setVisibility(View.GONE);
         }
-
 
         setBatteryIcon(mLevel, mPlugged, mDockStatus);
 

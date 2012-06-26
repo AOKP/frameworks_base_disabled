@@ -828,19 +828,19 @@ public class Process {
     };
 
     /**
-     * Returns true if the process can be found and is not a zombie
+     * Returns true if the process is not found or is a zombie
      * @param pid the process id
      * @hide
      */
-    public static final boolean isAlive(int pid) {
-        boolean ret = false;
+    public static final boolean isZombie(int pid) {
+        boolean ret = true;
         String[] processStateString = new String[1];
         if (Process.readProcFile("/proc/" + pid + "/stat",
                 PROCESS_STATE_FORMAT, processStateString, null, null)) {
-            ret = true;
+            ret = false;
             // Log.i(LOG_TAG,"State of process " + pid + " is " + processStateString[0]);
             if (processStateString[0].equals("Z")) {
-                ret = false;
+                ret = true;
             }
         }
         return ret;

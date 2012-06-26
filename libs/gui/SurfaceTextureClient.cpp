@@ -74,6 +74,22 @@ void SurfaceTextureClient::init() {
     mDefaultHeight = 0;
     mTransformHint = 0;
     mConnectedToCpu = false;
+#ifdef OMAP_ENHANCEMENT
+    char value[PROPERTY_VALUE_MAX];
+    property_get("surfaceflingerclient.numbuffers", value, "2");
+    int numBuffers = atoi(value);
+    // clamp to valid range
+    if (numBuffers < SurfaceTexture::MIN_SURFACEFLINGERCLIENT_BUFFERS) {
+        numBuffers = SurfaceTexture::MIN_SURFACEFLINGERCLIENT_BUFFERS;
+    } else if (numBuffers > SurfaceTexture::MAX_SURFACEFLINGERCLIENT_BUFFERS) {
+        numBuffers = SurfaceTexture::MAX_SURFACEFLINGERCLIENT_BUFFERS;
+    }
+    // initialize vector
+    // we only need to maintain (numbuffers -1) dirty region history
+    for (int i = 0; i < (numBuffers - 1); i++) {
+        mOldDirtyRegionHistory.push_back(Region());
+    }
+#endif
 }
 
 void SurfaceTextureClient::setISurfaceTexture(

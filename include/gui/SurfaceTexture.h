@@ -48,6 +48,13 @@ public:
     enum { NUM_BUFFER_SLOTS = 32 };
     enum { NO_CONNECTED_API = 0 };
 
+#ifdef OMAP_ENHANCEMENT
+    enum {
+        MIN_SURFACEFLINGERCLIENT_BUFFERS = 2,
+        MAX_SURFACEFLINGERCLIENT_BUFFERS
+    };
+#endif
+
     struct FrameAvailableListener : public virtual RefBase {
         // onFrameAvailable() is called from queueBuffer() each time an
         // additional frame becomes available for consumption. This means that
@@ -175,6 +182,12 @@ public:
     // other semantics (zero point, etc) are source-dependent and should be
     // documented by the source.
     int64_t getTimestamp();
+
+#ifdef OMAP_ENHANCEMENT
+    // getMetadata retrieves the metadata information for the texture from
+    // the current slot
+    String8 getMetadata();
+#endif
 
     // setFrameAvailableListener sets the listener object that will be notified
     // when a new frame becomes available.
@@ -331,6 +344,12 @@ private:
             // circumstances. See the note about the current buffer in the
             // documentation for DEQUEUED.
             QUEUED = 2,
+
+#ifdef OMAP_ENHANCEMENT
+            // TAKEN indicates that the buffer has been taken by the
+            // application.
+            TAKEN = 3,
+#endif
         };
 
         // mBufferState is the current state of this buffer slot.
@@ -367,6 +386,16 @@ private:
         // to EGL_NO_SYNC_KHR when the buffer is created and (optionally, based
         // on a compile-time option) set to a new sync object in updateTexImage.
         EGLSyncKHR mFence;
+
+#ifdef OMAP_ENHANCEMENT
+        // mLayout is the current layout of the buffer for this buffer slot. This gets
+        // set to mNextLayout each time queueBuffer gets called for this buffer.
+        uint32_t mLayout;
+
+        // mMetadata is a flattened string pertaining to some metadata for this
+        // slot. Content of metadata may be different dependeing on usecase
+        String8 mMetadata;
+#endif
     };
 
     // mSlots is the array of buffer slots that must be mirrored on the client
@@ -531,6 +560,19 @@ private:
      BufferInfo mNextBufferInfo;
 #endif
 
+#ifdef OMAP_ENHANCEMENT
+    // current and next layout for the buffers
+    uint32_t mCurrentLayout;
+    uint32_t mNextLayout;
+
+    // mMinBufferSlots is the mininum number of buffers/slots that SurfaceTexture needs
+    // to have.
+    int mMinBufferSlots;
+
+    // mMinUndequeued is the minimum number of buffers that needs to be owned by
+    // SurfaceTexture
+    int mMinUndequeued;
+#endif
 };
 
 // ----------------------------------------------------------------------------

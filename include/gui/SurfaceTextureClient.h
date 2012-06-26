@@ -154,6 +154,12 @@ private:
     // window. this is only a hint, actual transform may differ.
     uint32_t mTransformHint;
 
+#ifdef OMAP_ENHANCEMENT
+    // mMetadata is a flattened string that contains some metadata for the
+    // current texture
+    String8 mMetadata;
+#endif
+
     // mMutex is the mutex used to prevent concurrent access to the member
     // variables of SurfaceTexture objects. It must be locked whenever the
     // member variables are accessed.
@@ -177,6 +183,14 @@ private:
     // GRALLOC_USAGE_EXTERNAL_BLOCK
     // It is initialized to 0
     uint32_t mReqExtUsage;
+#ifdef OMAP_ENHANCEMENT
+    mutable Vector<Region>      mOldDirtyRegionHistory;
+#endif
+
+#ifdef OMAP_ENHANCEMENT
+    // mCurrentBuffer contains the current buffer from SurfaceTexture
+    // used in updateAndGetCurrent
+    sp<GraphicBuffer> mCurrentBuffer;
 #endif
 };
 

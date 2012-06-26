@@ -114,12 +114,21 @@ public:
         return result;
     }
 
+#ifdef OMAP_ENHANCEMENT
+    virtual status_t queueBuffer(int buf, int64_t timestamp,
+            uint32_t* outWidth, uint32_t* outHeight, uint32_t* outTransform,
+            const String8& metadata)
+#else
     virtual status_t queueBuffer(int buf, int64_t timestamp,
             uint32_t* outWidth, uint32_t* outHeight, uint32_t* outTransform) {
+#endif
         Parcel data, reply;
         data.writeInterfaceToken(ISurfaceTexture::getInterfaceDescriptor());
         data.writeInt32(buf);
         data.writeInt64(timestamp);
+#ifdef OMAP_ENHANCEMENT
+        data.writeString8(metadata);
+#endif
         status_t result = remote()->transact(QUEUE_BUFFER, data, &reply);
         if (result != NO_ERROR) {
             return result;
@@ -318,9 +327,18 @@ status_t BnSurfaceTexture::onTransact(
             CHECK_INTERFACE(ISurfaceTexture, data, reply);
             int buf = data.readInt32();
             int64_t timestamp = data.readInt64();
+#ifdef OMAP_ENHANCEMENT
+            String8 metadata = data.readString8();
+#endif
             uint32_t outWidth, outHeight, outTransform;
+#ifdef OMAP_ENHANCEMENT
+            status_t result = queueBuffer(buf, timestamp,
+                    &outWidth, &outHeight, &outTransform,
+                    metadata);
+#else
             status_t result = queueBuffer(buf, timestamp,
                     &outWidth, &outHeight, &outTransform);
+#endif
             reply->writeInt32(outWidth);
             reply->writeInt32(outHeight);
             reply->writeInt32(outTransform);

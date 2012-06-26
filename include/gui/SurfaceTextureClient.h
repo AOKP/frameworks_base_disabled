@@ -74,6 +74,11 @@ private:
 #ifdef QCOM_HARDWARE
     int dispatchPerformQcomOperation(int operation, va_list args);
 #endif
+#ifdef OMAP_ENHANCEMENT
+    int dispatchSetBuffersLayout(va_list args);
+    int dispatchUpdateAndGetCurrent(va_list args);
+    int dispatchSetBuffersMetadata(va_list args);
+#endif
 
 protected:
     virtual int cancelBuffer(ANativeWindowBuffer* buffer);
@@ -98,6 +103,11 @@ protected:
     virtual int unlockAndPost();
 #ifdef QCOM_HARDWARE
     virtual int performQcomOperation(int operation, int arg1, int arg2, int arg3);
+#endif
+#ifdef OMAP_ENHANCEMENT
+    virtual int setBuffersMetadata(const char *metadata);
+    virtual int setBuffersLayout(uint32_t layout);
+    virtual int updateAndGetCurrent(ANativeWindowBuffer** buffer);
 #endif
 
     enum { MIN_UNDEQUEUED_BUFFERS = SurfaceTexture::MIN_UNDEQUEUED_BUFFERS };

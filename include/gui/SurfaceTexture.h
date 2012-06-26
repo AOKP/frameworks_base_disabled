@@ -104,8 +104,14 @@ public:
     // nanoseconds, and must be monotonically increasing. Its other semantics
     // (zero point, etc) are client-dependent and should be documented by the
     // client.
+#ifdef OMAP_ENHANCEMENT
+    virtual status_t queueBuffer(int buf, int64_t timestamp,
+            uint32_t* outWidth, uint32_t* outHeight, uint32_t* outTransform,
+            const String8& metadata);
+#else
     virtual status_t queueBuffer(int buf, int64_t timestamp,
             uint32_t* outWidth, uint32_t* outHeight, uint32_t* outTransform);
+#endif
     virtual void cancelBuffer(int buf);
     virtual status_t setCrop(const Rect& reg);
     virtual status_t setTransform(uint32_t transform);

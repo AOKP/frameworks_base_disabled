@@ -115,6 +115,9 @@ private:
     Rect mCurrentCrop;
     uint32_t mCurrentTransform;
     uint32_t mCurrentScalingMode;
+#ifdef OMAP_ENHANCEMENT
+    uint32_t mCurrentLayout;
+#endif
     bool mCurrentOpacity;
 
     // constants

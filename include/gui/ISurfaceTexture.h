@@ -82,8 +82,14 @@ protected:
     // outWidth, outHeight and outTransform are filled with the default width
     // and height of the window and current transform applied to buffers,
     // respectively.
+#ifdef OMAP_ENHANCEMENT
+    virtual status_t queueBuffer(int slot, int64_t timestamp,
+            uint32_t* outWidth, uint32_t* outHeight, uint32_t* outTransform,
+            const String8& metadata) = 0;
+#else
     virtual status_t queueBuffer(int slot, int64_t timestamp,
             uint32_t* outWidth, uint32_t* outHeight, uint32_t* outTransform) = 0;
+#endif
 
     // cancelBuffer indicates that the client does not wish to fill in the
     // buffer associated with slot and transfers ownership of the slot back to

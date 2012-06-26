@@ -255,8 +255,14 @@ int SurfaceTextureClient::queueBuffer(android_native_buffer_t* buffer) {
     if (i < 0) {
         return i;
     }
+#ifdef OMAP_ENHANCEMENT
+    status_t err = mSurfaceTexture->queueBuffer(i, timestamp,
+            &mDefaultWidth, &mDefaultHeight, &mTransformHint,
+            mMetadata);
+#else
     status_t err = mSurfaceTexture->queueBuffer(i, timestamp,
             &mDefaultWidth, &mDefaultHeight, &mTransformHint);
+#endif
     if (err != OK)  {
         ALOGE("queueBuffer: error queuing buffer to SurfaceTexture, %d", err);
     }
@@ -334,6 +340,11 @@ int SurfaceTextureClient::perform(int operation, va_list args)
     case NATIVE_WINDOW_SET_BUFFERS_TIMESTAMP:
         res = dispatchSetBuffersTimestamp(args);
         break;
+#ifdef OMAP_ENHANCEMENT
+    case NATIVE_WINDOW_SET_BUFFERS_METADATA:
+        res = dispatchSetBuffersMetadata(args);
+        break;
+#endif
     case NATIVE_WINDOW_SET_BUFFERS_DIMENSIONS:
         res = dispatchSetBuffersDimensions(args);
         break;
@@ -470,6 +481,13 @@ int SurfaceTextureClient::dispatchSetBuffersTimestamp(va_list args) {
     int64_t timestamp = va_arg(args, int64_t);
     return setBuffersTimestamp(timestamp);
 }
+
+#ifdef OMAP_ENHANCEMENT
+int SurfaceTextureClient::dispatchSetBuffersMetadata(va_list args) {
+    const char* metadata = va_arg(args, const char*);
+    return setBuffersMetadata(metadata);
+}
+#endif
 
 int SurfaceTextureClient::dispatchLock(va_list args) {
     ANativeWindow_Buffer* outBuffer = va_arg(args, ANativeWindow_Buffer*);
@@ -669,6 +687,15 @@ int SurfaceTextureClient::updateAndGetCurrent(android_native_buffer_t** buffer)
     *buffer = mCurrentBuffer.get();
     return err;
 }
+
+int SurfaceTextureClient::setBuffersMetadata(const char* metadata)
+{
+    LOGV("SurfaceTextureClient::setBuffersMetadata");
+    Mutex::Autolock lock(mMutex);
+    mMetadata = String8(metadata);
+    return NO_ERROR;
+}
+
 #endif
 
 void SurfaceTextureClient::freeAllBuffers() {

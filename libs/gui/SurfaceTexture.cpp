@@ -698,6 +698,10 @@ status_t SurfaceTexture::queueBuffer(int buf, int64_t timestamp,
         mSlots[buf].mTimestamp = timestamp;
         mFrameCounter++;
         mSlots[buf].mFrameNumber = mFrameCounter;
+#ifdef OMAP_ENHANCEMENT
+        mSlots[buf].mMetadata = metadata;
+        mSlots[buf].mLayout = mNextLayout;
+#endif
 
 #ifdef QCOM_HARDWARE
         // Update the buffer Geometry if required
@@ -1137,6 +1141,17 @@ nsecs_t SurfaceTexture::getTimestamp() {
     Mutex::Autolock lock(mMutex);
     return mCurrentTimestamp;
 }
+
+#ifdef OMAP_ENHANCEMENT
+String8 SurfaceTexture::getMetadata() {
+    ST_LOGV("getMetadata");
+    Mutex::Autolock lock(mMutex);
+    if (mCurrentTexture !=INVALID_BUFFER_SLOT) {
+        return mSlots[mCurrentTexture].mMetadata;
+    }
+    return String8();
+}
+#endif
 
 void SurfaceTexture::setFrameAvailableListener(
         const sp<FrameAvailableListener>& listener) {

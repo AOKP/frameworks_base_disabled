@@ -141,6 +141,14 @@ protected:
                                           int arg3) = 0;
 #endif
 
+#ifdef OMAP_ENHANCEMENT
+    //method to set the buffer layout
+    virtual status_t setLayout(uint32_t layout) = 0;
+
+    // updateAndGetCurrent updates to the current image and gives the ownership
+    // of the buffer to the client
+    virtual status_t updateAndGetCurrent(sp<GraphicBuffer>* buf) = 0;
+#endif
 };
 
 // ----------------------------------------------------------------------------

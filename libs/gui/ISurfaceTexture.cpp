@@ -117,7 +117,7 @@ public:
 #ifdef OMAP_ENHANCEMENT
     virtual status_t queueBuffer(int buf, int64_t timestamp,
             uint32_t* outWidth, uint32_t* outHeight, uint32_t* outTransform,
-            const String8& metadata)
+            const String8& metadata) {
 #else
     virtual status_t queueBuffer(int buf, int64_t timestamp,
             uint32_t* outWidth, uint32_t* outHeight, uint32_t* outTransform) {

@@ -17,6 +17,7 @@
 package android.graphics;
 
 import java.lang.ref.WeakReference;
+import android.opengl.GLES11Ext;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -109,6 +110,23 @@ public class SurfaceTexture {
      * @hide
      */
     public SurfaceTexture(int texName, boolean allowSynchronousMode) {
+        this(texName, allowSynchronousMode, GLES11Ext.GL_TEXTURE_EXTERNAL_OES);
+    }
+
+    /**
+     * Construct a new SurfaceTexture to stream images to a given OpenGL texture.
+     *
+     * @param texName the OpenGL texture object name (e.g. generated via glGenTextures)
+     * @param allowSynchronousMode whether the SurfaceTexture can run in the synchronous mode.
+     *      When the image stream comes from OpenGL, SurfaceTexture may run in the synchronous
+     *      mode where the producer side may be blocked to avoid skipping frames. To avoid the
+     *      thread block, set allowSynchronousMode to false.
+     * @param texTarget GL texture target with which the GL texture object is associated. Can
+     *      be set to EGL_NONE if user does not want SurfaceTexture to be backed by GL texture
+     *
+     * @hide
+     */
+    public SurfaceTexture(int texName, boolean allowSynchronousMode, int texTarget) {
         Looper looper;
         if ((looper = Looper.myLooper()) != null) {
             mEventHandler = new EventHandler(looper);
@@ -117,7 +135,7 @@ public class SurfaceTexture {
         } else {
             mEventHandler = null;
         }
-        nativeInit(texName, new WeakReference<SurfaceTexture>(this), allowSynchronousMode);
+        nativeInit(texName, new WeakReference<SurfaceTexture>(this), allowSynchronousMode, texTarget);
     }
 
     /**
@@ -275,7 +293,8 @@ public class SurfaceTexture {
         }
     }
 
-    private native void nativeInit(int texName, Object weakSelf, boolean allowSynchronousMode);
+    private native void nativeInit(int texName, Object weakSelf, boolean allowSynchronousMode,
+                                   int texTarget);
     private native void nativeFinalize();
     private native void nativeGetTransformMatrix(float[] mtx);
     private native long nativeGetTimestamp();

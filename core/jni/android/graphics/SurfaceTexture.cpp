@@ -176,9 +176,13 @@ static void SurfaceTexture_classInit(JNIEnv* env, jclass clazz)
 }
 
 static void SurfaceTexture_init(JNIEnv* env, jobject thiz, jint texName,
-        jobject weakThiz, jboolean allowSynchronous)
+        jobject weakThiz, jboolean allowSynchronous, jint texTarget)
 {
+#ifdef OMAP_ENHANCEMENT
+    sp<SurfaceTexture> surfaceTexture(new SurfaceTexture(texName, allowSynchronous, texTarget));
+#else
     sp<SurfaceTexture> surfaceTexture(new SurfaceTexture(texName, allowSynchronous));
+#endif
     if (surfaceTexture == 0) {
         jniThrowException(env, OutOfResourcesException,
                 "Unable to create native SurfaceTexture");
@@ -254,7 +258,11 @@ static jstring SurfaceTexture_getMetadata(JNIEnv *env, jobject thiz)
 
 static JNINativeMethod gSurfaceTextureMethods[] = {
     {"nativeClassInit",          "()V",   (void*)SurfaceTexture_classInit },
-    {"nativeInit",               "(ILjava/lang/Object;Z)V", (void*)SurfaceTexture_init },
+#ifndef OMAP_ENHANCEMENT
+#warning Using OMAP_ENHANCEMENT version of nativeInit to avoid ABI mismatch. \
+         Original:(ILjava/lang/Object;Z) New:(ILjava/lang/Object;ZI)
+#endif
+    {"nativeInit",               "(ILjava/lang/Object;ZI)V", (void*)SurfaceTexture_init },
     {"nativeFinalize",           "()V",   (void*)SurfaceTexture_finalize },
     {"nativeSetDefaultBufferSize", "(II)V", (void*)SurfaceTexture_setDefaultBufferSize },
     {"nativeUpdateTexImage",     "()I",   (void*)SurfaceTexture_updateTexImage },

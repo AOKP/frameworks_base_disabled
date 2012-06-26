@@ -5717,7 +5717,7 @@ public final class BatteryStatsImpl extends BatteryStats {
                     mNetworkSummaryCache = mNetworkStatsFactory.readNetworkStatsSummary();
                 } catch (IllegalStateException e) {
                     // log problem and return empty object
-                    Log.wtf(TAG, "problem reading network stats", e);
+                    Log.e(TAG, "problem reading network stats", e);
                     mNetworkSummaryCache = new NetworkStats(SystemClock.elapsedRealtime(), 0);
                 }
             }

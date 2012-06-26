@@ -262,7 +262,7 @@ public:
     //
     // This call may only be made while the OpenGL ES context to which the
     // target texture belongs is bound to the calling thread.
-    status_t __updateTexImage(bool lock = true);
+    status_t __updateTexImage(sp<GraphicBuffer>* buf = NULL);
 
     // takeCurrentBuffer returns the buffer associated with the current image.
     // The buffer will not be reused until releaseBuffer() is called

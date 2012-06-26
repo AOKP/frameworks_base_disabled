@@ -281,6 +281,10 @@ status_t LiveSession::fetchFile(const char *url, sp<ABuffer> *out) {
                 buffer->size(), buffer->data() + buffer->size(),
                 bufferRemaining);
 
+        if (n == -EAGAIN) {
+            continue;
+        }
+
         if (n < 0) {
             return n;
         }

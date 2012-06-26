@@ -22,6 +22,10 @@
 #include <utils/Vector.h>
 #include <utils/Timers.h>
 
+#ifdef OMAP_ENHANCEMENT
+#include <utils/String8.h>
+#endif
+
 #include <binder/Parcel.h>
 #include <binder/IInterface.h>
 
@@ -43,8 +47,14 @@ enum {
     CONNECT,
     DISCONNECT,
     SET_SCALING_MODE,
+<<<<<<< HEAD
 #ifdef QCOM_HARDWARE
     PERFORM_QCOM_OPERATION,
+=======
+#ifdef OMAP_ENHANCEMENT
+    SET_LAYOUT,
+    UPDATE_AND_GET_CURRENT,
+>>>>>>> 3e8f70e... add updateAndGetCurrent() and layout OMAP support
 #endif
 };
 
@@ -233,10 +243,36 @@ public:
         if (result != NO_ERROR) {
             return result;
         }
+#endif
+#ifdef OMAP_ENHANCEMENT
+    virtual status_t setLayout(uint32_t layout) {
+        Parcel data, reply;
+        data.writeInterfaceToken(ISurfaceTexture::getInterfaceDescriptor());
+        data.writeInt32((int32_t)layout);
+        status_t result = remote()->transact(SET_LAYOUT, data, &reply);
+        if (result != NO_ERROR) {
+            return result;
+        }
         result = reply.readInt32();
         return result;
     }
 #endif
+
+    virtual status_t updateAndGetCurrent(sp<GraphicBuffer>* buf) {
+        Parcel data, reply;
+        data.writeInterfaceToken(ISurfaceTexture::getInterfaceDescriptor());
+        status_t result =remote()->transact(UPDATE_AND_GET_CURRENT, data, &reply);
+        if (result != NO_ERROR) {
+            return result;
+        }
+        bool nonNull = reply.readInt32();
+        if (nonNull) {
+            *buf = new GraphicBuffer();
+            reply.read(**buf);
+        }
+        result = reply.readInt32();
+        return result;
+    }
 };
 
 IMPLEMENT_META_INTERFACE(SurfaceTexture, "android.gui.SurfaceTexture");
@@ -366,6 +402,28 @@ status_t BnSurfaceTexture::onTransact(
             int arg3 = data.readInt32();
             status_t res = performQcomOperation(operation, arg1, arg2, arg3);
             reply->writeInt32(res);
+            return NO_ERROR;
+        } break;
+#endif
+
+#ifdef OMAP_ENHANCEMENT
+        case SET_LAYOUT: {
+            uint32_t layout;
+            CHECK_INTERFACE(ISurfaceTexture, data, reply);
+            layout = (uint32_t)data.readInt32();
+            status_t result = setLayout(layout);
+            reply->writeInt32(result);
+            return NO_ERROR;
+        } break;
+        case UPDATE_AND_GET_CURRENT: {
+            CHECK_INTERFACE(ISurfaceTexture, data, reply);
+            sp<GraphicBuffer> buffer;
+            int result = updateAndGetCurrent(&buffer);
+            reply->writeInt32(buffer != 0);
+            if (buffer != 0) {
+                reply->write(*buffer);
+            }
+            reply->writeInt32(result);
             return NO_ERROR;
         } break;
 #endif

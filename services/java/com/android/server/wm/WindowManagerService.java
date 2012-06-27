@@ -5977,7 +5977,8 @@ public class WindowManagerService extends IWindowManager.Stub
             unrotDw = dw;
             unrotDh = dh;
         }
-        int sw = reduceConfigWidthSize(unrotDw, Surface.ROTATION_0, density, unrotDw, unrotDh);
+	int sw = (int)(unrotDw/density);
+        sw = reduceConfigWidthSize(sw, Surface.ROTATION_0, density, unrotDw, unrotDh);
         sw = reduceConfigWidthSize(sw, Surface.ROTATION_90, density, unrotDh, unrotDw);
         sw = reduceConfigWidthSize(sw, Surface.ROTATION_180, density, unrotDw, unrotDh);
         sw = reduceConfigWidthSize(sw, Surface.ROTATION_270, density, unrotDh, unrotDw);

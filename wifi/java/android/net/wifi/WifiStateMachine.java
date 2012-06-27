@@ -2686,9 +2686,18 @@ public class WifiStateMachine extends StateMachine {
                 case WifiMonitor.SUPPLICANT_STATE_CHANGE_EVENT:
                     SupplicantState state = handleSupplicantStateChange(message);
                     if (state == SupplicantState.INTERFACE_DISABLED) {
+                        if (DBG) log("Received INTERFACE_DISABLED message");
                         transitionTo(mDriverStoppedState);
                     }
                     break;
+
+                case CMD_ENABLE_ALL_NETWORKS:
+                    loge("ENABLE_ALL_NETWORKS command received in stopping state, restarting wifi");
+                    // send DRIVER_HUNG_EVENT to mDefaultState to disable/enable the wifi...
+                    transitionTo(mDefaultState);
+                    sendMessage(WifiMonitor.DRIVER_HUNG_EVENT);
+                    return HANDLED;
+
                     /* Queue driver commands */
                 case CMD_START_DRIVER:
                 case CMD_STOP_DRIVER:

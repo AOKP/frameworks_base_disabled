@@ -82,8 +82,20 @@ status_t SurfaceTextureLayer::queueBuffer(int buf, int64_t timestamp,
             outWidth, outHeight, outTransform, metadata);
 #else
 
+#ifdef OMAP_ENHANCEMENT
+status_t SurfaceTextureLayer::queueBuffer(int buf, int64_t timestamp,
+        uint32_t* outWidth, uint32_t* outHeight, uint32_t* outTransform,
+        const String8& metadata) {
+
+   status_t res = SurfaceTexture::queueBuffer(buf, timestamp,
+            outWidth, outHeight, outTransform, metadata);
+#else
+
 status_t SurfaceTextureLayer::queueBuffer(int buf, int64_t timestamp,
         uint32_t* outWidth, uint32_t* outHeight, uint32_t* outTransform) {
+
+    status_t res = SurfaceTexture::queueBuffer(buf, timestamp,
+            outWidth, outHeight, outTransform);
 #endif
     sp<Layer> layer(mLayer.promote());
     if (layer != NULL) {

@@ -1657,4 +1657,11 @@ public interface CommandsInterface {
     public void setOnUnsolOemHookRaw(Handler handler, int i, Object obj);
     public void unSetOnUnsolOemHookRaw(Handler h);
 
+    /**
+     * @hide
+     * samsung stk service implementation - set up registrant for sending
+     * sms send result from modem(RIL) to catService
+     */
+    void setOnCatSendSmsResult(Handler h, int what, Object obj);
+    void unSetOnCatSendSmsResult(Handler h);
 }

@@ -165,7 +165,7 @@ public class CDMAPhone extends PhoneBase {
         mSubInfo = new PhoneSubInfo(this);
         mEriManager = new EriManager(this, context, EriManager.ERI_FROM_XML);
         mCcatService = CatService.getInstance(mCM, mIccRecords, mContext,
-                mIccFileHandler, mIccCard);
+                mIccFileHandler, mIccCard, mRuimSmsInterfaceManager);
 
         mCM.registerForAvailable(this, EVENT_RADIO_AVAILABLE, null);
         mIccRecords.registerForRecordsEvents(this, EVENT_ICC_RECORD_EVENTS, null);

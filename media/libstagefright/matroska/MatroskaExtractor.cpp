@@ -379,6 +379,15 @@ status_t MatroskaSource::readBlock() {
         const mkvparser::Block::Frame &frame = block->GetFrame(i);
 
         MediaBuffer *mbuf = new MediaBuffer(frame.len);
+#ifdef OMAP_ENHANCEMENT
+        /*
+         * according the notes for specification such blocks are invalid,
+         * but some decoders make audio starting from negative values
+         */
+        if (mIsAudio) {
+            timeUs = timeUs < 0 ? 0 : timeUs;
+        }
+#endif
         mbuf->meta_data()->setInt64(kKeyTime, timeUs);
         mbuf->meta_data()->setInt32(kKeyIsSyncFrame, block->IsKey());
 

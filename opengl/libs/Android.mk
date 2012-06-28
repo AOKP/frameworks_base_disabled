@@ -19,15 +19,9 @@ LOCAL_SRC_FILES:= 	       \
 	EGL/getProcAddress.cpp.arm \
 	EGL/Loader.cpp 	       \
 
-<<<<<<< HEAD
 LOCAL_CFLAGS += $(FLTO_FLAG) -ffast-math
 LOCAL_SHARED_LIBRARIES += libcutils libutils libGLESv2_dbg
 LOCAL_LDLIBS := $(FLTO_FLAG) -lpthread -ldl
-=======
-LOCAL_CFLAGS += -flto -ffast-math
-LOCAL_SHARED_LIBRARIES += libcutils libutils libGLESv2_dbg
-LOCAL_LDLIBS := -flto -lpthread -ldl
->>>>>>> 07f64cc... opengl: Enable -flto and -ffast-math
 LOCAL_MODULE:= libEGL
 LOCAL_LDFLAGS += -Wl,--exclude-libs=ALL
 LOCAL_SHARED_LIBRARIES += libdl
@@ -101,13 +95,8 @@ include $(CLEAR_VARS)
 LOCAL_SRC_FILES := GLES_CM/gl.cpp.arm
 
 LOCAL_SHARED_LIBRARIES += libcutils libEGL
-<<<<<<< HEAD
 LOCAL_CFLAGS += $(FLTO_FLAG) -ffast-math
 LOCAL_LDLIBS := $(FLTO_FLAG) -lpthread -ldl
-=======
-LOCAL_CFLAGS += -flto -ffast-math
-LOCAL_LDLIBS := -flto -lpthread -ldl
->>>>>>> 07f64cc... opengl: Enable -flto and -ffast-math
 LOCAL_MODULE:= libGLESv1_CM
 
 LOCAL_SHARED_LIBRARIES += libdl
@@ -181,7 +170,6 @@ LOCAL_SRC_FILES := ETC1/etc1.cpp
 
 LOCAL_CFLAGS += $(FLTO_FLAG) -ffast-math
 LOCAL_LDLIBS := $(FLTO_FLAG) -lpthread -ldl
-
 LOCAL_MODULE:= libETC1
 
 include $(BUILD_SHARED_LIBRARY)

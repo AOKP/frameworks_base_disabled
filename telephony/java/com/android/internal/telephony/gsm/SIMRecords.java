@@ -1269,8 +1269,10 @@ public class SIMRecords extends IccRecords {
 
         recordsLoadedRegistrants.notifyRegistrants(
             new AsyncResult(null, null, null));
-        phone.mIccCard.broadcastIccStateChangedIntent(
-                SimCard.INTENT_VALUE_ICC_LOADED, null);
+        if (phone.mIccCard != null) {
+            phone.mIccCard.broadcastIccStateChangedIntent(
+                    SimCard.INTENT_VALUE_ICC_LOADED, null);
+        }
     }
 
     //***** Private methods
@@ -1298,6 +1300,12 @@ public class SIMRecords extends IccRecords {
                 SimCard.INTENT_VALUE_ICC_READY, null);
 
         fetchSimRecords();
+    }
+
+    /* FIXME HASH: Added for Motorola Code */
+    public void onSimReadyInCdmaMode() {
+        Log.v("GSM", "SIMRecords: fetch icc id in cdma");
+        phone.getIccFileHandler().loadEFTransparent(EF_ICCID, obtainMessage(EVENT_GET_ICCID_DONE));
     }
 
     protected void fetchSimRecords() {

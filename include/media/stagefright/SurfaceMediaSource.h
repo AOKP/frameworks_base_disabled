@@ -218,10 +218,6 @@ public:
 #ifdef OMAP_ENHANCEMENT
     // Just confirming to the ISurfaceTexture interface as of now
     virtual status_t setLayout(uint32_t layout) { return OK; }
-
-    // updateAndGetCurrent updates to the current image and gives the ownership
-    // of the buffer to the client
-    virtual status_t updateAndGetCurrent(sp<GraphicBuffer>* buf);
 #endif
 
 protected:

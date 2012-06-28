@@ -26,7 +26,6 @@
 #include <utils/threads.h>
 
 #include <surfaceflinger/ISurfaceComposer.h>
-#include <media/mediaplayer.h>
 
 #if defined(HAVE_PTHREADS)
 # include <pthread.h>
@@ -46,7 +45,7 @@ int main(int argc, char** argv)
 #endif
 
     char value[PROPERTY_VALUE_MAX];
-    property_get("persist.sf.nobootanimation", value, "0");
+    property_get("persist.sys.nobootanimation", value, "0");
     int noBootAnimation = atoi(value);
     ALOGI_IF(noBootAnimation,  "boot animation disabled");
     if (!noBootAnimation) {

@@ -61,7 +61,8 @@ public abstract class BaseCommands implements CommandsInterface {
     protected RegistrantList mIccStatusChangedRegistrants = new RegistrantList();
     protected RegistrantList mVoicePrivacyOnRegistrants = new RegistrantList();
     protected RegistrantList mVoicePrivacyOffRegistrants = new RegistrantList();
-    protected Registrant mUnsolOemHookRawRegistrant;
+    /* FIXME HASH: Changed to list for Motorola Code */
+    protected RegistrantList mUnsolOemHookRawRegistrants = new RegistrantList();
     protected RegistrantList mOtaProvisionRegistrants = new RegistrantList();
     protected RegistrantList mCallWaitingInfoRegistrants = new RegistrantList();
     protected RegistrantList mDisplayInfoRegistrants = new RegistrantList();
@@ -548,11 +549,14 @@ public abstract class BaseCommands implements CommandsInterface {
     }
 
     public void setOnUnsolOemHookRaw(Handler h, int what, Object obj) {
-        mUnsolOemHookRawRegistrant = new Registrant (h, what, obj);
+        /* FIXME HASH: Changed for Motorola Code */
+        Registrant registrant = new Registrant (h, what, obj);
+        mUnsolOemHookRawRegistrants.add(registrant);
     }
 
     public void unSetOnUnsolOemHookRaw(Handler h) {
-        mUnsolOemHookRawRegistrant.clear();
+        /* FIXME HASH: Changed for Motorola Code */
+        mUnsolOemHookRawRegistrants.remove(h);
     }
 
     public void unregisterForSignalInfo(Handler h) {

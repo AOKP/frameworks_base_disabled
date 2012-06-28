@@ -164,9 +164,15 @@ public abstract class IccFileHandler extends Handler implements IccConstants {
                         onLoaded));
 
         // TODO(): Verify when path changes are done.
+        /* FIXME: Hashcode -- Using Motorola Code */
+        phone.mCM.iccIO(COMMAND_READ_RECORD, IccConstants.EF_IMG, getEFPath(IccConstants.EF_IMG),
+                recordNum, READ_RECORD_MODE_ABSOLUTE,
+                GET_RESPONSE_EF_IMG_SIZE_BYTES, null, null, response);
+        /*
         phone.mCM.iccIO(COMMAND_GET_RESPONSE, IccConstants.EF_IMG, "img",
                 recordNum, READ_RECORD_MODE_ABSOLUTE,
                 GET_RESPONSE_EF_IMG_SIZE_BYTES, null, null, response);
+        */
     }
 
     /**
@@ -236,7 +242,13 @@ public abstract class IccFileHandler extends Handler implements IccConstants {
         Message response = obtainMessage(EVENT_READ_ICON_DONE, fileid, 0,
                 onLoaded);
 
-        phone.mCM.iccIO(COMMAND_READ_BINARY, fileid, "img", highOffset, lowOffset,
+        String s;
+        if(fileid >= 0x4f01 && fileid <= 0x4f05)
+            s = MF_SIM + DF_TELECOM + DF_GRAPHICS;
+        else
+            s = getEFPath(fileid);
+
+        phone.mCM.iccIO(COMMAND_READ_BINARY, fileid, s, highOffset, lowOffset,
                 length, null, null, response);
     }
 
@@ -522,6 +534,7 @@ public abstract class IccFileHandler extends Handler implements IccConstants {
         case EF_ADN:
         case EF_FDN:
         case EF_MSISDN:
+        case EF_SMSP:
         case EF_SDN:
         case EF_EXT1:
         case EF_EXT2:
@@ -533,6 +546,8 @@ public abstract class IccFileHandler extends Handler implements IccConstants {
             return MF_SIM;
         case EF_IMG:
             return MF_SIM + DF_TELECOM + DF_GRAPHICS;
+        case EF_PBR:
+            return MF_SIM + DF_TELECOM + DF_PHONEBOOK;
         }
         return null;
     }

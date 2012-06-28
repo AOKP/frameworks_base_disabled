@@ -17,6 +17,7 @@
 package com.android.internal.telephony.cdma;
 
 import com.android.internal.telephony.IccCard;
+import com.android.internal.telephony.Phone;
 
 /**
  * Note: this class shares common code with SimCard, consider a base class to minimize code
@@ -45,6 +46,24 @@ public final class RuimCard extends IccCard {
     @Override
     public String getServiceProviderName () {
         return mPhone.mIccRecords.getServiceProviderName();
+    }
+
+    protected String getServicePhoneName() {
+        String s;
+        if(mPhone != null)
+            s = mPhone.getPhoneName();
+        else
+            s = "CDMA";
+        return s;
+    }
+
+    public int getServicePhoneType() {
+        int i;
+        if(mPhone != null)
+            i = mPhone.getPhoneType();
+        else
+            i = Phone.PHONE_TYPE_CDMA;
+        return i;
     }
  }
 

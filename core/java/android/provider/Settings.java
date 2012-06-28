@@ -2018,6 +2018,12 @@ public final class Settings {
         public static final String NOTIFICATION_LIGHT_PULSE_CUSTOM_VALUES = "notification_light_pulse_custom_values";
 
         /**
+         * Sprint MWI Quirk: Show message wait indicator notifications
+         * @hide
+         */
+        public static final String ENABLE_MWI_NOTIFICATION = "enable_mwi_notification";
+
+        /**
          * Show pointer location on screen?
          * 0 = no
          * 1 = yes
@@ -2834,13 +2840,6 @@ public final class Settings {
          * @hide
          */
         public static final String SHOW_STATUSBAR_IME_SWITCHER = "show_statusbar_ime_switcher";
-
-        /**
-         * Setting to enable volume options.
-         * 
-         * @hide
-         */
-        public static final String ENABLE_VOLUME_OPTIONS = "enable_volume_options";
 
         /**
          * Which layout to use to display the navigation menu at the bottom.
@@ -5210,11 +5209,13 @@ public final class Settings {
         public static final String LONGPRESS_APP_TASKER_INTENT = "longpress_app_tasker_intent";
 
         /**
-         * The {@link ComponentName} string of the service to be used as the
-         * voice recognition service.
+         * The {@link ComponentName} string of the service to be used as the voice recognition
+         * service.
+         *
          * @hide
          */
         public static final String VOICE_RECOGNITION_SERVICE = "voice_recognition_service";
+
 
         /**
          * The {@link ComponentName} string of the selected spell checker service which is

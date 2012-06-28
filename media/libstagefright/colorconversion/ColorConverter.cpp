@@ -188,7 +188,7 @@ status_t ColorConverter::convertInterlacedBuffer(
         size_t srcWidth, size_t srcHeight,
         size_t srcCropLeft, size_t srcCropTop,
         size_t srcCropRight, size_t srcCropBottom,
-        OMX_TI_INTERLACETYPE buff_layout,
+        OMX_INTERLACETYPE buff_layout,
         void *dstBits,
         size_t dstWidth, size_t dstHeight,
         size_t dstCropLeft, size_t dstCropTop,
@@ -228,7 +228,6 @@ status_t ColorConverter::convertInterlacedBuffer(
     return err;
 }
 #endif
-
 status_t ColorConverter::convertCbYCrY(
         const BitmapParams &src, const BitmapParams &dst) {
     // XXX Untested
@@ -457,7 +456,6 @@ status_t ColorConverter::convertYUV420SemiPlanar(
     // XXX Untested
 
     uint8_t *kAdjustedClip = initClip();
-
 #ifdef OMAP_ENHANCEMENT
     if (!((dst.mWidth & 1) == 0
 #else
@@ -530,7 +528,6 @@ status_t ColorConverter::convertYUV420SemiPlanar(
 status_t ColorConverter::convertTIYUV420PackedSemiPlanar(
         const BitmapParams &src, const BitmapParams &dst) {
     uint8_t *kAdjustedClip = initClip();
-
 #ifdef OMAP_ENHANCEMENT
     if (!((dst.mWidth & 1) == 0
 #else
@@ -629,6 +626,7 @@ status_t ColorConverter::convertTIYUV420PackedSemiPlanarInterlaced(
                 signed u_g = -u * 100;
                 signed v_g = -v * 208;
                 signed v_r = v * 409;
+
                 signed tmp1 = y1 * 298;
                 signed b1 = (tmp1 + u_b) / 256;
                 signed g1 = (tmp1 + v_g + u_g) / 256;

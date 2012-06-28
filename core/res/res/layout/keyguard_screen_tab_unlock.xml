@@ -49,33 +49,20 @@
             android:textColor="@color/lockscreen_clock_background"
             />
 
-            <!-- Because we can't have multi-tone fonts, we render two TextViews, one on
-            top of the other. Hence the redundant layout... -->
-            <TextView android:id="@+id/timeDisplayBackground"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:singleLine="true"
-                android:ellipsize="none"
-                android:textSize="@dimen/keyguard_lockscreen_clock_font_size"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:layout_marginBottom="6dip"
-                android:textColor="@color/lockscreen_clock_background"
-                />
+        <TextView android:id="@+id/timeDisplayForeground"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:ellipsize="none"
+            android:textSize="@dimen/keyguard_lockscreen_clock_font_size"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_marginBottom="6dip"
+            android:textColor="@color/lockscreen_clock_foreground"
+            android:layout_alignLeft="@id/timeDisplayBackground"
+            android:layout_alignTop="@id/timeDisplayBackground"
+            />
 
-            <TextView android:id="@+id/timeDisplayForeground"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:singleLine="true"
-                android:ellipsize="none"
-                android:textSize="@dimen/keyguard_lockscreen_clock_font_size"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:layout_marginBottom="6dip"
-                android:textColor="@color/lockscreen_clock_foreground"
-                android:layout_alignLeft="@id/timeDisplayBackground"
-                android:layout_alignTop="@id/timeDisplayBackground"
-                />
-
-        </com.android.internal.widget.DigitalClock>
+    </com.android.internal.widget.DigitalClock>
 
     <LinearLayout
         android:orientation="horizontal"
@@ -162,6 +149,8 @@
                 android:layout_below="@id/weather_city"
                 android:layout_alignParentRight="true"
                 android:gravity="right"
+                android:singleLine="true"
+                android:ellipsize="marquee"
                 android:textSize="12sp"
                 android:textColor="?android:attr/textColorPrimary" />
 
@@ -246,7 +235,6 @@
         android:paddingRight="12dip" >
 
         <ImageView
-            android:id="@+id/calendar_image"
             android:layout_width="36dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
@@ -304,7 +292,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_alignParentBottom="true"
-
             android:targetDrawables="@array/lockscreen_targets_with_camera"
             android:targetDescriptions="@array/lockscreen_target_descriptions_with_camera"
             android:directionDescriptions="@array/lockscreen_direction_descriptions"

@@ -24,6 +24,12 @@ import static android.telephony.TelephonyManager.NETWORK_TYPE_UMTS;
 import static android.telephony.TelephonyManager.NETWORK_TYPE_HSDPA;
 import static android.telephony.TelephonyManager.NETWORK_TYPE_HSUPA;
 import static android.telephony.TelephonyManager.NETWORK_TYPE_HSPA;
+/* FIXME HASH: Added Motorola Code */
+import static android.telephony.TelephonyManager.NETWORK_TYPE_CDMA;
+import static android.telephony.TelephonyManager.NETWORK_TYPE_1xRTT;
+import static android.telephony.TelephonyManager.NETWORK_TYPE_EVDO_0;
+import static android.telephony.TelephonyManager.NETWORK_TYPE_EVDO_A;
+import static android.telephony.TelephonyManager.NETWORK_TYPE_EVDO_B;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -2752,8 +2758,8 @@ public class RIL extends BaseCommands implements CommandsInterface {
 
             case RIL_UNSOL_OEM_HOOK_RAW:
                 if (RILJ_LOGD) unsljLogvRet(response, IccUtils.bytesToHexString((byte[])ret));
-                if (mUnsolOemHookRawRegistrant != null) {
-                    mUnsolOemHookRawRegistrant.notifyRegistrant(new AsyncResult(null, ret, null));
+                if (mUnsolOemHookRawRegistrants != null) {
+                    mUnsolOemHookRawRegistrants.notifyRegistrants(new AsyncResult(null, ret, null));
                 }
                 break;
 
@@ -3234,6 +3240,18 @@ public class RIL extends BaseCommands implements CommandsInterface {
            radioType = NETWORK_TYPE_HSUPA;
        } else if (radioString.equals("HSPA")) {
            radioType = NETWORK_TYPE_HSPA;
+       /* FIXME HASH: BEGIN Motorola Code */
+       } else if (radioString.equals("CDMA")) {
+           radioType = NETWORK_TYPE_CDMA;
+       } else if (radioString.equals("CDMA - 1xRTT")) {
+           radioType = NETWORK_TYPE_1xRTT;
+       } else if (radioString.equals("CDMA - EvDo rev. 0")) {
+           radioType = NETWORK_TYPE_EVDO_0;
+       } else if (radioString.equals("CDMA - EvDo rev. A")) {
+           radioType = NETWORK_TYPE_EVDO_A;
+       } else if (radioString.equals("CDMA - EvDo rev. B")) {
+           radioType = NETWORK_TYPE_EVDO_B;
+       /* FIXME HASH: END Motorola Code */
        } else {
            radioType = NETWORK_TYPE_UNKNOWN;
        }

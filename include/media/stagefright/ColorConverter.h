@@ -53,7 +53,7 @@ struct ColorConverter {
             size_t srcWidth, size_t srcHeight,
             size_t srcCropLeft, size_t srcCropTop,
             size_t srcCropRight, size_t srcCropBottom,
-            OMX_TI_INTERLACETYPE buff_layout,
+            OMX_INTERLACETYPE buff_layout,
             void *dstBits,
             size_t dstWidth, size_t dstHeight,
             size_t dstCropLeft, size_t dstCropTop,

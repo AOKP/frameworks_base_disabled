@@ -388,7 +388,8 @@ public class CdmaServiceStateTracker extends ServiceStateTracker {
                     mIsMinInfoReady = true;
 
                     updateOtaspState();
-                    phone.getIccCard().broadcastIccStateChangedIntent(IccCard.INTENT_VALUE_ICC_IMSI,
+                    if (phone.getIccCard() != null)
+                        phone.getIccCard().broadcastIccStateChangedIntent(IccCard.INTENT_VALUE_ICC_IMSI,
                             null);
                 } else {
                     if (DBG) {
@@ -754,10 +755,12 @@ public class CdmaServiceStateTracker extends ServiceStateTracker {
             }
 
             int roamingIndicator = newSS.getCdmaRoamingIndicator();
-            newSS.setCdmaEriIconIndex(phone.mEriManager.getCdmaEriIconIndex(roamingIndicator,
-                    mDefaultRoamingIndicator));
-            newSS.setCdmaEriIconMode(phone.mEriManager.getCdmaEriIconMode(roamingIndicator,
-                    mDefaultRoamingIndicator));
+            if (phone.mEriManager != null) {
+                newSS.setCdmaEriIconIndex(phone.mEriManager.getCdmaEriIconIndex(roamingIndicator,
+                        mDefaultRoamingIndicator));
+                newSS.setCdmaEriIconMode(phone.mEriManager.getCdmaEriIconMode(roamingIndicator,
+                        mDefaultRoamingIndicator));
+            }
 
             // NOTE: Some operator may require overriding mCdmaRoaming
             // (set by the modem), depending on the mRoamingIndicator.

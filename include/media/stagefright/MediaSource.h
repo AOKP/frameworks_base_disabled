@@ -125,6 +125,7 @@ public:
         return OK;
     }
 #endif
+
 };
 
 #ifdef OMAP_ENHANCEMENT

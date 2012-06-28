@@ -486,8 +486,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     public static final String INTENT_TORCH_OFF = "com.android.systemui.INTENT_TORCH_OFF";
     boolean mFastTorchOn; // local state of torch
     boolean mEnableQuickTorch; // System.Setting
-    boolean mBackJustKilled;
-    boolean mLongPressBackKill;
 
     public static ProgressDialog mBootMsgDialog = null;
     public static String CURRENT_PACKAGE_NAME = "no";
@@ -781,8 +779,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         public void run() {
             try {
                 performHapticFeedbackLw(null, HapticFeedbackConstants.LONG_PRESS, false);
-                IActivityManager mgr = ActivityManagerNative.getDefault();
-                List<RunningAppProcessInfo> apps = mgr.getRunningAppProcesses();
+                IActivityManager am = ActivityManagerNative.getDefault();
+                List<RunningAppProcessInfo> apps = am.getRunningAppProcesses();
                 for (RunningAppProcessInfo appInfo : apps) {
                     int uid = appInfo.uid;
                     // Make sure it's a foreground user application (not system,
@@ -791,14 +789,13 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                             && appInfo.importance == RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
                         Toast.makeText(mContext, R.string.app_killed_message, Toast.LENGTH_SHORT).show();
                         // Kill the entire pid
-                        if (appInfo.pkgList!=null && (apps.size() > 0)){
-                            mgr.forceStopPackage(appInfo.pkgList[0]);
-                        }else{
+                        if (appInfo.pkgList != null && (apps.size() > 0)) {
+                            am.forceStopPackage(appInfo.pkgList[0]);
+                        } else {
                             Process.killProcess(appInfo.pid);
                         }
                         break;
                     }
-                    mBackJustKilled = false;
                 }
             } catch (RemoteException remoteException) {
                 // Do nothing; just let it go.
@@ -1110,8 +1107,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     Settings.Secure.INCALL_POWER_BUTTON_BEHAVIOR_DEFAULT);
             int accelerometerDefault = Settings.System.getInt(resolver,
                     Settings.System.ACCELEROMETER_ROTATION, DEFAULT_ACCELEROMETER_ROTATION);
-            mLongPressBackKill = (Settings.Secure.getInt(
-                    resolver, Settings.Secure.KILL_APP_LONGPRESS_BACK, 0) == 1);
             mLongPressOnHomeBehavior = Settings.System.getInt(
                     resolver, Settings.System.NAVIGATION_BAR_HOME_LONGPRESS, -1);
             // set up rotation lock state
@@ -1736,7 +1731,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             if ((flags&KeyEvent.FLAG_CANCELED) == 0) {
                 mHandler.removeCallbacks(mBackLongPress);
                 KeyEvent.changeFlags(event, flags + KeyEvent.FLAG_CANCELED);
-                mBackJustKilled = false;
             }
         }
 
@@ -1861,10 +1855,10 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             }
             return -1;
         } else if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (mLongPressBackKill) {
-                if (!mBackJustKilled && down && repeatCount == 0) {
+            if (Settings.Secure.getInt(mContext.getContentResolver(),
+                    Settings.Secure.KILL_APP_LONGPRESS_BACK, 0) == 1) {
+                if (down && repeatCount == 0) {
                     mHandler.postDelayed(mBackLongPress, ViewConfiguration.getGlobalActionKeyTimeout());
-                    mBackJustKilled = true;
                 }
             }
         }

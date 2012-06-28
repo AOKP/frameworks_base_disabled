@@ -65,6 +65,7 @@ LOCAL_MODULE_PATH := $(TARGET_OUT)/lib/egl
 LOCAL_SRC_FILES := ../../../../$(BOARD_EGL_CFG)
 include $(BUILD_PREBUILT)
 
+ifdef OMAP_ENHANCEMENT
 ifeq ($(TARGET_BOARD_PLATFORM), omap4)
    # Only applicable for omap4 at the moment:
    # Do not install egl.cfg to system/lib/egl/egl.cfg
@@ -73,9 +74,15 @@ ifeq ($(TARGET_BOARD_PLATFORM), omap4)
    $(shell mkdir -p $(ANDROID_PRODUCT_OUT)/system/lib/egl/)
    $(shell ln -f -s /sys/egl/egl.cfg $(ANDROID_PRODUCT_OUT)/system/lib/egl/egl.cfg)
 else
+
+   # make sure we depend on egl.cfg, so it gets installed
+   $(installed_libEGL): | egl.cfg
+endif #omap4
+
+else
   # make sure we depend on egl.cfg, so it gets installed
   $(installed_libEGL): | egl.cfg
-endif #omap4
+endif #OMAP_ENHANCEMENT
 
 endif
 

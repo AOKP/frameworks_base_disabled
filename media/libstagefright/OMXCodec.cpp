@@ -216,7 +216,6 @@ static sp<MediaSource> InstantiateSoftwareDecoder(
 #undef FACTORY_REF
 #undef FACTORY_CREATE
 
-#ifdef TARGET_OMAP4
 static const CodecInfo kDecoderInfo[] = {
 #ifdef SAMSUNG_OMX
     { MEDIA_MIMETYPE_AUDIO_MPEG, "OMX.SEC.mp3.dec" },
@@ -344,51 +343,6 @@ static const CodecInfo kEncoderInfo[] = {
     { MEDIA_MIMETYPE_VIDEO_AVC, "OMX.SEC.AVC.Encoder" },
     { MEDIA_MIMETYPE_VIDEO_AVC, "AVCEncoder" },
 };
-#else
-static const CodecInfo kDecoderInfo[] = {
-    { MEDIA_MIMETYPE_IMAGE_JPEG, "OMX.TI.JPEG.decode" },
-    { MEDIA_MIMETYPE_AUDIO_MPEG, "OMX.TI.MP3.decode" },
-    { MEDIA_MIMETYPE_AUDIO_MPEG, "OMX.google.mp3.decoder" },
-    { MEDIA_MIMETYPE_AUDIO_AMR_NB, "OMX.TI.AMR.decode" },
-    { MEDIA_MIMETYPE_AUDIO_AMR_NB, "OMX.google.amrnb.decoder" },
-    { MEDIA_MIMETYPE_AUDIO_AMR_WB, "OMX.TI.WBAMR.decode" },
-    { MEDIA_MIMETYPE_AUDIO_AMR_WB, "OMX.google.amrwb.decoder" },
-    { MEDIA_MIMETYPE_AUDIO_AAC, "OMX.TI.AAC.decode" },
-    { MEDIA_MIMETYPE_AUDIO_AAC, "OMX.ITTIAM.AAC.decode" },
-    { MEDIA_MIMETYPE_AUDIO_AAC, "OMX.google.aac.decoder" },
-    { MEDIA_MIMETYPE_AUDIO_G711_ALAW, "OMX.google.g711.alaw.decoder" },
-    { MEDIA_MIMETYPE_AUDIO_G711_MLAW, "OMX.google.g711.mlaw.decoder" },
-    { MEDIA_MIMETYPE_VIDEO_MPEG4, "OMX.TI.Video.Decoder" },
-    { MEDIA_MIMETYPE_VIDEO_MPEG4, "OMX.TI.720P.Decoder" },
-    { MEDIA_MIMETYPE_VIDEO_H263, "OMX.TI.Video.Decoder" },
-    /* 720p Video Decoder must be placed before the TI Video Decoder.
-       DO NOT CHANGE THIS SEQUENCE. IT WILL BREAK FLASH. */
-    { MEDIA_MIMETYPE_VIDEO_AVC, "OMX.TI.720P.Decoder" },
-    { MEDIA_MIMETYPE_VIDEO_AVC, "OMX.TI.Video.Decoder" },
-    { MEDIA_MIMETYPE_VIDEO_WMV, "OMX.TI.Video.Decoder" },
-    { MEDIA_MIMETYPE_VIDEO_WMV, "OMX.TI.720P.Decoder" },
-    { MEDIA_MIMETYPE_AUDIO_WMA, "OMX.TI.WMA.decode"},
-    { MEDIA_MIMETYPE_AUDIO_WMA, "OMX.ITTIAM.WMA.decode"},
-    { MEDIA_MIMETYPE_VIDEO_H263, "OMX.google.h263.decoder" },
-    { MEDIA_MIMETYPE_AUDIO_VORBIS, "OMX.google.vorbis.decoder" },
-    { MEDIA_MIMETYPE_VIDEO_VPX, "OMX.google.vpx.decoder" },
-    { MEDIA_MIMETYPE_VIDEO_AVC, "OMX.google.h264.decoder" },
-    { MEDIA_MIMETYPE_VIDEO_AVC, "OMX.google.avc.decoder" },
-    { MEDIA_MIMETYPE_VIDEO_VPX, "VPXDecoder" },
-};
-
-static const CodecInfo kEncoderInfo[] = {
-    { MEDIA_MIMETYPE_AUDIO_AMR_NB, "OMX.TI.AMR.encode" },
-    { MEDIA_MIMETYPE_AUDIO_AMR_WB, "OMX.TI.WBAMR.encode" },
-    { MEDIA_MIMETYPE_AUDIO_AAC, "OMX.TI.AAC.encode" },
-    { MEDIA_MIMETYPE_AUDIO_AAC, "OMX.ITTIAM.AAC.encode" },
-    { MEDIA_MIMETYPE_VIDEO_MPEG4, "OMX.TI.Video.encoder" },
-    { MEDIA_MIMETYPE_VIDEO_MPEG4, "OMX.TI.720P.Encoder" },
-    { MEDIA_MIMETYPE_VIDEO_H263, "OMX.TI.Video.encoder" },
-    { MEDIA_MIMETYPE_VIDEO_AVC, "OMX.TI.Video.encoder" },
-    { MEDIA_MIMETYPE_VIDEO_AVC, "OMX.TI.720P.Encoder" },
-};
-#endif
 
 #undef OPTIONAL
 
@@ -602,10 +556,8 @@ uint32_t OMXCodec::getComponentQuirks(
 
         quirks |= kRequiresAllocateBufferOnInputPorts;
         quirks |= kRequiresAllocateBufferOnOutputPorts;
-
-        if (!strncmp(componentName, "OMX.TI.Video.encoder", 20) ||
-            !strncmp(componentName, "OMX.TI.720P.Encoder", 19)) {
-            //quirks |= kAvoidMemcopyInputRecordingFrames;
+        if (!strncmp(componentName, "OMX.TI.Video.encoder", 20)) {
+            quirks |= kAvoidMemcopyInputRecordingFrames;
         }
     }
 
@@ -974,7 +926,7 @@ status_t OMXCodec::configureCodec(const sp<MetaData> &meta) {
                     profile, AVCProfileToString(profile), level);
 
             if (!strcmp(mComponentName, "OMX.TI.Video.Decoder")
-                && (profile != kAVCProfileBaseline || level > 31)) {
+                && (profile != kAVCProfileBaseline || level > 30)) {
                 // This stream exceeds the decoder's capabilities. The decoder
                 // does not handle this gracefully and would clobber the heap
                 // and wreak havoc instead...
@@ -1046,20 +998,6 @@ status_t OMXCodec::configureCodec(const sp<MetaData> &meta) {
     int32_t bitRate = 0;
     if (mIsEncoder) {
         CHECK(meta->findInt32(kKeyBitRate, &bitRate));
-
-#if defined(OMAP_ENHANCEMENT) && defined(TARGET_OMAP3)
-        if (!strcmp(mComponentName, "OMX.TI.Video.encoder")) {
-            int32_t width, height;
-            bool success = meta->findInt32(kKeyWidth, &width);
-            success = success && meta->findInt32(kKeyHeight, &height);
-            CHECK(success);
-            if (width*height > MAX_RESOLUTION) {
-                // need OMX.TI.720P.Encoder
-                return ERROR_UNSUPPORTED;
-            }
-        }
-#endif
-
     }
     if (!strcasecmp(MEDIA_MIMETYPE_AUDIO_AMR_NB, mMIME)) {
         setAMRFormat(false /* isWAMR */, bitRate);
@@ -1322,8 +1260,7 @@ status_t OMXCodec::setVideoPortFormatType(
              index, format.eCompressionFormat, format.eColorFormat);
 #endif
 
-        if (!strcmp("OMX.TI.Video.encoder", mComponentName) ||
-            !strcmp("OMX.TI.720P.Encoder", mComponentName)) {
+        if (!strcmp("OMX.TI.Video.encoder", mComponentName)) {
             if (portIndex == kPortIndexInput
                     && colorFormat == format.eColorFormat) {
                 // eCompressionFormat does not seem right.
@@ -1420,8 +1357,7 @@ status_t OMXCodec::findTargetColorFormat(
     if (meta->findInt32(kKeyColorFormat, &targetColorFormat)) {
         *colorFormat = (OMX_COLOR_FORMATTYPE) targetColorFormat;
     } else {
-        if (!strcasecmp("OMX.TI.Video.encoder", mComponentName) ||
-            !strcasecmp("OMX.TI.720P.Encoder", mComponentName)) {
+        if (!strcasecmp("OMX.TI.Video.encoder", mComponentName)) {
             *colorFormat = OMX_COLOR_FormatYCbYCr;
         }
     }
@@ -4386,8 +4322,7 @@ bool OMXCodec::drainInputBuffer(BufferInfo *info) {
 
     // This component does not ever signal the EOS flag on output buffers,
     // Thanks for nothing.
-    if ((mSignalledEOS && !strcmp(mComponentName, "OMX.TI.Video.encoder")) ||
-        (mSignalledEOS && !strcmp(mComponentName, "OMX.TI.720P.Encoder"))) {
+    if (mSignalledEOS && !strcmp(mComponentName, "OMX.TI.Video.encoder")) {
         mNoMoreOutputData = true;
         mBufferFilled.signal();
     }

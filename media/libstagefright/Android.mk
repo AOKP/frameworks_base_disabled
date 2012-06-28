@@ -89,12 +89,6 @@ ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
 	LOCAL_C_INCLUDES += $(TOP)/hardware/qcom/display/libqcomui
 endif
 
-ifeq ($(OMAP_ENHANCEMENT), true)
-	LOCAL_SRC_FILES += ASFExtractor.cpp
-	LOCAL_SRC_FILES += AVIExtractor.cpp
-	LOCAL_C_INCLUDES += $(TOP)/hardware/ti/omap4xxx/domx/omx_core/inc
-endif
-
 ifeq ($(TARGET_USES_QCOM_LPA),true)
 ifeq ($(BOARD_USES_ALSA_AUDIO),true)
 	LOCAL_SRC_FILES += LPAPlayerALSA.cpp

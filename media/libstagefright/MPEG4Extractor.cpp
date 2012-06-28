@@ -635,17 +635,11 @@ status_t MPEG4Extractor::parseChunk(off64_t *offset, int depth) {
             // The smallest valid chunk is 16 bytes long in this case.
             return ERROR_MALFORMED;
         }
-#ifdef OMAP_ENHANCEMENT
-    } else if ((chunk_size < 8) && (chunk_size != 0)){
+    } else if (chunk_size < 8) {
         // The smallest valid chunk is 8 bytes long.
         return ERROR_MALFORMED;
     }
-#else
-    } else if (chunk_size < 8){
-        // The smallest valid chunk is 8 bytes long.
-        return ERROR_MALFORMED;
-    }
-#endif
+
     char chunk[5];
     MakeFourCCString(chunk_type, chunk);
 
@@ -689,28 +683,7 @@ status_t MPEG4Extractor::parseChunk(off64_t *offset, int depth) {
 
         return OK;
     }
-#ifdef OMAP_ENHANCEMENT
-    {
-        union {
-            uint32_t chunk;
-            uint8_t t[4];
-        }chnk;
-        chnk.chunk=chunk_type;
-        LOGV("Chunk: %c%c%c%c\n", chnk.t[3],chnk.t[2],chnk.t[1],chnk.t[0]);
-    }
 
-    // If the size of the atom is zero, then this is an empty atom that
-    //  needs to be skipped; the way to skip it is by making its size 4,
-    //  so the next time the instruction *offset += chunk_size happen
-    //  the atom be skipped and it doesn't cause the parser enter in
-    //  aninfinite loop.
-    //  (*offset would be pointing to the same place again and again if
-    //  chunk_size is zero)
-
-    if (!chunk_size){
-        chunk_size=4;
-    }
-#endif
     switch(chunk_type) {
         case FOURCC('m', 'o', 'o', 'v'):
         case FOURCC('t', 'r', 'a', 'k'):

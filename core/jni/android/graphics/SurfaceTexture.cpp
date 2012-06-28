@@ -247,11 +247,11 @@ static void SurfaceTexture_release(JNIEnv* env, jobject thiz)
 
 static JNINativeMethod gSurfaceTextureMethods[] = {
     {"nativeClassInit",          "()V",   (void*)SurfaceTexture_classInit },
-#ifdef OMAP_ENHANCEMENT
-    {"nativeInit",               "(ILjava/lang/Object;ZI)V", (void*)SurfaceTexture_init },
-#else
-    {"nativeInit",               "(ILjava/lang/Object;Z)V", (void*)SurfaceTexture_init },
+#ifndef OMAP_ENHANCEMENT
+#warning Using OMAP_ENHANCEMENT version of nativeInit to avoid ABI mismatch. \
+         Original:(ILjava/lang/Object;Z) New:(ILjava/lang/Object;ZI)
 #endif
+    {"nativeInit",               "(ILjava/lang/Object;ZI)V", (void*)SurfaceTexture_init },
     {"nativeFinalize",           "()V",   (void*)SurfaceTexture_finalize },
     {"nativeSetDefaultBufferSize", "(II)V", (void*)SurfaceTexture_setDefaultBufferSize },
     {"nativeUpdateTexImage",     "()I",   (void*)SurfaceTexture_updateTexImage },

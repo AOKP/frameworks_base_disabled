@@ -30,15 +30,17 @@ import android.os.SystemProperties;
 import android.text.TextUtils;
 import android.util.Log;
 
+import android.telephony.PhoneNumberUtils;
 import com.android.internal.telephony.RILConstants;
 import com.android.internal.telephony.gsm.SmsBroadcastConfigInfo;
 import com.android.internal.telephony.cdma.CdmaInformationRecords;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Samsung CDMA RIL doesn't send CDMA NV in RIUM infomation format which causes the CDMA RIL stack to crash and end up not being provisioned.
- * Samsung put CDMA NV in GSM format. I forced the RIL stack to process CDMA NV request as a GSM SIM in CDMA mode. 
+ * Samsung put CDMA NV in GSM format. I forced the RIL stack to process CDMA NV request as a GSM SIM in CDMA mode.
  * Custom Qualcomm No SimReady RIL using the latest Uicc stack
  *
  * {@hide}
@@ -50,7 +52,7 @@ public class SamsungCDMAQualcommRIL extends QualcommSharedRIL implements Command
     private final int RIL_INT_RADIO_ON = 2;
     private final int RIL_INT_RADIO_ON_NG = 10;
     private final int RIL_INT_RADIO_ON_HTC = 13;
-    
+
     public SamsungCDMAQualcommRIL(Context context, int networkMode, int cdmaSubscription) {
         super(context, networkMode, cdmaSubscription);
     }
@@ -95,7 +97,7 @@ public class SamsungCDMAQualcommRIL extends QualcommSharedRIL implements Command
         int appIndex = -1;
         appIndex = status.getGsmUmtsSubscriptionAppIndex();
         Log.d(LOG_TAG, "This is a CDMA PHONE " + appIndex);
-        
+
 
         if (numApplications > 0) {
             IccCardApplication application = status.getApplication(appIndex);
@@ -143,7 +145,7 @@ public class SamsungCDMAQualcommRIL extends QualcommSharedRIL implements Command
                     mIccHandler.run();
                 }
                 radioState = CommandsInterface.RadioState.SIM_NOT_READY;
-                
+
                 setRadioState(radioState);
                 break;
             default:
@@ -157,18 +159,19 @@ public class SamsungCDMAQualcommRIL extends QualcommSharedRIL implements Command
     responseSignalStrength(Parcel p) {
         int numInts = 12;
         int response[];
-        
+
         // This is a mashup of algorithms used in
         // SamsungQualcommUiccRIL.java
-        
+
         // Get raw data
         response = new int[numInts];
         for (int i = 0 ; i < numInts ; i++) {
             response[i] = p.readInt();
         }
-        
-        // TODO: fix SS reporting on samsung cdma devices
-        
+        //Workaround: use cdmaecio and evdoecio to determine signal strength and it is better than no signal bars
+        //TODO: find a proper fix for it
+        response[2] = response[3]*4; // mutiply by 4 simulate dbm so the signal bars do not jump often to full bars
+        response[4] = response[5]*4;
         // RIL_LTE_SignalStrength
         if (response[7] == 99) {
             // If LTE is not enabled, clear LTE results
@@ -181,11 +184,80 @@ public class SamsungCDMAQualcommRIL extends QualcommSharedRIL implements Command
         } else {
             response[8] *= -1;
         }
-        
+
         return response;
-    
+
     }
 
+    @Override
+    protected Object
+    responseCallList(Parcel p) {
+        int num;
+        int voiceSettings;
+        ArrayList<DriverCall> response;
+        DriverCall dc;
+
+        num = p.readInt();
+        response = new ArrayList<DriverCall>(num);
+
+        for (int i = 0 ; i < num ; i++) {
+            dc = new DriverCall();
+
+            dc.state = DriverCall.stateFromCLCC(p.readInt());
+            dc.index = p.readInt();
+            dc.TOA = p.readInt();
+            dc.isMpty = (0 != p.readInt());
+            dc.isMT = (0 != p.readInt());
+            dc.als = p.readInt();
+            voiceSettings = p.readInt();
+            dc.isVoice = (0 == voiceSettings) ? false : true;
+            dc.isVoicePrivacy = (0 != p.readInt());
+            //Some Samsung magic data for Videocalls
+            // hack taken from smdk4210ril class
+            voiceSettings = p.readInt();
+            //printing it to cosole for later investigation
+            Log.d(LOG_TAG, "Samsung magic = " + voiceSettings);
+            dc.number = p.readString();
+            int np = p.readInt();
+            dc.numberPresentation = DriverCall.presentationFromCLIP(np);
+            dc.name = p.readString();
+            dc.namePresentation = p.readInt();
+            int uusInfoPresent = p.readInt();
+            if (uusInfoPresent == 1) {
+                dc.uusInfo = new UUSInfo();
+                dc.uusInfo.setType(p.readInt());
+                dc.uusInfo.setDcs(p.readInt());
+                byte[] userData = p.createByteArray();
+                dc.uusInfo.setUserData(userData);
+                riljLogv(String.format("Incoming UUS : type=%d, dcs=%d, length=%d",
+                                       dc.uusInfo.getType(), dc.uusInfo.getDcs(),
+                                       dc.uusInfo.getUserData().length));
+                riljLogv("Incoming UUS : data (string)="
+                         + new String(dc.uusInfo.getUserData()));
+                riljLogv("Incoming UUS : data (hex): "
+                         + IccUtils.bytesToHexString(dc.uusInfo.getUserData()));
+            } else {
+                riljLogv("Incoming UUS : NOT present!");
+            }
+
+            // Make sure there's a leading + on addresses with a TOA of 145
+            dc.number = PhoneNumberUtils.stringFromStringAndTOA(dc.number, dc.TOA);
+
+            response.add(dc);
+
+            if (dc.isVoicePrivacy) {
+                mVoicePrivacyOnRegistrants.notifyRegistrants();
+                riljLog("InCall VoicePrivacy is enabled");
+            } else {
+                mVoicePrivacyOffRegistrants.notifyRegistrants();
+                riljLog("InCall VoicePrivacy is disabled");
+            }
+        }
+
+        Collections.sort(response);
+
+        return response;
+    }
 
     class IccHandler extends Handler implements Runnable {
         private static final int EVENT_RADIO_ON = 1;
@@ -287,6 +359,5 @@ public class SamsungCDMAQualcommRIL extends QualcommSharedRIL implements Command
             mRil.getIccCardStatus(msg);
         }
     }
-
-
 }
+

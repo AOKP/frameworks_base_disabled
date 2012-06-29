@@ -153,8 +153,8 @@ void AudioResamplerSpeex::resampleStereo16(int32_t* out, size_t outFrameCount,
         mInputIndex += inCount;
 
         for(uint i=0; i < outCount; i++) {
-            out[2*(outFrameIndex+i)] = (int32_t)mVolume[0] * outBuffer[2*i];
-            out[2*(outFrameIndex+i)+1] = (int32_t)mVolume[1] * outBuffer[2*i+1];
+            out[2*(outFrameIndex+i)] += (int32_t)mVolume[0] * outBuffer[2*i];
+            out[2*(outFrameIndex+i)+1] += (int32_t)mVolume[1] * outBuffer[2*i+1];
         }
 
         outFrameIndex += outCount;
@@ -195,8 +195,8 @@ void AudioResamplerSpeex::resampleMono16(int32_t* out, size_t outFrameCount,
         mInputIndex += inCount;
 
         for(uint i=0; i < outCount; i++) {
-            out[2*(outFrameIndex+i)] = (int32_t)mVolume[0] * outBuffer[i];
-            out[2*(outFrameIndex+i)+1] = (int32_t)mVolume[1] * outBuffer[i];
+            out[2*(outFrameIndex+i)] += (int32_t)mVolume[0] * outBuffer[i];
+            out[2*(outFrameIndex+i)+1] += (int32_t)mVolume[1] * outBuffer[i];
         }
 
         outFrameIndex += outCount;

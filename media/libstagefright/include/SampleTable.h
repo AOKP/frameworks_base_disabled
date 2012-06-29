@@ -147,12 +147,6 @@ private:
 
     SampleTable(const SampleTable &);
     SampleTable &operator=(const SampleTable &);
-
-#ifdef OMAP_ENHANCEMENT
-public:
-    bool haveDeltaTable() const;
-#endif
-
 };
 
 }  // namespace android

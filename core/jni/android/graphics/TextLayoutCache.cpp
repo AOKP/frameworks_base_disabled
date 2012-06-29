@@ -172,9 +172,6 @@ sp<TextLayoutCacheValue> TextLayoutCache::getValue(SkPaint* paint,
                         start, count, contextCount, size, mMaxSize - mSize, endTime,
                         String8((char16_t*)text, count).string());
             }
-#ifndef OMAP_ENHANCEMENT
-            value.clear();
-#endif
         }
     } else {
         // This is a cache hit, just log timestamp and user infos

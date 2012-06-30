@@ -59,9 +59,6 @@ Layer::Layer(SurfaceFlinger* flinger,
         mQueuedFrames(0),
         mCurrentTransform(0),
         mCurrentScalingMode(NATIVE_WINDOW_SCALING_MODE_FREEZE),
-#ifdef OMAP_ENHANCEMENT
-        mCurrentLayout(NATIVE_WINDOW_BUFFERS_LAYOUT_PROGRESSIVE),
-#endif
         mCurrentOpacity(true),
         mFormat(PIXEL_FORMAT_NONE),
         mGLExtensions(GLExtensions::getInstance()),
@@ -75,12 +72,8 @@ Layer::Layer(SurfaceFlinger* flinger,
 #ifdef QCOM_HARDWARE
         mLayerQcomFlags(0),
 #endif
-#ifndef OMAP_ENHANCEMENT
-        mProtectedByApp(false)
-#else
         mProtectedByApp(false),
         mTextureSizeTooLarge(false)
-#endif
 {
     mCurrentCrop.makeInvalid();
     glGenTextures(1, &mTextureName);
@@ -282,9 +275,6 @@ void Layer::setGeometry(hwc_layer_t* hwcl)
             hwcl->sourceCrop.bottom = mTransformedBounds.height();
         }
     }
-#ifdef OMAP_ENHANCEMENT
-    hwcl->buf_layout = mCurrentLayout;
-#endif
 }
 
 void Layer::setPerFrameData(hwc_layer_t* hwcl) {
@@ -338,15 +328,7 @@ void Layer::onDraw(const Region& clip) const
         return;
     }
 
-#ifdef OMAP_ENHANCEMENT
-    // DIRTY HACK: if texture size exceeds hardware limitations, we draw black screen instead.
-    // Should be removed once proper solution on how to handle 1080p + VSTAB on SGX540 be implemented
-    if (mTextureSizeTooLarge) {
-        LOGW("Texture was not generated due to it's size, skipping redraw");
-        clearWithOpenGL(clip, 0, 0, 0, 1);
-        return;
-    }
-#endif
+
 
 #ifdef QCOM_HARDWARE
 	if (!isGPUSupportedFormat(mActiveBuffer->format)) {
@@ -541,27 +523,11 @@ void Layer::lockPageFlip(bool& recomputeVisibleRegions)
 
         if (mSurfaceTexture->updateTexImage(isComposition) < NO_ERROR) {
 #else
-#ifdef OMAP_ENHANCEMENT
-        // DIRTY HACK: we are not trying to draw texture if it's size exceeds hardware limitations.
-        // Should be removed once proper solution on how to handle 1080p + VSTAB on SGX540 be implemented
-        mTextureSizeTooLarge = false;
-        int err = 0;
-        if ((err = mSurfaceTexture->updateTexImage()) < NO_ERROR) {
-#else
         if (mSurfaceTexture->updateTexImage() < NO_ERROR) {
-#endif // OMAP_ENHANCEMENT
 #endif // DECIDE_TEXTURE_TARGET
             // something happened!
-#ifdef OMAP_ENHANCEMENT
-            if(err == -EFBIG) {
-                mTextureSizeTooLarge = true;
-            } else {
-#endif
             recomputeVisibleRegions = true;
             return;
-#ifdef OMAP_ENHANCEMENT
-            }
-#endif
         }
 
 
@@ -581,22 +547,13 @@ void Layer::lockPageFlip(bool& recomputeVisibleRegions)
         const Rect crop(mSurfaceTexture->getCurrentCrop());
         const uint32_t transform(mSurfaceTexture->getCurrentTransform());
         const uint32_t scalingMode(mSurfaceTexture->getCurrentScalingMode());
-#ifdef OMAP_ENHANCEMENT
-        const uint32_t layout(mSurfaceTexture->getCurrentLayout());
-#endif
         if ((crop != mCurrentCrop) ||
             (transform != mCurrentTransform) ||
-#ifdef OMAP_ENHANCEMENT
-            (layout != mCurrentLayout) ||
-#endif
             (scalingMode != mCurrentScalingMode))
         {
             mCurrentCrop = crop;
             mCurrentTransform = transform;
             mCurrentScalingMode = scalingMode;
-#ifdef OMAP_ENHANCEMENT
-            mCurrentLayout = layout;
-#endif
             mFlinger->invalidateHwcGeometry();
         }
 

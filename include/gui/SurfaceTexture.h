@@ -141,7 +141,7 @@ public:
     //
     // This call may only be made while the OpenGL ES context to which the
     // target texture belongs is bound to the calling thread.
-    status_t updateTexImage(bool isComposition = false);
+    status_t updateTexImage();
 
     // setBufferCountServer set the buffer count. If the client has requested
     // a buffer count using setBufferCount, the server-buffer count will

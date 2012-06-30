@@ -249,6 +249,7 @@ protected:
 #ifdef QCOM_HARDWARE
           void drawS3DUIWithOpenGL(const Region& clip) const;
 #endif
+#endif
 
           void setFiltering(bool filtering);
           bool getFiltering() const;

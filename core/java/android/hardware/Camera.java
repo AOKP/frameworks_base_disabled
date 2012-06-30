@@ -137,17 +137,10 @@ public class Camera {
     private static final int CAMERA_MSG_RAW_IMAGE = 0x080;
     private static final int CAMERA_MSG_COMPRESSED_IMAGE = 0x100;
     private static final int CAMERA_MSG_RAW_IMAGE_NOTIFY = 0x200;
-<<<<<<< HEAD
-    private static final int CAMERA_MSG_STATS_DATA       = 0x800;
-    private static final int CAMERA_MSG_META_DATA        = 0x8000;
-    private static final int CAMERA_MSG_PREVIEW_METADATA = 0x400;
-    private static final int CAMERA_MSG_ALL_MSGS         = 0x4FF;
-=======
     private static final int CAMERA_MSG_STATS_DATA = 0x800;
     private static final int CAMERA_MSG_META_DATA = 0x8000;
     private static final int CAMERA_MSG_PREVIEW_METADATA = 0x400;
     private static final int CAMERA_MSG_ALL_MSGS = 0x4FF;
->>>>>>> ac28877... Fix a build break
 
     private int mNativeContext; // accessed by native methods
     private EventHandler mEventHandler;
@@ -218,21 +211,6 @@ public class Camera {
         public static final int CAMERA_FACING_FRONT = 1;
 
         /**
-<<<<<<< HEAD
-         * The facing of the camera is the same as that of the screen.
-         */
-        public static final int CAMERA_SUPPORT_MODE_ZSL = 2;
-
-        /**
-         * The facing of the camera is the same as that of the screen.
-         */
-        public static final int CAMERA_SUPPORT_MODE_NONZSL = 3;
-
-        /**
-         * The direction that the camera faces. It should be
-         * CAMERA_FACING_BACK or CAMERA_FACING_FRONT.
-         */
-=======
 * The facing of the camera is the same as that of the screen.
 * @hide
 */
@@ -248,7 +226,6 @@ public class Camera {
 * The direction that the camera faces. It should be
 * CAMERA_FACING_BACK or CAMERA_FACING_FRONT.
 */
->>>>>>> ac28877... Fix a build break
         public int facing;
 
         /**
@@ -913,13 +890,8 @@ public class Camera {
     private native final void native_cancelAutoFocus();
 
     /**
-<<<<<<< HEAD
-     * @hide
-     */
-=======
 * @hide
 */
->>>>>>> ac28877... Fix a build break
 
     public final void encodeData()
     {
@@ -927,17 +899,10 @@ public class Camera {
     }
     private native final void native_encodeData();
     /**
-<<<<<<< HEAD
-     * Callback interface used to signal the moment of actual image capture.
-     *
-     * @see #takePicture(ShutterCallback, PictureCallback, PictureCallback, PictureCallback)
-     */
-=======
 * Callback interface used to signal the moment of actual image capture.
 *
 * @see #takePicture(ShutterCallback, PictureCallback, PictureCallback, PictureCallback)
 */
->>>>>>> ac28877... Fix a build break
     public interface ShutterCallback
     {
         /**
@@ -950,19 +915,6 @@ public class Camera {
         void onShutter();
     }
     /**
-<<<<<<< HEAD
-     * @hide
-     * Handles the callback for when Camera Data is available.
-     * data is read from the camera.
-     */
-    public interface CameraDataCallback {
-        /**
-         * Callback for when camera data is available.
-         *
-         * @param data   a int array of the camera data
-         * @param camera the Camera service object
-         */
-=======
 * @hide
 * Handles the callback for when Camera Data is available.
 * data is read from the camera.
@@ -974,26 +926,16 @@ public class Camera {
 * @param data a int array of the camera data
 * @param camera the Camera service object
 */
->>>>>>> ac28877... Fix a build break
         void onCameraData(int[] data, Camera camera);
     };
 
     /**
-<<<<<<< HEAD
-     * @hide
-     * Set camera histogram mode and registers a callback function to run.
-     *  Only valid after startPreview() has been called.
-     *
-     * @param cb the callback to run
-     */
-=======
 * @hide
 * Set camera histogram mode and registers a callback function to run.
 * Only valid after startPreview() has been called.
 *
 * @param cb the callback to run
 */
->>>>>>> ac28877... Fix a build break
     public final void setHistogramMode(CameraDataCallback cb)
     {
         mCameraDataCallback = cb;
@@ -1002,17 +944,10 @@ public class Camera {
     private native final void native_setHistogramMode(boolean mode);
 
     /**
-<<<<<<< HEAD
-     * @hide
-     * Set camera histogram command to send data.
-     *
-     */
-=======
 * @hide
 * Set camera histogram command to send data.
 *
 */
->>>>>>> ac28877... Fix a build break
     public final void sendHistogramData()
     {
         native_sendHistogramData();
@@ -1020,19 +955,6 @@ public class Camera {
     private native final void native_sendHistogramData();
 
     /**
-<<<<<<< HEAD
-     * @hide
-     * Handles the callback for when Camera Meta Data is available.
-     * Meta data is read from the camera.
-     */
-    public interface CameraMetaDataCallback {
-        /**
-         * Callback for when camera meta data is available.
-         *
-         * @param data   a int array of the camera meta data
-         * @param camera the Camera service object
-         */
-=======
 * @hide
 * Handles the callback for when Camera Meta Data is available.
 * Meta data is read from the camera.
@@ -1044,26 +966,16 @@ public class Camera {
 * @param data a int array of the camera meta data
 * @param camera the Camera service object
 */
->>>>>>> ac28877... Fix a build break
         void onCameraMetaData(int[] data, Camera camera);
     };
 
     /**
-<<<<<<< HEAD
-     * @hide
-     * Set camera face detection mode and registers a callback function to run.
-     *  Only valid after startPreview() has been called.
-     *
-     * @param cb the callback to run
-     */
-=======
 * @hide
 * Set camera face detection mode and registers a callback function to run.
 * Only valid after startPreview() has been called.
 *
 * @param cb the callback to run
 */
->>>>>>> ac28877... Fix a build break
     public final void setFaceDetectionCb(CameraMetaDataCallback cb)
     {
         mCameraMetaDataCallback = cb;
@@ -1072,15 +984,9 @@ public class Camera {
     private native final void native_setFaceDetectionCb(boolean mode);
 
     /**
-<<<<<<< HEAD
-     * @hide
-     * Set camera face detection command to send meta data.
-     */
-=======
 * @hide
 * Set camera face detection command to send meta data.
 */
->>>>>>> ac28877... Fix a build break
     public final void sendMetaData()
     {
         native_sendMetaData();
@@ -1658,18 +1564,6 @@ public class Camera {
         public int weight;
     }
      /**
-<<<<<<< HEAD
-     * @hide
-     * Handles the Touch Co-ordinate.
-     */
-	public class Coordinate {
-        /**
-         * Sets the x,y co-ordinates for a touch event
-         *
-         * @param x the x co-ordinate (pixels)
-         * @param y the y co-ordinate (pixels)
-         */
-=======
 * @hide
 * Handles the Touch Co-ordinate.
 */
@@ -1680,27 +1574,17 @@ public class Coordinate {
 * @param x the x co-ordinate (pixels)
 * @param y the y co-ordinate (pixels)
 */
->>>>>>> ac28877... Fix a build break
         public Coordinate(int x, int y) {
             xCoordinate = x;
             yCoordinate = y;
         }
         /**
-<<<<<<< HEAD
-         * Compares {@code obj} to this co-ordinate.
-         *
-         * @param obj the object to compare this co-ordinate with.
-         * @return {@code true} if the xCoordinate and yCoordinate of {@code obj} is the
-         *         same as those of this coordinate. {@code false} otherwise.
-         */
-=======
 * Compares {@code obj} to this co-ordinate.
 *
 * @param obj the object to compare this co-ordinate with.
 * @return {@code true} if the xCoordinate and yCoordinate of {@code obj} is the
 * same as those of this coordinate. {@code false} otherwise.
 */
->>>>>>> ac28877... Fix a build break
         @Override
         public boolean equals(Object obj) {
             if (!(obj instanceof Coordinate)) {
@@ -1737,11 +1621,7 @@ public class Coordinate {
     public class Parameters {
         // Parameter keys to communicate with the camera driver.
         private static final String KEY_PREVIEW_SIZE = "preview-size";
-<<<<<<< HEAD
-	    private static final String KEY_HFR_SIZE = "hfr-size";
-=======
-private static final String KEY_HFR_SIZE = "hfr-size";
->>>>>>> ac28877... Fix a build break
+        private static final String KEY_HFR_SIZE = "hfr-size";
         private static final String KEY_PREVIEW_FORMAT = "preview-format";
         private static final String KEY_PREVIEW_FRAME_RATE = "preview-frame-rate";
         private static final String KEY_PREVIEW_FPS_RANGE = "preview-fps-range";
@@ -1776,11 +1656,7 @@ private static final String KEY_HFR_SIZE = "hfr-size";
         private static final String KEY_SCENE_DETECT = "scene-detect";
         private static final String KEY_FLASH_MODE = "flash-mode";
         private static final String KEY_FOCUS_MODE = "focus-mode";
-<<<<<<< HEAD
-		private static final String KEY_ISO_MODE = "iso";
-=======
-private static final String KEY_ISO_MODE = "iso";
->>>>>>> ac28877... Fix a build break
+        private static final String KEY_ISO_MODE = "iso";
         private static final String KEY_LENSSHADE = "lensshade";
         private static final String KEY_HISTOGRAM = "histogram";
         private static final String KEY_SKIN_TONE_ENHANCEMENT = "skinToneEnhancement";
@@ -1827,11 +1703,7 @@ private static final String KEY_ISO_MODE = "iso";
         private static final String KEY_SELECTABLE_ZONE_AF = "selectable-zone-af";
         private static final String KEY_FACE_DETECTION = "face-detection";
         private static final String KEY_MEMORY_COLOR_ENHANCEMENT = "mce";
-<<<<<<< HEAD
-	    private static final String KEY_REDEYE_REDUCTION = "redeye-reduction";
-=======
-private static final String KEY_REDEYE_REDUCTION = "redeye-reduction";
->>>>>>> ac28877... Fix a build break
+        private static final String KEY_REDEYE_REDUCTION = "redeye-reduction";
         private static final String KEY_ZSL = "zsl";
         private static final String KEY_CAMERA_MODE = "camera-mode";
         private static final String KEY_VIDEO_HIGH_FRAME_RATE = "video-hfr";
@@ -1864,14 +1736,6 @@ private static final String KEY_REDEYE_REDUCTION = "redeye-reduction";
         public static final String EFFECT_AQUA = "aqua";
 
         // Values for touch af/aec settings.
-<<<<<<< HEAD
-        public static final String TOUCH_AF_AEC_OFF = "touch-off";
-        public static final String TOUCH_AF_AEC_ON = "touch-on";
-
-        // Values for auto exposure settings.
-        public static final String AUTO_EXPOSURE_FRAME_AVG = "frame-average";
-        public static final String AUTO_EXPOSURE_CENTER_WEIGHTED = "center-weighted";
-=======
         /** @hide */
         public static final String TOUCH_AF_AEC_OFF = "touch-off";
         /** @hide */
@@ -1883,7 +1747,6 @@ private static final String KEY_REDEYE_REDUCTION = "redeye-reduction";
         /** @hide */
         public static final String AUTO_EXPOSURE_CENTER_WEIGHTED = "center-weighted";
         /** @hide */
->>>>>>> ac28877... Fix a build break
         public static final String AUTO_EXPOSURE_SPOT_METERING = "spot-metering";
         // Values for antibanding settings.
         public static final String ANTIBANDING_AUTO = "auto";
@@ -1892,14 +1755,6 @@ private static final String KEY_REDEYE_REDUCTION = "redeye-reduction";
         public static final String ANTIBANDING_OFF = "off";
         //Values for ISO settings
 
-<<<<<<< HEAD
-        public static final String ISO_AUTO = "auto";
-        public static final String ISO_HJR = "ISO_HJR";
-        public static final String ISO_100 = "ISO100";
-        public static final String ISO_200 = "ISO200";
-        public static final String ISO_400 = "ISO400";
-        public static final String ISO_800 = "ISO800";
-=======
         /** @hide */
         public static final String ISO_AUTO = "auto";
         /** @hide */
@@ -1913,41 +1768,10 @@ private static final String KEY_REDEYE_REDUCTION = "redeye-reduction";
         /** @hide */
         public static final String ISO_800 = "ISO800";
         /** @hide */
->>>>>>> ac28877... Fix a build break
         public static final String ISO_1600 = "ISO1600";
 
         //Values for Lens Shading
 
-<<<<<<< HEAD
-        public static final String LENSSHADE_ENABLE = "enable";
-        public static final String LENSSHADE_DISABLE= "disable";
-
-        public static final String HISTOGRAM_ENABLE = "enable";
-        public static final String HISTOGRAM_DISABLE= "disable";
-
-        public static final String SKIN_TONE_ENHANCEMENT_ENABLE = "enable";
-        public static final String SKIN_TONE_ENHANCEMENT_DISABLE= "disable";
-
-        // Values for MCE settings.
-        public static final String MCE_ENABLE = "enable";
-        public static final String MCE_DISABLE = "disable";
-
-        // Values for ZSL settings.
-        public static final String ZSL_ON = "on";
-        public static final String ZSL_OFF = "off";
-
-        // Values for HDR Bracketing settings.
-        public static final String AE_BRACKET_HDR_OFF = "Off";
-        public static final String AE_BRACKET_HDR = "HDR";
-        public static final String AE_BRACKET = "AE-Bracket";
-
-        // Values for HFR settings.
-        public static final String VIDEO_HFR_OFF = "off";
-        public static final String VIDEO_HFR_2X = "60";
-        public static final String VIDEO_HFR_3X = "90";
-        public static final String VIDEO_HFR_4X = "120";
-
-=======
         /** @hide */
         public static final String LENSSHADE_ENABLE = "enable";
         /** @hide */
@@ -1994,7 +1818,6 @@ private static final String KEY_REDEYE_REDUCTION = "redeye-reduction";
         public static final String VIDEO_HFR_4X = "120";
 
         /** @hide */
->>>>>>> ac28877... Fix a build break
         public static final String KEY_AE_BRACKET_HDR = "ae-bracket-hdr";
 
         // Values for flash mode settings.
@@ -2027,15 +1850,6 @@ private static final String KEY_REDEYE_REDUCTION = "redeye-reduction";
         public static final String FLASH_MODE_TORCH = "torch";
 
         /**
-<<<<<<< HEAD
-         * Scene mode is off.
-         */
-        public static final String SCENE_MODE_ASD = "asd";
-
-        /**
-         * Scene mode is auto ASD.
-         */
-=======
 * Scene mode is off.
 * @hide
 */
@@ -2044,7 +1858,6 @@ private static final String KEY_REDEYE_REDUCTION = "redeye-reduction";
         /**
 * Scene mode is auto ASD.
 */
->>>>>>> ac28877... Fix a build break
         public static final String SCENE_MODE_AUTO = "auto";
 
         /**
@@ -2118,13 +1931,6 @@ private static final String KEY_REDEYE_REDUCTION = "redeye-reduction";
 * Capture the naturally warm color of scenes lit by candles.
 */
         public static final String SCENE_MODE_CANDLELIGHT = "candlelight";
-<<<<<<< HEAD
-        public static final String SCENE_MODE_BACKLIGHT = "backlight";
-        public static final String SCENE_MODE_FLOWERS = "flowers";
-
-        // Values for auto scene detection settings.
-        public static final String SCENE_DETECT_OFF = "off";
-=======
         /** @hide */
         public static final String SCENE_MODE_BACKLIGHT = "backlight";
         /** @hide */
@@ -2134,7 +1940,6 @@ private static final String KEY_REDEYE_REDUCTION = "redeye-reduction";
         /** @hide */
         public static final String SCENE_DETECT_OFF = "off";
         /** @hide */
->>>>>>> ac28877... Fix a build break
         public static final String SCENE_DETECT_ON = "on";
 
         /**
@@ -2171,19 +1976,6 @@ private static final String KEY_REDEYE_REDUCTION = "redeye-reduction";
         public static final String FOCUS_MODE_FIXED = "fixed";
 
         /**
-<<<<<<< HEAD
-         * Normal focus mode. Applications should call
-         * {@link #autoFocus(AutoFocusCallback)} to start the focus in this
-         * mode.
-         */
-        public static final String FOCUS_MODE_NORMAL = "normal";
-
-        /**
-         * Extended depth of field (EDOF). Focusing is done digitally and
-         * continuously. Applications should not call {@link
-         * #autoFocus(AutoFocusCallback)} in this mode.
-         */
-=======
 * Normal focus mode. Applications should call
 * {@link #autoFocus(AutoFocusCallback)} to start the focus in this
 * mode.
@@ -2196,7 +1988,6 @@ private static final String KEY_REDEYE_REDUCTION = "redeye-reduction";
 * continuously. Applications should not call {@link
 * #autoFocus(AutoFocusCallback)} in this mode.
 */
->>>>>>> ac28877... Fix a build break
         public static final String FOCUS_MODE_EDOF = "edof";
 
         /**
@@ -2292,24 +2083,6 @@ private static final String KEY_REDEYE_REDUCTION = "redeye-reduction";
 
         //Values for Continuous AF
 
-<<<<<<< HEAD
-        public static final String CONTINUOUS_AF_OFF = "caf-off";
-        public static final String CONTINUOUS_AF_ON = "caf-on";
-        public static final String DENOISE_OFF = "denoise-off";
-        public static final String DENOISE_ON = "denoise-on";
-	// Values for Redeye Reduction settings.
-        public static final String REDEYE_REDUCTION_ENABLE = "enable";
-        public static final String REDEYE_REDUCTION_DISABLE = "disable";
-
-        // Values for selectable zone af settings.
-        public static final String SELECTABLE_ZONE_AF_AUTO = "auto";
-        public static final String SELECTABLE_ZONE_AF_SPOTMETERING = "spot-metering";
-        public static final String SELECTABLE_ZONE_AF_CENTER_WEIGHTED = "center-weighted";
-        public static final String SELECTABLE_ZONE_AF_FRAME_AVERAGE = "frame-average";
-
-        // Values for Face Detection settings.
-        public static final String FACE_DETECTION_OFF = "off";
-=======
         /** @hide */
         public static final String CONTINUOUS_AF_OFF = "caf-off";
         /** @hide */
@@ -2338,7 +2111,6 @@ private static final String KEY_REDEYE_REDUCTION = "redeye-reduction";
         /** @hide */
         public static final String FACE_DETECTION_OFF = "off";
         /** @hide */
->>>>>>> ac28877... Fix a build break
         public static final String FACE_DETECTION_ON = "on";
 
         private HashMap<String, String> mMap;
@@ -2532,15 +2304,6 @@ private static final String KEY_REDEYE_REDUCTION = "redeye-reduction";
             return splitSize(str);
         }
 
-<<<<<<< HEAD
-	/**
-         * @hide
-         * Gets the supported preview sizes in high frame rate recording mode.
-         *
-         * @return a list of Size object. This method will always return a list
-         *         with at least one element.
-         */
-=======
 /**
 * @hide
 * Gets the supported preview sizes in high frame rate recording mode.
@@ -2548,7 +2311,6 @@ private static final String KEY_REDEYE_REDUCTION = "redeye-reduction";
 * @return a list of Size object. This method will always return a list
 * with at least one element.
 */
->>>>>>> ac28877... Fix a build break
         public List<Size> getSupportedHfrSizes() {
             String str = get(KEY_HFR_SIZE + SUPPORTED_VALUES_SUFFIX);
             return splitSize(str);
@@ -3006,105 +2768,59 @@ private static final String KEY_REDEYE_REDUCTION = "redeye-reduction";
         }
 
         /**
-<<<<<<< HEAD
-         * @hide
-         * Sets GPS latitude reference coordinate. This will be stored in JPEG EXIF
-         * header.
-         * @param latRef GPS latitude reference coordinate.
-         */
-=======
 * @hide
 * Sets GPS latitude reference coordinate. This will be stored in JPEG EXIF
 * header.
 * @param latRef GPS latitude reference coordinate.
 */
->>>>>>> ac28877... Fix a build break
         public void setGpsLatitudeRef(String latRef) {
             set(KEY_GPS_LATITUDE_REF, latRef);
         }
 
         /**
-<<<<<<< HEAD
-         * Sets GPS latitude coordinate. This will be stored in JPEG EXIF
-         * header.
-         *
-         * @param latitude GPS latitude coordinate.
-         */
-=======
 * Sets GPS latitude coordinate. This will be stored in JPEG EXIF
 * header.
 *
 * @param latitude GPS latitude coordinate.
 */
->>>>>>> ac28877... Fix a build break
         public void setGpsLatitude(double latitude) {
             set(KEY_GPS_LATITUDE, Double.toString(latitude));
         }
 
         /**
-<<<<<<< HEAD
-         * @hide
-         * Sets GPS longitude reference coordinate. This will be stored in JPEG EXIF
-         * header.
-         * @param lonRef GPS longitude reference coordinate.
-         */
-=======
 * @hide
 * Sets GPS longitude reference coordinate. This will be stored in JPEG EXIF
 * header.
 * @param lonRef GPS longitude reference coordinate.
 */
->>>>>>> ac28877... Fix a build break
         public void setGpsLongitudeRef(String lonRef) {
             set(KEY_GPS_LONGITUDE_REF, lonRef);
         }
 
         /**
-<<<<<<< HEAD
-         * Sets GPS longitude coordinate. This will be stored in JPEG EXIF
-         * header.
-         *
-         * @param longitude GPS longitude coordinate.
-         */
-=======
 * Sets GPS longitude coordinate. This will be stored in JPEG EXIF
 * header.
 *
 * @param longitude GPS longitude coordinate.
 */
->>>>>>> ac28877... Fix a build break
         public void setGpsLongitude(double longitude) {
             set(KEY_GPS_LONGITUDE, Double.toString(longitude));
         }
 
         /**
-<<<<<<< HEAD
-         * @hide
-         * Sets GPS altitude reference. This will be stored in JPEG EXIF header.
-         * @param altRef reference GPS altitude in meters.
-         */
-=======
 * @hide
 * Sets GPS altitude reference. This will be stored in JPEG EXIF header.
 * @param altRef reference GPS altitude in meters.
 */
->>>>>>> ac28877... Fix a build break
         public void setGpsAltitudeRef(double altRef) {
             set(KEY_GPS_ALTITUDE_REF, Double.toString(altRef));
         }
 
         /**
-<<<<<<< HEAD
-         * Sets GPS altitude. This will be stored in JPEG EXIF header.
-         *
-         * @param altitude GPS altitude in meters.
-         */
-=======
 * Sets GPS altitude. This will be stored in JPEG EXIF header.
 *
 * @param altitude GPS altitude in meters.
 */
->>>>>>> ac28877... Fix a build break
         public void setGpsAltitude(double altitude) {
             set(KEY_GPS_ALTITUDE, Double.toString(altitude));
         }
@@ -3130,55 +2846,31 @@ private static final String KEY_REDEYE_REDUCTION = "redeye-reduction";
         }
 
         /**
-<<<<<<< HEAD
-         * @hide
-         * Sets system timestamp. This will be stored in JPEG EXIF header.
-         *
-         * @param dateTime current timestamp (UTC in seconds since January 1,
-         *                  1970).
-         */
-=======
 * @hide
 * Sets system timestamp. This will be stored in JPEG EXIF header.
 *
 * @param dateTime current timestamp (UTC in seconds since January 1,
 * 1970).
 */
->>>>>>> ac28877... Fix a build break
         public void setExifDateTime(String dateTime) {
             set(KEY_EXIF_DATETIME, dateTime);
         }
 
         /**
-<<<<<<< HEAD
-         * @hide
-         * Sets GPS Status. This will be stored in JPEG EXIF header.
-         *
-         * @param status GPS status (UTC in seconds since January 1,
-         *                  1970).
-         */
-=======
 * @hide
 * Sets GPS Status. This will be stored in JPEG EXIF header.
 *
 * @param status GPS status (UTC in seconds since January 1,
 * 1970).
 */
->>>>>>> ac28877... Fix a build break
         public void setGpsStatus(double status) {
             set(KEY_GPS_STATUS, Double.toString(status));
         }
 
         /**
-<<<<<<< HEAD
-         * Removes GPS latitude, longitude, altitude, and timestamp from the
-         * parameters.
-         */
-=======
 * Removes GPS latitude, longitude, altitude, and timestamp from the
 * parameters.
 */
->>>>>>> ac28877... Fix a build break
         public void removeGpsData() {
             remove(KEY_GPS_LATITUDE_REF);
             remove(KEY_GPS_LATITUDE);
@@ -3278,41 +2970,6 @@ private static final String KEY_REDEYE_REDUCTION = "redeye-reduction";
             return split(str);
         }
 
-<<<<<<< HEAD
-        /**
-         * @hide
-         * Gets the current Touch AF/AEC setting.
-         *
-         * @return one of TOUCH_AF_AEC_XXX string constant. null if Touch AF/AEC
-         *         setting is not supported.
-         *
-         */
-        public String getTouchAfAec() {
-            return get(KEY_TOUCH_AF_AEC);
-        }
-
-        /**
-         * @hide
-         * Sets the current TOUCH AF/AEC setting.
-         *
-         * @param value TOUCH_AF_AEC_XXX string constants.
-         *
-         */
-        public void setTouchAfAec(String value) {
-            set(KEY_TOUCH_AF_AEC, value);
-        }
-
-       /**
-         * @hide
-         * Gets the supported Touch AF/AEC setting.
-         *
-         * @return a List of TOUCH_AF_AEC_XXX string constants. null if TOUCH AF/AEC
-         *         setting is not supported.
-         *
-         */
-        public List<String> getSupportedTouchAfAec() {
-            String str = get(KEY_TOUCH_AF_AEC + SUPPORTED_VALUES_SUFFIX);
-=======
         /**
 * @hide
 * Gets the current Touch AF/AEC setting.
@@ -3573,438 +3230,10 @@ private static final String KEY_REDEYE_REDUCTION = "redeye-reduction";
 */
         public List<String> getSupportedAntibanding() {
             String str = get(KEY_ANTIBANDING + SUPPORTED_VALUES_SUFFIX);
->>>>>>> ac28877... Fix a build break
             return split(str);
         }
 
         /**
-<<<<<<< HEAD
-         * @hide
-         * Sets the touch co-ordinate for Touch AEC.
-         *
-         * @param x  the x co-ordinate of the touch event
-         * @param y the y co-ordinate of the touch event
-         *
-         */
-        public void setTouchIndexAec(int x, int y) {
-            String v = Integer.toString(x) + "x" + Integer.toString(y);
-            set(KEY_TOUCH_INDEX_AEC, v);
-        }
-
-        /**
-         * @hide
-         * Returns the touch co-ordinates of the touch event.
-         *
-         * @return a Index object with the x and y co-ordinated
-         *          for the touch event
-         *
-         */
-        public Coordinate getTouchIndexAec() {
-            String pair = get(KEY_TOUCH_INDEX_AEC);
-            return strToCoordinate(pair);
-        }
-
-        /**
-         * @hide
-         * Sets the touch co-ordinate for Touch AF.
-         *
-         * @param x  the x co-ordinate of the touch event
-         * @param y the y co-ordinate of the touch event
-         *
-         */
-        public void setTouchIndexAf(int x, int y) {
-            String v = Integer.toString(x) + "x" + Integer.toString(y);
-            set(KEY_TOUCH_INDEX_AF, v);
-        }
-
-        /**
-         * @hide
-         * Returns the touch co-ordinates of the touch event.
-         *
-         * @return a Index object with the x and y co-ordinated
-         *          for the touch event
-         *
-         */
-        public Coordinate getTouchIndexAf() {
-            String pair = get(KEY_TOUCH_INDEX_AF);
-            return strToCoordinate(pair);
-        }
-
-        /**
-         * @hide
-         * Get Sharpness level
-         *
-         * @return sharpness level
-         */
-        public int getSharpness(){
-            return getInt(KEY_SHARPNESS);
-        }
-
-        /**
-         * @hide
-         * Set Sharpness Level
-         *
-         * @param sharpness level
-         */
-        public void setSharpness(int sharpness){
-            if((sharpness < 0) || (sharpness > getMaxSharpness()) )
-                throw new IllegalArgumentException(
-                        "Invalid Sharpness " + sharpness);
-
-            set(KEY_SHARPNESS, String.valueOf(sharpness));
-        }
-
-        /**
-         * @hide
-         * Get Max Sharpness Level
-         *
-         * @return max sharpness level
-         */
-        public int getMaxSharpness(){
-            return getInt(KEY_MAX_SHARPNESS);
-        }
-
-        /**
-         * @hide
-         * Get Contrast level
-         *
-         * @return contrast level
-         */
-        public int getContrast(){
-            return getInt(KEY_CONTRAST);
-        }
-
-        /**
-         * @hide
-         * Set Contrast Level
-         *
-         * @param contrast level
-         */
-        public void setContrast(int contrast){
-            if((contrast < 0 ) || (contrast > getMaxContrast()))
-                throw new IllegalArgumentException(
-                        "Invalid Contrast " + contrast);
-
-            set(KEY_CONTRAST, String.valueOf(contrast));
-        }
-
-        /**
-         * @hide
-         * Get Max Contrast Level
-         *
-         * @return max contrast level
-         */
-        public int getMaxContrast(){
-            return getInt(KEY_MAX_CONTRAST);
-        }
-
-        /**
-         * @hide
-         * Get Saturation level
-         *
-         * @return saturation level
-         */
-        public int getSaturation(){
-            return getInt(KEY_SATURATION);
-        }
-
-        /**
-         * @hide
-         * Set Saturation Level
-         *
-         * @param saturation level
-         */
-        public void setSaturation(int saturation){
-            if((saturation < 0 ) || (saturation > getMaxSaturation()))
-                throw new IllegalArgumentException(
-                        "Invalid Saturation " + saturation);
-
-            set(KEY_SATURATION, String.valueOf(saturation));
-        }
-
-        /**
-         * @hide
-         * Get Max Saturation Level
-         *
-         * @return max contrast level
-         */
-        public int getMaxSaturation(){
-            return getInt(KEY_MAX_SATURATION);
-        }
-
-        /**
-         * @hide
-         * Gets the current redeye reduction setting.
-         *
-         * @return one of REDEYE_REDUCTION_XXX string constant. null if redeye reduction
-         *         setting is not supported.
-         *
-         */
-        public String getRedeyeReductionMode() {
-            return get(KEY_REDEYE_REDUCTION);
-        }
-
-	/**
-         * @hide
-         * Sets the redeye reduction. Other parameters may be changed after changing
-         * redeye reduction. After setting redeye reduction,
-         * applications should call getParameters to know if some parameters are
-         * changed.
-         *
-         * @param value REDEYE_REDUCTION_XXX string constants.
-         *
-         */
-        public void setRedeyeReductionMode(String value) {
-            set(KEY_REDEYE_REDUCTION, value);
-        }
-        /**
-         * @hide
-         * Gets the supported redeye reduction modes.
-         *
-         * @return a List of REDEYE_REDUCTION_XXX string constant. null if redeye reduction
-         *         setting is not supported.
-         *
-         */
-        public List<String> getSupportedRedeyeReductionModes() {
-            String str = get(KEY_REDEYE_REDUCTION + SUPPORTED_VALUES_SUFFIX);
-            return split(str);
-        }
-        /**
-         * Gets the current antibanding setting.
-         *
-         * @return current antibanding. null if antibanding setting is not
-         *         supported.
-         * @see #ANTIBANDING_AUTO
-         * @see #ANTIBANDING_50HZ
-         * @see #ANTIBANDING_60HZ
-         * @see #ANTIBANDING_OFF
-         */
-        public String getAntibanding() {
-            return get(KEY_ANTIBANDING);
-        }
-
-        /**
-         * Sets the antibanding.
-         *
-         * @param antibanding new antibanding value.
-         * @see #getAntibanding()
-         */
-        public void setAntibanding(String antibanding) {
-            set(KEY_ANTIBANDING, antibanding);
-        }
-
-        /**
-         * Gets the supported antibanding values.
-         *
-         * @return a list of supported antibanding values. null if antibanding
-         *         setting is not supported.
-         * @see #getAntibanding()
-         */
-        public List<String> getSupportedAntibanding() {
-            String str = get(KEY_ANTIBANDING + SUPPORTED_VALUES_SUFFIX);
-            return split(str);
-        }
-
-        /**
-         * @hide
-         * Gets the frame rate mode setting.
-         *
-         * @return one of FRAME_RATE_XXX_MODE string constant. null if this
-         *         setting is not supported.
-         */
-        public String getPreviewFrameRateMode() {
-            return get(KEY_PREVIEW_FRAME_RATE_MODE);
-        }
-
-        /**
-         * @hide
-         * Sets the frame rate mode.
-         *
-         * @param value FRAME_RATE_XXX_MODE string constants.
-         */
-        public void setPreviewFrameRateMode(String value) {
-            set(KEY_PREVIEW_FRAME_RATE_MODE, value);
-        }
-
-        /**
-         * @hide
-         * Gets the supported frame rate modes.
-         *
-         * @return a List of FRAME_RATE_XXX_MODE string constant. null if this
-         *         setting is not supported.
-         */
-        public List<String> getSupportedPreviewFrameRateModes() {
-            String str = get(KEY_PREVIEW_FRAME_RATE_MODE + SUPPORTED_VALUES_SUFFIX);
-            return split(str);
-        }
-
-        /**
-         * Gets the current scene mode setting.
-         *
-         * @return one of SCENE_MODE_XXX string constant. null if scene mode
-         *         setting is not supported.
-         * @see #SCENE_MODE_AUTO
-         * @see #SCENE_MODE_ACTION
-         * @see #SCENE_MODE_PORTRAIT
-         * @see #SCENE_MODE_LANDSCAPE
-         * @see #SCENE_MODE_NIGHT
-         * @see #SCENE_MODE_NIGHT_PORTRAIT
-         * @see #SCENE_MODE_THEATRE
-         * @see #SCENE_MODE_BEACH
-         * @see #SCENE_MODE_SNOW
-         * @see #SCENE_MODE_SUNSET
-         * @see #SCENE_MODE_STEADYPHOTO
-         * @see #SCENE_MODE_FIREWORKS
-         * @see #SCENE_MODE_SPORTS
-         * @see #SCENE_MODE_PARTY
-         * @see #SCENE_MODE_CANDLELIGHT
-         */
-        public String getSceneMode() {
-            return get(KEY_SCENE_MODE);
-        }
-
-        /**
-         * Sets the scene mode. Changing scene mode may override other
-         * parameters (such as flash mode, focus mode, white balance). For
-         * example, suppose originally flash mode is on and supported flash
-         * modes are on/off. In night scene mode, both flash mode and supported
-         * flash mode may be changed to off. After setting scene mode,
-         * applications should call getParameters to know if some parameters are
-         * changed.
-         *
-         * @param value scene mode.
-         * @see #getSceneMode()
-         */
-        public void setSceneMode(String value) {
-            set(KEY_SCENE_MODE, value);
-        }
-
-        /**
-         * Gets the supported scene modes.
-         *
-         * @return a list of supported scene modes. null if scene mode setting
-         *         is not supported.
-         * @see #getSceneMode()
-         */
-        public List<String> getSupportedSceneModes() {
-            String str = get(KEY_SCENE_MODE + SUPPORTED_VALUES_SUFFIX);
-            return split(str);
-        }
-
-        /**
-         * @hide
-         * Gets the current auto scene detection setting.
-         *
-         * @return one of SCENE_DETECT_XXX string constant. null if auto scene detection
-         *         setting is not supported.
-         *
-         */
-        public String getSceneDetectMode() {
-            return get(KEY_SCENE_DETECT);
-        }
-
-        /**
-         * @hide
-         * Sets the auto scene detect. Other parameters may be changed after changing
-         * scene detect. After setting auto scene detection,
-         * applications should call getParameters to know if some parameters are
-         * changed.
-         *
-         * @param value SCENE_DETECT_XXX string constants.
-         *
-         */
-        public void setSceneDetectMode(String value) {
-            set(KEY_SCENE_DETECT, value);
-        }
-
-        /**
-         * @hide
-         * Gets the supported auto scene detection modes.
-         *
-         * @return a List of SCENE_DETECT_XXX string constant. null if scene detection
-         *         setting is not supported.
-         *
-         */
-        public List<String> getSupportedSceneDetectModes() {
-            String str = get(KEY_SCENE_DETECT + SUPPORTED_VALUES_SUFFIX);
-            return split(str);
-        }
-
-        /**
-         * Gets the current flash mode setting.
-         *
-         * @return current flash mode. null if flash mode setting is not
-         *         supported.
-         * @see #FLASH_MODE_OFF
-         * @see #FLASH_MODE_AUTO
-         * @see #FLASH_MODE_ON
-         * @see #FLASH_MODE_RED_EYE
-         * @see #FLASH_MODE_TORCH
-         */
-        public String getFlashMode() {
-            return get(KEY_FLASH_MODE);
-        }
-
-        /**
-         * @hide
-         * Gets the current hdr bracketing mode setting.
-         *
-         * @return current hdr bracketing mode.
-         * @see #KEY_AE_BRACKET_OFF
-         * @see #KEY_AE_BRACKET_HDR
-         * @see #KEY_AE_BRACKET_BRACKATING
-         */
-        public String getAEBracket() {
-            return get(KEY_AE_BRACKET_HDR);
-        }
-
-        /**
-         * Sets the flash mode.
-         *
-         * @param value flash mode.
-         * @see #getFlashMode()
-         */
-        public void setFlashMode(String value) {
-            set(KEY_FLASH_MODE, value);
-        }
-
-        /**
-         * @hide
-         * Set HDR-Bracketing Level
-         *
-         * @param value HDR-Bracketing
-         */
-        public void setAEBracket(String value){
-            set(KEY_AE_BRACKET_HDR, value);
-        }
-
-        /**
-         * Gets the supported flash modes.
-         *
-         * @return a list of supported flash modes. null if flash mode setting
-         *         is not supported.
-         * @see #getFlashMode()
-         */
-        public List<String> getSupportedFlashModes() {
-            String str = get(KEY_FLASH_MODE + SUPPORTED_VALUES_SUFFIX);
-            return split(str);
-        }
-
-        /**
-         * Gets the current focus mode setting.
-         *
-         * @return current focus mode. This method will always return a non-null
-         *         value. Applications should call {@link
-         *         #autoFocus(AutoFocusCallback)} to start the focus if focus
-         *         mode is FOCUS_MODE_AUTO or FOCUS_MODE_MACRO.
-         * @see #FOCUS_MODE_AUTO
-         * @see #FOCUS_MODE_INFINITY
-         * @see #FOCUS_MODE_MACRO
-         * @see #FOCUS_MODE_FIXED
-         * @see #FOCUS_MODE_EDOF
-         * @see #FOCUS_MODE_CONTINUOUS_VIDEO
-         */
-=======
 * @hide
 * Gets the frame rate mode setting.
 *
@@ -4203,7 +3432,6 @@ private static final String KEY_REDEYE_REDUCTION = "redeye-reduction";
 * @see #FOCUS_MODE_EDOF
 * @see #FOCUS_MODE_CONTINUOUS_VIDEO
 */
->>>>>>> ac28877... Fix a build break
         public String getFocusMode() {
             return get(KEY_FOCUS_MODE);
         }
@@ -4535,345 +3763,191 @@ private static final String KEY_REDEYE_REDUCTION = "redeye-reduction";
         }
 
         /**
-<<<<<<< HEAD
-         * @hide
-         * Gets the current ISO setting.
-         *
-         * @return one of ISO_XXX string constant. null if ISO
-         *         setting is not supported.
-         */
-=======
 * @hide
 * Gets the current ISO setting.
 *
 * @return one of ISO_XXX string constant. null if ISO
 * setting is not supported.
 */
->>>>>>> ac28877... Fix a build break
         public String getISOValue() {
             return get(KEY_ISO_MODE);
         }
 
         /**
-<<<<<<< HEAD
-         * @hide
-         * Sets the ISO.
-         *
-         * @param iso ISO_XXX string constant.
-         */
-=======
 * @hide
 * Sets the ISO.
 *
 * @param iso ISO_XXX string constant.
 */
->>>>>>> ac28877... Fix a build break
         public void setISOValue(String iso) {
             set(KEY_ISO_MODE, iso);
         }
 
          /**
-<<<<<<< HEAD
-         * @hide
-         * Gets the supported ISO values.
-         *
-         * @return a List of FLASH_MODE_XXX string constants. null if flash mode
-         *         setting is not supported.
-         */
-=======
 * @hide
 * Gets the supported ISO values.
 *
 * @return a List of FLASH_MODE_XXX string constants. null if flash mode
 * setting is not supported.
 */
->>>>>>> ac28877... Fix a build break
         public List<String> getSupportedIsoValues() {
             String str = get(KEY_ISO_MODE + SUPPORTED_VALUES_SUFFIX);
             return split(str);
         }
 
          /**
-<<<<<<< HEAD
-         * @hide
-         * Gets the current LensShade Mode.
-         *
-         * @return LensShade Mode
-         */
-=======
 * @hide
 * Gets the current LensShade Mode.
 *
 * @return LensShade Mode
 */
->>>>>>> ac28877... Fix a build break
         public String getLensShade() {
             return get(KEY_LENSSHADE);
         }
         /**
-<<<<<<< HEAD
-         * @hide
-         * Sets the current LensShade Mode.
-         *
-         * @return LensShade Mode
-         */
-=======
 * @hide
 * Sets the current LensShade Mode.
 *
 * @return LensShade Mode
 */
->>>>>>> ac28877... Fix a build break
         public void setLensShade(String lensshade) {
             set(KEY_LENSSHADE, lensshade);
         }
 
          /**
-<<<<<<< HEAD
-         * @hide
-         * Gets the supported Lensshade modes.
-         *
-         * @return a List of LENS_MODE_XXX string constants. null if lens mode
-         *         setting is not supported.
-         */
-=======
 * @hide
 * Gets the supported Lensshade modes.
 *
 * @return a List of LENS_MODE_XXX string constants. null if lens mode
 * setting is not supported.
 */
->>>>>>> ac28877... Fix a build break
         public List<String> getSupportedLensShadeModes() {
             String str = get(KEY_LENSSHADE + SUPPORTED_VALUES_SUFFIX);
             return split(str);
         }
 
          /**
-<<<<<<< HEAD
-         * @hide
-         * Gets the supported Histogram modes.
-         *
-         * @return a List of HISTOGRAM_XXX string constants. null if histogram mode
-         *         setting is not supported.
-         */
-=======
 * @hide
 * Gets the supported Histogram modes.
 *
 * @return a List of HISTOGRAM_XXX string constants. null if histogram mode
 * setting is not supported.
 */
->>>>>>> ac28877... Fix a build break
         public List<String> getSupportedHistogramModes() {
             String str = get(KEY_HISTOGRAM + SUPPORTED_VALUES_SUFFIX);
             return split(str);
         }
 
          /**
-<<<<<<< HEAD
-         * @hide
-         * Gets the supported Skin Tone Enhancement modes.
-         *
-         * @return a List of SKIN_TONE_ENHANCEMENT_XXX string constants. null if skin tone enhancement
-         *         setting is not supported.
-         */
-=======
 * @hide
 * Gets the supported Skin Tone Enhancement modes.
 *
 * @return a List of SKIN_TONE_ENHANCEMENT_XXX string constants. null if skin tone enhancement
 * setting is not supported.
 */
->>>>>>> ac28877... Fix a build break
         public List<String> getSupportedSkinToneEnhancementModes() {
             String str = get(KEY_SKIN_TONE_ENHANCEMENT + SUPPORTED_VALUES_SUFFIX);
           return split(str);
         }
 
          /**
-<<<<<<< HEAD
-         * @hide
-         * Gets the current auto exposure setting.
-         *
-         * @return one of AUTO_EXPOSURE_XXX string constant. null if auto exposure
-         *         setting is not supported.
-         */
-=======
 * @hide
 * Gets the current auto exposure setting.
 *
 * @return one of AUTO_EXPOSURE_XXX string constant. null if auto exposure
 * setting is not supported.
 */
->>>>>>> ac28877... Fix a build break
         public String getAutoExposure() {
             return get(KEY_AUTO_EXPOSURE);
         }
 
         /**
-<<<<<<< HEAD
-         * @hide
-         * Sets the current auto exposure setting.
-         *
-         * @param value AUTO_EXPOSURE_XXX string constants.
-         */
-=======
 * @hide
 * Sets the current auto exposure setting.
 *
 * @param value AUTO_EXPOSURE_XXX string constants.
 */
->>>>>>> ac28877... Fix a build break
         public void setAutoExposure(String value) {
             set(KEY_AUTO_EXPOSURE, value);
         }
 
        /**
-<<<<<<< HEAD
-         * @hide
-         * Gets the supported auto exposure setting.
-         *
-         * @return a List of AUTO_EXPOSURE_XXX string constants. null if auto exposure
-         *         setting is not supported.
-         */
-=======
 * @hide
 * Gets the supported auto exposure setting.
 *
 * @return a List of AUTO_EXPOSURE_XXX string constants. null if auto exposure
 * setting is not supported.
 */
->>>>>>> ac28877... Fix a build break
         public List<String> getSupportedAutoexposure() {
             String str = get(KEY_AUTO_EXPOSURE + SUPPORTED_VALUES_SUFFIX);
             return split(str);
         }
 
          /**
-<<<<<<< HEAD
-         * @hide
-         * Gets the current MCE Mode.
-         *
-         * @return MCE value
-         */
-=======
 * @hide
 * Gets the current MCE Mode.
 *
 * @return MCE value
 */
->>>>>>> ac28877... Fix a build break
         public String getMemColorEnhance() {
             return get(KEY_MEMORY_COLOR_ENHANCEMENT);
         }
 
         /**
-<<<<<<< HEAD
-         * @hide
-         * Sets the current MCE Mode.
-         *
-         * @return MCE Mode
-         */
-=======
 * @hide
 * Sets the current MCE Mode.
 *
 * @return MCE Mode
 */
->>>>>>> ac28877... Fix a build break
         public void setMemColorEnhance(String mce) {
             set(KEY_MEMORY_COLOR_ENHANCEMENT, mce);
         }
 
          /**
-<<<<<<< HEAD
-         * @hide
-         * Gets the supported MCE modes.
-         *
-         * @return a List of MCE_ENABLE/DISABLE string constants. null if MCE mode
-         *         setting is not supported.
-         */
-=======
 * @hide
 * Gets the supported MCE modes.
 *
 * @return a List of MCE_ENABLE/DISABLE string constants. null if MCE mode
 * setting is not supported.
 */
->>>>>>> ac28877... Fix a build break
         public List<String> getSupportedMemColorEnhanceModes() {
             String str = get(KEY_MEMORY_COLOR_ENHANCEMENT + SUPPORTED_VALUES_SUFFIX);
             return split(str);
         }
 
          /**
-<<<<<<< HEAD
-         * @hide
-         * Gets the current ZSL Mode.
-         *
-         * @return ZSL mode value
-         */
-=======
 * @hide
 * Gets the current ZSL Mode.
 *
 * @return ZSL mode value
 */
->>>>>>> ac28877... Fix a build break
          public String getZSLMode() {
             return get(KEY_ZSL);
          }
 
          /**
-<<<<<<< HEAD
-         * @hide
-         * Sets the current ZSL Mode. ZSL mode is set as a 0th bit in KEY_CAMERA_MODE.
-         *
-         * @return null
-         */
-=======
 * @hide
 * Sets the current ZSL Mode. ZSL mode is set as a 0th bit in KEY_CAMERA_MODE.
 *
 * @return null
 */
->>>>>>> ac28877... Fix a build break
         public void setZSLMode(String zsl) {
             set(KEY_ZSL, zsl);
         }
 
          /**
-<<<<<<< HEAD
-         * @hide
-         * Gets the supported ZSL modes.
-         *
-         * @return a List of ZSL_OFF/OFF string constants. null if ZSL mode
-         * setting is not supported.
-         */
-=======
 * @hide
 * Gets the supported ZSL modes.
 *
 * @return a List of ZSL_OFF/OFF string constants. null if ZSL mode
 * setting is not supported.
 */
->>>>>>> ac28877... Fix a build break
         public List<String> getSupportedZSLModes() {
             String str = get(KEY_ZSL + SUPPORTED_VALUES_SUFFIX);
             return split(str);
         }
 
           /**
-<<<<<<< HEAD
-          * @hide
-          * Gets the current Camera Mode Flag. Camera mode includes a
-          * flag(byte) which indicates different camera modes.
-          * For now support for ZSL added at bit0
-          *
-          * @return Camera Mode.
-          */
-=======
 * @hide
 * Gets the current Camera Mode Flag. Camera mode includes a
 * flag(byte) which indicates different camera modes.
@@ -4881,117 +3955,53 @@ private static final String KEY_REDEYE_REDUCTION = "redeye-reduction";
 *
 * @return Camera Mode.
 */
->>>>>>> ac28877... Fix a build break
          public String getCameraMode() {
             return get(KEY_CAMERA_MODE);
          }
 
           /**
-<<<<<<< HEAD
-          * @hide
-          * Sets the current Camera Mode.
-          *
-          * @return null
-          */
-=======
 * @hide
 * Sets the current Camera Mode.
 *
 * @return null
 */
->>>>>>> ac28877... Fix a build break
          public void setCameraMode(int cameraMode) {
             set(KEY_CAMERA_MODE, cameraMode);
          }
 
          /**
-<<<<<<< HEAD
-         * @hide
-         * Gets the current HFR Mode.
-         *
-         * @return VIDEO_HFR_XXX string constants
-         */
-=======
 * @hide
 * Gets the current HFR Mode.
 *
 * @return VIDEO_HFR_XXX string constants
 */
->>>>>>> ac28877... Fix a build break
         public String getVideoHighFrameRate() {
             return get(KEY_VIDEO_HIGH_FRAME_RATE);
         }
 
         /**
-<<<<<<< HEAD
-         * @hide
-         * Sets the current HFR Mode.
-         *
-         * @param hfr VIDEO_HFR_XXX string constants
-         */
-=======
 * @hide
 * Sets the current HFR Mode.
 *
 * @param hfr VIDEO_HFR_XXX string constants
 */
->>>>>>> ac28877... Fix a build break
         public void setVideoHighFrameRate(String hfr) {
             set(KEY_VIDEO_HIGH_FRAME_RATE, hfr);
         }
 
          /**
-<<<<<<< HEAD
-         * @hide
-         * Gets the supported HFR modes.
-         *
-         * @return a List of VIDEO_HFR_XXX string constants. null if hfr mode
-         *         setting is not supported.
-         */
-=======
 * @hide
 * Gets the supported HFR modes.
 *
 * @return a List of VIDEO_HFR_XXX string constants. null if hfr mode
 * setting is not supported.
 */
->>>>>>> ac28877... Fix a build break
         public List<String> getSupportedVideoHighFrameRateModes() {
             String str = get(KEY_VIDEO_HIGH_FRAME_RATE + SUPPORTED_VALUES_SUFFIX);
             return split(str);
         }
 
         /**
-<<<<<<< HEAD
-         * Gets the distances from the camera to where an object appears to be
-         * in focus. The object is sharpest at the optimal focus distance. The
-         * depth of field is the far focus distance minus near focus distance.</p>
-         *
-         * <p>Focus distances may change after calling {@link
-         * #autoFocus(AutoFocusCallback)}, {@link #cancelAutoFocus}, or {@link
-         * #startPreview()}. Applications can call {@link #getParameters()}
-         * and this method anytime to get the latest focus distances. If the
-         * focus mode is FOCUS_MODE_CONTINUOUS_VIDEO, focus distances may change
-         * from time to time.</p>
-         *
-         * <p>This method is intended to estimate the distance between the camera
-         * and the subject. After autofocus, the subject distance may be within
-         * near and far focus distance. However, the precision depends on the
-         * camera hardware, autofocus algorithm, the focus area, and the scene.
-         * The error can be large and it should be only used as a reference.</p>
-         *
-         * <p>Far focus distance >= optimal focus distance >= near focus distance.
-         * If the focus distance is infinity, the value will be
-         * {@code Float.POSITIVE_INFINITY}.</p>
-         *
-         * @param output focus distances in meters. output must be a float
-         *        array with three elements. Near focus distance, optimal focus
-         *        distance, and far focus distance will be filled in the array.
-         * @see #FOCUS_DISTANCE_NEAR_INDEX
-         * @see #FOCUS_DISTANCE_OPTIMAL_INDEX
-         * @see #FOCUS_DISTANCE_FAR_INDEX
-         */
-=======
 * Gets the distances from the camera to where an object appears to be
 * in focus. The object is sharpest at the optimal focus distance. The
 * depth of field is the far focus distance minus near focus distance.</p>
@@ -5020,7 +4030,6 @@ private static final String KEY_REDEYE_REDUCTION = "redeye-reduction";
 * @see #FOCUS_DISTANCE_OPTIMAL_INDEX
 * @see #FOCUS_DISTANCE_FAR_INDEX
 */
->>>>>>> ac28877... Fix a build break
         public void getFocusDistances(float[] output) {
             if (output == null || output.length != 3) {
                 throw new IllegalArgumentException(
@@ -5086,32 +4095,6 @@ private static final String KEY_REDEYE_REDUCTION = "redeye-reduction";
         public List<Area> getFocusAreas() {
             return splitArea(get(KEY_FOCUS_AREAS));
         }
-<<<<<<< HEAD
-        /**
-         * @hide
-         * Gets the current DENOISE  setting.
-         *
-         * @return one of DENOISE_XXX string constant. null if Denoise
-         *         setting is not supported.
-         *
-         */
-         public String getDenoise() {
-         return get(KEY_DENOISE);
-         }
-        /**
-         * @hide
-         * Gets the current Continuous AF setting.
-         *
-         * @return one of CONTINUOUS_AF_XXX string constant. null if continuous AF
-         *         setting is not supported.
-         *
-         */
-         public String getContinuousAf() {
-            return get(KEY_CONTINUOUS_AF);
-        }
-
-=======
->>>>>>> ac28877... Fix a build break
         /**
 * @hide
 * Gets the current DENOISE setting.
@@ -5145,32 +4128,11 @@ private static final String KEY_REDEYE_REDUCTION = "redeye-reduction";
             set(KEY_FOCUS_AREAS, focusAreas);
         }
         /**
-<<<<<<< HEAD
-         * @hide
-         * Sets the current Denoise  mode.
-         * @param value DENOISE_XXX string constants.
-         *
-         */
-
-         public void setDenoise(String value) {
-             set(KEY_DENOISE, value);
-         }
-        /**
-         * @hide
-         * Sets the current Continuous AF mode.
-         * @param value CONTINUOUS_AF_XXX string constants.
-         *
-         */
-         public void setContinuousAf(String value) {
-            set(KEY_CONTINUOUS_AF, value);
-        }
-=======
 * @hide
 * Sets the current Denoise mode.
 * @param value DENOISE_XXX string constants.
 *
 */
->>>>>>> ac28877... Fix a build break
 
          public void setDenoise(String value) {
              set(KEY_DENOISE, value);
@@ -5242,15 +4204,6 @@ private static final String KEY_REDEYE_REDUCTION = "redeye-reduction";
         }
 
         /**
-<<<<<<< HEAD
-         * @hide
-         * Gets the supported Continuous AF modes.
-         *
-         * @return a List of CONTINUOUS_AF_XXX string constant. null if continuous AF
-         *         setting is not supported.
-         *
-         */
-=======
 * @hide
 * Gets the supported Continuous AF modes.
 *
@@ -5258,21 +4211,11 @@ private static final String KEY_REDEYE_REDUCTION = "redeye-reduction";
 * setting is not supported.
 *
 */
->>>>>>> ac28877... Fix a build break
          public List<String> getSupportedContinuousAfModes() {
             String str = get(KEY_CONTINUOUS_AF + SUPPORTED_VALUES_SUFFIX);
             return split(str);
         }
         /**
-<<<<<<< HEAD
-         * @hide
-         * Gets the supported DENOISE  modes.
-         *
-         * @return a List of DENOISE_XXX string constant. null if DENOISE
-         *         setting is not supported.
-         *
-         */
-=======
 * @hide
 * Gets the supported DENOISE modes.
 *
@@ -5280,7 +4223,6 @@ private static final String KEY_REDEYE_REDUCTION = "redeye-reduction";
 * setting is not supported.
 *
 */
->>>>>>> ac28877... Fix a build break
          public List<String> getSupportedDenoiseModes() {
              String str = get(KEY_DENOISE + SUPPORTED_VALUES_SUFFIX);
              return split(str);
@@ -5288,68 +4230,27 @@ private static final String KEY_REDEYE_REDUCTION = "redeye-reduction";
 
 
         /**
-<<<<<<< HEAD
-         * Sets metering areas. See {@link #getMeteringAreas()} for
-         * documentation.
-         *
-         * @param meteringAreas the metering areas
-         * @see #getMeteringAreas()
-         */
-=======
 * Sets metering areas. See {@link #getMeteringAreas()} for
 * documentation.
 *
 * @param meteringAreas the metering areas
 * @see #getMeteringAreas()
 */
->>>>>>> ac28877... Fix a build break
          public void setMeteringAreas(List<Area> meteringAreas) {
             set(KEY_METERING_AREAS, meteringAreas);
         }
         /**
-<<<<<<< HEAD
-         * @hide
-         * Gets the current selectable zone af setting.
-         *
-         * @return one of SELECTABLE_ZONE_AF_XXX string constant. null if selectable zone af
-         *         setting is not supported.
-         */
-=======
 * @hide
 * Gets the current selectable zone af setting.
 *
 * @return one of SELECTABLE_ZONE_AF_XXX string constant. null if selectable zone af
 * setting is not supported.
 */
->>>>>>> ac28877... Fix a build break
          public String getSelectableZoneAf() {
             return get(KEY_SELECTABLE_ZONE_AF);
         }
 
         /**
-<<<<<<< HEAD
-         * Gets the maximum number of detected faces supported. This is the
-         * maximum length of the list returned from {@link FaceDetectionListener}.
-         * If the return value is 0, face detection of the specified type is not
-         * supported.
-         *
-         * @return the maximum number of detected face supported by the camera.
-         * @see #startFaceDetection()
-         */
-         public int getMaxNumDetectedFaces() {
-            return getInt(KEY_MAX_NUM_DETECTED_FACES_HW, 0);
-        }
-        /**
-         * @hide
-         * Sets the current selectable zone af setting.
-         *
-         * @param value SELECTABLE_ZONE_AF_XXX string constants.
-         */
-         public void setSelectableZoneAf(String value) {
-            set(KEY_SELECTABLE_ZONE_AF, value);
-        }
-
-=======
 * Gets the maximum number of detected faces supported. This is the
 * maximum length of the list returned from {@link FaceDetectionListener}.
 * If the return value is 0, face detection of the specified type is not
@@ -5361,7 +4262,6 @@ private static final String KEY_REDEYE_REDUCTION = "redeye-reduction";
          public int getMaxNumDetectedFaces() {
             return getInt(KEY_MAX_NUM_DETECTED_FACES_HW, 0);
         }
->>>>>>> ac28877... Fix a build break
         /**
 * @hide
 * Sets the current selectable zone af setting.
@@ -5395,51 +4295,18 @@ private static final String KEY_REDEYE_REDUCTION = "redeye-reduction";
         }
 
         /**
-<<<<<<< HEAD
-         * @hide
-         * Gets the supported selectable zone af setting.
-         *
-         * @return a List of SELECTABLE_ZONE_AF_XXX string constants. null if selectable zone af
-         *         setting is not supported.
-         */
-=======
 * @hide
 * Gets the supported selectable zone af setting.
 *
 * @return a List of SELECTABLE_ZONE_AF_XXX string constants. null if selectable zone af
 * setting is not supported.
 */
->>>>>>> ac28877... Fix a build break
         public List<String> getSupportedSelectableZoneAf() {
             String str = get(KEY_SELECTABLE_ZONE_AF + SUPPORTED_VALUES_SUFFIX);
             return split(str);
         }
 
         /**
-<<<<<<< HEAD
-         * Returns true if video snapshot is supported. That is, applications
-         * can call {@link #takePicture(Camera.ShutterCallback,
-         * Camera.PictureCallback, Camera.PictureCallback, Camera.PictureCallback)}
-         * during recording. Applications do not need to call {@link
-         * #startPreview()} after taking a picture. The preview will be still
-         * active. Other than that, taking a picture during recording is
-         * identical to taking a picture normally. All settings and methods
-         * related to takePicture work identically. Ex: {@link
-         * #getPictureSize()}, {@link #getSupportedPictureSizes()}, {@link
-         * #setJpegQuality(int)}, {@link #setRotation(int)}, and etc. The
-         * picture will have an EXIF header. {@link #FLASH_MODE_AUTO} and {@link
-         * #FLASH_MODE_ON} also still work, but the video will record the flash.
-         *
-         * Applications can set shutter callback as null to avoid the shutter
-         * sound. It is also recommended to set raw picture and post view
-         * callbacks to null to avoid the interrupt of preview display.
-         *
-         * Field-of-view of the recorded video may be different from that of the
-         * captured pictures.
-         *
-         * @return true if video snapshot is supported.
-         */
-=======
 * Returns true if video snapshot is supported. That is, applications
 * can call {@link #takePicture(Camera.ShutterCallback,
 * Camera.PictureCallback, Camera.PictureCallback, Camera.PictureCallback)}
@@ -5462,7 +4329,6 @@ private static final String KEY_REDEYE_REDUCTION = "redeye-reduction";
 *
 * @return true if video snapshot is supported.
 */
->>>>>>> ac28877... Fix a build break
         public boolean isVideoSnapshotSupported() {
             String str = get(KEY_VIDEO_SNAPSHOT_SUPPORTED);
             return TRUE.equals(str);
@@ -5490,49 +4356,6 @@ private static final String KEY_REDEYE_REDUCTION = "redeye-reduction";
         }
 
         /**
-<<<<<<< HEAD
-         * <p>Enables and disables video stabilization. Use
-         * {@link #isVideoStabilizationSupported} to determine if calling this
-         * method is valid.</p>
-         *
-         * <p>Video stabilization reduces the shaking due to the motion of the
-         * camera in both the preview stream and in recorded videos, including
-         * data received from the preview callback. It does not reduce motion
-         * blur in images captured with
-         * {@link Camera#takePicture takePicture}.</p>
-         *
-         * <p>Video stabilization can be enabled and disabled while preview or
-         * recording is active, but toggling it may cause a jump in the video
-         * stream that may be undesirable in a recorded video.</p>
-         *
-         * @param toggle Set to true to enable video stabilization, and false to
-         * disable video stabilization.
-         * @see #isVideoStabilizationSupported()
-         * @see #getVideoStabilization()
-         * @hide
-         */
-=======
-* @hide
-* @return true if full size video snapshot is supported.
-*/
-        public boolean isFullsizeVideoSnapSupported() {
-            String str = get(KEY_FULL_VIDEO_SNAP_SUPPORTED);
-            return TRUE.equals(str);
-        }
-
-        /**
-* @hide
-* Gets the current face detection setting.
-*
-* @return one of FACE_DETECTION_XXX string constant. null if face detection
-* setting is not supported.
-*
-*/
-        public String getFaceDetectionMode() {
-            return get(KEY_FACE_DETECTION);
-        }
-
-        /**
 * <p>Enables and disables video stabilization. Use
 * {@link #isVideoStabilizationSupported} to determine if calling this
 * method is valid.</p>
@@ -5552,42 +4375,22 @@ private static final String KEY_REDEYE_REDUCTION = "redeye-reduction";
 * @see #isVideoStabilizationSupported()
 * @see #getVideoStabilization()
 */
->>>>>>> ac28877... Fix a build break
         public void setVideoStabilization(boolean toggle) {
             set(KEY_VIDEO_STABILIZATION, toggle ? TRUE : FALSE);
         }
 
         /**
-<<<<<<< HEAD
-         * Sets the auto scene detect. Other settings like Touch AF/AEC might be
-         * changed after setting face detection.
-         *
-         * @param value FACE_DETECTION_XXX string constants.
-         *
-         */
-=======
 * Sets the auto scene detect. Other settings like Touch AF/AEC might be
 * changed after setting face detection.
 *
 * @param value FACE_DETECTION_XXX string constants.
 * @hide
 */
->>>>>>> ac28877... Fix a build break
         public void setFaceDetectionMode(String value) {
             set(KEY_FACE_DETECTION, value);
         }
 
         /**
-<<<<<<< HEAD
-         * Get the current state of video stabilization. See
-         * {@link #setVideoStabilization} for details of video stabilization.
-         *
-         * @return true if video stabilization is enabled
-         * @see #isVideoStabilizationSupported()
-         * @see #setVideoStabilization(boolean)
-         * @hide
-         */
-=======
 * Get the current state of video stabilization. See
 * {@link #setVideoStabilization} for details of video stabilization.
 *
@@ -5595,23 +4398,12 @@ private static final String KEY_REDEYE_REDUCTION = "redeye-reduction";
 * @see #isVideoStabilizationSupported()
 * @see #setVideoStabilization(boolean)
 */
->>>>>>> ac28877... Fix a build break
         public boolean getVideoStabilization() {
             String str = get(KEY_VIDEO_STABILIZATION);
             return TRUE.equals(str);
         }
 
         /**
-<<<<<<< HEAD
-         * Returns true if video stabilization is supported. See
-         * {@link #setVideoStabilization} for details of video stabilization.
-         *
-         * @return true if video stabilization is supported
-         * @see #setVideoStabilization(boolean)
-         * @see #getVideoStabilization()
-         * @hide
-         */
-=======
 * Returns true if video stabilization is supported. See
 * {@link #setVideoStabilization} for details of video stabilization.
 *
@@ -5619,22 +4411,12 @@ private static final String KEY_REDEYE_REDUCTION = "redeye-reduction";
 * @see #setVideoStabilization(boolean)
 * @see #getVideoStabilization()
 */
->>>>>>> ac28877... Fix a build break
         public boolean isVideoStabilizationSupported() {
             String str = get(KEY_VIDEO_STABILIZATION_SUPPORTED);
             return TRUE.equals(str);
         }
 
         /**
-<<<<<<< HEAD
-         * @hide
-         * Gets the supported face detection modes.
-         *
-         * @return a List of FACE_DETECTION_XXX string constant. null if face detection
-         *         setting is not supported.
-         *
-         */
-=======
 * @hide
 * Gets the supported face detection modes.
 *
@@ -5642,7 +4424,6 @@ private static final String KEY_REDEYE_REDUCTION = "redeye-reduction";
 * setting is not supported.
 *
 */
->>>>>>> ac28877... Fix a build break
         public List<String> getSupportedFaceDetectionModes() {
             String str = get(KEY_FACE_DETECTION + SUPPORTED_VALUES_SUFFIX);
             return split(str);

@@ -331,7 +331,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 
     boolean mKeyboardDockFeature;
     boolean mHallSensorFeature;
-
+    
     boolean mSystemReady;
     boolean mSystemBooted;
     boolean mHdmiPlugged;
@@ -928,6 +928,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
 
         PackageManager packageManager = mContext.getPackageManager();
+        mKeyboardDockFeature = packageManager.hasSystemFeature(PackageManager.FEATURE_TF101_KB_DOCK);
+        mHallSensorFeature = packageManager.hasSystemFeature(PackageManager.FEATURE_TF101_HALL_SENSOR);
+
         PowerManager pm = (PowerManager)context.getSystemService(Context.POWER_SERVICE);
         mBroadcastWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
                 "PhoneWindowManager.mBroadcastWakeLock");
@@ -938,10 +941,13 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 com.android.internal.R.integer.config_carDockRotation);
         mDeskDockRotation = readRotation(
                 com.android.internal.R.integer.config_deskDockRotation);
+        mKeyboardDockRotation = readRotation(
+                com.android.internal.R.integer.config_keyboardDockRotation);
         mCarDockEnablesAccelerometer = mContext.getResources().getBoolean(
                 com.android.internal.R.bool.config_carDockEnablesAccelerometer);
         mDeskDockEnablesAccelerometer = mContext.getResources().getBoolean(
                 com.android.internal.R.bool.config_deskDockEnablesAccelerometer);
+        mKeyboardDockEnablesAccelerometer = mContext.getResources().getBoolean(com.android.internal.R.bool.config_keyboardDockEnablesAccelerometer);
         mLidKeyboardAccessibility = mContext.getResources().getInteger(
                 com.android.internal.R.integer.config_lidKeyboardAccessibility);
         mLidNavigationAccessibility = mContext.getResources().getInteger(
@@ -2766,6 +2772,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     /** {@inheritDoc} */
     public void notifyLidSwitchChanged(long whenNanos, boolean lidOpen) {
         // lid changed state
+        if ((mKeyboardDockFeature) && (mDockMode == Intent.EXTRA_DOCK_STATE_TF101_KB));
+            lidOpen = lidOpen ? false : true;
         mLidOpen = lidOpen ? LID_OPEN : LID_CLOSED;
         readLidStateByHardwareFeature();
         if(goToSleepWhenLidClose())
@@ -2786,7 +2794,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     // keyguard, then we need to have it turn on the
                     // screen once it is shown.
                     mKeyguardMediator.onWakeKeyWhenKeyguardShowingTq(
-                            KeyEvent.KEYCODE_POWER, mDockMode != Intent.EXTRA_DOCK_STATE_UNDOCKED);
+                        KeyEvent.KEYCODE_POWER, mDockMode != Intent.EXTRA_DOCK_STATE_UNDOCKED);
                 }
             } else {
                 // Light up the keyboard if we are sliding up.
@@ -2800,6 +2808,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             }
         }
     }
+
 
     boolean readLidStateByHardwareFeature()
     {
@@ -2832,6 +2841,41 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             return false;
         }
     }
+boolean readLidStateByHardwareFeature()
+	    {
+	        boolean flag = true;
+	        if (!mHallSensorFeature)
+	            mLidOpen = LID_ABSENT;
+	        else {
+	            if((mKeyboardDockFeature) && (mDockMode != Intent.EXTRA_DOCK_STATE_TF101_KB))
+	                mLidOpen = LID_ABSENT;
+	            else
+	                flag = false;
+	        }
+	        return flag;
+	    }
+	
+	    private boolean goToSleepWhenLidClose()
+	    {
+	        if ((mScreenOnEarly) && (isLidClosedOnDock()))
+	        {
+	            mPowerManager.goToSleep(SystemClock.uptimeMillis() + 1L);
+	            Log.i(TAG, "Lid closed, going to sleep");
+	            return true;
+	        } else {
+	            return false;
+	        }
+	    }
+	
+	    public boolean isLidClosedOnDock()
+	    {
+	        if ((mLidOpen == LID_CLOSED) && (mKeyboardDockFeature)) {
+	            return true;
+	        } else {
+	            return false;
+	        }
+	    }
+
 
     void setHdmiPlugged(boolean plugged) {
         if (mHdmiPlugged != plugged) {
@@ -3615,6 +3659,12 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 // enable 180 degree rotation while docked.
                 preferredRotation = mDeskDockEnablesAccelerometer
                         ? sensorRotation : mDeskDockRotation;
+            } else if(mDockMode == Intent.EXTRA_DOCK_STATE_TF101_KB
+	                    && (mKeyboardDockEnablesAccelerometer || mKeyboardDockRotation >= 0)) {
+	            // Ignore sensor when in keyboard dock unless explicitly enabled.
+	            // This case can override the behavior of NOSENSOR, and can also
+	            // enable 180 degree rotation while docked.
+                preferredRotation = mKeyboardDockEnablesAccelerometer ? sensorRotation : mKeyboardDockRotation;
             } else if (mHdmiPlugged) {
                 // Ignore sensor when plugged into HDMI.
                 // Note that the dock orientation overrides the HDMI orientation.

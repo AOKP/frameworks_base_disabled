@@ -929,10 +929,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         mDeskDockIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
                 | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
 
-        PackageManager packageManager = mContext.getPackageManager();
-        mKeyboardDockFeature = packageManager.hasSystemFeature(PackageManager.FEATURE_TF101_KB_DOCK);
-        mHallSensorFeature = packageManager.hasSystemFeature(PackageManager.FEATURE_TF101_HALL_SENSOR);
-
         PowerManager pm = (PowerManager)context.getSystemService(Context.POWER_SERVICE);
         mBroadcastWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
                 "PhoneWindowManager.mBroadcastWakeLock");
@@ -2844,41 +2840,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             return false;
         }
     }
-boolean readLidStateByHardwareFeature()
-	    {
-	        boolean flag = true;
-	        if (!mHallSensorFeature)
-	            mLidOpen = LID_ABSENT;
-	        else {
-	            if((mKeyboardDockFeature) && (mDockMode != Intent.EXTRA_DOCK_STATE_TF101_KB))
-	                mLidOpen = LID_ABSENT;
-	            else
-	                flag = false;
-	        }
-	        return flag;
-	    }
-	
-	    private boolean goToSleepWhenLidClose()
-	    {
-	        if ((mScreenOnEarly) && (isLidClosedOnDock()))
-	        {
-	            mPowerManager.goToSleep(SystemClock.uptimeMillis() + 1L);
-	            Log.i(TAG, "Lid closed, going to sleep");
-	            return true;
-	        } else {
-	            return false;
-	        }
-	    }
-	
-	    public boolean isLidClosedOnDock()
-	    {
-	        if ((mLidOpen == LID_CLOSED) && (mKeyboardDockFeature)) {
-	            return true;
-	        } else {
-	            return false;
-	        }
-	    }
-
 
     void setHdmiPlugged(boolean plugged) {
         if (mHdmiPlugged != plugged) {
@@ -3356,10 +3317,7 @@ boolean readLidStateByHardwareFeature()
                 break;
             }
             case KeyEvent.KEYCODE_EXPLORER:
-            case KeyEvent.KEYCODE_SETTINGS:
-            case KeyEvent.KEYCODE_WIRELESS:
-            case KeyEvent.KEYCODE_BLUETOOTH:
-            case KeyEvent.KEYCODE_TOUCHPAD: {
+            case KeyEvent.KEYCODE_SETTINGS: {
                 if (!isDeviceProvisioned())
                     return 0;
                 handleFunctionKey(event);
@@ -3372,19 +3330,6 @@ boolean readLidStateByHardwareFeature()
                 if (!down || keyguardActive)
                     return 0;
                 handleFunctionKey(event);
-                result &= ~ACTION_PASS_TO_USER;
-                break;
-            }
-            case KeyEvent.KEYCODE_CAPTURE: {
-                if (!down)
-                    return 0;
-                mHandler.post(mScreenshotChordLongPress);
-                result &= ~ACTION_PASS_TO_USER;
-                break;
-            }
-            case KeyEvent.KEYCODE_SLEEP: {
-                if (isScreenOn && down && (!keyguardActive || isKeyguardSecure()))
-                    result = (result & ~ACTION_POKE_USER_ACTIVITY) | ACTION_GO_TO_SLEEP;
                 result &= ~ACTION_PASS_TO_USER;
                 break;
             }

@@ -1199,8 +1199,6 @@ sp<GraphicBuffer> SurfaceTexture::getCurrentBuffer() const {
     return mCurrentTextureBuf;
 }
 
-<<<<<<< HEAD
-=======
 #ifdef OMAP_ENHANCEMENT
 sp<GraphicBuffer> SurfaceTexture::takeCurrentBuffer() {
     Mutex::Autolock lock(mMutex);
@@ -1231,7 +1229,6 @@ void SurfaceTexture::releaseBuffer(sp<GraphicBuffer> graphic_buffer) {
 }
 #endif
 
->>>>>>> c485416... st: add null check in releaseBuffer
 Rect SurfaceTexture::getCurrentCrop() const {
     Mutex::Autolock lock(mMutex);
     return mCurrentCrop;

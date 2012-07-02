@@ -34,6 +34,13 @@ static struct {
     { AID_MEDIA, "media.player" },
     { AID_MEDIA, "media.camera" },
     { AID_MEDIA, "media.audio_policy" },
+#ifdef YAMAHAPLAYER
+    { AID_MEDIA, "media.yamahaplayer" },
+#endif
+    { AID_MEDIA, "media.nvidia.audio_alsa" },
+#ifdef SECTVOUT
+    { AID_MEDIA, "SecTVOutService" },
+#endif
     { AID_DRM,   "drm.drmManager" },
     { AID_NFC,   "nfc" },
     { AID_RADIO, "radio.phone" },

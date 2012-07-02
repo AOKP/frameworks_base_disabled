@@ -149,6 +149,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -1052,6 +1054,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 mStatusBarCanHide
                 ? com.android.internal.R.dimen.status_bar_height
                 : com.android.internal.R.dimen.system_bar_height);
+
         final int showByDefault = mContext.getResources().getBoolean(
                 com.android.internal.R.bool.config_showNavigationBar) ? 1 : 0;
         mHasNavigationBar = Settings.System.getInt(mContext.getContentResolver(),

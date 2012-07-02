@@ -918,7 +918,7 @@ status_t SurfaceTexture::setScalingMode(int mode) {
 }
 
 #ifdef OMAP_ENHANCEMENT
-status_t SurfaceTexture::updateTexImage(bool isComposition) {
+status_t SurfaceTexture::updateTexImage() {
     return __updateTexImage(NULL);
 }
 

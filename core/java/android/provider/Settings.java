@@ -2039,6 +2039,13 @@ public final class Settings {
          */
         public static final String SHOW_TOUCHES = "show_touches";
 
+         /**
+         * The keylayout that will be used by EventHub instead of the default
+         * one.
+         * @hide
+         */
+        public static final String KEYLAYOUT_OVERRIDES = "keylayout";
+
         /**
          * Log raw orientation data from {@link WindowOrientationListener} for use with the
          * orientationplot.py tool.
@@ -2570,6 +2577,7 @@ public final class Settings {
             QUIET_HOURS_RINGER,
             QUIET_HOURS_STILL,
             QUIET_HOURS_DIM,
+            KEYLAYOUT_OVERRIDES,
         };
 
         // Settings moved to Settings.Secure

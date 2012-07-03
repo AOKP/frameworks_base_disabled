@@ -738,7 +738,7 @@ private NetworkStateTracker makeWimaxStateTracker() {
      */
     private NetworkInfo getFilteredNetworkInfo(NetworkStateTracker tracker, int uid) {
         NetworkInfo info = tracker.getNetworkInfo();
-        if (isNetworkBlocked(tracker, uid) && info.isConnected()) {
+        if (isNetworkBlocked(tracker, uid)) {
             // network is blocked; clone and override state
             info = new NetworkInfo(info);
             info.setDetailedState(DetailedState.BLOCKED, null, null);

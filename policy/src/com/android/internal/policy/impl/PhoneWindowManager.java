@@ -149,6 +149,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -331,7 +333,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 
     boolean mKeyboardDockFeature;
     boolean mHallSensorFeature;
-
+    
     boolean mSystemReady;
     boolean mSystemBooted;
     boolean mHdmiPlugged;
@@ -927,7 +929,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         mDeskDockIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
                 | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
 
-        PackageManager packageManager = mContext.getPackageManager();
         PowerManager pm = (PowerManager)context.getSystemService(Context.POWER_SERVICE);
         mBroadcastWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
                 "PhoneWindowManager.mBroadcastWakeLock");
@@ -938,10 +939,13 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 com.android.internal.R.integer.config_carDockRotation);
         mDeskDockRotation = readRotation(
                 com.android.internal.R.integer.config_deskDockRotation);
+        mKeyboardDockRotation = readRotation(
+                com.android.internal.R.integer.config_keyboardDockRotation);
         mCarDockEnablesAccelerometer = mContext.getResources().getBoolean(
                 com.android.internal.R.bool.config_carDockEnablesAccelerometer);
         mDeskDockEnablesAccelerometer = mContext.getResources().getBoolean(
                 com.android.internal.R.bool.config_deskDockEnablesAccelerometer);
+        mKeyboardDockEnablesAccelerometer = mContext.getResources().getBoolean(com.android.internal.R.bool.config_keyboardDockEnablesAccelerometer);
         mLidKeyboardAccessibility = mContext.getResources().getInteger(
                 com.android.internal.R.integer.config_lidKeyboardAccessibility);
         mLidNavigationAccessibility = mContext.getResources().getInteger(
@@ -1046,6 +1050,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 mStatusBarCanHide
                 ? com.android.internal.R.dimen.status_bar_height
                 : com.android.internal.R.dimen.system_bar_height);
+
         final int showByDefault = mContext.getResources().getBoolean(
                 com.android.internal.R.bool.config_showNavigationBar) ? 1 : 0;
         mHasNavigationBar = Settings.System.getInt(mContext.getContentResolver(),
@@ -2766,6 +2771,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     /** {@inheritDoc} */
     public void notifyLidSwitchChanged(long whenNanos, boolean lidOpen) {
         // lid changed state
+        if ((mKeyboardDockFeature) && (mDockMode == Intent.EXTRA_DOCK_STATE_TF101_KB));
+            lidOpen = lidOpen ? false : true;
         mLidOpen = lidOpen ? LID_OPEN : LID_CLOSED;
         readLidStateByHardwareFeature();
         if(goToSleepWhenLidClose())
@@ -2786,7 +2793,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     // keyguard, then we need to have it turn on the
                     // screen once it is shown.
                     mKeyguardMediator.onWakeKeyWhenKeyguardShowingTq(
-                            KeyEvent.KEYCODE_POWER, mDockMode != Intent.EXTRA_DOCK_STATE_UNDOCKED);
+                        KeyEvent.KEYCODE_POWER, mDockMode != Intent.EXTRA_DOCK_STATE_UNDOCKED);
                 }
             } else {
                 // Light up the keyboard if we are sliding up.
@@ -2800,6 +2807,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             }
         }
     }
+
 
     boolean readLidStateByHardwareFeature()
     {
@@ -3309,10 +3317,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 break;
             }
             case KeyEvent.KEYCODE_EXPLORER:
-            case KeyEvent.KEYCODE_SETTINGS:
-            case KeyEvent.KEYCODE_WIRELESS:
-            case KeyEvent.KEYCODE_BLUETOOTH:
-            case KeyEvent.KEYCODE_TOUCHPAD: {
+            case KeyEvent.KEYCODE_SETTINGS: {
                 if (!isDeviceProvisioned())
                     return 0;
                 handleFunctionKey(event);
@@ -3325,19 +3330,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 if (!down || keyguardActive)
                     return 0;
                 handleFunctionKey(event);
-                result &= ~ACTION_PASS_TO_USER;
-                break;
-            }
-            case KeyEvent.KEYCODE_CAPTURE: {
-                if (!down)
-                    return 0;
-                mHandler.post(mScreenshotChordLongPress);
-                result &= ~ACTION_PASS_TO_USER;
-                break;
-            }
-            case KeyEvent.KEYCODE_SLEEP: {
-                if (isScreenOn && down && (!keyguardActive || isKeyguardSecure()))
-                    result = (result & ~ACTION_POKE_USER_ACTIVITY) | ACTION_GO_TO_SLEEP;
                 result &= ~ACTION_PASS_TO_USER;
                 break;
             }
@@ -3615,6 +3607,12 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 // enable 180 degree rotation while docked.
                 preferredRotation = mDeskDockEnablesAccelerometer
                         ? sensorRotation : mDeskDockRotation;
+            } else if(mDockMode == Intent.EXTRA_DOCK_STATE_TF101_KB
+	                    && (mKeyboardDockEnablesAccelerometer || mKeyboardDockRotation >= 0)) {
+	            // Ignore sensor when in keyboard dock unless explicitly enabled.
+	            // This case can override the behavior of NOSENSOR, and can also
+	            // enable 180 degree rotation while docked.
+                preferredRotation = mKeyboardDockEnablesAccelerometer ? sensorRotation : mKeyboardDockRotation;
             } else if (mHdmiPlugged) {
                 // Ignore sensor when plugged into HDMI.
                 // Note that the dock orientation overrides the HDMI orientation.

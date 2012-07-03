@@ -1154,16 +1154,15 @@ public class SensorManager
             for (int i=0 ; i<size ; i++) {
                 ListenerDelegate l = sListeners.get(i);
                 if (l.getListener() == listener) {
-                    // Check if the ListenerDelegate has the sensor it is trying to unregister.
-                    if (l.hasSensor(sensor) && l.removeSensor(sensor) == 0) {
+                    if (l.removeSensor(sensor) == 0) {
                         // if we have no more sensors enabled on this listener,
                         // take it off the list.
                         sListeners.remove(i);
-                        disableSensorLocked(sensor);
                     }
                     break;
                 }
             }
+            disableSensorLocked(sensor);
         }
     }
 

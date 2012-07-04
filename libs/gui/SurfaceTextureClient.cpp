@@ -192,6 +192,9 @@ int SurfaceTextureClient::getSlotFromBufferLocked(
     for (int i = 0; i < NUM_BUFFER_SLOTS; i++) {
         // XXX: Dump the slots whenever we hit a NULL entry while searching for
         // a buffer.
+#ifdef OMAP_ENHANCEMENT
+        if (mSlots[i] == NULL) i++;
+#endif
         if (mSlots[i] == NULL) {
             if (!dumpedState) {
                 ALOGD("getSlotFromBufferLocked: encountered NULL buffer in slot %d "

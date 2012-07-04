@@ -1,4 +1,3 @@
-
 package com.android.systemui.statusbar.policy;
 
 import android.content.BroadcastReceiver;
@@ -17,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.systemui.R;
+import com.android.systemui.statusbar.phone.PhoneStatusBar;
 
 public class WeatherPanel extends FrameLayout {
 
@@ -24,6 +24,7 @@ public class WeatherPanel extends FrameLayout {
 
     public static final String EXTRA_CITY = "city";
     public static final String EXTRA_CONDITION = "condition";
+    public static final String EXTRA_LAST_UPDATE = "datestamp";
     public static final String EXTRA_CONDITION_CODE = "condition_code";
     public static final String EXTRA_FORECAST_DATE = "forecast_date";
     public static final String EXTRA_TEMP = "temp";
@@ -39,13 +40,25 @@ public class WeatherPanel extends FrameLayout {
     private TextView mHumidity;
     private TextView mWinds;
     private TextView mCondition;
+    private TextView mDatestamp;
     private ImageView mConditionImage;
     private Context mContext;
     private String mCondition_code = "";
+    private String mViewMode;
 
     BroadcastReceiver weatherReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            mViewMode = getViewMode();
+            if(mDatestamp != null) {
+                if("fdate".equals(mViewMode)) {
+                    mDatestamp.setVisibility(View.GONE);
+                    PhoneStatusBar.showDateView();
+                } else {
+                    mDatestamp.setVisibility(View.VISIBLE);
+                    PhoneStatusBar.hideDateView();
+                }
+            }
             mCondition_code = (String) intent.getCharSequenceExtra(EXTRA_CONDITION_CODE);
             if (mCurrentTemp != null)
                 mCurrentTemp.setText(intent.getCharSequenceExtra(EXTRA_TEMP));
@@ -61,6 +74,9 @@ public class WeatherPanel extends FrameLayout {
                 mWinds.setText(intent.getCharSequenceExtra(EXTRA_WIND));
             if (mCondition != null)
                 mCondition.setText(intent.getCharSequenceExtra(EXTRA_CONDITION));
+            if (mDatestamp != null)
+                mDatestamp.setText(context.getString(R.string.weather_last_updated) + " " +
+                        intent.getCharSequenceExtra(EXTRA_LAST_UPDATE));
             if (mConditionImage != null) {
                 String condition_filename = "weather_" + mCondition_code;
                 int resID = getResources().getIdentifier(condition_filename, "drawable",
@@ -95,10 +111,49 @@ public class WeatherPanel extends FrameLayout {
         }
     };
 
+    private View.OnLongClickListener mPanelOnLongClickListener = new View.OnLongClickListener() {
+
+        @Override
+        public boolean onLongClick(View v) {
+            if(v.getId() != R.id.condition_image) {
+                if("fdate".equals(mViewMode)) {
+                    setViewMode("udate");
+                    mDatestamp.setVisibility(View.VISIBLE);
+                    PhoneStatusBar.hideDateView();
+                } else {
+                    setViewMode("fdate");
+                    mDatestamp.setVisibility(View.GONE);
+                    PhoneStatusBar.showDateView();
+                }
+            }
+            return true;
+        }
+    };
+
     public WeatherPanel(Context context, AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
+        mViewMode = getViewMode();
+        setOnLongClickListener(mPanelOnLongClickListener);
         setOnClickListener(mPanelOnClickListener);
+    }
+
+    private String getViewMode() {
+        if(Settings.System.getString(mContext.getContentResolver(),
+                Settings.System.WEATHER_PANEL_VIEW_MODE) == null) {
+            setViewMode("fdate");
+        }
+
+        mViewMode = Settings.System.getString(mContext.getContentResolver(),
+                Settings.System.WEATHER_PANEL_VIEW_MODE);
+
+        return mViewMode;
+    }
+
+    private void setViewMode(String viewMode) {
+        mViewMode = viewMode;
+        Settings.System.putString(mContext.getContentResolver(),
+                Settings.System.WEATHER_PANEL_VIEW_MODE, viewMode);
     }
 
     @Override
@@ -111,6 +166,7 @@ public class WeatherPanel extends FrameLayout {
         mHumidity = (TextView) this.findViewById(R.id.humidity);
         mWinds = (TextView) this.findViewById(R.id.winds);
         mCondition = (TextView) this.findViewById(R.id.condition);
+        mDatestamp = (TextView) this.findViewById(R.id.datestamp);
         mConditionImage = (ImageView) this.findViewById(R.id.condition_image);
 
         if (mConditionImage != null) {
@@ -122,6 +178,7 @@ public class WeatherPanel extends FrameLayout {
             IntentFilter filter = new IntentFilter("com.aokp.romcontrol.INTENT_WEATHER_UPDATE");
             getContext().registerReceiver(weatherReceiver, filter, null, getHandler());
         }
+
     }
 
     @Override

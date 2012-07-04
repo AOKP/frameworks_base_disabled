@@ -49,6 +49,12 @@
         android:layout_height="wrap_content"
         android:textAppearance="@style/Text" />
 
+    <TextView
+        android:id="@+id/datestamp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/Text" />
+
     <ImageView
         android:id="@+id/condition_image"
         android:layout_width="wrap_content"

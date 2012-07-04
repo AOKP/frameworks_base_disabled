@@ -210,7 +210,7 @@ public class PhoneStatusBar extends StatusBar {
     boolean mExpandedVisible;
 
     // the date view
-    DateView mDateView;
+    static DateView mDateView;
     LinearLayout mTxtLayout;
     RelativeLayout.LayoutParams mTxtParams;
 
@@ -503,6 +503,14 @@ public class PhoneStatusBar extends StatusBar {
         }
 
         return sb;
+    }
+
+    public static void hideDateView() {
+        mDateView.setVisibility(View.GONE);
+    }
+
+    public static void showDateView() {
+        mDateView.setVisibility(View.VISIBLE);
     }
 
     private boolean checkAutoBrightNess() {

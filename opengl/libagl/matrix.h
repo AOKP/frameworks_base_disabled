@@ -348,6 +348,92 @@ GLfixed dot3(const GLfixed* a, const GLfixed* b)
     return mla3(a[0], b[0], a[1], b[1], a[2], b[2]);
 }
 
+#define VFP_CLOBBER_S0_S31                                  \
+    "s0", "s1", "s2", "s3", "s4", "s5", "s6", "s7", "s8",   \
+    "s9", "s10", "s11", "s12", "s13", "s14", "s15", "s16",  \
+    "s17", "s18", "s19", "s20", "s21", "s22", "s23", "s24", \
+    "s25", "s26", "s27", "s28", "s29", "s30", "s31"
+
+// Sets length and stride to 0.
+#define VFP_VECTOR_LENGTH_ZERO          \
+    "fmrx    r0, fpscr            \n\t" \
+    "bic     r0, r0, #0x00370000  \n\t" \
+    "fmxr    fpscr, r0            \n\t"
+
+// Set vector length. VEC_LENGTH has to be bitween 0 for length 1 and 3 for length 4.
+#define VFP_VECTOR_LENGTH(VEC_LENGTH) \
+    "fmrx    r0, fpscr                         \n\t" \
+    "bic     r0, r0, #0x00370000               \n\t" \
+    "orr     r0, r0, #0x000" #VEC_LENGTH "0000 \n\t" \
+    "fmxr    fpscr, r0                         \n\t"
+
+#if defined(HAVE_ARM_VFP)
+static inline void matrix_4x4_mul(const float *src_mat_1,
+                                  const float *src_mat_2,
+                                  float *dst_mat)
+{
+    asm volatile (
+        VFP_VECTOR_LENGTH(3)
+
+        // Interleaving loads and adds/muls for faster calculation.
+        // Let A:=src_ptr_1, B:=src_ptr_2, then
+        // function computes A*B as (B^T * A^T)^T.
+
+        // Load the whole matrix into memory.
+        "fldmias  %2, {s8-s23}    \n\t"
+        // Load first column to scalar bank.
+        "fldmias  %1!, {s0-s3}    \n\t"
+        // First column times matrix.
+        "fmuls s24, s8, s0        \n\t"
+        "fmacs s24, s12, s1       \n\t"
+
+        // Load second column to scalar bank.
+        "fldmias %1!,  {s4-s7}    \n\t"
+
+        "fmacs s24, s16, s2       \n\t"
+        "fmacs s24, s20, s3       \n\t"
+        // Save first column.
+        "fstmias  %0!, {s24-s27}  \n\t"
+
+        // Second column times matrix.
+        "fmuls s28, s8, s4        \n\t"
+        "fmacs s28, s12, s5       \n\t"
+
+        // Load third column to scalar bank.
+        "fldmias  %1!, {s0-s3}    \n\t"
+
+        "fmacs s28, s16, s6       \n\t"
+        "fmacs s28, s20, s7       \n\t"
+        // Save second column.
+        "fstmias  %0!, {s28-s31}  \n\t"
+
+        // Third column times matrix.
+        "fmuls s24, s8, s0        \n\t"
+        "fmacs s24, s12, s1       \n\t"
+
+        // Load fourth column to scalar bank.
+        "fldmias %1,  {s4-s7}    \n\t"
+
+        "fmacs s24, s16, s2       \n\t"
+        "fmacs s24, s20, s3       \n\t"
+        // Save third column.
+        "fstmias  %0!, {s24-s27}  \n\t"
+
+        // Fourth column times matrix.
+        "fmuls s28, s8, s4        \n\t"
+        "fmacs s28, s12, s5       \n\t"
+        "fmacs s28, s16, s6       \n\t"
+        "fmacs s28, s20, s7       \n\t"
+        // Save fourth column.
+        "fstmias  %0!, {s28-s31}  \n\t"
+
+        VFP_VECTOR_LENGTH_ZERO
+        : "=r" (dst_mat), "=r" (src_mat_2)
+        : "r" (src_mat_1), "0" (dst_mat), "1" (src_mat_2)
+        : "r0", "cc", "memory", VFP_CLOBBER_S0_S31
+    );
+}
+#endif /* HAVE_ARM_VFP */
 
 }; // namespace android
 

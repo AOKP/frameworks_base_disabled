@@ -201,8 +201,6 @@ public class WifiStateMachine extends StateMachine {
     private static final int EVENTLOG_WIFI_EVENT_HANDLED        = 50022;
     private static final int EVENTLOG_SUPPLICANT_STATE_CHANGED  = 50023;
 
-    private static final int FORCE_STOPPED_STATE               = 999999;
-
     /* The base for wifi message types */
     static final int BASE = Protocol.BASE_WIFI;
     /* Load the driver */
@@ -2674,15 +2672,11 @@ public class WifiStateMachine extends StateMachine {
         public void enter() {
             if (DBG) log(getName() + "\n");
             EventLog.writeEvent(EVENTLOG_WIFI_STATE_CHANGED, getName());
-            sendMessageDelayed(FORCE_STOPPED_STATE, 2000);
         }
         @Override
         public boolean processMessage(Message message) {
             if (DBG) log(getName() + message.toString() + "\n");
             switch(message.what) {
-                case FORCE_STOPPED_STATE:
-                    forceTransitionToStopped(SupplicantState.INTERFACE_DISABLED);
-                    break;
                 case WifiMonitor.SUPPLICANT_STATE_CHANGE_EVENT:
                     SupplicantState state = handleSupplicantStateChange(message);
                     if (state == SupplicantState.INTERFACE_DISABLED) {

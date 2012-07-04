@@ -110,7 +110,20 @@ void Layer::onFirstRef()
 #ifdef QCOM_HARDWARE
     mSurfaceTexture->setBufferCountServer(BUFFER_COUNT_SERVER);
 #else
+#ifndef OMAP_ENHANCEMENT
     mSurfaceTexture->setBufferCountServer(2);
+#else
+    char value[PROPERTY_VALUE_MAX];
+    property_get("surfaceflingerclient.numbuffers", value, "2");
+    int numBuffers = atoi(value);
+    // clamp to valid range
+    if (numBuffers < SurfaceTexture::MIN_SURFACEFLINGERCLIENT_BUFFERS) {
+        numBuffers = SurfaceTexture::MIN_SURFACEFLINGERCLIENT_BUFFERS;
+    } else if (numBuffers > SurfaceTexture::MAX_SURFACEFLINGERCLIENT_BUFFERS) {
+        numBuffers = SurfaceTexture::MAX_SURFACEFLINGERCLIENT_BUFFERS;
+    }
+    mSurfaceTexture->setBufferCountServer(numBuffers);
+#endif
 #endif
 }
 
@@ -561,16 +574,13 @@ void Layer::lockPageFlip(bool& recomputeVisibleRegions)
 #endif
             recomputeVisibleRegions = true;
             return;
-        }
-
-
-#ifdef QCOM_HARDWARE
-        updateLayerQcomFlags(LAYER_UPDATE_STATUS, true, mLayerQcomFlags);
-#endif
 #ifdef OMAP_ENHANCEMENT
             }
 #endif
         }
+#ifdef QCOM_HARDWARE
+        updateLayerQcomFlags(LAYER_UPDATE_STATUS, true, mLayerQcomFlags);
+#endif
         // update the active buffer
         mActiveBuffer = mSurfaceTexture->getCurrentBuffer();
 

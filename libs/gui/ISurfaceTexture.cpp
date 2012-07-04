@@ -47,14 +47,12 @@ enum {
     CONNECT,
     DISCONNECT,
     SET_SCALING_MODE,
-<<<<<<< HEAD
 #ifdef QCOM_HARDWARE
     PERFORM_QCOM_OPERATION,
-=======
+#endif
 #ifdef OMAP_ENHANCEMENT
     SET_LAYOUT,
     UPDATE_AND_GET_CURRENT,
->>>>>>> 3e8f70e... add updateAndGetCurrent() and layout OMAP support
 #endif
 };
 

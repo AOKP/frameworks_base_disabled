@@ -570,11 +570,11 @@ static jint android_content_AssetManager_getResourceIdentifier(JNIEnv* env, jobj
     const char16_t* defType16 = defType
         ? (char16_t*)env->GetStringChars(defType, NULL) : NULL;
     jsize defTypeLen = defType
-        ? (char16_t*)env->GetStringLength(defType) : 0;
+        ? env->GetStringLength(defType) : 0;
     const char16_t* defPackage16 = defPackage
         ? (char16_t*)env->GetStringChars(defPackage, NULL) : NULL;
     jsize defPackageLen = defPackage
-        ? (char16_t*)env->GetStringLength(defPackage) : 0;
+        ? env->GetStringLength(defPackage) : 0;
 
     jint ident = am->getResources().identifierForName(
         (const char16_t*)name16.get(), name16.size(), defType16, defTypeLen, defPackage16, defPackageLen);

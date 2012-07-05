@@ -553,21 +553,21 @@ VIDEOEDIT_JAVA_DEFINE_FIELDS(EditSettings)
     VIDEOEDIT_JAVA_FIELD_INIT("clipSettingsArray",       "[L" CLIP_SETTINGS_CLASS_NAME ";"         ),
     VIDEOEDIT_JAVA_FIELD_INIT("transitionSettingsArray", "[L" TRANSITION_SETTINGS_CLASS_NAME ";"   ),
     VIDEOEDIT_JAVA_FIELD_INIT("effectSettingsArray",     "[L" EFFECT_SETTINGS_CLASS_NAME ";"       ),
-    VIDEOEDIT_JAVA_FIELD_INIT("videoFrameRate",          "I"                                     ),
-    VIDEOEDIT_JAVA_FIELD_INIT("outputFile",              "Ljava/lang/String;"                    ),
-    VIDEOEDIT_JAVA_FIELD_INIT("videoFrameSize",          "I"                                     ),
-    VIDEOEDIT_JAVA_FIELD_INIT("videoFormat",             "I"                                     ),
-    VIDEOEDIT_JAVA_FIELD_INIT("videoProfile",            "I"                                     ),
-    VIDEOEDIT_JAVA_FIELD_INIT("videoLevel",              "I"                                     ),
-    VIDEOEDIT_JAVA_FIELD_INIT("audioFormat",             "I"                                     ),
-    VIDEOEDIT_JAVA_FIELD_INIT("audioSamplingFreq",       "I"                                     ),
-    VIDEOEDIT_JAVA_FIELD_INIT("maxFileSize",             "I"                                     ),
-    VIDEOEDIT_JAVA_FIELD_INIT("audioChannels",           "I"                                     ),
-    VIDEOEDIT_JAVA_FIELD_INIT("videoBitrate",            "I"                                     ),
-    VIDEOEDIT_JAVA_FIELD_INIT("audioBitrate",            "I"                                     ),
+    VIDEOEDIT_JAVA_FIELD_INIT("videoFrameRate",          "I"                                       ),
+    VIDEOEDIT_JAVA_FIELD_INIT("outputFile",              "Ljava/lang/String;"                      ),
+    VIDEOEDIT_JAVA_FIELD_INIT("videoFrameSize",          "I"                                       ),
+    VIDEOEDIT_JAVA_FIELD_INIT("videoFormat",             "I"                                       ),
+    VIDEOEDIT_JAVA_FIELD_INIT("videoProfile",            "I"                                       ),
+    VIDEOEDIT_JAVA_FIELD_INIT("videoLevel",              "I"                                       ),
+    VIDEOEDIT_JAVA_FIELD_INIT("audioFormat",             "I"                                       ),
+    VIDEOEDIT_JAVA_FIELD_INIT("audioSamplingFreq",       "I"                                       ),
+    VIDEOEDIT_JAVA_FIELD_INIT("maxFileSize",             "I"                                       ),
+    VIDEOEDIT_JAVA_FIELD_INIT("audioChannels",           "I"                                       ),
+    VIDEOEDIT_JAVA_FIELD_INIT("videoBitrate",            "I"                                       ),
+    VIDEOEDIT_JAVA_FIELD_INIT("audioBitrate",            "I"                                       ),
     VIDEOEDIT_JAVA_FIELD_INIT("backgroundMusicSettings",\
     "L" BACKGROUND_MUSIC_SETTINGS_CLASS_NAME ";"),
-    VIDEOEDIT_JAVA_FIELD_INIT("primaryTrackVolume",            "I"                               )
+    VIDEOEDIT_JAVA_FIELD_INIT("primaryTrackVolume",            "I"                                 )
 };
 
 VIDEOEDIT_JAVA_DEFINE_FIELD_CLASS(EditSettings, EDIT_SETTINGS_CLASS_NAME)

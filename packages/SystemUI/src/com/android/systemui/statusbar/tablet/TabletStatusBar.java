@@ -42,6 +42,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
 import android.content.res.CustomTheme;
 import android.content.res.Resources;
+import android.inputmethodservice.InputMethodService;
 import android.database.ContentObserver;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
@@ -62,6 +63,7 @@ import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Pair;
 import android.util.Slog;
+import android.view.accessibility.AccessibilityEvent;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.Gravity;
@@ -78,6 +80,7 @@ import android.view.WindowManager;
 import android.view.WindowManagerImpl;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.ImageView;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.RemoteViews;
@@ -164,6 +167,8 @@ public class TabletStatusBar extends StatusBar implements
     int mIconSize = -1;
     int mIconHPadding = -1;
     private int mMaxNotificationIcons = 5;
+
+    private boolean mShowClock;
 
     H mHandler = new H();
 
@@ -274,6 +279,10 @@ public class TabletStatusBar extends StatusBar implements
         // Bt
         mBluetoothController.addIconView(
                 (ImageView)mNotificationPanel.findViewById(R.id.bluetooth));
+        mDockBatteryController.addLabelView(
+	                    (TextView)mNotificationPanel.findViewById(R.id.dock_battery_text));
+	        } else {
+	            mNotificationPanel.findViewById(R.id.dock_battery_text).setVisibility(View.GONE);
 
         // storage
         mStorageManager = (StorageManager) context.getSystemService(Context.STORAGE_SERVICE);

@@ -809,4 +809,6 @@
     <!--Boolean to enable stk functionality on Samsung phones-->
     <bool name="config_samsung_stk">false</bool>
 
+    <!-- Whether to prevent preloading of ap firmware, some devices need to disable this -->
+    <bool name="config_wifi_ap_firmware_reload">true</bool>
 </resources>

@@ -135,6 +135,7 @@ public class WifiStateMachine extends StateMachine {
     private int mReconnectCount = 0;
     private boolean mIsScanMode = false;
     private boolean mScanResultIsPending = false;
+    private boolean mFirmwareReload;
 
     private boolean mBluetoothConnectionActive = false;
 
@@ -584,6 +585,9 @@ public class WifiStateMachine extends StateMachine {
                 com.android.internal.R.integer.config_wifi_supplicant_scan_interval);
 
         mSoftApIface = SystemProperties.get("wifi.ap.interface", "wl0.1");
+
+        mFirmwareReload = mContext.getResources().getBoolean(
+            com.android.internal.R.bool.config_wifi_ap_firmware_reload);
 
         mContext.registerReceiver(
             new BroadcastReceiver() {
@@ -2030,7 +2034,8 @@ public class WifiStateMachine extends StateMachine {
                     break;
                 case CMD_START_SUPPLICANT:
                     try {
-                        mNwService.wifiFirmwareReload(mInterfaceName, "STA");
+                        if (mFirmwareReload)
+                            mNwService.wifiFirmwareReload(mInterfaceName, "STA");
                     } catch (Exception e) {
                         loge("Failed to reload STA firmware " + e);
                         // continue

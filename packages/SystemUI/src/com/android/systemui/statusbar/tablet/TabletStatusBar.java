@@ -633,7 +633,6 @@ public class TabletStatusBar extends StatusBar implements
         mMenuButton = mNavigationArea.findViewById(R.id.menu);
         mRecentButton = mNavigationArea.findViewById(R.id.recent_apps);
         mRecentButton.setOnClickListener(mOnClickListener);
-		*/
 
         LayoutTransition lt = new LayoutTransition();
         lt.setDuration(250);

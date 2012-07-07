@@ -795,4 +795,3 @@ public class Smdk4210RIL extends RIL implements CommandsInterface {
         return response;
     }
 }
->>>>>>> 90d35f4... Smdk4210Ril: fix bad file format

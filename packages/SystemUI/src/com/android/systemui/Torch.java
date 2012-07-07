@@ -18,7 +18,6 @@
 
 package com.android.systemui;
 
-import java.io.IOException;
 import java.util.List;
 
 import android.app.Activity;
@@ -34,9 +33,6 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
-import android.view.WindowManager;
-
-import com.android.systemui.R;
 
 /*
  * Torch is an LED flashlight.
@@ -280,7 +276,7 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
     public void surfaceCreated(SurfaceHolder holder) {
         try {
             mCamera.setPreviewDisplay(holder);
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

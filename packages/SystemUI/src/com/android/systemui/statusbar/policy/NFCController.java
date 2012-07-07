@@ -26,7 +26,7 @@ import android.os.AsyncTask;
 import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.provider.Settings;
-import android.util.Slog;
+import android.util.Log;
 import android.widget.CompoundButton;
 
 public class NFCController extends BroadcastReceiver
@@ -41,8 +41,6 @@ public class NFCController extends BroadcastReceiver
 
     public NFCController(Context context, CompoundButton checkbox) {
         mContext = context;
-        mNfcAdapter = NfcAdapter.getDefaultAdapter(context);
-        mNfcEnabled = getNfcState();
         mCheckBox = checkbox;
         checkbox.setChecked(mNfcEnabled);
         checkbox.setOnCheckedChangeListener(this);
@@ -65,6 +63,8 @@ public class NFCController extends BroadcastReceiver
     }
 
     public void onReceive(Context context, Intent intent) {
+        mContext = context;
+        mNfcAdapter = NfcAdapter.getDefaultAdapter(context);
         if (NfcAdapter.ACTION_ADAPTER_STATE_CHANGED.equals(intent.getAction())) {
             final boolean enabled = (intent.getIntExtra(NfcAdapter.EXTRA_ADAPTER_STATE,
                     NfcAdapter.STATE_OFF) == NfcAdapter.STATE_ON);
@@ -76,20 +76,30 @@ public class NFCController extends BroadcastReceiver
     }
 
     private boolean getNfcState() {
-        return mNfcAdapter.isEnabled();
+        if (mNfcAdapter == null) {
+            Log.d(TAG, "NFC service not running.");
+            return false;
+        }
+        else {
+            return mNfcAdapter.isEnabled();
+        }
     }
 
     private void setNfcState(final boolean desiredState) {
-        AsyncTask.execute(new Runnable() {
-            public void run() {
-                if (desiredState) {
-                    mNfcAdapter.enable();
-                } else {
-                    mNfcAdapter.disable();
+        if (mNfcAdapter == null) {
+            Log.d(TAG, "NFC service not running.");
+        } else {
+            AsyncTask.execute(new Runnable() {
+                public void run() {
+                    if (desiredState) {
+                        mNfcAdapter.enable();
+                    } else {
+                        mNfcAdapter.disable();
+                    }
+                    return;
                 }
-                return;
-            }
-        });
+            });
+        }
     }
 }
 

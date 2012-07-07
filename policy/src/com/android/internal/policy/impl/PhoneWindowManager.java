@@ -3378,11 +3378,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         return result;
     }
 
-    void handleFunctionKey(KeyEvent event) {
-        mBroadcastWakeLock.acquire();
-        mHandler.post(new PassFunctionKey(new KeyEvent(event)));
-    }
-
     void handleVolumeLongPress(int keycode) {
         Runnable btnHandler;
 

@@ -270,6 +270,10 @@ enum {
     AKEYCODE_BRIGHTNESS_DOWN = 224,
     AKEYCODE_BRIGHTNESS_AUTO = 225,
     AKEYCODE_CAPTURE         = 226,
+    AKEYCODE_TOGGLE_WIFI     = 227,
+    AKEYCODE_TOGGLE_BT       = 228,
+    AKEYCODE_TOGGLE_TOUCHPAD = 229,
+    AKEYCODE_SCREENSHOT      = 230,
 
     // NOTE: If you add a new keycode here you must also add it to several other files.
     //       Refer to frameworks/base/core/java/android/view/KeyEvent.java for the full list.

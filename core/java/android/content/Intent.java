@@ -2318,14 +2318,7 @@ public class Intent implements Parcelable, Cloneable {
      */
     @SdkConstant(SdkConstantType.INTENT_CATEGORY)
     public static final String CATEGORY_HE_DESK_DOCK = "android.intent.category.HE_DESK_DOCK";
-    /**
-     * An activity to run when device is inserted into a keyboard dock.
-     * Used with {@link #ACTION_MAIN} to launch an activity.  For more
-     * information, see {@link android.app.UiModeManager}.
-     */
-    @SdkConstant(SdkConstantType.INTENT_CATEGORY)
-    public static final String CATEGORY_EOS_KB_DOCK = "android.intent.category.TF101_KB_DOCK";
-    
+
     /**
      * An activity to run when device is inserted into a keyboard dock.
      * Used with {@link #ACTION_MAIN} to launch an activity.  For more

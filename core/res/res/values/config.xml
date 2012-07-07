@@ -341,10 +341,10 @@
     <bool name="config_carDockEnablesAccelerometer">true</bool>
 
     <!-- Control whether being in the keyboard dock should enable accelerometer based
-        screen orientation.  This defaults to false because putting a device in
-        a keyboard dock should lock in the default orientation. -->
+         screen orientation.  This defaults to false because putting a device in
+         a keyboard dock should lock in the default orientation. -->
     <bool name="config_keyboardDockEnablesAccelerometer">false</bool>
-    
+
     <!-- Indicate whether the lid state impacts the accessibility of
          the physical keyboard.  0 means it doesn't, 1 means it is accessible
          when the lid is open, 2 means it is accessible when the lid is

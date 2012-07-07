@@ -118,6 +118,8 @@ ifeq ($(OMAP_ENHANCEMENT), true)
 LOCAL_C_INCLUDES += $(TOP)/hardware/ti/omap4xxx/domx/omx_core/inc
 endif
 
+ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
+
 LOCAL_C_INCLUDES += \
     $(TOP)/hardware/qcom/display/libgralloc \
     $(TOP)/vendor/qcom/opensource/omx/mm-core/omxcore/inc \

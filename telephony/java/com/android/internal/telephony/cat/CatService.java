@@ -632,6 +632,64 @@ public class CatService extends Handler implements AppInterface {
             CatLog.d(this, "SIM ready. Reporting STK service running now...");
             mCmdIf.reportStkServiceIsRunning(null);
             break;
+        // Samsung ril sms send handling part
+        case MSG_ID_SEND_SMS_RESULT:
+            if (mContext.getResources().
+                        getBoolean(com.android.internal.R.bool.config_samsung_stk)) {
+                int[] sendResult;
+                AsyncResult ar;
+                CatLog.d(this, "handleMsg : MSG_ID_SEND_SMS_RESULT");
+                cancelTimeOut();
+                CatLog.d(this, "The Msg ID data:" + msg.what);
+                if (msg.obj == null)
+                    break;
+                ar = (AsyncResult) msg.obj;
+                if (ar == null || ar.result == null || mCurrntCmd == null || mCurrntCmd.mCmdDet == null)
+                    break;
+                sendResult = (int[]) ar.result;
+                switch (sendResult[0]) {
+                    default:
+                        CatLog.d(this, "SMS SEND GENERIC FAIL");
+                        if (CallControlResult.fromInt(mCallControlResultCode) ==
+                                CallControlResult.CALL_CONTROL_NOT_ALLOWED)
+                            sendTerminalResponse(mCurrntCmd.mCmdDet,
+                                    ResultCode.USIM_CALL_CONTROL_PERMANENT, true, 1, null);
+                        else
+                            sendTerminalResponse(mCurrntCmd.mCmdDet,
+                                    ResultCode.TERMINAL_CRNTLY_UNABLE_TO_PROCESS, false, 0, null);
+                        break;
+                    case SMS_SEND_OK: // '\0'
+                        CatLog.d(this, "SMS SEND OK");
+                        if (CallControlResult.fromInt(mCallControlResultCode) ==
+                                CallControlResult.CALL_CONTROL_NOT_ALLOWED)
+                            sendTerminalResponse(mCurrntCmd.mCmdDet,
+                                    ResultCode.USIM_CALL_CONTROL_PERMANENT, true, 1, null);
+                        else
+                            sendTerminalResponse(mCurrntCmd.mCmdDet, ResultCode.OK, false, 0, null);
+                        break;
+                    case SMS_SEND_FAIL:
+                        CatLog.d(this, "SMS SEND FAIL - MEMORY NOT AVAILABLE");
+                        if (CallControlResult.fromInt(mCallControlResultCode) ==
+                                CallControlResult.CALL_CONTROL_NOT_ALLOWED)
+                            sendTerminalResponse(mCurrntCmd.mCmdDet,
+                                    ResultCode.USIM_CALL_CONTROL_PERMANENT, true, 1, null);
+                        else
+                            sendTerminalResponse(mCurrntCmd.mCmdDet,
+                                    ResultCode.TERMINAL_CRNTLY_UNABLE_TO_PROCESS, false, 0, null);
+                        break;
+                    case SMS_SEND_RETRY:
+                        CatLog.d(this, "SMS SEND FAIL RETRY");
+                        if (CallControlResult.fromInt(mCallControlResultCode) ==
+                                CallControlResult.CALL_CONTROL_NOT_ALLOWED)
+                            sendTerminalResponse(mCurrntCmd.mCmdDet,
+                                    ResultCode.USIM_CALL_CONTROL_PERMANENT, true, 1, null);
+                        else
+                            sendTerminalResponse(mCurrntCmd.mCmdDet,
+                                    ResultCode.NETWORK_CRNTLY_UNABLE_TO_PROCESS, false, 0, null);
+                        break;
+                    }
+            }
+            break;
         default:
             throw new AssertionError("Unrecognized CAT command: " + msg.what);
         }

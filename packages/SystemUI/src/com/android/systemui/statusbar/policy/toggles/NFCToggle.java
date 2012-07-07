@@ -38,9 +38,7 @@ public class NFCToggle extends Toggle {
             if (NfcAdapter.ACTION_ADAPTER_STATE_CHANGED.equals(intent.getAction())) {
                 final boolean enabled = (intent.getIntExtra(NfcAdapter.EXTRA_ADAPTER_STATE,
                         NfcAdapter.STATE_OFF) == NfcAdapter.STATE_ON);
-                if (enabled != mNfcEnabled) {
-                    mNfcEnabled = enabled;
-                }
+                mNfcEnabled = enabled;
                 updateState();
             }
         }

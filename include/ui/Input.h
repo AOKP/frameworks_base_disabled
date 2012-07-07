@@ -122,6 +122,7 @@ enum {
     POLICY_FLAG_LAUNCHER = 0x00000080,
     POLICY_FLAG_VIRTUAL = 0x00000100,
     POLICY_FLAG_FUNCTION = 0x00000200,
+    POLICY_FLAG_UNLOCK = 0x00000400,
 
     POLICY_FLAG_RAW_MASK = 0x0000ffff,
 
@@ -311,7 +312,7 @@ public:
     // Return true if this event represents a system key.
     static bool isSystemKey(int32_t keyCode);
     bool isSystemKey() const;
-    
+
     void initialize(
             int32_t deviceId,
             int32_t source,

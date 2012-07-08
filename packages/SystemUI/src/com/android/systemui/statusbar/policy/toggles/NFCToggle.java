@@ -16,7 +16,6 @@ import com.android.systemui.R;
 public class NFCToggle extends Toggle {
     private static final String TAG = "StatusBar.NFCToggle";
 
-    private Context mContext;
     private boolean mNfcEnabled;
     private NfcAdapter mNfcAdapter;
 
@@ -33,7 +32,6 @@ public class NFCToggle extends Toggle {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            mContext = context;
             mNfcAdapter = NfcAdapter.getDefaultAdapter(context);
             if (NfcAdapter.ACTION_ADAPTER_STATE_CHANGED.equals(intent.getAction())) {
                 final boolean enabled = (intent.getIntExtra(NfcAdapter.EXTRA_ADAPTER_STATE,

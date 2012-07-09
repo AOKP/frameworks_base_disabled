@@ -118,34 +118,6 @@ ifeq ($(OMAP_ENHANCEMENT), true)
 LOCAL_C_INCLUDES += $(TOP)/hardware/ti/omap4xxx/domx/omx_core/inc
 endif
 
-ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
-
-LOCAL_C_INCLUDES += \
-    $(TOP)/hardware/qcom/display/libgralloc \
-    $(TOP)/vendor/qcom/opensource/omx/mm-core/omxcore/inc \
-    $(TOP)/system/core/include \
-    $(TOP)/hardware/libhardware_legacy/include \
-    $(TOP)/hardware/qcom/display/libqcomui
-
-LOCAL_CFLAGS += -DQCOM_HARDWARE
-
-ifeq ($(TARGET_BOARD_PLATFORM),msm7x30)
-LOCAL_CFLAGS += -DTARGET7x30
-else ifeq ($(TARGET_BOARD_PLATFORM),msm8660)
-LOCAL_CFLAGS += -DTARGET8x60
-else ifeq ($(TARGET_BOARD_PLATFORM),msm8960)
-LOCAL_CFLAGS += -DTARGET8x60
-else ifeq ($(TARGET_BOARD_PLATFORM),msm7x27)
-LOCAL_CFLAGS += -DTARGET7x27
-else ifeq ($(TARGET_BOARD_PLATFORM),msm7x27a)
-LOCAL_CFLAGS += -DTARGET7x27A -DUSE_AAC_HW_DEC
-else ifeq ($(TARGET_BOARD_PLATFORM),qsd8k)
-LOCAL_CFLAGS += -DTARGET8x50
-endif
-
-
-endif # QCOM_HARDWARE
-
 LOCAL_SHARED_LIBRARIES := \
         libbinder         \
         libmedia          \

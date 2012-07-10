@@ -556,6 +556,12 @@ status_t SurfaceTexture::dequeueBuffer(int *outBuf, uint32_t w, uint32_t h,
                 mPixelFormat = format;
             }
 
+            if (mPixelFormat != format) {
+                LOGW("dequeueBuffer: mPixelFormat %d != format %d", mPixelFormat, format);
+            }
+            if (mPixelFormat != 1 && mPixelFormat != 4 && mPixelFormat != 5) {
+                LOGV("dequeueBuffer: non standard pixel format: %d.", mPixelFormat);
+            }
             mSlots[buf].mGraphicBuffer = graphicBuffer;
             mSlots[buf].mRequestBufferCalled = false;
             mSlots[buf].mFence = EGL_NO_SYNC_KHR;

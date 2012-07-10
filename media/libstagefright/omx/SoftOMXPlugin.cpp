@@ -35,7 +35,6 @@ static const struct {
 
 } kComponents[] = {
     { "OMX.google.aac.decoder", "aacdec", "audio_decoder.aac" },
-    { "OMX.google.aac.decoder.secure", "aacdec", "audio_decoder.aac" },
     { "OMX.google.amrnb.decoder", "amrdec", "audio_decoder.amrnb" },
     { "OMX.google.amrwb.decoder", "amrdec", "audio_decoder.amrwb" },
     { "OMX.google.h264.decoder", "h264dec", "video_decoder.avc" },
@@ -59,7 +58,7 @@ OMX_ERRORTYPE SoftOMXPlugin::makeComponentInstance(
         const OMX_CALLBACKTYPE *callbacks,
         OMX_PTR appData,
         OMX_COMPONENTTYPE **component) {
-    ALOGV("makeComponentInstance '%s'", name);
+    LOGV("makeComponentInstance '%s'", name);
 
     for (size_t i = 0; i < kNumComponents; ++i) {
         if (strcmp(name, kComponents[i].mName)) {
@@ -73,7 +72,7 @@ OMX_ERRORTYPE SoftOMXPlugin::makeComponentInstance(
         void *libHandle = dlopen(libName.c_str(), RTLD_NOW);
 
         if (libHandle == NULL) {
-            ALOGE("unable to dlopen %s", libName.c_str());
+            LOGE("unable to dlopen %s", libName.c_str());
 
             return OMX_ErrorComponentNotFound;
         }

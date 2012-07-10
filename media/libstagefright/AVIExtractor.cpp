@@ -457,7 +457,7 @@ ssize_t AVIExtractor::parseChunk(off64_t offset, off64_t size, int depth) {
 
         uint32_t subFourcc = U32_AT(&tmp[8]);
 
-        ALOGV("%s offset 0x%08llx LIST of '%c%c%c%c', size %d",
+        LOGV("%s offset 0x%08llx LIST of '%c%c%c%c', size %d",
              prefix,
              offset,
              (char)(subFourcc >> 24),
@@ -486,7 +486,7 @@ ssize_t AVIExtractor::parseChunk(off64_t offset, off64_t size, int depth) {
             }
         }
     } else {
-        ALOGV("%s offset 0x%08llx CHUNK '%c%c%c%c'",
+        LOGV("%s offset 0x%08llx CHUNK '%c%c%c%c'",
              prefix,
              offset,
              (char)(fourcc >> 24),
@@ -580,20 +580,6 @@ static const char *GetMIMETypeForHandler(uint32_t handler) {
         case FOURCC('v', 's', 's', 'h'):
             return MEDIA_MIMETYPE_VIDEO_AVC;
 
-#ifdef OMAP_ENHANCEMENT
-
-        case FOURCC('D','2','6','3'):
-        case FOURCC('H','2','6','3'):
-        case FOURCC('L','2','6','3'):
-        case FOURCC('M','2','6','3'):
-        case FOURCC('S','2','6','3'):
-        case FOURCC('T','2','6','3'):
-        case FOURCC('U','2','6','3'):
-        case FOURCC('X','2','6','3'):
-             return MEDIA_MIMETYPE_VIDEO_H263;
-
-#endif
-
         default:
             return NULL;
     }
@@ -639,7 +625,7 @@ status_t AVIExtractor::parseStreamHeader(off64_t offset, size_t size) {
         }
 
         if (mime == NULL) {
-            ALOGW("Unsupported video format '%c%c%c%c'",
+            LOGW("Unsupported video format '%c%c%c%c'",
                  (char)(handler >> 24),
                  (char)((handler >> 16) & 0xff),
                  (char)((handler >> 8) & 0xff),
@@ -719,7 +705,7 @@ status_t AVIExtractor::parseStreamFormat(off64_t offset, size_t size) {
         if (format == 0x55) {
             track->mMeta->setCString(kKeyMIMEType, MEDIA_MIMETYPE_AUDIO_MPEG);
         } else {
-            ALOGW("Unsupported audio format = 0x%04x", format);
+            LOGW("Unsupported audio format = 0x%04x", format);
         }
 
         uint32_t numChannels = U16LE_AT(&data[2]);
@@ -870,7 +856,7 @@ status_t AVIExtractor::parseIndex(off64_t offset, size_t size) {
             }
         }
 
-        ALOGV("Chunk offsets are %s",
+        LOGV("Chunk offsets are %s",
              mOffsetsAreAbsolute ? "absolute" : "movie-chunk relative");
     }
 
@@ -922,7 +908,7 @@ status_t AVIExtractor::parseIndex(off64_t offset, size_t size) {
         CHECK_EQ((status_t)OK,
                  getSampleTime(i, track->mSamples.size() - 1, &durationUs));
 
-        ALOGV("track %d duration = %.2f secs", i, durationUs / 1E6);
+        LOGV("track %d duration = %.2f secs", i, durationUs / 1E6);
 
         track->mMeta->setInt64(kKeyDuration, durationUs);
         track->mMeta->setInt32(kKeyMaxInputSize, track->mMaxSampleSize);
@@ -1094,7 +1080,7 @@ status_t AVIExtractor::addH264CodecSpecificData(size_t trackIndex) {
     sp<MetaData> meta = MakeAVCCodecSpecificData(buffer);
 
     if (meta == NULL) {
-        ALOGE("Unable to extract AVC codec specific data");
+        LOGE("Unable to extract AVC codec specific data");
         return ERROR_MALFORMED;
     }
 

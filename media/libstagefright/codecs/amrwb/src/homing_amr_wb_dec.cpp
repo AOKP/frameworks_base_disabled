@@ -134,7 +134,7 @@ extern "C"
 ; LOCAL STORE/BUFFER/POINTER DEFINITIONS
 ; Variable declaration - defined here and used outside this module
 ----------------------------------------------------------------------------*/
-static const int16 prmnofsf[NUM_OF_SPMODES] =
+const int16 prmnofsf[NUM_OF_SPMODES] =
 {
     63,  81, 100,
     108, 116, 128,
@@ -142,21 +142,21 @@ static const int16 prmnofsf[NUM_OF_SPMODES] =
 };
 
 
-static const int16 dfh_M7k[PRMN_7k] =
+const int16 dfh_M7k[PRMN_7k] =
 {
     3168, 29954, 29213, 16121,
     64, 13440, 30624, 16430,
     19008
 };
 
-static const int16 dfh_M9k[PRMN_9k] =
+const int16 dfh_M9k[PRMN_9k] =
 {
     3168, 31665,  9943, 9123,
     15599,  4358, 20248, 2048,
     17040, 27787, 16816, 13888
 };
 
-static const int16 dfh_M12k[PRMN_12k] =
+const int16 dfh_M12k[PRMN_12k] =
 {
     3168, 31665,  9943,  9128,
     3647,  8129, 30930, 27926,
@@ -165,7 +165,7 @@ static const int16 dfh_M12k[PRMN_12k] =
     13948
 };
 
-static const int16 dfh_M14k[PRMN_14k] =
+const int16 dfh_M14k[PRMN_14k] =
 {
     3168, 31665,  9943,  9131,
     24815,   655, 26616, 26764,
@@ -174,7 +174,7 @@ static const int16 dfh_M14k[PRMN_14k] =
     221, 20321, 17823
 };
 
-static const int16 dfh_M16k[PRMN_16k] =
+const int16 dfh_M16k[PRMN_16k] =
 {
     3168, 31665,  9943,  9131,
     24815,   700,  3824,  7271,
@@ -184,7 +184,7 @@ static const int16 dfh_M16k[PRMN_16k] =
     6759, 24576
 };
 
-static const int16 dfh_M18k[PRMN_18k] =
+const int16 dfh_M18k[PRMN_18k] =
 {
     3168, 31665,  9943,  9135,
     14787, 14423, 30477, 24927,
@@ -195,7 +195,7 @@ static const int16 dfh_M18k[PRMN_18k] =
     0
 };
 
-static const int16 dfh_M20k[PRMN_20k] =
+const int16 dfh_M20k[PRMN_20k] =
 {
     3168, 31665,  9943,  9129,
     8637, 31807, 24646,   736,
@@ -206,7 +206,7 @@ static const int16 dfh_M20k[PRMN_20k] =
     30249, 29123, 0
 };
 
-static const int16 dfh_M23k[PRMN_23k] =
+const int16 dfh_M23k[PRMN_23k] =
 {
     3168, 31665,  9943,  9132,
     16748,  3202, 28179, 16317,
@@ -218,7 +218,7 @@ static const int16 dfh_M23k[PRMN_23k] =
     23392, 26053, 31216
 };
 
-static const int16 dfh_M24k[PRMN_24k] =
+const int16 dfh_M24k[PRMN_24k] =
 {
     3168, 31665,  9943,  9134,
     24776,  5857, 18475, 28535,

@@ -189,9 +189,9 @@ status_t OggSource::read(
 #if 0
     int64_t timeUs;
     if (packet->meta_data()->findInt64(kKeyTime, &timeUs)) {
-        ALOGI("found time = %lld us", timeUs);
+        LOGI("found time = %lld us", timeUs);
     } else {
-        ALOGI("NO time");
+        LOGI("NO time");
     }
 #endif
 
@@ -244,7 +244,7 @@ status_t MyVorbisExtractor::findNextPage(
 
         if (!memcmp(signature, "OggS", 4)) {
             if (*pageOffset > startOffset) {
-                ALOGV("skipped %lld bytes of junk to reach next frame",
+                LOGV("skipped %lld bytes of junk to reach next frame",
                      *pageOffset - startOffset);
             }
 
@@ -272,7 +272,7 @@ status_t MyVorbisExtractor::findPrevGranulePosition(
             prevGuess = 0;
         }
 
-        ALOGV("backing up %lld bytes", pageOffset - prevGuess);
+        LOGV("backing up %lld bytes", pageOffset - prevGuess);
 
         status_t err = findNextPage(prevGuess, &prevPageOffset);
         if (err != OK) {
@@ -289,7 +289,7 @@ status_t MyVorbisExtractor::findPrevGranulePosition(
         return UNKNOWN_ERROR;
     }
 
-    ALOGV("prevPageOffset at %lld, pageOffset at %lld",
+    LOGV("prevPageOffset at %lld, pageOffset at %lld",
          prevPageOffset, pageOffset);
 
     for (;;) {
@@ -315,7 +315,7 @@ status_t MyVorbisExtractor::seekToTime(int64_t timeUs) {
 
         off64_t pos = timeUs * approxBitrate() / 8000000ll;
 
-        ALOGV("seeking to offset %lld", pos);
+        LOGV("seeking to offset %lld", pos);
         return seekToOffset(pos);
     }
 
@@ -338,7 +338,7 @@ status_t MyVorbisExtractor::seekToTime(int64_t timeUs) {
 
     const TOCEntry &entry = mTableOfContents.itemAt(left);
 
-    ALOGV("seeking to entry %d / %d at offset %lld",
+    LOGV("seeking to entry %d / %d at offset %lld",
          left, mTableOfContents.size(), entry.mPageOffset);
 
     return seekToOffset(entry.mPageOffset);
@@ -381,7 +381,7 @@ ssize_t MyVorbisExtractor::readPage(off64_t offset, Page *page) {
     ssize_t n;
     if ((n = mSource->readAt(offset, header, sizeof(header)))
             < (ssize_t)sizeof(header)) {
-        ALOGV("failed to read %d bytes at offset 0x%016llx, got %ld bytes",
+        LOGV("failed to read %d bytes at offset 0x%016llx, got %ld bytes",
              sizeof(header), offset, n);
 
         if (n < 0) {
@@ -441,7 +441,7 @@ ssize_t MyVorbisExtractor::readPage(off64_t offset, Page *page) {
         tmp.append(x);
     }
 
-    ALOGV("%c %s", page->mFlags & 1 ? '+' : ' ', tmp.string());
+    LOGV("%c %s", page->mFlags & 1 ? '+' : ' ', tmp.string());
 #endif
 
     return sizeof(header) + page->mNumSegments + totalSize;
@@ -505,7 +505,7 @@ status_t MyVorbisExtractor::readNextPacket(MediaBuffer **out) {
                     packetSize);
 
             if (n < (ssize_t)packetSize) {
-                ALOGV("failed to read %d bytes at 0x%016llx, got %ld bytes",
+                LOGV("failed to read %d bytes at 0x%016llx, got %ld bytes",
                      packetSize, dataOffset, n);
                 return ERROR_IO;
             }
@@ -546,7 +546,7 @@ status_t MyVorbisExtractor::readNextPacket(MediaBuffer **out) {
                 buffer = NULL;
             }
 
-            ALOGV("readPage returned %ld", n);
+            LOGV("readPage returned %ld", n);
 
             return n < 0 ? n : (status_t)ERROR_END_OF_STREAM;
         }
@@ -590,7 +590,7 @@ status_t MyVorbisExtractor::init() {
     if ((err = readNextPacket(&packet)) != OK) {
         return err;
     }
-    ALOGV("read packet of size %d\n", packet->range_length());
+    LOGV("read packet of size %d\n", packet->range_length());
     err = verifyHeader(packet, 1);
     packet->release();
     packet = NULL;
@@ -601,7 +601,7 @@ status_t MyVorbisExtractor::init() {
     if ((err = readNextPacket(&packet)) != OK) {
         return err;
     }
-    ALOGV("read packet of size %d\n", packet->range_length());
+    LOGV("read packet of size %d\n", packet->range_length());
     err = verifyHeader(packet, 3);
     packet->release();
     packet = NULL;
@@ -612,7 +612,7 @@ status_t MyVorbisExtractor::init() {
     if ((err = readNextPacket(&packet)) != OK) {
         return err;
     }
-    ALOGV("read packet of size %d\n", packet->range_length());
+    LOGV("read packet of size %d\n", packet->range_length());
     err = verifyHeader(packet, 5);
     packet->release();
     packet = NULL;
@@ -722,10 +722,10 @@ status_t MyVorbisExtractor::verifyHeader(
             mMeta->setInt32(kKeySampleRate, mVi.rate);
             mMeta->setInt32(kKeyChannelCount, mVi.channels);
 
-            ALOGV("lower-bitrate = %ld", mVi.bitrate_lower);
-            ALOGV("upper-bitrate = %ld", mVi.bitrate_upper);
-            ALOGV("nominal-bitrate = %ld", mVi.bitrate_nominal);
-            ALOGV("window-bitrate = %ld", mVi.bitrate_window);
+            LOGV("lower-bitrate = %ld", mVi.bitrate_lower);
+            LOGV("upper-bitrate = %ld", mVi.bitrate_upper);
+            LOGV("nominal-bitrate = %ld", mVi.bitrate_nominal);
+            LOGV("window-bitrate = %ld", mVi.bitrate_window);
 
             off64_t size;
             if (mSource->getSize(&size) == OK) {
@@ -777,7 +777,7 @@ void MyVorbisExtractor::parseFileMetaData() {
         const char *comment = mVc.user_comments[i];
         size_t commentLength = mVc.comment_lengths[i];
         parseVorbisComment(mFileMeta, comment, commentLength);
-        //ALOGI("comment #%d: '%s'", i + 1, mVc.user_comments[i]);
+        //LOGI("comment #%d: '%s'", i + 1, mVc.user_comments[i]);
     }
 }
 
@@ -893,17 +893,17 @@ static uint8_t *DecodeBase64(const char *s, size_t size, size_t *outSize) {
 
 static void extractAlbumArt(
         const sp<MetaData> &fileMeta, const void *data, size_t size) {
-    ALOGV("extractAlbumArt from '%s'", (const char *)data);
+    LOGV("extractAlbumArt from '%s'", (const char *)data);
 
     size_t flacSize;
     uint8_t *flac = DecodeBase64((const char *)data, size, &flacSize);
 
     if (flac == NULL) {
-        ALOGE("malformed base64 encoded data.");
+        LOGE("malformed base64 encoded data.");
         return;
     }
 
-    ALOGV("got flac of size %d", flacSize);
+    LOGV("got flac of size %d", flacSize);
 
     uint32_t picType;
     uint32_t typeLen;
@@ -934,7 +934,7 @@ static void extractAlbumArt(
     memcpy(type, &flac[8], typeLen);
     type[typeLen] = '\0';
 
-    ALOGV("picType = %d, type = '%s'", picType, type);
+    LOGV("picType = %d, type = '%s'", picType, type);
 
     if (!strcmp(type, "-->")) {
         // This is not inline cover art, but an external url instead.
@@ -953,7 +953,7 @@ static void extractAlbumArt(
         goto exit;
     }
 
-    ALOGV("got image data, %d trailing bytes",
+    LOGV("got image data, %d trailing bytes",
          flacSize - 32 - typeLen - descLen - dataLen);
 
     fileMeta->setData(

@@ -55,7 +55,7 @@ ARTSPConnection::ARTSPConnection(bool uidValid, uid_t uid)
 
 ARTSPConnection::~ARTSPConnection() {
     if (mSocket >= 0) {
-        ALOGE("Connection is still open, closing the socket.");
+        LOGE("Connection is still open, closing the socket.");
         if (mUIDValid) {
             HTTPBase::UnRegisterSocketUserTag(mSocket);
         }
@@ -235,7 +235,7 @@ void ARTSPConnection::onConnect(const sp<AMessage> &msg) {
         // right here, since we currently have no way of asking the user
         // for this information.
 
-        ALOGE("Malformed rtsp url %s", url.c_str());
+        LOGE("Malformed rtsp url %s", url.c_str());
 
         reply->setInt32("result", ERROR_MALFORMED);
         reply->post();
@@ -245,12 +245,12 @@ void ARTSPConnection::onConnect(const sp<AMessage> &msg) {
     }
 
     if (mUser.size() > 0) {
-        ALOGV("user = '%s', pass = '%s'", mUser.c_str(), mPass.c_str());
+        LOGV("user = '%s', pass = '%s'", mUser.c_str(), mPass.c_str());
     }
 
     struct hostent *ent = gethostbyname(host.c_str());
     if (ent == NULL) {
-        ALOGE("Unknown host %s", host.c_str());
+        LOGE("Unknown host %s", host.c_str());
 
         reply->setInt32("result", -ENOENT);
         reply->post();
@@ -268,17 +268,14 @@ void ARTSPConnection::onConnect(const sp<AMessage> &msg) {
 
     MakeSocketBlocking(mSocket, false);
 
-    union {
-        struct sockaddr_in remote;
-        struct sockaddr remote_generic;
-    };
+    struct sockaddr_in remote;
     memset(remote.sin_zero, 0, sizeof(remote.sin_zero));
     remote.sin_family = AF_INET;
     remote.sin_addr.s_addr = *(in_addr_t *)ent->h_addr;
     remote.sin_port = htons(port);
 
     int err = ::connect(
-            mSocket, &remote_generic, sizeof(remote));
+            mSocket, (const struct sockaddr *)&remote, sizeof(remote));
 
     reply->setInt32("server-ip", ntohl(remote.sin_addr.s_addr));
 
@@ -379,7 +376,7 @@ void ARTSPConnection::onCompleteConnection(const sp<AMessage> &msg) {
     CHECK_EQ(optionLen, (socklen_t)sizeof(err));
 
     if (err != 0) {
-        ALOGE("err = %d (%s)", err, strerror(err));
+        LOGE("err = %d (%s)", err, strerror(err));
 
         reply->setInt32("result", -err);
 
@@ -432,7 +429,7 @@ void ARTSPConnection::onSendRequest(const sp<AMessage> &msg) {
 
     request.insert(cseqHeader, i + 2);
 
-    ALOGV("request: '%s'", request.c_str());
+    LOGV("request: '%s'", request.c_str());
 
     size_t numBytesSent = 0;
     while (numBytesSent < request.size()) {
@@ -449,12 +446,12 @@ void ARTSPConnection::onSendRequest(const sp<AMessage> &msg) {
 
             if (n == 0) {
                 // Server closed the connection.
-                ALOGE("Server unexpectedly closed the connection.");
+                LOGE("Server unexpectedly closed the connection.");
 
                 reply->setInt32("result", ERROR_IO);
                 reply->post();
             } else {
-                ALOGE("Error sending rtsp request. (%s)", strerror(errno));
+                LOGE("Error sending rtsp request. (%s)", strerror(errno));
                 reply->setInt32("result", -errno);
                 reply->post();
             }
@@ -539,10 +536,10 @@ status_t ARTSPConnection::receive(void *data, size_t size) {
 
             if (n == 0) {
                 // Server closed the connection.
-                ALOGE("Server unexpectedly closed the connection.");
+                LOGE("Server unexpectedly closed the connection.");
                 return ERROR_IO;
             } else {
-                ALOGE("Error reading rtsp response. (%s)", strerror(errno));
+                LOGE("Error reading rtsp response. (%s)", strerror(errno));
                 return -errno;
             }
         }
@@ -618,7 +615,7 @@ bool ARTSPConnection::receiveRTSPReponse() {
             notify->setObject("buffer", buffer);
             notify->post();
         } else {
-            ALOGW("received binary data, but no one cares.");
+            LOGW("received binary data, but no one cares.");
         }
 
         return true;
@@ -627,7 +624,7 @@ bool ARTSPConnection::receiveRTSPReponse() {
     sp<ARTSPResponse> response = new ARTSPResponse;
     response->mStatusLine = statusLine;
 
-    ALOGI("status: %s", response->mStatusLine.c_str());
+    LOGI("status: %s", response->mStatusLine.c_str());
 
     ssize_t space1 = response->mStatusLine.find(" ");
     if (space1 < 0) {
@@ -672,7 +669,7 @@ bool ARTSPConnection::receiveRTSPReponse() {
             break;
         }
 
-        ALOGV("line: '%s'", line.c_str());
+        LOGV("line: '%s'", line.c_str());
 
         if (line.c_str()[0] == ' ' || line.c_str()[0] == '\t') {
             // Support for folded header values.
@@ -743,7 +740,7 @@ bool ARTSPConnection::receiveRTSPReponse() {
             msg->setMessage("reply", reply);
             msg->setString("request", request.c_str(), request.size());
 
-            ALOGI("re-sending request with authentication headers...");
+            LOGI("re-sending request with authentication headers...");
             onSendRequest(msg);
 
             return true;
@@ -796,9 +793,9 @@ bool ARTSPConnection::handleServerRequest(const sp<ARTSPResponse> &request) {
         if (n <= 0) {
             if (n == 0) {
                 // Server closed the connection.
-                ALOGE("Server unexpectedly closed the connection.");
+                LOGE("Server unexpectedly closed the connection.");
             } else {
-                ALOGE("Error sending rtsp response (%s).", strerror(errno));
+                LOGE("Error sending rtsp response (%s).", strerror(errno));
             }
 
             performDisconnect();

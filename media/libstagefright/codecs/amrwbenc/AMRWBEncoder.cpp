@@ -80,7 +80,7 @@ status_t AMRWBEncoder::initCheck() {
     CHECK(mApiHandle);
 
     if (VO_ERR_NONE != voGetAMRWBEncAPI(mApiHandle)) {
-        ALOGE("Failed to get api handle");
+        LOGE("Failed to get api handle");
         return UNKNOWN_ERROR;
     }
 
@@ -97,20 +97,20 @@ status_t AMRWBEncoder::initCheck() {
     userData.memflag = VO_IMF_USERMEMOPERATOR;
     userData.memData = (VO_PTR) mMemOperator;
     if (VO_ERR_NONE != mApiHandle->Init(&mEncoderHandle, VO_AUDIO_CodingAMRWB, &userData)) {
-        ALOGE("Failed to init AMRWB encoder");
+        LOGE("Failed to init AMRWB encoder");
         return UNKNOWN_ERROR;
     }
 
     // Configure AMRWB encoder$
     VOAMRWBMODE mode = pickModeFromBitRate(mBitRate);
     if (VO_ERR_NONE != mApiHandle->SetParam(mEncoderHandle, VO_PID_AMRWB_MODE,  &mode)) {
-        ALOGE("Failed to set AMRWB encoder mode to %d", mode);
+        LOGE("Failed to set AMRWB encoder mode to %d", mode);
         return UNKNOWN_ERROR;
     }
 
     VOAMRWBFRAMETYPE type = VOAMRWB_RFC3267;
     if (VO_ERR_NONE != mApiHandle->SetParam(mEncoderHandle, VO_PID_AMRWB_FRAMETYPE, &type)) {
-        ALOGE("Failed to set AMRWB encoder frame type to %d", type);
+        LOGE("Failed to set AMRWB encoder frame type to %d", type);
         return UNKNOWN_ERROR;
     }
 
@@ -125,7 +125,7 @@ AMRWBEncoder::~AMRWBEncoder() {
 
 status_t AMRWBEncoder::start(MetaData *params) {
     if (mStarted) {
-        ALOGW("Call start() when encoder already started");
+        LOGW("Call start() when encoder already started");
         return OK;
     }
 
@@ -140,7 +140,7 @@ status_t AMRWBEncoder::start(MetaData *params) {
 
     status_t err = mSource->start(params);
     if (err != OK) {
-        ALOGE("AudioSource is not available");
+        LOGE("AudioSource is not available");
         return err;
     }
     mStarted = true;
@@ -150,7 +150,7 @@ status_t AMRWBEncoder::start(MetaData *params) {
 
 status_t AMRWBEncoder::stop() {
     if (!mStarted) {
-        ALOGW("Call stop() when encoder has not started");
+        LOGW("Call stop() when encoder has not started");
         return OK;
     }
 

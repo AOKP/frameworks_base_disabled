@@ -48,10 +48,7 @@ LOCAL_C_INCLUDES := \
         $(LOCAL_PATH)/include
 
 LOCAL_CFLAGS := \
-        -DOSCL_UNUSED_ARG= -DOSCL_IMPORT_REF= \
-        $(call cc-ifversion, -ge, 47, -O2)
-# The -O2 addition above is a Workaround for gcc bug 52294
-# http://gcc.gnu.org/bugzilla/show_bug.cgi?id=52294
+        -DOSCL_UNUSED_ARG= -DOSCL_IMPORT_REF=
 
 LOCAL_MODULE := libstagefright_amrwbdec
 

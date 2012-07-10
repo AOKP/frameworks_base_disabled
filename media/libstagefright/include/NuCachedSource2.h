@@ -72,28 +72,12 @@ private:
 
     enum {
         kPageSize                       = 65536,
-#ifdef OMAP_ENHANCEMENT
-        kDefaultHighWaterThreshold      = 20 * 1024 * 1024,
-        kDefaultLowWaterThreshold       = 7 * 1024 * 1024,
-#else
         kDefaultHighWaterThreshold      = 20 * 1024 * 1024,
         kDefaultLowWaterThreshold       = 4 * 1024 * 1024,
-#endif
 
         // Read data after a 15 sec timeout whether we're actively
         // fetching or not.
         kDefaultKeepAliveIntervalUs     = 15000000,
-    };
-
-#ifdef OMAP_ENHANCEMENT
-    enum {
-        kGrayArea = 2 * 1024 * 1024,
-    };
-#endif
-
-    enum {
-       kMinAVInterleavingOffset = 256 * 1024,
-       kMaxAVInterleavingOffset = 2 * 1024 * 1024,
     };
 
     enum {
@@ -117,10 +101,6 @@ private:
     off64_t mCacheOffset;
     status_t mFinalStatus;
     off64_t mLastAccessPos;
-#ifdef OMAP_ENHANCEMENT
-    off64_t mMinAccessPos;
-    off64_t mMaxAccessPos;
-#endif
     sp<AMessage> mAsyncResult;
     bool mFetching;
     int64_t mLastFetchTimeUs;
@@ -134,7 +114,6 @@ private:
     int64_t mKeepAliveIntervalUs;
 
     bool mDisconnectAtHighwatermark;
-    int64_t mAVOffset;
 
     void onMessageReceived(const sp<AMessage> &msg);
     void onFetch();
@@ -153,9 +132,6 @@ private:
     void updateCacheParamsFromString(const char *s);
 
     DISALLOW_EVIL_CONSTRUCTORS(NuCachedSource2);
-public:
-    bool isCacheFull();
-    void setAVInterleavingOffset(int64_t av_offset);
 };
 
 }  // namespace android

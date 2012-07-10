@@ -147,7 +147,7 @@ bool ARTPSource::queuePacket(const sp<ABuffer> &buffer) {
     }
 
     if (it != mQueue.end() && (uint32_t)(*it)->int32Data() == seqNum) {
-        ALOGW("Discarding duplicate buffer");
+        LOGW("Discarding duplicate buffer");
         return false;
     }
 
@@ -174,7 +174,7 @@ void ARTPSource::addFIR(const sp<ABuffer> &buffer) {
     mLastFIRRequestUs = nowUs;
 
     if (buffer->size() + 20 > buffer->capacity()) {
-        ALOGW("RTCP buffer too small to accomodate FIR.");
+        LOGW("RTCP buffer too small to accomodate FIR.");
         return;
     }
 
@@ -207,12 +207,12 @@ void ARTPSource::addFIR(const sp<ABuffer> &buffer) {
 
     buffer->setRange(buffer->offset(), buffer->size() + 20);
 
-    ALOGV("Added FIR request.");
+    LOGV("Added FIR request.");
 }
 
 void ARTPSource::addReceiverReport(const sp<ABuffer> &buffer) {
     if (buffer->size() + 32 > buffer->capacity()) {
-        ALOGW("RTCP buffer too small to accomodate RR.");
+        LOGW("RTCP buffer too small to accomodate RR.");
         return;
     }
 

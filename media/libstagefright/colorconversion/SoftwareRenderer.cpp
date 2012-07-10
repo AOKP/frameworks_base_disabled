@@ -63,6 +63,7 @@ SoftwareRenderer::SoftwareRenderer(
 
     switch (mColorFormat) {
         case OMX_COLOR_FormatYUV420Planar:
+        case OMX_COLOR_FormatCbYCrY:
         case OMX_TI_COLOR_FormatYUV420PackedSemiPlanar:
         {
             halFormat = HAL_PIXEL_FORMAT_YV12;
@@ -71,6 +72,7 @@ SoftwareRenderer::SoftwareRenderer(
             break;
         }
         default:
+            LOGW("HAL_PIXEL_FORMAT_RGB_565! Unnecessary YUV->RGB conversion!!!");
             halFormat = HAL_PIXEL_FORMAT_RGB_565;
             bufWidth = mCropWidth;
             bufHeight = mCropHeight;
@@ -148,6 +150,8 @@ void SoftwareRenderer::render(
     CHECK_EQ(0, mapper.lock(
                 buf->handle, GRALLOC_USAGE_SW_WRITE_OFTEN, bounds, &dst));
 
+    //LOGI("mColorFormat %x, mWidth %d, mHeight %d, buf->stride %d, buf->height %d, mCropWidth %d, mCropHeight %d, mCropLeft %d, mCropTop %d, mCropRight %d, mCropBottom %d", mColorFormat, mWidth, mHeight, buf->stride, buf->height, mCropWidth, mCropHeight, mCropLeft, mCropTop, mCropRight, mCropBottom);
+
     if (mConverter) {
         mConverter->convert(
                 data,
@@ -202,6 +206,37 @@ void SoftwareRenderer::render(
             src_v += mWidth / 2;
             dst_u += dst_c_stride;
             dst_v += dst_c_stride;
+        }
+    } else if (mColorFormat == OMX_COLOR_FormatCbYCrY) {
+        int i, j;
+        uint8_t *src = (uint8_t *)data;
+        uint8_t *src1 = src;
+        uint8_t *dst_y = (uint8_t *)dst;
+        uint8_t *dst_u, *dst_v;
+
+        src1 = src;
+        for (i = 0; i < mHeight; i++) {
+            for (j = 0; j < mWidth; j += 2) {
+            *dst_y++ = src1[1];
+            *dst_y++ = src1[3];
+            src1 += 4;
+            }
+        }
+
+        src1 = src + mWidth * 2;		/* next line */
+
+        dst_v = dst_y;
+        dst_u = dst_y + mWidth * mHeight / 4;
+
+        for (i = 0; i < mHeight; i += 2) {
+            for (j = 0; j < mWidth; j += 2) {
+                *dst_u++ = (src[0] + src1[0]) / 2;
+                *dst_v++ = (src[2] + src1[2]) / 2;
+                src += 4;
+                src1 += 4;
+            }
+            src = src1;
+            src1 += mWidth * 2;
         }
     } else {
         CHECK_EQ(mColorFormat, OMX_TI_COLOR_FormatYUV420PackedSemiPlanar);

@@ -260,7 +260,7 @@ static const CodecInfo kDecoderInfo[] = {
     { MEDIA_MIMETYPE_VIDEO_MPEG4, "OMX.qcom.7x30.video.decoder.mpeg4" },
     { MEDIA_MIMETYPE_VIDEO_MPEG4, "OMX.qcom.video.decoder.mpeg4" },
     { MEDIA_MIMETYPE_VIDEO_MPEG4, "OMX.TI.Video.Decoder" },
-//    { MEDIA_MIMETYPE_VIDEO_MPEG4, "OMX.TI.720P.Decoder" },
+    { MEDIA_MIMETYPE_VIDEO_MPEG4, "OMX.TI.720P.Decoder" },
     { MEDIA_MIMETYPE_VIDEO_MPEG4, "OMX.SEC.MPEG4.Decoder" },
     { MEDIA_MIMETYPE_VIDEO_MPEG4, "OMX.google.mpeg4.decoder" },
     { MEDIA_MIMETYPE_VIDEO_H263, "OMX.TI.DUCATI1.VIDEO.DECODER" },
@@ -273,8 +273,8 @@ static const CodecInfo kDecoderInfo[] = {
     { MEDIA_MIMETYPE_VIDEO_AVC, "OMX.Nvidia.h264.decode" },
     { MEDIA_MIMETYPE_VIDEO_AVC, "OMX.qcom.7x30.video.decoder.avc" },
     { MEDIA_MIMETYPE_VIDEO_AVC, "OMX.qcom.video.decoder.avc" },
-//    { MEDIA_MIMETYPE_VIDEO_AVC, "OMX.TI.720P.Decoder" },
-//    { MEDIA_MIMETYPE_VIDEO_AVC, "OMX.TI.Video.Decoder" },
+    { MEDIA_MIMETYPE_VIDEO_AVC, "OMX.TI.Video.Decoder" },
+    { MEDIA_MIMETYPE_VIDEO_AVC, "OMX.TI.720P.Decoder" },
     { MEDIA_MIMETYPE_VIDEO_AVC, "OMX.SEC.AVC.Decoder" },
     { MEDIA_MIMETYPE_VIDEO_AVC, "OMX.SEC.FP.AVC.Decoder" },
     { MEDIA_MIMETYPE_VIDEO_AVC, "OMX.google.h264.decoder" },
@@ -926,7 +926,7 @@ status_t OMXCodec::configureCodec(const sp<MetaData> &meta) {
                     profile, AVCProfileToString(profile), level);
 
             if (!strcmp(mComponentName, "OMX.TI.Video.Decoder")
-                && (profile != kAVCProfileBaseline || level > 30)) {
+                && (profile != kAVCProfileBaseline || level > 31)) {
                 // This stream exceeds the decoder's capabilities. The decoder
                 // does not handle this gracefully and would clobber the heap
                 // and wreak havoc instead...
@@ -2004,11 +2004,6 @@ status_t OMXCodec::setVideoOutputFormat(
                 format.eColorFormat = OMX_COLOR_FormatYUV420Planar;
             else
                 format.eColorFormat = OMX_COLOR_FormatYUV420SemiPlanar;
-        }
-#endif
-#ifdef OMAP_COMPAT
-        if (!strncmp("OMX.TI.", mComponentName, 7)) {
-            format.eColorFormat = OMX_COLOR_FormatYUV420Planar;
         }
 #endif
 

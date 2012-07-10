@@ -204,7 +204,7 @@ OMX_ERRORTYPE SoftAVC::internalGetParameter(
                     (OMX_VIDEO_PARAM_PROFILELEVELTYPE *) params;
 
             if (profileLevel->nPortIndex != kInputPortIndex) {
-                ALOGE("Invalid port index: %ld", profileLevel->nPortIndex);
+                LOGE("Invalid port index: %ld", profileLevel->nPortIndex);
                 return OMX_ErrorUnsupportedIndex;
             }
 
@@ -371,7 +371,7 @@ void SoftAVC::onQueueFilled(OMX_U32 portIndex) {
                 }
                 inPicture.dataLen = 0;
                 if (ret < 0) {
-                    ALOGE("Decoder failed: %d", ret);
+                    LOGE("Decoder failed: %d", ret);
 
                     notify(OMX_EventError, OMX_ErrorUndefined,
                            ERROR_MALFORMED, NULL);

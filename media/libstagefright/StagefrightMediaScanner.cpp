@@ -38,9 +38,6 @@ static bool FileHasAcceptableExtension(const char *extension) {
         ".mpeg", ".ogg", ".mid", ".smf", ".imy", ".wma", ".aac",
         ".wav", ".amr", ".midi", ".xmf", ".rtttl", ".rtx", ".ota",
         ".mkv", ".mka", ".webm", ".ts", ".fl", ".flac", ".mxmf", ".mpg",
-#ifdef OMAP_ENHANCEMENT
-        ".wmv", ".asf", ".avi",
-#endif
 #ifdef QCOM_HARDWARE
         ".avi"
 #else
@@ -64,7 +61,7 @@ static MediaScanResult HandleMIDI(
     // get the library configuration and do sanity check
     const S_EAS_LIB_CONFIG* pLibConfig = EAS_Config();
     if ((pLibConfig == NULL) || (LIB_VERSION != pLibConfig->libVersion)) {
-        ALOGE("EAS library/header mismatch\n");
+        LOGE("EAS library/header mismatch\n");
         return MEDIA_SCAN_RESULT_ERROR;
     }
     EAS_I32 temp;
@@ -110,7 +107,7 @@ static MediaScanResult HandleMIDI(
 MediaScanResult StagefrightMediaScanner::processFile(
         const char *path, const char *mimeType,
         MediaScannerClient &client) {
-    ALOGV("processFile '%s'.", path);
+    LOGV("processFile '%s'.", path);
 
     client.setLocale(locale());
     client.beginFile();
@@ -195,7 +192,7 @@ MediaScanResult StagefrightMediaScanner::processFileInternal(
 }
 
 char *StagefrightMediaScanner::extractAlbumArt(int fd) {
-    ALOGV("extractAlbumArt %d", fd);
+    LOGV("extractAlbumArt %d", fd);
 
     off64_t size = lseek64(fd, 0, SEEK_END);
     if (size < 0) {

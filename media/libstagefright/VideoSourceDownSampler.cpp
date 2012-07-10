@@ -29,7 +29,7 @@ namespace android {
 
 VideoSourceDownSampler::VideoSourceDownSampler(const sp<MediaSource> &videoSource,
         int32_t width, int32_t height) {
-    ALOGV("Construct VideoSourceDownSampler");
+    LOGV("Construct VideoSourceDownSampler");
     CHECK(width > 0);
     CHECK(height > 0);
 
@@ -94,23 +94,23 @@ void VideoSourceDownSampler::downSampleYUVImage(
 }
 
 status_t VideoSourceDownSampler::start(MetaData *params) {
-    ALOGV("start");
+    LOGV("start");
     return mRealVideoSource->start();
 }
 
 status_t VideoSourceDownSampler::stop() {
-    ALOGV("stop");
+    LOGV("stop");
     return mRealVideoSource->stop();
 }
 
 sp<MetaData> VideoSourceDownSampler::getFormat() {
-    ALOGV("getFormat");
+    LOGV("getFormat");
     return mMeta;
 }
 
 status_t VideoSourceDownSampler::read(
         MediaBuffer **buffer, const ReadOptions *options) {
-    ALOGV("read");
+    LOGV("read");
     MediaBuffer *realBuffer;
     status_t err = mRealVideoSource->read(&realBuffer, options);
 
@@ -135,7 +135,7 @@ status_t VideoSourceDownSampler::read(
 }
 
 status_t VideoSourceDownSampler::pause() {
-    ALOGV("pause");
+    LOGV("pause");
     return mRealVideoSource->pause();
 }
 

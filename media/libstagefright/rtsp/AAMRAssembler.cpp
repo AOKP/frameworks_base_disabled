@@ -127,7 +127,7 @@ ARTPAssembler::AssemblyStatus AAMRAssembler::addPacket(
         mNextExpectedSeqNoValid = true;
         mNextExpectedSeqNo = (uint32_t)buffer->int32Data();
     } else if ((uint32_t)buffer->int32Data() != mNextExpectedSeqNo) {
-        ALOGV("Not the sequence number I expected");
+        LOGV("Not the sequence number I expected");
 
         return WRONG_SEQUENCE_NUMBER;
     }
@@ -138,7 +138,7 @@ ARTPAssembler::AssemblyStatus AAMRAssembler::addPacket(
         queue->erase(queue->begin());
         ++mNextExpectedSeqNo;
 
-        ALOGV("AMR packet too short.");
+        LOGV("AMR packet too short.");
 
         return MALFORMED_PACKET;
     }
@@ -156,7 +156,7 @@ ARTPAssembler::AssemblyStatus AAMRAssembler::addPacket(
             queue->erase(queue->begin());
             ++mNextExpectedSeqNo;
 
-            ALOGV("Unable to parse TOC.");
+            LOGV("Unable to parse TOC.");
 
             return MALFORMED_PACKET;
         }
@@ -170,7 +170,7 @@ ARTPAssembler::AssemblyStatus AAMRAssembler::addPacket(
             queue->erase(queue->begin());
             ++mNextExpectedSeqNo;
 
-            ALOGV("Illegal TOC entry.");
+            LOGV("Illegal TOC entry.");
 
             return MALFORMED_PACKET;
         }
@@ -197,7 +197,7 @@ ARTPAssembler::AssemblyStatus AAMRAssembler::addPacket(
             queue->erase(queue->begin());
             ++mNextExpectedSeqNo;
 
-            ALOGV("AMR packet too short.");
+            LOGV("AMR packet too short.");
 
             return MALFORMED_PACKET;
         }

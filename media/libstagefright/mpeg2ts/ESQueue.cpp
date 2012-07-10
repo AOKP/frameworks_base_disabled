@@ -144,7 +144,7 @@ status_t ElementaryStreamQueue::appendData(
                 }
 
                 if (startOffset > 0) {
-                    ALOGI("found something resembling an H.264/MPEG syncword at "
+                    LOGI("found something resembling an H.264/MPEG syncword at "
                          "offset %ld",
                          startOffset);
                 }
@@ -177,7 +177,7 @@ status_t ElementaryStreamQueue::appendData(
                 }
 
                 if (startOffset > 0) {
-                    ALOGI("found something resembling an H.264/MPEG syncword at "
+                    LOGI("found something resembling an H.264/MPEG syncword at "
                          "offset %ld",
                          startOffset);
                 }
@@ -210,7 +210,7 @@ status_t ElementaryStreamQueue::appendData(
                 }
 
                 if (startOffset > 0) {
-                    ALOGI("found something resembling an AAC syncword at offset %ld",
+                    LOGI("found something resembling an AAC syncword at offset %ld",
                          startOffset);
                 }
 
@@ -237,7 +237,7 @@ status_t ElementaryStreamQueue::appendData(
                 }
 
                 if (startOffset > 0) {
-                    ALOGI("found something resembling an MPEG audio "
+                    LOGI("found something resembling an MPEG audio "
                          "syncword at offset %ld",
                          startOffset);
                 }
@@ -257,7 +257,7 @@ status_t ElementaryStreamQueue::appendData(
     if (mBuffer == NULL || neededSize > mBuffer->capacity()) {
         neededSize = (neededSize + 65535) & ~65535;
 
-        ALOGV("resizing buffer to size %d", neededSize);
+        LOGV("resizing buffer to size %d", neededSize);
 
         sp<ABuffer> buffer = new ABuffer(neededSize);
         if (mBuffer != NULL) {
@@ -280,7 +280,7 @@ status_t ElementaryStreamQueue::appendData(
 
 #if 0
     if (mMode == AAC) {
-        ALOGI("size = %d, timeUs = %.2f secs", size, timeUs / 1E6);
+        LOGI("size = %d, timeUs = %.2f secs", size, timeUs / 1E6);
         hexdump(data, size);
     }
 #endif
@@ -332,17 +332,13 @@ sp<ABuffer> ElementaryStreamQueue::dequeueAccessUnitAAC() {
             mFormat = MakeAACCodecSpecificData(
                     profile, sampling_freq_index, channel_configuration);
 
-            mFormat->setInt32(kKeyMaxInputSize, (8192 * 3));
-
             int32_t sampleRate;
             int32_t numChannels;
-            int32_t maxInputSize;
             CHECK(mFormat->findInt32(kKeySampleRate, &sampleRate));
             CHECK(mFormat->findInt32(kKeyChannelCount, &numChannels));
-            CHECK(mFormat->findInt32(kKeyMaxInputSize, &maxInputSize));
 
-            LOGI("found AAC codec config (%d Hz, %d channels), Input buffer size %d",
-                 sampleRate, numChannels,maxInputSize);
+            LOGI("found AAC codec config (%d Hz, %d channels)",
+                 sampleRate, numChannels);
         } else {
             // profile_ObjectType, sampling_frequency_index, private_bits,
             // channel_configuration, original_copy, home
@@ -412,7 +408,7 @@ sp<ABuffer> ElementaryStreamQueue::dequeueAccessUnitAAC() {
     if (timeUs >= 0) {
         accessUnit->meta()->setInt64("timeUs", timeUs);
     } else {
-        ALOGW("no time for AAC access unit");
+        LOGW("no time for AAC access unit");
     }
 
     return accessUnit;
@@ -449,7 +445,7 @@ int64_t ElementaryStreamQueue::fetchTimestamp(size_t size) {
     }
 
     if (timeUs == 0ll) {
-        ALOGV("Returning 0 timestamp");
+        LOGV("Returning 0 timestamp");
     }
 
     return timeUs;
@@ -533,7 +529,7 @@ sp<ABuffer> ElementaryStreamQueue::dequeueAccessUnitH264() {
                 dstOffset += pos.nalSize + 4;
             }
 
-            ALOGV("accessUnit contains nal types %s", out.c_str());
+            LOGV("accessUnit contains nal types %s", out.c_str());
 
             const NALPosition &pos = nals.itemAt(nals.size() - 1);
             size_t nextScan = pos.nalOffset + pos.nalSize;
@@ -718,7 +714,7 @@ sp<ABuffer> ElementaryStreamQueue::dequeueAccessUnitMPEGVideo() {
                 mFormat->setInt32(kKeyWidth, width);
                 mFormat->setInt32(kKeyHeight, height);
 
-                ALOGI("found MPEG2 video codec config (%d x %d)", width, height);
+                LOGI("found MPEG2 video codec config (%d x %d)", width, height);
 
                 sp<ABuffer> csd = new ABuffer(offset);
                 memcpy(csd->data(), data, offset);
@@ -764,7 +760,7 @@ sp<ABuffer> ElementaryStreamQueue::dequeueAccessUnitMPEGVideo() {
 
                 accessUnit->meta()->setInt64("timeUs", timeUs);
 
-                ALOGV("returning MPEG video access unit at time %lld us",
+                LOGV("returning MPEG video access unit at time %lld us",
                       timeUs);
 
                 // hexdump(accessUnit->data(), accessUnit->size());
@@ -884,7 +880,7 @@ sp<ABuffer> ElementaryStreamQueue::dequeueAccessUnitMPEG4Video() {
                     mFormat->setInt32(kKeyWidth, width);
                     mFormat->setInt32(kKeyHeight, height);
 
-                    ALOGI("found MPEG4 video codec config (%d x %d)",
+                    LOGI("found MPEG4 video codec config (%d x %d)",
                          width, height);
 
                     sp<ABuffer> csd = new ABuffer(offset);
@@ -923,7 +919,7 @@ sp<ABuffer> ElementaryStreamQueue::dequeueAccessUnitMPEG4Video() {
 
                     accessUnit->meta()->setInt64("timeUs", timeUs);
 
-                    ALOGV("returning MPEG4 video access unit at time %lld us",
+                    LOGV("returning MPEG4 video access unit at time %lld us",
                          timeUs);
 
                     // hexdump(accessUnit->data(), accessUnit->size());

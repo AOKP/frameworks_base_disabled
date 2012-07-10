@@ -31,7 +31,7 @@ typedef struct{
 
   Word16 sfbCnt;
   Word16 sfbActive;   /* number of sf bands containing energy after lowpass */
-  const Word16 *sfbOffset;
+  Word16 *sfbOffset;
 
   Word32 sfbThresholdQuiet[MAX_SFB_LONG];
 
@@ -61,7 +61,7 @@ typedef struct{
 
   Word16 sfbCnt;
   Word16 sfbActive;   /* number of sf bands containing energy after lowpass */
-  const Word16 *sfbOffset;
+  Word16 *sfbOffset;
 
   Word32 sfbThresholdQuiet[MAX_SFB_SHORT];
 

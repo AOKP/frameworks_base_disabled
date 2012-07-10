@@ -37,22 +37,22 @@ static status_t ConvertOmxProfileLevel(
         int32_t omxProfile,
         int32_t omxLevel,
         ProfileLevelType* pvProfileLevel) {
-    ALOGV("ConvertOmxProfileLevel: %d/%d/%d", mode, omxProfile, omxLevel);
+    LOGV("ConvertOmxProfileLevel: %d/%d/%d", mode, omxProfile, omxLevel);
     ProfileLevelType profileLevel;
     if (mode == H263_MODE) {
         switch (omxProfile) {
             case OMX_VIDEO_H263ProfileBaseline:
                 if (omxLevel > OMX_VIDEO_H263Level45) {
-                    ALOGE("Unsupported level (%d) for H263", omxLevel);
+                    LOGE("Unsupported level (%d) for H263", omxLevel);
                     return BAD_VALUE;
                 } else {
-                    ALOGW("PV does not support level configuration for H263");
+                    LOGW("PV does not support level configuration for H263");
                     profileLevel = CORE_PROFILE_LEVEL2;
                     break;
                 }
                 break;
             default:
-                ALOGE("Unsupported profile (%d) for H263", omxProfile);
+                LOGE("Unsupported profile (%d) for H263", omxProfile);
                 return BAD_VALUE;
         }
     } else {  // MPEG4
@@ -72,7 +72,7 @@ static status_t ConvertOmxProfileLevel(
                         profileLevel = SIMPLE_PROFILE_LEVEL3;
                         break;
                     default:
-                        ALOGE("Unsupported level (%d) for MPEG4 simple profile",
+                        LOGE("Unsupported level (%d) for MPEG4 simple profile",
                             omxLevel);
                         return BAD_VALUE;
                 }
@@ -89,7 +89,7 @@ static status_t ConvertOmxProfileLevel(
                         profileLevel = SIMPLE_SCALABLE_PROFILE_LEVEL2;
                         break;
                     default:
-                        ALOGE("Unsupported level (%d) for MPEG4 simple "
+                        LOGE("Unsupported level (%d) for MPEG4 simple "
                              "scalable profile", omxLevel);
                         return BAD_VALUE;
                 }
@@ -103,7 +103,7 @@ static status_t ConvertOmxProfileLevel(
                         profileLevel = CORE_PROFILE_LEVEL2;
                         break;
                     default:
-                        ALOGE("Unsupported level (%d) for MPEG4 core "
+                        LOGE("Unsupported level (%d) for MPEG4 core "
                              "profile", omxLevel);
                         return BAD_VALUE;
                 }
@@ -120,13 +120,13 @@ static status_t ConvertOmxProfileLevel(
                         profileLevel = CORE_SCALABLE_PROFILE_LEVEL3;
                         break;
                     default:
-                        ALOGE("Unsupported level (%d) for MPEG4 core "
+                        LOGE("Unsupported level (%d) for MPEG4 core "
                              "scalable profile", omxLevel);
                         return BAD_VALUE;
                 }
                 break;
             default:
-                ALOGE("Unsupported MPEG4 profile (%d)", omxProfile);
+                LOGE("Unsupported MPEG4 profile (%d)", omxProfile);
                 return BAD_VALUE;
         }
     }
@@ -178,7 +178,7 @@ M4vH263Encoder::M4vH263Encoder(
       mInputFrameData(NULL),
       mGroup(NULL) {
 
-    ALOGI("Construct software M4vH263Encoder");
+    LOGI("Construct software M4vH263Encoder");
 
     mHandle = new tagvideoEncControls;
     memset(mHandle, 0, sizeof(tagvideoEncControls));
@@ -187,7 +187,7 @@ M4vH263Encoder::M4vH263Encoder(
 }
 
 M4vH263Encoder::~M4vH263Encoder() {
-    ALOGV("Destruct software M4vH263Encoder");
+    LOGV("Destruct software M4vH263Encoder");
     if (mStarted) {
         stop();
     }
@@ -197,7 +197,7 @@ M4vH263Encoder::~M4vH263Encoder() {
 }
 
 status_t M4vH263Encoder::initCheck(const sp<MetaData>& meta) {
-    ALOGV("initCheck");
+    LOGV("initCheck");
     CHECK(meta->findInt32(kKeyWidth, &mVideoWidth));
     CHECK(meta->findInt32(kKeyHeight, &mVideoHeight));
     CHECK(meta->findInt32(kKeyFrameRate, &mVideoFrameRate));
@@ -207,7 +207,7 @@ status_t M4vH263Encoder::initCheck(const sp<MetaData>& meta) {
     CHECK(meta->findInt32(kKeyColorFormat, &mVideoColorFormat));
     if (mVideoColorFormat != OMX_COLOR_FormatYUV420Planar) {
         if (mVideoColorFormat != OMX_COLOR_FormatYUV420SemiPlanar) {
-            ALOGE("Color format %d is not supported", mVideoColorFormat);
+            LOGE("Color format %d is not supported", mVideoColorFormat);
             return BAD_VALUE;
         }
         // Allocate spare buffer only when color conversion is needed.
@@ -219,7 +219,7 @@ status_t M4vH263Encoder::initCheck(const sp<MetaData>& meta) {
 
     // XXX: Remove this restriction
     if (mVideoWidth % 16 != 0 || mVideoHeight % 16 != 0) {
-        ALOGE("Video frame size %dx%d must be a multiple of 16",
+        LOGE("Video frame size %dx%d must be a multiple of 16",
             mVideoWidth, mVideoHeight);
         return BAD_VALUE;
     }
@@ -227,7 +227,7 @@ status_t M4vH263Encoder::initCheck(const sp<MetaData>& meta) {
     mEncParams = new tagvideoEncOptions;
     memset(mEncParams, 0, sizeof(tagvideoEncOptions));
     if (!PVGetDefaultEncOption(mEncParams, 0)) {
-        ALOGE("Failed to get default encoding parameters");
+        LOGE("Failed to get default encoding parameters");
         return BAD_VALUE;
     }
 
@@ -308,18 +308,18 @@ status_t M4vH263Encoder::initCheck(const sp<MetaData>& meta) {
 }
 
 status_t M4vH263Encoder::start(MetaData *params) {
-    ALOGV("start");
+    LOGV("start");
     if (mInitCheck != OK) {
         return mInitCheck;
     }
 
     if (mStarted) {
-        ALOGW("Call start() when encoder already started");
+        LOGW("Call start() when encoder already started");
         return OK;
     }
 
     if (!PVInitVideoEncoder(mHandle, mEncParams)) {
-        ALOGE("Failed to initialize the encoder");
+        LOGE("Failed to initialize the encoder");
         return UNKNOWN_ERROR;
     }
 
@@ -328,7 +328,7 @@ status_t M4vH263Encoder::start(MetaData *params) {
     if (!PVGetMaxVideoFrameSize(mHandle, &maxSize)) {
         maxSize = 256 * 1024;  // Magic #
     }
-    ALOGV("Max output buffer size: %d", maxSize);
+    LOGV("Max output buffer size: %d", maxSize);
     mGroup->add_buffer(new MediaBuffer(maxSize));
 
     mSource->start(params);
@@ -339,9 +339,9 @@ status_t M4vH263Encoder::start(MetaData *params) {
 }
 
 status_t M4vH263Encoder::stop() {
-    ALOGV("stop");
+    LOGV("stop");
     if (!mStarted) {
-        ALOGW("Call stop() when encoder has not started");
+        LOGW("Call stop() when encoder has not started");
         return OK;
     }
 
@@ -369,7 +369,7 @@ status_t M4vH263Encoder::stop() {
 }
 
 sp<MetaData> M4vH263Encoder::getFormat() {
-    ALOGV("getFormat");
+    LOGV("getFormat");
     return mFormat;
 }
 
@@ -386,10 +386,10 @@ status_t M4vH263Encoder::read(
     // Output codec specific data
     if (mNumInputFrames < 0) {
         if (!PVGetVolHeader(mHandle, outPtr, &dataLength, 0)) {
-            ALOGE("Failed to get VOL header");
+            LOGE("Failed to get VOL header");
             return UNKNOWN_ERROR;
         }
-        ALOGV("Output VOL header: %d bytes", dataLength);
+        LOGV("Output VOL header: %d bytes", dataLength);
         outputBuffer->meta_data()->setInt32(kKeyIsCodecConfig, 1);
         outputBuffer->set_range(0, dataLength);
         *out = outputBuffer;
@@ -401,7 +401,7 @@ status_t M4vH263Encoder::read(
     status_t err = mSource->read(&mInputBuffer, options);
     if (OK != err) {
         if (err != ERROR_END_OF_STREAM) {
-            ALOGE("Failed to read from data source");
+            LOGE("Failed to read from data source");
         }
         outputBuffer->release();
         return err;
@@ -460,7 +460,7 @@ status_t M4vH263Encoder::read(
     if (!PVEncodeVideoFrame(mHandle, &vin, &vout,
             &modTimeMs, outPtr, &dataLength, &nLayer) ||
         !PVGetHintTrack(mHandle, &hintTrack)) {
-        ALOGE("Failed to encode frame or get hink track at frame %lld",
+        LOGE("Failed to encode frame or get hink track at frame %lld",
             mNumInputFrames);
         outputBuffer->release();
         mInputBuffer->release();

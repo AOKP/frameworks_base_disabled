@@ -240,11 +240,11 @@ void AmrWbUp_samp(
 {
 
     int32 i;
-    int16 frac, j;
+    int16 frac;
     int16 * pt_sig_u = sig_u;
 
     frac = 1;
-    for (j = 0; j < L_frame; j++)
+    for (int16 j = 0; j < L_frame; j++)
     {
         i = ((int32)j * INV_FAC5) >> 13;       /* integer part = pos * 1/5 */
 
@@ -337,6 +337,6 @@ int16 AmrWbInterpol(                      /* return result of interpolation */
 
     L_sum = shl_int32(L_sum, 2);               /* saturation can occur here */
 
-    return ((int16)(L_sum >> 16));
+    return ((int16(L_sum >> 16)));
 }
 

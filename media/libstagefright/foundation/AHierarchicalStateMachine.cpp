@@ -63,7 +63,7 @@ void AHierarchicalStateMachine::onMessageReceived(const sp<AMessage> &msg) {
         return;
     }
 
-    ALOGW("Warning message %s unhandled in root state.",
+    LOGW("Warning message %s unhandled in root state.",
          msg->debugString().c_str());
 }
 

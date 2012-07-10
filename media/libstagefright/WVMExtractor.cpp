@@ -53,7 +53,7 @@ WVMExtractor::WVMExtractor(const sp<DataSource> &source)
         }
 
         if (gVendorLibHandle == NULL) {
-            ALOGE("Failed to open libwvm.so");
+            LOGE("Failed to open libwvm.so");
             return;
         }
     }
@@ -67,7 +67,7 @@ WVMExtractor::WVMExtractor(const sp<DataSource> &source)
         mImpl = (*getInstanceFunc)(source);
         CHECK(mImpl != NULL);
     } else {
-        ALOGE("Failed to locate GetInstance in libwvm.so");
+        LOGE("Failed to locate GetInstance in libwvm.so");
     }
 }
 

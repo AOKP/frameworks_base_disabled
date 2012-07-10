@@ -40,7 +40,7 @@ AACWriter::AACWriter(const char *filename)
       mChannelCount(-1),
       mSampleRate(-1) {
 
-    ALOGV("AACWriter Constructor");
+    LOGV("AACWriter Constructor");
 
     mFd = open(filename, O_CREAT | O_LARGEFILE | O_TRUNC | O_RDWR);
     if (mFd >= 0) {
@@ -84,7 +84,7 @@ status_t AACWriter::addSource(const sp<MediaSource> &source) {
     }
 
     if (mSource != NULL) {
-        ALOGE("AAC files only support a single track of audio.");
+        LOGE("AAC files only support a single track of audio.");
         return UNKNOWN_ERROR;
     }
 
@@ -209,14 +209,14 @@ static bool getSampleRateTableIndex(int sampleRate, uint8_t* tableIndex) {
     *tableIndex = 0;
     for (int index = 0; index < tableSize; ++index) {
         if (sampleRate == kSampleRateTable[index]) {
-            ALOGV("Sample rate: %d and index: %d",
+            LOGV("Sample rate: %d and index: %d",
                 sampleRate, index);
             *tableIndex = index;
             return true;
         }
     }
 
-    ALOGE("Sampling rate %d bps is not supported", sampleRate);
+    LOGE("Sampling rate %d bps is not supported", sampleRate);
     return false;
 }
 
@@ -322,7 +322,7 @@ status_t AACWriter::threadFunc() {
 
         int32_t isCodecSpecific = 0;
         if (buffer->meta_data()->findInt32(kKeyIsCodecConfig, &isCodecSpecific) && isCodecSpecific) {
-            ALOGV("Drop codec specific info buffer");
+            LOGV("Drop codec specific info buffer");
             buffer->release();
             buffer = NULL;
             continue;
@@ -338,7 +338,7 @@ status_t AACWriter::threadFunc() {
             mResumed = false;
         }
         timestampUs -= previousPausedDurationUs;
-        ALOGV("time stamp: %lld, previous paused duration: %lld",
+        LOGV("time stamp: %lld, previous paused duration: %lld",
             timestampUs, previousPausedDurationUs);
         if (timestampUs > maxTimestampUs) {
             maxTimestampUs = timestampUs;

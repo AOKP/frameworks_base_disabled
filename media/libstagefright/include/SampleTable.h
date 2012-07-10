@@ -82,7 +82,6 @@ public:
 
     status_t findThumbnailSample(uint32_t *sample_index);
     uint32_t getNumSyncSamples();
-
 protected:
     ~SampleTable();
 
@@ -147,12 +146,6 @@ private:
 
     SampleTable(const SampleTable &);
     SampleTable &operator=(const SampleTable &);
-
-#ifdef OMAP_ENHANCEMENT
-public:
-    bool haveDeltaTable() const;
-#endif
-
 };
 
 }  // namespace android

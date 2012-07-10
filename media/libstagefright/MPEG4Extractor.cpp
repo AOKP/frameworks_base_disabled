@@ -42,22 +42,8 @@
 #include <cutils/properties.h>
 
 namespace android {
-#ifdef OMAP_ENHANCEMENT
-#define MP4_MPEG2VisualSimple  0x60
-#define MP4_MPEG2VisualMain    0x61
-#define MP4_MPEG2VisualSNR     0x62
-#define MP4_MPEG2VisualSpatial 0x63
-#define MP4_MPEG2VisualHigh    0x64
-#define MP4_MPEG2Visual422     0x65
-#define IS_MP4_MPEG2(x) (x < MP4_MPEG2VisualSimple) ? false : \
-                     (x > MP4_MPEG2Visual422)    ? false : true
-#endif
 
-#ifdef OMAP_ENHANCEMENT
-class MPEG4Source : public MediaSourceWithHaveDeltaTable {
-#else
 class MPEG4Source : public MediaSource {
-#endif
 public:
     // Caller retains ownership of both "dataSource" and "sampleTable".
     MPEG4Source(const sp<MetaData> &format,
@@ -108,13 +94,6 @@ private:
 
     MPEG4Source(const MPEG4Source &);
     MPEG4Source &operator=(const MPEG4Source &);
-
-#ifdef OMAP_ENHANCEMENT
-public:
-    bool haveDeltaTable() const {
-        return mSampleTable == NULL ? false : mSampleTable->haveDeltaTable();
-    }
-#endif
 };
 
 // This custom data source wraps an existing one and satisfies requests
@@ -273,11 +252,6 @@ static const char *FourCC2MIME(uint32_t fourcc) {
         case FOURCC('s', 'a', 'w', 'b'):
             return MEDIA_MIMETYPE_AUDIO_AMR_WB;
 
-#ifdef OMAP_ENHANCEMENT
-        case FOURCC('.', 'm', 'p', '3'):
-            return MEDIA_MIMETYPE_AUDIO_MPEG;
-#endif
-
         case FOURCC('m', 'p', '4', 'v'):
             return MEDIA_MIMETYPE_VIDEO_MPEG4;
 
@@ -285,12 +259,6 @@ static const char *FourCC2MIME(uint32_t fourcc) {
         case FOURCC('h', '2', '6', '3'):
         case FOURCC('H', '2', '6', '3'):
             return MEDIA_MIMETYPE_VIDEO_H263;
-
-#ifdef OMAP_ENHANCEMENT
-        case FOURCC('M', 'P', 'G', '2'):
-        case FOURCC('m', 'p', 'g', '2'):
-            return MEDIA_MIMETYPE_VIDEO_MPEG2;
-#endif
 
         case FOURCC('a', 'v', 'c', '1'):
             return MEDIA_MIMETYPE_VIDEO_AVC;
@@ -420,31 +388,6 @@ status_t MPEG4Extractor::readMetaData() {
     if (mInitCheck == OK) {
         if (mHasVideo) {
             mFileMetaData->setCString(kKeyMIMEType, "video/mp4");
-#ifdef OMAP_ENHANCEMENT
-    Track *tempTrack = mFirstTrack;
-    int count = 0;
-    const char *mime;
-    while (tempTrack) {
-        CHECK(tempTrack->meta->findCString(kKeyMIMEType, &mime));
-        if (!strncasecmp("video/", mime, 6)) {
-            size_t totalframes;
-            int64_t duration;
-            int32_t dur32,fps;
-            fps = 0;
-            totalframes = tempTrack->sampleTable->countSamples();
-            tempTrack->meta->findInt64(kKeyDuration, &duration);
-            dur32 = (int32_t) (duration / 1000000);
-            if(dur32 <=0){
-                //dur32 will be zero for clips < 1 second.
-                dur32 = 1;
-            }
-            fps = totalframes/dur32;
-            LOGV("totalframes %d duration %lld dur32 %d fps %d",totalframes,duration,dur32,fps);
-            tempTrack->meta->setInt32(kKeyVideoFPS,fps);
-        }
-        tempTrack= tempTrack->next;
-    }
-#endif
         } else {
             mFileMetaData->setCString(kKeyMIMEType, "audio/mp4");
         }
@@ -756,7 +699,7 @@ status_t MPEG4Extractor::parseChunk(off64_t *offset, int depth) {
         case FOURCC('i', 'l', 's', 't'):
         {
             if (chunk_type == FOURCC('s', 't', 'b', 'l')) {
-                ALOGV("sampleTable chunk is %d bytes long.", (size_t)chunk_size);
+                LOGV("sampleTable chunk is %d bytes long.", (size_t)chunk_size);
 
                 if (mDataSource->flags()
                         & (DataSource::kWantsPrefetching
@@ -990,9 +933,6 @@ status_t MPEG4Extractor::parseChunk(off64_t *offset, int depth) {
         case FOURCC('m', 'p', '4', 'a'):
         case FOURCC('s', 'a', 'm', 'r'):
         case FOURCC('s', 'a', 'w', 'b'):
-#ifdef OMAP_ENHANCEMENT
-        case FOURCC('.', 'm', 'p', '3'):
-#endif
 #ifdef QCOM_HARDWARE
         case FOURCC('s', 'e', 'v', 'c'):
         case FOURCC('s', 'q', 'c', 'p'):
@@ -1038,14 +978,6 @@ status_t MPEG4Extractor::parseChunk(off64_t *offset, int depth) {
 
             off64_t stop_offset = *offset + chunk_size;
             *offset = data_offset + sizeof(buffer);
-#ifdef OMAP_ENHANCEMENT
-            if (!strcasecmp(MEDIA_MIMETYPE_AUDIO_AMR_WB,
-                    FourCC2MIME(chunk_type)) ||
-                    !strcasecmp(MEDIA_MIMETYPE_AUDIO_AMR_NB,
-                    FourCC2MIME(chunk_type))) {
-                *offset = stop_offset;
-            }
-#endif
             while (*offset < stop_offset) {
                 status_t err = parseChunk(offset, depth + 1);
                 if (err != OK) {
@@ -1063,10 +995,6 @@ status_t MPEG4Extractor::parseChunk(off64_t *offset, int depth) {
         case FOURCC('s', '2', '6', '3'):
         case FOURCC('H', '2', '6', '3'):
         case FOURCC('h', '2', '6', '3'):
-#ifdef OMAP_ENHANCEMENT
-        case FOURCC('M', 'P', 'G', '2'):
-        case FOURCC('m', 'p', 'g', '2'):
-#endif
         case FOURCC('a', 'v', 'c', '1'):
         {
             mHasVideo = true;
@@ -1293,22 +1221,6 @@ status_t MPEG4Extractor::parseChunk(off64_t *offset, int depth) {
             mLastTrack->meta->setData(
                     kKeyESDS, kTypeESDS, &buffer[4], chunk_data_size - 4);
 
-#ifdef OMAP_ENHANCEMENT
-            // For MP4V video tracks, check and update mime type, based on MPEG2/MPEG4 bitstream
-            const char *mime;
-            CHECK(mLastTrack->meta->findCString(kKeyMIMEType, &mime));
-            if (!strcmp(mime,MEDIA_MIMETYPE_VIDEO_MPEG4)) {
-                ESDS esds(&buffer[4], chunk_data_size - 4);
-                uint8_t objectTypeIndication;
-                if (OK == esds.getObjectTypeIndication(&objectTypeIndication)) {
-                    if (IS_MP4_MPEG2(objectTypeIndication)) {
-                        LOGV("Mpeg2 Clip. Setting MIME type to MPEG2");
-                        mLastTrack->meta->setCString(kKeyMIMEType, MEDIA_MIMETYPE_VIDEO_MPEG2);
-                    }
-                }
-            }
-#endif
-
             if (mPath.size() >= 2
                     && mPath[mPath.size() - 2] == FOURCC('m', 'p', '4', 'a')) {
                 // Information from the ESDS must be relied on for proper
@@ -1330,7 +1242,7 @@ status_t MPEG4Extractor::parseChunk(off64_t *offset, int depth) {
 
         case FOURCC('a', 'v', 'c', 'C'):
         {
-            char buffer[1024];
+            char buffer[256];
             if (chunk_data_size > (off64_t)sizeof(buffer)) {
                 return ERROR_BUFFER_TOO_SMALL;
             }
@@ -1363,7 +1275,7 @@ status_t MPEG4Extractor::parseChunk(off64_t *offset, int depth) {
             char buffer[23];
             if (chunk_data_size != 7 &&
                 chunk_data_size != 23) {
-                ALOGE("Incorrect D263 box size %lld", chunk_data_size);
+                LOGE("Incorrect D263 box size %lld", chunk_data_size);
                 return ERROR_MALFORMED;
             }
 
@@ -1549,7 +1461,7 @@ status_t MPEG4Extractor::parseChunk(off64_t *offset, int depth) {
         case FOURCC('c', 'o', 'v', 'r'):
         {
             if (mFileMetaData != NULL) {
-                ALOGV("chunk_data_size = %lld and data_offset = %lld",
+                LOGV("chunk_data_size = %lld and data_offset = %lld",
                         chunk_data_size, data_offset);
                 uint8_t *buffer = new uint8_t[chunk_data_size + 1];
                 if (mDataSource->readAt(
@@ -1631,9 +1543,9 @@ status_t MPEG4Extractor::parseTrackHeader(
     int32_t dy = U32_AT(&buffer[matrixOffset + 20]);
 
 #if 0
-    ALOGI("x' = %.2f * x + %.2f * y + %.2f",
+    LOGI("x' = %.2f * x + %.2f * y + %.2f",
          a00 / 65536.0f, a01 / 65536.0f, dx / 65536.0f);
-    ALOGI("y' = %.2f * x + %.2f * y + %.2f",
+    LOGI("y' = %.2f * x + %.2f * y + %.2f",
          a10 / 65536.0f, a11 / 65536.0f, dy / 65536.0f);
 #endif
 
@@ -1650,7 +1562,7 @@ status_t MPEG4Extractor::parseTrackHeader(
     } else if (a00 == -kFixedOne && a01 == 0 && a10 == 0 && a11 == -kFixedOne) {
         rotationDegrees = 180;
     } else {
-        ALOGW("We only support 0,90,180,270 degree rotation matrices");
+        LOGW("We only support 0,90,180,270 degree rotation matrices");
         rotationDegrees = 0;
     }
 
@@ -1889,13 +1801,8 @@ status_t MPEG4Extractor::updateAudioTrackInfoFromESDS_MPEG4Audio(
         // The media subtype is MP3 audio
         // Our software MP3 audio decoder may not be able to handle
         // packetized MP3 audio; for now, lets just return ERROR_UNSUPPORTED
-#if defined(OMAP_ENHANCEMENT)
-        mLastTrack->meta->setCString(kKeyMIMEType, MEDIA_MIMETYPE_AUDIO_MPEG);
-        return OK;
-#else
         LOGE("MP3 track in MP4/3GPP file is not supported");
         return ERROR_UNSUPPORTED;
-#endif
     }
 
     const uint8_t *csd;
@@ -1960,7 +1867,7 @@ status_t MPEG4Extractor::updateAudioTrackInfoFromESDS_MPEG4Audio(
     CHECK(mLastTrack->meta->findInt32(kKeySampleRate, &prevSampleRate));
 
     if (prevSampleRate != sampleRate) {
-        ALOGV("mpeg4 audio sample rate different from previous setting. "
+        LOGV("mpeg4 audio sample rate different from previous setting. "
              "was: %d, now: %d", prevSampleRate, sampleRate);
     }
 
@@ -1970,7 +1877,7 @@ status_t MPEG4Extractor::updateAudioTrackInfoFromESDS_MPEG4Audio(
     CHECK(mLastTrack->meta->findInt32(kKeyChannelCount, &prevChannelCount));
 
     if (prevChannelCount != numChannels) {
-        ALOGV("mpeg4 audio channel count different from previous setting. "
+        LOGV("mpeg4 audio channel count different from previous setting. "
              "was: %d, now: %d", prevChannelCount, numChannels);
     }
 
@@ -2124,9 +2031,7 @@ status_t MPEG4Source::read(
 
     CHECK(mStarted);
 
-#ifndef OMAP_ENHANCEMENT
     *out = NULL;
-#endif
 
     int64_t targetSampleTimeUs = -1;
 
@@ -2195,7 +2100,7 @@ status_t MPEG4Source::read(
         CHECK_EQ(OK, mSampleTable->getMetaDataForSample(
                     syncSampleIndex, NULL, NULL, &syncSampleTime));
 
-        ALOGI("seek to time %lld us => sample at time %lld us, "
+        LOGI("seek to time %lld us => sample at time %lld us, "
              "sync sample at time %lld us",
              seekTimeUs,
              sampleTime * 1000000ll / mTimescale,
@@ -2216,12 +2121,7 @@ status_t MPEG4Source::read(
     uint32_t cts;
     bool isSyncSample;
     bool newBuffer = false;
-
-#ifdef OMAP_ENHANCEMENT
-    if (mBuffer == NULL || (*out && !mWantsNALFragments)) {
-#else
     if (mBuffer == NULL) {
-#endif
         newBuffer = true;
 
         status_t err =
@@ -2233,15 +2133,7 @@ status_t MPEG4Source::read(
             return err;
         }
 
-#ifdef OMAP_ENHANCEMENT
-        if (NULL == *out || mWantsNALFragments) {
-            err = mGroup->acquire_buffer(&mBuffer);
-        } else {
-            mBuffer = *out;
-        }
-#else
         err = mGroup->acquire_buffer(&mBuffer);
-#endif
 
         if (err != OK) {
             CHECK(mBuffer == NULL);
@@ -2298,7 +2190,7 @@ status_t MPEG4Source::read(
 
         size_t nal_size = parseNALSize(src);
         if (mBuffer->range_length() < mNALLengthSize + nal_size) {
-            ALOGE("incomplete NAL unit.");
+            LOGE("incomplete NAL unit.");
 
             mBuffer->release();
             mBuffer = NULL;
@@ -2605,13 +2497,6 @@ static bool BetterSniffMPEG4(
         *meta = new AMessage;
         (*meta)->setInt64("meta-data-size", moovAtomEndOffset);
 
-        ALOGV("found metadata size: %lld", moovAtomEndOffset);
-    }
-
-    if (moovAtomEndOffset >= 0) {
-        *meta = new AMessage;
-        (*meta)->setInt64("meta-data-size", moovAtomEndOffset);
-
         LOGV("found metadata size: %lld", moovAtomEndOffset);
     }
 
@@ -2626,7 +2511,7 @@ bool SniffMPEG4(
     }
 
     if (LegacySniffMPEG4(source, mimeType, confidence)) {
-        ALOGW("Identified supported mpeg4 through LegacySniffMPEG4.");
+        LOGW("Identified supported mpeg4 through LegacySniffMPEG4.");
         return true;
     }
 

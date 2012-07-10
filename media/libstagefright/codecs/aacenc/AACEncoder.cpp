@@ -53,7 +53,7 @@ status_t AACEncoder::initCheck() {
     CHECK(mApiHandle);
 
     if (VO_ERR_NONE != voGetAACEncAPI(mApiHandle)) {
-        ALOGE("Failed to get api handle");
+        LOGE("Failed to get api handle");
         return UNKNOWN_ERROR;
     }
 
@@ -70,11 +70,11 @@ status_t AACEncoder::initCheck() {
     userData.memflag = VO_IMF_USERMEMOPERATOR;
     userData.memData = (VO_PTR) mMemOperator;
     if (VO_ERR_NONE != mApiHandle->Init(&mEncoderHandle, VO_AUDIO_CodingAAC, &userData)) {
-        ALOGE("Failed to init AAC encoder");
+        LOGE("Failed to init AAC encoder");
         return UNKNOWN_ERROR;
     }
     if (OK != setAudioSpecificConfigData()) {
-        ALOGE("Failed to configure AAC encoder");
+        LOGE("Failed to configure AAC encoder");
         return UNKNOWN_ERROR;
     }
 
@@ -86,7 +86,7 @@ status_t AACEncoder::initCheck() {
     params.nChannels = mChannels;
     params.adtsUsed = 0;  // We add adts header in the file writer if needed.
     if (VO_ERR_NONE != mApiHandle->SetParam(mEncoderHandle, VO_PID_AAC_ENCPARAM,  &params)) {
-        ALOGE("Failed to set AAC encoder parameters");
+        LOGE("Failed to set AAC encoder parameters");
         return UNKNOWN_ERROR;
     }
 
@@ -106,18 +106,18 @@ static status_t getSampleRateTableIndex(int32_t sampleRate, int32_t &index) {
         }
     }
 
-    ALOGE("Sampling rate %d bps is not supported", sampleRate);
+    LOGE("Sampling rate %d bps is not supported", sampleRate);
     return UNKNOWN_ERROR;
 }
 
 status_t AACEncoder::setAudioSpecificConfigData() {
-    ALOGV("setAudioSpecificConfigData: %d hz, %d bps, and %d channels",
+    LOGV("setAudioSpecificConfigData: %d hz, %d bps, and %d channels",
          mSampleRate, mBitRate, mChannels);
 
     int32_t index;
     CHECK_EQ(OK, getSampleRateTableIndex(mSampleRate, index));
     if (mChannels > 2 || mChannels <= 0) {
-        ALOGE("Unsupported number of channels(%d)", mChannels);
+        LOGE("Unsupported number of channels(%d)", mChannels);
         return UNKNOWN_ERROR;
     }
 
@@ -135,7 +135,7 @@ AACEncoder::~AACEncoder() {
 
 status_t AACEncoder::start(MetaData *params) {
     if (mStarted) {
-        ALOGW("Call start() when encoder already started");
+        LOGW("Call start() when encoder already started");
         return OK;
     }
 
@@ -153,7 +153,7 @@ status_t AACEncoder::start(MetaData *params) {
 
     status_t err = mSource->start(params);
     if (err != OK) {
-         ALOGE("AudioSource is not available");
+         LOGE("AudioSource is not available");
         return err;
     }
 
@@ -177,7 +177,7 @@ status_t AACEncoder::stop() {
     }
 
     if (!mStarted) {
-        ALOGW("Call stop() when encoder has not started");
+        LOGW("Call stop() when encoder has not started");
         return ERROR_END_OF_STREAM;
     }
 

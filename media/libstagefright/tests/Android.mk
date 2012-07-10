@@ -1,3 +1,5 @@
+ifeq ($(DEBUG_SF),true)
+
 # Build the unit tests.
 LOCAL_PATH:= $(call my-dir)
 include $(CLEAR_VARS)
@@ -52,3 +54,5 @@ endif
 ifeq (,$(ONE_SHOT_MAKEFILE))
 include $(call first-makefiles-under,$(LOCAL_PATH))
 endif
+
+endif # DEBUG_SF

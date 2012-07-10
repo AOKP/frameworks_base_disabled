@@ -116,14 +116,6 @@ status_t GraphicBufferAllocator::alloc(uint32_t w, uint32_t h, PixelFormat forma
     }
 #endif
 
-#ifdef CUSTOM_OMX_16BPP_YUV
-    // 27: OMX_COLOR_FormatCbYCrY (both are 16bpp, so same buffer size)
-    if (format == CUSTOM_OMX_16BPP_YUV) {
-        LOGD("%s: Override OMX_COLOR_FormatCbYCrY", __FUNCTION__);
-        format = HAL_PIXEL_FORMAT_RGB_565;
-    }
-#endif
-
     err = mAllocDev->alloc(mAllocDev, w, h, format, usage, handle, stride);
 
     LOGW_IF(err, "alloc(%u, %u, format %d (0x%x), %08x, ...) failed %d (%s)",

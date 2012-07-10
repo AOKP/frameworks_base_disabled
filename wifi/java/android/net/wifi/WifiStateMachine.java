@@ -2622,8 +2622,8 @@ public class WifiStateMachine extends StateMachine {
                     }
                     mWakeLock.acquire();
                     WifiNative.stopDriverCommand();
-                    mWakeLock.release();
                     transitionTo(mDriverStoppingState);
+                    mWakeLock.release();
                     break;
                 case CMD_START_PACKET_FILTERING:
                     if (message.arg1 == MULTICAST_V6) {

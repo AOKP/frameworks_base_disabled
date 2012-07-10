@@ -1974,10 +1974,6 @@ status_t OMXCodec::setVideoOutputFormat(
                || format.eColorFormat == OMX_COLOR_FormatYUV420SemiPlanar
                || format.eColorFormat == OMX_COLOR_FormatCbYCrY
                || format.eColorFormat == OMX_TI_COLOR_FormatYUV420PackedSemiPlanar
-               || format.eColorFormat == OMX_QCOM_COLOR_FormatYVU420SemiPlanar
-#ifdef QCOM_HARDWARE
-               || format.eColorFormat == QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka
-#endif
 #ifdef SAMSUNG_CODEC_SUPPORT
                || format.eColorFormat == OMX_SEC_COLOR_FormatNV12TPhysicalAddress
                || format.eColorFormat == OMX_SEC_COLOR_FormatNV12Tiled
@@ -1989,6 +1985,11 @@ status_t OMXCodec::setVideoOutputFormat(
                 format.eColorFormat = OMX_COLOR_FormatYUV420Planar;
             else
                 format.eColorFormat = OMX_COLOR_FormatYUV420SemiPlanar;
+        }
+#endif
+#ifdef OMAP_COMPAT
+        if (!strncmp("OMX.TI.", mComponentName, 7)) {
+            format.eColorFormat = OMX_COLOR_FormatYUV420Planar;
         }
 #endif
 
@@ -2100,6 +2101,9 @@ OMXCodec::OMXCodec(
 #endif
       mNativeWindow(
               (!strncmp(componentName, "OMX.google.", 11)
+#ifdef OMAP_COMPAT
+              || !strncmp(componentName, "OMX.TI.", 7)
+#endif
               || !strcmp(componentName, "OMX.Nvidia.mpeg2v.decode"))
                         ? NULL : nativeWindow) {
     mPortStatus[kPortIndexInput] = ENABLED;

@@ -176,6 +176,12 @@ void SoftwareRenderer::render(
         uint8_t *dst_v = (uint8_t *)pYUVBuf[1];
         uint8_t *dst_u = (uint8_t *)pYUVBuf[2];
 #else
+#ifndef OMAP_COMPAT
+        size_t dst_c_stride = ALIGN(buf->stride / 2, 16);
+#else
+        size_t dst_c_stride = buf->stride / 2;
+#endif
+        size_t dst_y_size = buf->stride * buf->height;
         size_t dst_c_stride = ALIGN(buf->stride / 2, 16);
         size_t dst_y_size = buf->stride * buf->height;
         size_t dst_c_size = dst_c_stride * buf->height / 2;

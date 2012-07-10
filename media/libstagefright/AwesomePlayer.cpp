@@ -1176,6 +1176,9 @@ void AwesomePlayer::initRenderer_l() {
     if (USE_SURFACE_ALLOC
             && !strncmp(component, "OMX.", 4)
             && strncmp(component, "OMX.google.", 11)
+#ifdef OMAP_COMPAT
+            && strncmp(component, "OMX.TI.", 7)
+#endif
             && strcmp(component, "OMX.Nvidia.mpeg2v.decode")) {
         // Hardware decoders avoid the CPU color conversion by decoding
         // directly to ANativeBuffers, so we must use a renderer that

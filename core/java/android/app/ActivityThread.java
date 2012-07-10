@@ -181,14 +181,14 @@ public final class ActivityThread {
     // set of instantiated backup agents, keyed by package name
     final HashMap<String, BackupAgent> mBackupAgents = new HashMap<String, BackupAgent>();
     static final ThreadLocal<ActivityThread> sThreadLocal = new ThreadLocal<ActivityThread>();
-    ArrayList<String> ApplicationHwuiWhitelist = null;
+    ArrayList<String> ApplicationHwuiBlacklist = null;
     Instrumentation mInstrumentation;
     String mInstrumentationAppDir = null;
     String mInstrumentationAppPackage = null;
     String mInstrumentedAppDir = null;
     boolean mSystemThread = false;
     boolean mJitEnabled = false;
-    boolean mReadWhiteList = false;
+    boolean mReadBlackList = false;
 
     // These can be accessed by multiple threads; mPackages is the lock.
     // XXX For now we keep around information about all packages we have
@@ -3893,15 +3893,15 @@ public final class ActivityThread {
         }
     }    
 
-    private void ReadAppHwuiWhitelist() {
-        if (ApplicationHwuiWhitelist == null) {
-            ApplicationHwuiWhitelist = new ArrayList<String>();
+    private void ReadAppHwuiBlacklist() {
+        if (ApplicationHwuiBlacklist == null) {
+            ApplicationHwuiBlacklist = new ArrayList<String>();
         }
 
-        mReadWhiteList = true;
+        mReadBlackList = true;
         FileInputStream fstream = null;
         try {
-            fstream = new FileInputStream("/system/hwui-whitelist.txt");
+            fstream = new FileInputStream("/system/hwui-blacklist.txt");
             DataInputStream in = new DataInputStream(fstream);
             BufferedReader file = new BufferedReader(new InputStreamReader(in));
             String line;
@@ -3913,11 +3913,11 @@ public final class ActivityThread {
                     continue;
                 }
 
-                ApplicationHwuiWhitelist.add(line);
+                ApplicationHwuiBlacklist.add(line);
             }
         } catch (FileNotFoundException e) {
         } catch (IOException e) {
-            Log.e(TAG, "Error reading hardware acceleration whitelist file", e);
+            Log.e(TAG, "Error reading hardware acceleration blacklist file", e);
         } finally {
             if (fstream != null) {
                 try {
@@ -3927,12 +3927,12 @@ public final class ActivityThread {
         }
     }
 
-    private boolean IsAppHwuiWhitelisted(String runningapp) {
-        if (mReadWhiteList == false) {
-            ReadAppHwuiWhitelist();
+    private boolean IsAppHwuiBlacklisted(String runningapp) {
+        if (mReadBlackList == false) {
+            ReadAppHwuiBlacklist();
         }
 
-        return ApplicationHwuiWhitelist.contains(runningapp);
+        return ApplicationHwuiBlacklist.contains(runningapp);
     }
     
     private void handleBindApplication(AppBindData data) {
@@ -3959,9 +3959,9 @@ public final class ActivityThread {
             }
         }
 
-        // Hardware accelerated whitelist override
+        // Hardware accelerated blacklist override
         if (!HardwareRenderer.sRendererDisabled &&
-            !IsAppHwuiWhitelisted(data.processName))
+            IsAppHwuiBlacklisted(data.processName))
         {
             HardwareRenderer.disable(false);
         }

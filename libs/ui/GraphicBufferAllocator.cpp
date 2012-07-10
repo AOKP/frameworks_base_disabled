@@ -100,22 +100,6 @@ status_t GraphicBufferAllocator::alloc(uint32_t w, uint32_t h, PixelFormat forma
 
     status_t err;
 
-#ifdef MISSING_EGL_PIXEL_FORMAT_YV12
-    if (format == HAL_PIXEL_FORMAT_YV12) {
-        LOGD("%s: Override HAL_PIXEL_FORMAT_YV12", __FUNCTION__);
-        format = HAL_PIXEL_FORMAT_RGB_565;
-    }
-    if (!(usage & GRALLOC_USAGE_SW_READ_MASK)) {
-        usage |= GRALLOC_USAGE_SW_READ_RARELY;
-    }
-    if (!(usage & GRALLOC_USAGE_SW_WRITE_MASK)) {
-        usage |= GRALLOC_USAGE_SW_WRITE_RARELY;
-    }
-    if (usage & GRALLOC_USAGE_EXTERNAL_DISP) {
-	usage ^= GRALLOC_USAGE_EXTERNAL_DISP;
-    }
-#endif
-
     err = mAllocDev->alloc(mAllocDev, w, h, format, usage, handle, stride);
 
     LOGW_IF(err, "alloc(%u, %u, format %d (0x%x), %08x, ...) failed %d (%s)",

@@ -2024,6 +2024,7 @@ public class MediaPlayer
                     if (msg.obj instanceof Parcel) {
                         Parcel parcel = (Parcel)msg.obj;
                         TimedText text = new TimedText(parcel);
+                        parcel.recycle();
                         mOnTimedTextListener.onTimedText(mMediaPlayer, text);
                     }
                 }

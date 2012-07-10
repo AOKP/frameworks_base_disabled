@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2009 The Android Open Source Project
- * Copyright (C) 2011 Code Aurora Forum
+ * Copyright (C) 2011, Code Aurora Forum. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,14 +39,22 @@ namespace android {
 StagefrightMetadataRetriever::StagefrightMetadataRetriever()
     : mParsedMetaData(false),
       mAlbumArt(NULL) {
-    ALOGV("StagefrightMetadataRetriever()");
+#ifdef QCOM_HARDWARE
+    LOGV("StagefrightMetadataRetriever() constructor %p ", this);
+#else
+    LOGV("StagefrightMetadataRetriever()");
+#endif
 
     DataSource::RegisterDefaultSniffers();
     CHECK_EQ(mClient.connect(), OK);
 }
 
 StagefrightMetadataRetriever::~StagefrightMetadataRetriever() {
-    ALOGV("~StagefrightMetadataRetriever()");
+#ifdef QCOM_HARDWARE
+    LOGV("~StagefrightMetadataRetriever() %p", this);
+#else
+    LOGV("~StagefrightMetadataRetriever()");
+#endif
 
     delete mAlbumArt;
     mAlbumArt = NULL;
@@ -56,7 +64,12 @@ StagefrightMetadataRetriever::~StagefrightMetadataRetriever() {
 
 status_t StagefrightMetadataRetriever::setDataSource(
         const char *uri, const KeyedVector<String8, String8> *headers) {
-    ALOGV("setDataSource(%s)", uri);
+
+#ifdef QCOM_HARDWARE
+    LOGW("setDataSource(%s) %p", uri, this);
+#else
+    LOGV("setDataSource(%s)", uri);
+#endif
 
     mParsedMetaData = false;
     mMetaData.clear();
@@ -85,7 +98,11 @@ status_t StagefrightMetadataRetriever::setDataSource(
         int fd, int64_t offset, int64_t length) {
     fd = dup(fd);
 
-    ALOGV("setDataSource(%d, %lld, %lld)", fd, offset, length);
+#ifdef QCOM_HARDWARE
+    LOGW("setDataSource(%d, %lld, %lld) %p", fd, offset, length, this);
+#else
+    LOGV("setDataSource(%d, %lld, %lld)", fd, offset, length);
+#endif
 
     mParsedMetaData = false;
     mMetaData.clear();
@@ -350,7 +367,11 @@ static VideoFrame *extractVideoFrameWithCodecFlags(
 VideoFrame *StagefrightMetadataRetriever::getFrameAtTime(
         int64_t timeUs, int option) {
 
-    ALOGV("getFrameAtTime: %lld us option: %d", timeUs, option);
+#ifdef QCOM_HARDWARE
+    LOGW("getFrameAtTime: %lld us option: %d %p", timeUs, option, this);
+#else
+    LOGV("getFrameAtTime: %lld us option: %d", timeUs, option);
+#endif
 
     if (mExtractor.get() == NULL) {
         ALOGV("no extractor.");
@@ -430,48 +451,36 @@ VideoFrame *StagefrightMetadataRetriever::getFrameAtTime(
         }
         else {
             frame = extractVideoFrameWithCodecFlags(
-                &mClient, trackMeta, source, OMXCodec::kSoftwareCodecsOnly,
-                timeUs, option);
-            if (frame == NULL){
-                // remake source to ensure its stopped before we start it
-                source.clear();
-                source = mExtractor->getTrack(i);
-                if (source.get() == NULL) {
-                    LOGV("unable to instantiate video track.");
-                    return NULL;
-                }
-            }
-        }
-    }
 #else
     VideoFrame *frame =
         extractVideoFrameWithCodecFlags(
                 &mClient, trackMeta, source, OMXCodec::kPreferSoftwareCodecs,
                 timeUs, option);
+#ifdef QCOM_HARDWARE
+        }
+    }
 #endif
 
     if (frame == NULL) {
         ALOGV("Software decoder failed to extract thumbnail, "
              "trying hardware decoder.");
 
-#ifdef QCOM_HARDWARE
+#ifndef QCOM_HARDWARE
+            frame = extractVideoFrameWithCodecFlags(&mClient, trackMeta, source, 0,
+                        timeUs, option);
+#else
         char value[PROPERTY_VALUE_MAX];
         int32_t flags = 0;
-        if (property_get("ro.board.platform", value, "0")
+        if (property_get("ro.product.device", value, "0")
             && (!strncmp(value, "msm8660", sizeof("msm8660") - 1) ||
-                !strncmp(value, "msm8960", sizeof("msm8960") - 1) ||
-                !strncmp(value, "msm7x30", sizeof("msm7x30") - 1) )) {
+                !strncmp(value, "msm8960", sizeof("msm8960") - 1))) {
             flags |= OMXCodec::kEnableThumbnailMode;
             frame = extractVideoFrameWithCodecFlags(&mClient, trackMeta,
                         source, flags,
                         timeUs, option);
         }
-#else
-        frame = extractVideoFrameWithCodecFlags(&mClient, trackMeta, source, 0,
-                        timeUs, option);
 #endif
     }
-
     return frame;
 }
 

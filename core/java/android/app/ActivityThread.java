@@ -73,7 +73,6 @@ import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.os.StrictMode;
 import android.os.SystemClock;
-import android.os.SystemProperties;
 import android.text.TextUtils;
 import android.util.AndroidRuntimeException;
 import android.util.DisplayMetrics;
@@ -92,14 +91,9 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.WindowManagerImpl;
 
-import java.io.BufferedReader;
-import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileDescriptor;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.ref.WeakReference;
@@ -181,14 +175,12 @@ public final class ActivityThread {
     // set of instantiated backup agents, keyed by package name
     final HashMap<String, BackupAgent> mBackupAgents = new HashMap<String, BackupAgent>();
     static final ThreadLocal<ActivityThread> sThreadLocal = new ThreadLocal<ActivityThread>();
-    ArrayList<String> ApplicationHwuiBlacklist = null;
     Instrumentation mInstrumentation;
     String mInstrumentationAppDir = null;
     String mInstrumentationAppPackage = null;
     String mInstrumentedAppDir = null;
     boolean mSystemThread = false;
     boolean mJitEnabled = false;
-    boolean mReadBlackList = false;
 
     // These can be accessed by multiple threads; mPackages is the lock.
     // XXX For now we keep around information about all packages we have
@@ -3892,48 +3884,6 @@ public final class ActivityThread {
             // Ignore
         }
     }    
-
-    private void ReadAppHwuiBlacklist() {
-        if (ApplicationHwuiBlacklist == null) {
-            ApplicationHwuiBlacklist = new ArrayList<String>();
-        }
-
-        mReadBlackList = true;
-        FileInputStream fstream = null;
-        try {
-            fstream = new FileInputStream("/system/hwui-blacklist.txt");
-            DataInputStream in = new DataInputStream(fstream);
-            BufferedReader file = new BufferedReader(new InputStreamReader(in));
-            String line;
-            while ((line = file.readLine()) != null) {
-                line = line.trim();
-
-                // Ignore comments and blank lines
-                if (line.length() == 0 || line.startsWith("#")) {
-                    continue;
-                }
-
-                ApplicationHwuiBlacklist.add(line);
-            }
-        } catch (FileNotFoundException e) {
-        } catch (IOException e) {
-            Log.e(TAG, "Error reading hardware acceleration blacklist file", e);
-        } finally {
-            if (fstream != null) {
-                try {
-                    fstream.close();
-                } catch (IOException e) {}
-            }
-        }
-    }
-
-    private boolean IsAppHwuiBlacklisted(String runningapp) {
-        if (mReadBlackList == false) {
-            ReadAppHwuiBlacklist();
-        }
-
-        return ApplicationHwuiBlacklist.contains(runningapp);
-    }
     
     private void handleBindApplication(AppBindData data) {
         mBoundApplication = data;
@@ -3957,13 +3907,6 @@ public final class ActivityThread {
             if (!ActivityManager.isHighEndGfx(display)) {
                 HardwareRenderer.disable(false);
             }
-        }
-
-        // Hardware accelerated blacklist override
-        if (!HardwareRenderer.sRendererDisabled &&
-            IsAppHwuiBlacklisted(data.processName))
-        {
-            HardwareRenderer.disable(false);
         }
         
         if (mProfiler.profileFd != null) {

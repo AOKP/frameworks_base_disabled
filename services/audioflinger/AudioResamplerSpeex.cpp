@@ -128,8 +128,10 @@ void AudioResamplerSpeex::resampleStereo16(int32_t* out, size_t outFrameCount,
 
     while(outFrameIndex < outFrameCount) {
         if (mInputIndex >= mBuffer.frameCount) {
-            if (mBuffer.raw != NULL)
+            /* mBuffer.raw is undefined if mBuffer.frameCount == 0 */
+            if (mBuffer.frameCount && (mBuffer.raw != NULL)) {
                 provider->releaseBuffer(&mBuffer);
+            }
             mInputIndex = 0;
         }
         if (mBuffer.frameCount == 0) {
@@ -169,8 +171,10 @@ void AudioResamplerSpeex::resampleMono16(int32_t* out, size_t outFrameCount,
 
     while(outFrameIndex < outFrameCount) {
         if (mInputIndex >= mBuffer.frameCount) {
-            if (mBuffer.raw != NULL)
+            /* mBuffer.raw is undefined if mBuffer.frameCount == 0 */
+            if (mBuffer.frameCount && (mBuffer.raw != NULL)) {
                 provider->releaseBuffer(&mBuffer);
+            }
             mInputIndex = 0;
         }
         if (mBuffer.frameCount == 0) {

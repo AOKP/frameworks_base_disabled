@@ -205,11 +205,15 @@ public final class ShutdownThread extends Thread {
             sIsStarted = true;
         }
 
+        final int shutdownMessageId = mRebootReason == null
+                ? com.android.internal.R.string.shutdown_progress
+                : com.android.internal.R.string.reboot_progress;
+
         // throw up an indeterminate system dialog to indicate radio is
         // shutting down.
         ProgressDialog pd = new ProgressDialog(context);
-        pd.setTitle(context.getText(com.android.internal.R.string.power_off));
-        pd.setMessage(context.getText(com.android.internal.R.string.shutdown_progress));
+        //pd.setTitle(context.getText(com.android.internal.R.string.power_off));
+        pd.setMessage(context.getText(shutdownMessageId));
         pd.setIndeterminate(true);
         pd.setCancelable(false);
         pd.getWindow().setType(WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG);

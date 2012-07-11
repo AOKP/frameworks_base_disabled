@@ -15,4 +15,8 @@ endif
 
 LOCAL_MODULE:= libstagefright_color_conversion
 
+ifeq ($(OMAP_ENHANCEMENT), true)
+        LOCAL_C_INCLUDES += $(TOP)/hardware/ti/omap4xxx/domx/omx_core/inc
+endif
+
 include $(BUILD_STATIC_LIBRARY)

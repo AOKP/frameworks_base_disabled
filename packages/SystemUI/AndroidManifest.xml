@@ -49,6 +49,13 @@
     <uses-permission android:name="android.permission.SET_ORIENTATION" />
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
 
+    <!-- AOKP extra permissions -->
+    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
+    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
+    <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.NFC" />
+
     <application
         android:persistent="true"
         android:allowClearUserData="false"
@@ -175,6 +182,25 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="com.android.internal.category.PLATLOGO" />
 <!--            <category android:name="android.intent.category.LAUNCHER" />-->
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name="com.android.systemui.Torch"
+            android:label="@string/toggle_torch"
+            android:icon="@drawable/toggle_torch"
+            android:theme="@android:style/Theme.Holo.Panel"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTop" >
+            <intent-filter>
+                 <action android:name="com.android.systemui.INTENT_TORCH_ON"/>
+                 <action android:name="com.android.systemui.INTENT_TORCH_OFF"/>
+                 <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.android.systemui.INTENT_TORCH_TOGGLE" />
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="com.android.systemui.SHORTCUT" />
             </intent-filter>
         </activity>
     </application>

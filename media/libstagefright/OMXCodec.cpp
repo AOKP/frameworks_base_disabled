@@ -938,20 +938,6 @@ status_t OMXCodec::configureCodec(const sp<MetaData> &meta) {
                 LOGE("Profile and/or level exceed the decoder's capabilities.");
                 return ERROR_UNSUPPORTED;
             }
-            int32_t width, height;
-            bool success = meta->findInt32(kKeyWidth, &width);
-            success = success && meta->findInt32(kKeyHeight, &height);
-            CHECK(success);
-            if (!strcmp(mComponentName, "OMX.TI.720P.Decoder")
-                && (profile == kAVCProfileBaseline && level <= 39)
-                && (width*height <= MAX_RESOLUTION)
-                && (width <= MAX_RESOLUTION_WIDTH && height <= MAX_RESOLUTION_HEIGHT ))
-            {
-                // Though this decoder can handle this profile/level,
-                // we prefer to use "OMX.TI.Video.Decoder" for
-                // Baseline Profile with level <=39 and sub 720p
-                return ERROR_UNSUPPORTED;
-            }
 
 #if defined(OMAP_ENHANCEMENT) && defined(TARGET_OMAP3)
             int32_t width, height;
@@ -967,6 +953,13 @@ status_t OMXCodec::configureCodec(const sp<MetaData> &meta) {
                 return ERROR_UNSUPPORTED;
             }
 #endif
+
+            if(!strcmp(mComponentName, "OMX.google.h264.decoder")
+                && (profile != kAVCProfileBaseline)) {
+                LOGE("%s does not support profiles > kAVCProfileBaseline", mComponentName);
+                // The profile is unsupported by the decoder
+                return ERROR_UNSUPPORTED;
+            }
         } else if (meta->findData(kKeyVorbisInfo, &type, &data, &size)) {
 
             addCodecSpecificData(data, size);

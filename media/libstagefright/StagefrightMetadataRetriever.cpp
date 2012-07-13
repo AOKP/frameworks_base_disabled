@@ -384,22 +384,38 @@ VideoFrame *StagefrightMetadataRetriever::getFrameAtTime(
         memcpy(mAlbumArt->mData, data, dataSize);
     }
 
-#ifdef QCOM_HARDWARE
-    const char *mime;
-    bool success = trackMeta->findCString(kKeyMIMEType, &mime);
-    CHECK(success);
-    VideoFrame *frame = NULL;
 
-    if ((!strcmp(mime, MEDIA_MIMETYPE_VIDEO_DIVX))||
-            (!strcmp(mime, MEDIA_MIMETYPE_VIDEO_DIVX311))||
-            (!strcmp(mime, MEDIA_MIMETYPE_VIDEO_DIVX4))||
-            (!strcmp(mime, MEDIA_MIMETYPE_VIDEO_WMV)))
-    {
-        LOGV("Software codec is not being used for %s clips for thumbnail ",
-            mime);
-    } else {
-        frame = extractVideoFrameWithCodecFlags(
+#if defined(OMAP_ENHANCEMENT)
+    const char *filemime;
+    CHECK(fileMeta->findCString(kKeyMIMEType, &filemime));
+    LOGV("file mime type:%s",filemime);
+    VideoFrame *frame=NULL;
+    bool useHWCodec =0;
+
+    /*For all the formats except Mpeg2TS/Mpeg2PS, we try with Software decoder
+    first. Currently there is no support for seek in Mpeg2TSExtracto or
+    Mpeg2PSExtractor. Incase of Mpeg2TS  if software decoder fails to decode,
+    the extractor is providing the next available frame instead of seeking back
+    to I-frame. So, incase of Mpeg2TS/Mpeg2PS clips we use hardware decoder
+    for thumbnail generation*/
+    if ((!strcasecmp(filemime, MEDIA_MIMETYPE_CONTAINER_MPEG2TS))
+        ||(!strcasecmp(filemime, MEDIA_MIMETYPE_CONTAINER_MPEG2PS))){
+            useHWCodec = 1;
+    }
+    if (!useHWCodec){
+        LOGV("Trying with s/w codec(NonMpeg2TS/PS clip)");
+        frame =  extractVideoFrameWithCodecFlags(
+           &mClient, trackMeta, source, OMXCodec::kPreferSoftwareCodecs,
+           timeUs, option);
+    }
+    if (frame == NULL){
+       LOGV("Software decoder failed to extract thumbnail, "
+           "trying hardware decoder.");
+       frame = extractVideoFrameWithCodecFlags(&mClient, trackMeta, source, 0,
+                     timeUs, option);
+    }
 #else
+
     VideoFrame *frame =
         extractVideoFrameWithCodecFlags(
 #endif

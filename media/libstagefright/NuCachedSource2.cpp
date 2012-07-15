@@ -556,8 +556,8 @@ size_t NuCachedSource2::approxDataRemaining_l(status_t *finalStatus) {
     }
 
     off64_t lastBytePosCached = mCacheOffset + mCache->totalSize();
-    if (mMaxAccessPos < lastBytePosCached) {
-        return lastBytePosCached - mMaxAccessPos;
+    if (mLastAccessPos < lastBytePosCached) {
+        return lastBytePosCached - mLastAccessPos;
     }
     return 0;
 }

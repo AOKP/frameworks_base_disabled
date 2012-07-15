@@ -1,0 +1,11 @@
+Change-Id: I7a586a0a6c82755cad48a118c53017cb0df279a6
+Code-Review+2: Khas Mek <boushh@gmail.com>
+Verified+1: Khas Mek <boushh@gmail.com>
+Code-Review+1: Jonathan Steadman <xxwhitehawk@gmail.com>
+Code-Review+1: Steve Spear <stephen.k.spear@gmail.com>
+Code-Review+1: Arham Jamal <arhamjamal@gmail.com>
+Submitted-by: Khas Mek <boushh@gmail.com>
+Submitted-at: Sun, 15 Jul 2012 10:27:09 -0400
+Reviewed-on: http://gerrit.sudoservers.com/1840
+Project: AOKP/frameworks_base
+Branch: refs/heads/jb

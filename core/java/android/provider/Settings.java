@@ -2110,6 +2110,18 @@ public final class Settings {
         public static final String LOCKSCREEN_DISABLED = "lockscreen.disabled";
 
         /**
+         * Stores values for custom lockscreen targets
+         * @hide
+         */
+        public static final String LOCKSCREEN_TARGETS = "lockscreen_targets";
+
+        /**
+         * Number of custom lockscreen targets
+         * @hide
+         */
+        public static final String LOCKSCREEN_TARGET_AMOUNT = "lockscreen_target_amount";
+
+        /**
          * URI for the low battery sound file.
          * @hide
          */

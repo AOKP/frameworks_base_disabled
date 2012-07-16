@@ -16,6 +16,13 @@
 
 //#define LOG_NDEBUG 0
 #define LOG_TAG "AVIExtractor"
+
+#ifdef OMAP_ENHANCEMENT
+#define BITMAPINFO_HDR_SIZE 40
+#define HDR_LENGTH 4
+#define WMV_CFG_PREFIX_LEN 15
+#define VC1_MAX_PREFIX_LEN 100
+#endif
 #include <utils/Log.h>
 
 #include "include/avc_utils.h"
@@ -185,12 +192,47 @@ status_t AVIExtractor::AVISource::read(
         MediaBuffer *out;
         CHECK_EQ(mBufferGroup->acquire_buffer(&out), (status_t)OK);
 
+#ifdef OMAP_ENHANCEMENT
+
+       const Track &track = mExtractor->mTracks.itemAt(mTrackIndex);
+       ssize_t startprefexLength=0;
+
+       /*For VC1 encodedstreams, Decoder expects that the first frame have
+        config header followed by 4byte data prefex  0x0000010d followed by
+        data.  All other frames should have the 4byte data prefex
+        0x0000010d followed by data*/
+       if (track.mKind == Track::VIDEO &&  mExtractor->mIsVC1) {
+           void *edata = out->data();
+           if (mSampleIndex==1) {
+               uint32_t type;
+               const void *configdata;
+               size_t ConfingLen;
+               uint32_t hdr_offset;
+
+               track.mMeta->findData(kKeyHdr, &type, &configdata, &ConfingLen);
+               hdr_offset = BITMAPINFO_HDR_SIZE + WMV_CFG_PREFIX_LEN - HDR_LENGTH + 1;
+               memcpy(edata, (char *)configdata + hdr_offset, ConfingLen - hdr_offset);
+               startprefexLength = ConfingLen - hdr_offset;
+               edata = (char*)edata + startprefexLength;
+
+           }
+           /*data prefex 0x00 00 01 0d*/
+           memcpy(edata, "\x00\x00\x01\x0d", 4);
+           startprefexLength += 4;
+       }
+        ssize_t n = mExtractor->mDataSource->readAt(offset,
+                               (char*)(out->data()) + startprefexLength, size);
+#else
         ssize_t n = mExtractor->mDataSource->readAt(offset, out->data(), size);
+#endif
 
         if (n < (ssize_t)size) {
             return n < 0 ? (status_t)n : (status_t)ERROR_MALFORMED;
         }
 
+#ifdef OMAP_ENHANCEMENT
+        size = size + startprefexLength;
+#endif
         out->set_range(0, size);
 
         out->meta_data()->setInt64(kKeyTime, timeUs);
@@ -367,6 +409,10 @@ status_t AVIExtractor::MP3Splitter::read(MediaBuffer **out) {
 
 AVIExtractor::AVIExtractor(const sp<DataSource> &dataSource)
     : mDataSource(dataSource) {
+
+#ifdef OMAP_ENHANCEMENT
+    mIsVC1 = 0;
+#endif
     mInitCheck = parseHeaders();
 
     if (mInitCheck != OK) {
@@ -580,6 +626,23 @@ static const char *GetMIMETypeForHandler(uint32_t handler) {
         case FOURCC('v', 's', 's', 'h'):
             return MEDIA_MIMETYPE_VIDEO_AVC;
 
+#ifdef OMAP_ENHANCEMENT
+        case FOURCC('D','2','6','3'):
+        case FOURCC('H','2','6','3'):
+        case FOURCC('L','2','6','3'):
+        case FOURCC('M','2','6','3'):
+        case FOURCC('S','2','6','3'):
+        case FOURCC('T','2','6','3'):
+        case FOURCC('U','2','6','3'):
+        case FOURCC('X','2','6','3'):
+             return MEDIA_MIMETYPE_VIDEO_H263;
+
+        case FOURCC('W','M','V','3'):
+        case FOURCC('W','M','V','9'):
+        case FOURCC('W','V','C','1'):
+            return MEDIA_MIMETYPE_VIDEO_WMV;
+#endif
+
         default:
             return NULL;
     }
@@ -652,6 +715,13 @@ status_t AVIExtractor::parseStreamHeader(off64_t offset, size_t size) {
 
     mTracks.push();
     Track *track = &mTracks.editItemAt(mTracks.size() - 1);
+#ifdef OMAP_ENHANCEMENT
+        if (!strcasecmp(mime, MEDIA_MIMETYPE_VIDEO_WMV)) {
+            if (FOURCC('W','V','C','1') == handler) {
+                mIsVC1= true;
+            }
+        }
+#endif
 
     track->mMeta = meta;
     track->mRate = rate;
@@ -665,7 +735,7 @@ status_t AVIExtractor::parseStreamHeader(off64_t offset, size_t size) {
     track->mAvgChunkSize = 1.0;
     track->mFirstChunkSize = 0;
 #ifdef OMAP_ENHANCEMENT
-    track->mMeta->setInt32(kKeyVideoFPS,fps);
+    track->mMeta->setInt32(kKeyVideoFPS, fps);
 #endif
     return OK;
 }
@@ -704,6 +774,32 @@ status_t AVIExtractor::parseStreamFormat(off64_t offset, size_t size) {
 
         track->mMeta->setInt32(kKeyWidth, width);
         track->mMeta->setInt32(kKeyHeight, height);
+#ifdef OMAP_ENHANCEMENT
+        const char *tmp;
+        CHECK(track->mMeta->findCString(kKeyMIMEType, &tmp));
+        AString mime = tmp;
+
+        if (!strcasecmp(mime.c_str(), MEDIA_MIMETYPE_VIDEO_WMV)) {
+        /* Incase of WMV/VC1, the codec specific header is placed at the end
+         * of StreamFormatHeader, i.e immediately after BitmapInfoHeader
+         * We need to compare the size of StreamFormatHeader against the
+         * BitmapInfoHeade size. If the StreamFormatHeader size is greater then
+         * it implies that  config header is inserted at the end
+         */
+          if (size > BITMAPINFO_HDR_SIZE) {
+            /*codec config header should be start with start code consisiting
+            15bytes of zeros followed by the BitmapInfo header(excluding the
+            length field) followed by configheader*/
+             uint8_t *edata = new uint8_t[WMV_CFG_PREFIX_LEN + size - HDR_LENGTH];
+             memset(edata, 0x0, WMV_CFG_PREFIX_LEN);
+             memcpy(edata + WMV_CFG_PREFIX_LEN, data + HDR_LENGTH,
+                    size-HDR_LENGTH);
+             track->mMeta->setData(kKeyHdr, kTypeHdr, edata,
+                    WMV_CFG_PREFIX_LEN + size - HDR_LENGTH);
+             delete(edata);
+         }
+       }
+#endif
     } else {
         uint32_t format = U16LE_AT(data);
 
@@ -940,6 +1036,18 @@ status_t AVIExtractor::parseIndex(off64_t offset, size_t size) {
             } else if (!strcasecmp(mime.c_str(), MEDIA_MIMETYPE_VIDEO_AVC)) {
                 err = addH264CodecSpecificData(i);
             }
+#ifdef OMAP_ENHANCEMENT
+            else if (!strcasecmp(mime.c_str(), MEDIA_MIMETYPE_VIDEO_WMV)) {
+                 /* Max sample size is increased considering VC1 encoded Stream into account.
+                  * As VC1 decoder expects data to be prefexed with start code(for all frames)
+                  * and configheader  (incase of first frame)
+                  */
+                 if (mIsVC1) {
+                    track->mMaxSampleSize+=VC1_MAX_PREFIX_LEN;
+                    track->mMeta->setInt32(kKeyMaxInputSize, track->mMaxSampleSize);
+                 }
+            }
+#endif
 
             if (err != OK) {
                 return err;

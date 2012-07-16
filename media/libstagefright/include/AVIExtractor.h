@@ -81,6 +81,9 @@ private:
     status_t mInitCheck;
     Vector<Track> mTracks;
 
+#ifdef OMAP_ENHANCEMENT
+    bool mIsVC1;
+#endif
     off64_t mMovieOffset;
     bool mFoundIndex;
     bool mOffsetsAreAbsolute;

@@ -76,4 +76,9 @@ const char *MEDIA_MIMETYPE_CONTAINER_3G2 = "video/3g2";
 #endif
 const char *MEDIA_MIMETYPE_TEXT_3GPP = "text/3gpp-tt";
 
+
+#ifdef OMAP_ENHANCEMENT //DOLBY_DDPDEC51
+const char *MEDIA_MIMETYPE_AUDIO_AC3 = "audio/ac3";
+const char *MEDIA_MIMETYPE_AUDIO_EC3 = "audio/eac3";
+#endif
 }  // namespace android

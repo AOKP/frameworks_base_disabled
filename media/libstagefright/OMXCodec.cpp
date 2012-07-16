@@ -302,6 +302,18 @@ static const CodecInfo kDecoderInfo[] = {
     { MEDIA_MIMETYPE_AUDIO_WMA, "OMX.qcom.audio.decoder.wma10Pro"},
     { MEDIA_MIMETYPE_VIDEO_WMV, "OMX.qcom.video.decoder.vc1"},
 #endif
+#ifdef OMAP_ENHANCEMENT
+    { MEDIA_MIMETYPE_VIDEO_MPEG2, "OMX.TI.DUCATI1.VIDEO.DECODER" },
+    { MEDIA_MIMETYPE_AUDIO_VORBIS, "OMX.google.vorbis.decoder" },
+    { MEDIA_MIMETYPE_VIDEO_VPX, "OMX.google.vpx.decoder" },
+    { MEDIA_MIMETYPE_VIDEO_MPEG2, "OMX.Nvidia.mpeg2v.decode" },
+    { MEDIA_MIMETYPE_VIDEO_WMV, "OMX.TI.DUCATI1.VIDEO.DECODER" },
+    { MEDIA_MIMETYPE_AUDIO_WMA, "OMX.ITTIAM.WMA.decode" },
+    { MEDIA_MIMETYPE_AUDIO_WMALSL, "OMX.ITTIAM.WMALSL.decode" },
+    { MEDIA_MIMETYPE_AUDIO_WMAPRO, "OMX.ITTIAM.WMAPRO.decode" },
+    { MEDIA_MIMETYPE_AUDIO_AC3, "OMX.dolby.ac3.decoder" },
+    { MEDIA_MIMETYPE_AUDIO_EC3, "OMX.dolby.ec3.decoder" },
+#endif
 };
 
 static const CodecInfo kEncoderInfo[] = {
@@ -2463,6 +2475,11 @@ void OMXCodec::setComponentRole(
             "audio_decoder.wmapro", "" },
         { MEDIA_MIMETYPE_AUDIO_WMALSL,
             "audio_decoder.wmalsl", "" },
+        { MEDIA_MIMETYPE_AUDIO_AC3,
+            "audio_decoder.ac3", "audio_encoder.ac3" },
+        { MEDIA_MIMETYPE_AUDIO_EC3,
+            "audio_decoder.ec3", "audio_encoder.ec3" },
+
 #endif
 
     };

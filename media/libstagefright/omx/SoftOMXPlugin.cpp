@@ -45,6 +45,10 @@ static const struct {
     { "OMX.google.mp3.decoder", "mp3dec", "audio_decoder.mp3" },
     { "OMX.google.vorbis.decoder", "vorbisdec", "audio_decoder.vorbis" },
     { "OMX.google.vpx.decoder", "vpxdec", "video_decoder.vpx" },
+#ifdef OMAP_ENHANCEMENT //DOLBY_DDPDEC51
+    { "OMX.dolby.ac3.decoder", "ddpdec", "audio_decoder.ac3" },
+    { "OMX.dolby.ec3.decoder", "ddpdec", "audio_decoder.ec3" },
+#endif
 };
 
 static const size_t kNumComponents =

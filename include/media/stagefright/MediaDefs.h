@@ -79,6 +79,11 @@ extern const char *MEDIA_MIMETYPE_AUDIO_WMA;
 extern const char *MEDIA_MIMETYPE_AUDIO_WMAPRO;
 extern const char *MEDIA_MIMETYPE_AUDIO_WMALSL;
 #endif
+
+#ifdef OMAP_ENHANCEMENT //DOLBY_DDPDEC51
+extern const char *MEDIA_MIMETYPE_AUDIO_EC3;
+extern const char *MEDIA_MIMETYPE_AUDIO_AC3;
+#endif
 }  // namespace android
 
 #endif  // MEDIA_DEFS_H_

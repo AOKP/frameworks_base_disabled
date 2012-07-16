@@ -18,10 +18,24 @@
 
 #define AUDIO_PLAYER_H_
 
+#ifdef OMAP_ENHANCEMENT //DOLBY_DDPDEC51_MULTICHANNEL
+#include "include/TimedEventQueue.h"
+#endif
+
 #include <media/MediaPlayerInterface.h>
 #include <media/stagefright/MediaBuffer.h>
 #include <media/stagefright/TimeSource.h>
 #include <utils/threads.h>
+
+#if defined(OMAP_ENHANCEMENT)
+#define OMAP_TIME_INTERPOLATOR
+#endif
+
+#if defined(OMAP_ENHANCEMENT) && defined(OMAP_TIME_INTERPOLATOR)
+namespace omap_enhancement {
+    class TimeInterpolator;
+}
+#endif
 
 namespace android {
 
@@ -110,10 +124,23 @@ private:
 
     void reset();
 
+#ifdef OMAP_ENHANCEMENT //DOLBY_DDPDEC51_MULTICHANNEL
+    void onPortSettingsChangedEvent();
+
+    TimedEventQueue mQueue;
+    bool mQueueStarted;
+    sp<TimedEventQueue::Event> mPortSettingsChangedEvent;
+    bool mPortSettingsChangedEventPending;
+#endif
     uint32_t getNumFramesPendingPlayout() const;
 
     AudioPlayer(const AudioPlayer &);
     AudioPlayer &operator=(const AudioPlayer &);
+#if defined(OMAP_ENHANCEMENT) && defined(OMAP_TIME_INTERPOLATOR)
+    omap_enhancement::TimeInterpolator *mRealTimeInterpolator;
+public:
+    int64_t latency() const;
+#endif
 };
 
 }  // namespace android

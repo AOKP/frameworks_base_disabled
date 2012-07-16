@@ -16,6 +16,11 @@ LOCAL_SRC_FILES:= \
     sensor.cpp \
     storage_manager.cpp
 
+ifeq ($(OMAP_ENHANCEMENT), true)
+LOCAL_SRC_FILES+= \
+    camera_buffer_context.cpp
+endif
+
 LOCAL_SHARED_LIBRARIES := \
     libcutils \
     libutils \

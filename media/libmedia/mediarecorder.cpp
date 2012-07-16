@@ -184,7 +184,12 @@ status_t MediaRecorder::setOutputFormat(int of)
         ALOGE("setOutputFormat called in an invalid state: %d", mCurrentState);
         return INVALID_OPERATION;
     }
-    if (mIsVideoSourceSet && of >= OUTPUT_FORMAT_AUDIO_ONLY_START && of != OUTPUT_FORMAT_RTP_AVP && of != OUTPUT_FORMAT_MPEG2TS) { //first non-video output format
+    if (mIsVideoSourceSet && of >= OUTPUT_FORMAT_AUDIO_ONLY_START && of != OUTPUT_FORMAT_RTP_AVP
+#ifdef OMAP_ENHANCEMENT
+            && of != OUTPUT_FORMAT_MPEG2TS && of != OUTPUT_FORMAT_RTP_MPEG2TS) { //first non-video output format
+#else
+            && of != OUTPUT_FORMAT_MPEG2TS) { //first non-video output format
+#endif
         ALOGE("output format (%d) is meant for audio recording only and incompatible with video recording", of);
         return INVALID_OPERATION;
     }
@@ -399,7 +404,9 @@ status_t MediaRecorder::setParameters(const String8& params) {
 
     bool isInvalidState = (mCurrentState &
                            (MEDIA_RECORDER_PREPARED |
+#ifndef OMAP_ENHANCEMENT
                             MEDIA_RECORDER_RECORDING |
+#endif
                             MEDIA_RECORDER_ERROR));
     if (isInvalidState) {
         ALOGE("setParameters is called in an invalid state: %d", mCurrentState);
@@ -416,6 +423,33 @@ status_t MediaRecorder::setParameters(const String8& params) {
 
     return ret;
 }
+
+#ifdef OMAP_ENHANCEMENT
+//Allow setting parameters in any media recorder state except error state
+status_t MediaRecorder::setParametersExt(const String8& params) {
+    LOGV("setParametersExt(%s)", params.string());
+    if(mMediaRecorder == NULL) {
+        LOGE("media recorder is not initialized yet");
+        return INVALID_OPERATION;
+    }
+
+    bool isInvalidState = (mCurrentState & MEDIA_RECORDER_ERROR);
+    if (isInvalidState) {
+        LOGE("setParametersExt is called in an invalid state: %d", mCurrentState);
+        return INVALID_OPERATION;
+    }
+
+    status_t ret = mMediaRecorder->setParameters(params);
+    if (OK != ret) {
+        LOGE("setParametersExt(%s) failed: %d", params.string(), ret);
+        // Do not change our current state to MEDIA_RECORDER_ERROR, failures
+        // of the only currently supported parameters, "max-duration" and
+        // "max-filesize" are _not_ fatal.
+    }
+
+    return ret;
+}
+#endif
 
 status_t MediaRecorder::prepare()
 {

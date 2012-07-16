@@ -72,6 +72,10 @@ enum output_format {
     OUTPUT_FORMAT_THREE_GPP2 = 10, /*3GPP2*/
 #endif
 
+#ifdef OMAP_ENHANCEMENT
+    /* H.264/AAC data encapsulated in RTP/MPEG2TS. Added for wifi display feature */
+    OUTPUT_FORMAT_RTP_MPEG2TS = 9,
+#endif
     OUTPUT_FORMAT_LIST_END // must be last - used to validate format type
 };
 
@@ -87,6 +91,9 @@ enum audio_encoder {
     AUDIO_ENCODER_QCELP = 7,
 #endif
 
+#ifdef OMAP_ENHANCEMENT
+    AUDIO_ENCODER_PCM = 6,//PCM support added for wifi display feature
+#endif
     AUDIO_ENCODER_LIST_END // must be the last - used to validate the audio encoder type
 };
 

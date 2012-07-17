@@ -35,7 +35,7 @@
 #include <media/stagefright/CameraSourceTimeLapse.h>
 #include <media/stagefright/MPEG2TSWriter.h>
 #ifdef OMAP_ENHANCEMENT
-#include <MPEG2TSRTPWriter.h>
+#include <media/stagefright/MPEG2TSRTPWriter.h>
 #endif
 #include <media/stagefright/MPEG4Writer.h>
 #include <media/stagefright/MediaDebug.h>

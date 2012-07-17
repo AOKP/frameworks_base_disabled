@@ -23,7 +23,11 @@
 #include <hardware/camera.h>
 
 /* This needs to be increased if we can have more cameras */
+#ifdef OMAP_ENHANCEMENT
+#define MAX_CAMERAS 4
+#else
 #define MAX_CAMERAS 2
+#endif
 
 namespace android {
 
@@ -103,7 +107,14 @@ private:
         virtual void            releaseRecordingFrame(const sp<IMemory>& mem);
         virtual status_t        autoFocus();
         virtual status_t        cancelAutoFocus();
+#ifdef OMAP_ENHANCEMENT_CPCAM
+        virtual status_t        takePicture(int msgType, const String8& params);
+        virtual status_t        reprocess(int msgType, const String8& params);
+        virtual status_t        setBufferSource(const sp<ISurfaceTexture>& tapin,
+                                                const sp<ISurfaceTexture>& tapout);
+#else
         virtual status_t        takePicture(int msgType);
+#endif
         virtual status_t        setParameters(const String8& params);
         virtual String8         getParameters() const;
         virtual status_t        sendCommand(int32_t cmd, int32_t arg1, int32_t arg2);
@@ -154,6 +165,9 @@ private:
         void                    handlePostview(const sp<IMemory>& mem);
         void                    handleRawPicture(const sp<IMemory>& mem);
         void                    handleCompressedPicture(const sp<IMemory>& mem);
+#ifdef OMAP_ENHANCEMENT
+        void                    handleCompressedBurstPicture(const sp<IMemory>& mem);
+#endif
         void                    handleGenericNotify(int32_t msgType, int32_t ext1, int32_t ext2);
         void                    handleGenericData(int32_t msgType, const sp<IMemory>& dataPtr,
                                                   camera_frame_metadata_t *metadata);
@@ -190,6 +204,14 @@ private:
         // This is a binder of Surface or SurfaceTexture.
         sp<IBinder>                     mSurface;
         sp<ANativeWindow>               mPreviewWindow;
+
+#ifdef OMAP_ENHANCEMENT_CPCAM
+        // This is a binder of Surface or SurfaceTexture.
+        sp<IBinder>                     mTapin;
+        sp<ANativeWindow>               mTapinClient;
+        sp<IBinder>                     mTapout;
+        sp<ANativeWindow>               mTapoutClient;
+#endif
 
         // If the user want us to return a copy of the preview frame (instead
         // of the original one), we allocate mPreviewBuffer and reuse it if possible.

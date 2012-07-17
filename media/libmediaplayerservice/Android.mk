@@ -31,6 +31,10 @@ LOCAL_SHARED_LIBRARIES :=     		\
 	libgui                          \
 	libdl
 
+ifeq ($(OMAP_ENHANCEMENT), true)
+LOCAL_SHARED_LIBRARIES += libwfd_mpeg2tsrtp
+endif
+
 LOCAL_STATIC_LIBRARIES := \
         libstagefright_nuplayer                 \
         libstagefright_rtsp                     \

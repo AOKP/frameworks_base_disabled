@@ -1242,7 +1242,7 @@ status_t OMXCodec::configureCodec(const sp<MetaData> &meta) {
             }
 #endif
 
-            if(!strcmp(mComponentName, "OMX.google.h264.decoder")
+            if (!strcmp(mComponentName, "OMX.google.h264.decoder")
                 && (profile != kAVCProfileBaseline)) {
                 LOGE("%s does not support profiles > kAVCProfileBaseline", mComponentName);
                 // The profile is unsupported by the decoder
@@ -1300,13 +1300,52 @@ status_t OMXCodec::configureCodec(const sp<MetaData> &meta) {
         }
         if (!strcasecmp(MEDIA_MIMETYPE_VIDEO_WMV, mMIME)) {
             //Set the profile (RCV or VC1)
-            meta->findData(kKeyHdr, &type, &data, &size);
+            bool success = meta->findData(kKeyHdr, &type, &data, &size);
             const uint8_t *ptr = (const uint8_t *)data;
+            CHECK(success);
 
-            OMX_U32 width = (((OMX_U32)ptr[18] << 24) | ((OMX_U32)ptr[17] << 16) | ((OMX_U32)ptr[16] << 8) | (OMX_U32)ptr[15]);
-            OMX_U32 height  = (((OMX_U32)ptr[22] << 24) | ((OMX_U32)ptr[21] << 16) | ((OMX_U32)ptr[20] << 8) | (OMX_U32)ptr[19]);
+            OMX_U32 width  = (((OMX_U32)ptr[18] << 24) | ((OMX_U32)ptr[17] << 16) |
+                              ((OMX_U32)ptr[16] << 8)  | (OMX_U32)ptr[15]);
+            OMX_U32 height = (((OMX_U32)ptr[22] << 24) | ((OMX_U32)ptr[21] << 16) |
+                              ((OMX_U32)ptr[20] << 8)  | (OMX_U32)ptr[19]);
 
             CODEC_LOGV("Height and width = %u %u\n", height, width);
+#ifdef TARGET_OMAP3
+        //This logic is used by omap3 codec, is use less in omap4 at this time, but we may want to use it after, when the
+        // OpenMAX IL gets the update.
+        //MAX_RESOLUTION is use to take the decision between TI and Ittiam WMV codec
+        if ((!strcmp(mComponentName, "OMX.TI.Video.Decoder")) &&
+            (width*height > MAX_RESOLUTION)) {
+                        // need OMX.TI.720P.Decoder
+                        return ERROR_UNSUPPORTED;
+        }
+        if (!strcmp(mComponentName, "OMX.TI.720P.Decoder")) {
+            OMX_U32 NewCompression = MAKEFOURCC_WMC((OMX_U8)ptr[27], (OMX_U8)ptr[28],
+                                                    (OMX_U8)ptr[29], (OMX_U8)ptr[30]);
+            OMX_U32 StreamType;
+            OMX_PARAM_WMVFILETYPE WMVFileType;
+            InitOMXParams(&WMVFileType);
+
+            if (NewCompression == FOURCC_WMV3) {
+                CODEC_LOGV("VIDDEC_WMV_RCVSTREAM\n");
+                StreamType = VIDDEC_WMV_RCVSTREAM;
+            } else if(NewCompression == FOURCC_WVC1) {
+                CODEC_LOGV("VIDDEC_WMV_ELEMSTREAM\n");
+                StreamType = VIDDEC_WMV_ELEMSTREAM;
+            } else {
+                CODEC_LOGV("ERROR...  PROFILE NOT KNOWN ASSUMED TO BE VIDDEC_WMV_RCVSTREAM\n");
+                StreamType = VIDDEC_WMV_RCVSTREAM;
+            }
+            WMVFileType.nWmvFileType = StreamType;
+
+            status_t err = mOMX->setParameter(mNode,
+                                (OMX_INDEXTYPE)VideoDecodeCustomParamWMVFileType,
+                                &WMVFileType, sizeof(WMVFileType));
+            if (err != OMX_ErrorNone) {
+                return err;
+            }
+        }
+#endif
         }
 #endif
     }

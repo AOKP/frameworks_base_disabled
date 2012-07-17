@@ -186,6 +186,7 @@ enum {
     kTypeHdr         = 'hdrd',
 #endif
     kTypeD263        = 'd263',
+    kKeyVideoInterlaced   = 'vint',
 };
 #ifdef QCOM_HARDWARE
 enum {

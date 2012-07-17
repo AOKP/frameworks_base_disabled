@@ -203,6 +203,11 @@ extmap FILE_EXTS [] =  {
         {".rtttl", SONIVOX_PLAYER},
         {".rtx", SONIVOX_PLAYER},
         {".ota", SONIVOX_PLAYER},
+#ifdef OMAP_ENHANCEMENT
+        {".wma", STAGEFRIGHT_PLAYER},
+        {".wmv", STAGEFRIGHT_PLAYER},
+        {".asf", STAGEFRIGHT_PLAYER},
+#endif
 };
 
 // TODO: Find real cause of Audio/Video delay in PV framework and remove this workaround
@@ -551,6 +556,14 @@ player_type getPlayerType(int fd, int64_t offset, int64_t length)
     // Ogg vorbis?
     if (ident == 0x5367674f) // 'OggS'
         return STAGEFRIGHT_PLAYER;
+
+#ifdef OMAP_ENHANCEMENT
+    if (ident == 0x75b22630) {
+        LOGV("The magic number for .asf files, i.e. wmv and wma content");
+        LOGV("These will be supported through stagefright.");
+        return STAGEFRIGHT_PLAYER;
+    }
+#endif
 
     // Some kind of MIDI?
     EAS_DATA_HANDLE easdata;

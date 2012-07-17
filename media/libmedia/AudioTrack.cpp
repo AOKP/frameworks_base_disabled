@@ -308,7 +308,11 @@ status_t AudioTrack::set(
                                   flags,
                                   sharedBuffer,
                                   output,
+#ifdef OMAP_ENHANCEMENT
+                                  false);
+#else
                                   true);
+#endif
 
     if (status != NO_ERROR) {
         return status;
@@ -1008,6 +1012,14 @@ status_t AudioTrack::createTrack_l(
     android_atomic_or(CBLK_DIRECTION_OUT, &mCblk->flags);
     if (sharedBuffer == 0) {
         mCblk->buffers = (char*)mCblk + sizeof(audio_track_cblk_t);
+#ifdef OMAP_ENHANCEMENT //DOLBY_DDPDEC51_MULTICHANNEL
+        //Align mBuffer to handle framesize which are not power of 2
+        uint32_t channelCount = popcount(channelMask);
+        size_t nOffset = channelCount * sizeof(int16_t);
+        if ((channelCount != 2) && ((unsigned long int)mCblk->buffers % nOffset)) {
+            mCblk->buffers  = (char*)mCblk->buffers  + (nOffset - ((unsigned long int)mCblk->buffers % nOffset));
+        }
+#endif
     } else {
         mCblk->buffers = sharedBuffer->pointer();
          // Force buffer full condition as data is already present in shared memory

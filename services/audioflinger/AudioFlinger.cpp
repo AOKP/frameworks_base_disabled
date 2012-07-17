@@ -161,6 +161,9 @@ static const char *audio_interfaces[] = {
     "primary",
     "a2dp",
     "usb",
+#if defined(OMAP_ENHANCEMENT)
+    "wfd",
+#endif
 };
 #define ARRAY_SIZE(x) (sizeof((x))/sizeof(((x)[0])))
 
@@ -2094,8 +2097,18 @@ void AudioFlinger::PlaybackThread::readOutputParameters()
     // FIXME - Current mixer implementation only supports stereo output: Always
     // Allocate a stereo buffer even if HW output is mono.
     if (mMixBuffer != NULL) delete[] mMixBuffer;
+
+#ifdef OMAP_ENHANCEMENT //DOLBY_DDPDEC51_MULTICHANNEL
+    // Assign a buffer of size mChannelCount, which can be >2.
+    // This is a partial fix for the FIXME above. The mixer still has this limitation
+    // but a DirectThread can be any reasonable channel count and the buffer should
+    // account for the proper channel count.
+    mMixBuffer = new int16_t[mFrameCount * mChannelCount];
+    memset(mMixBuffer, 0, mFrameCount * mChannelCount * sizeof(int16_t));
+#else
     mMixBuffer = new int16_t[mFrameCount * 2];
     memset(mMixBuffer, 0, mFrameCount * 2 * sizeof(int16_t));
+#endif
 
     // force reconfiguration of effect chains and engines to take new buffer size and audio
     // parameters into account
@@ -3666,8 +3679,14 @@ AudioFlinger::ThreadBase::TrackBase::TrackBase(
    size_t size = sizeof(audio_track_cblk_t);
    uint8_t channelCount = popcount(channelMask);
    size_t bufferSize = frameCount*channelCount*sizeof(int16_t);
+#ifdef OMAP_ENHANCEMENT //DOLBY_DDPDEC51_MULTICHANNEL
+   size_t nOffset = channelCount*sizeof(int16_t);
+#endif
    if (sharedBuffer == 0) {
        size += bufferSize;
+#ifdef OMAP_ENHANCEMENT //DOLBY_DDPDEC51_MULTICHANNEL
+       if (channelCount != 2) size += nOffset;
+#endif
    }
 
    if (client != NULL) {
@@ -3683,6 +3702,13 @@ AudioFlinger::ThreadBase::TrackBase::TrackBase(
                 mChannelMask = channelMask;
                 if (sharedBuffer == 0) {
                     mBuffer = (char*)mCblk + sizeof(audio_track_cblk_t);
+#ifdef OMAP_ENHANCEMENT //DOLBY_DDPDEC51_MULTICHANNEL
+                    // Align to multiple of framesize. Take care of framesize which are not power of 2
+                    // only do this if channelCount >2
+                    if ((channelCount != 2) && ((unsigned long int)mBuffer % nOffset)) {
+                        mBuffer = (char*)mBuffer + (nOffset - ((unsigned long int)mBuffer % nOffset));
+                    }
+#endif
                     memset(mBuffer, 0, frameCount*channelCount*sizeof(int16_t));
                     // Force underrun condition to avoid false underrun callback until first data is
                     // written to buffer (other flags are cleared)
@@ -3707,6 +3733,13 @@ AudioFlinger::ThreadBase::TrackBase::TrackBase(
            mChannelCount = channelCount;
            mChannelMask = channelMask;
            mBuffer = (char*)mCblk + sizeof(audio_track_cblk_t);
+#ifdef OMAP_ENHANCEMENT //DOLBY_DDPDEC51_MULTICHANNEL
+           // Align to multiple of framesize. Take care of framesize which are not power of 2
+           // only do this if channelCount >2
+           if ((channelCount != 2) && ((unsigned long int)mBuffer % nOffset)) {
+               mBuffer = (char*)mBuffer + (nOffset - ((unsigned long int)mBuffer % nOffset));
+           }
+#endif
            memset(mBuffer, 0, frameCount*channelCount*sizeof(int16_t));
            // Force underrun condition to avoid false underrun callback until first data is
            // written to buffer (other flags are cleared)
@@ -3718,6 +3751,21 @@ AudioFlinger::ThreadBase::TrackBase::TrackBase(
 
 AudioFlinger::ThreadBase::TrackBase::~TrackBase()
 {
+#ifdef OMAP_ENHANCEMENT
+    sp<AudioFlinger> audioFlinger;
+    // We have to use flinger's lock here to avoid race conditions between
+    // different threads inside one flinger. Even if mClient is NULL,
+    // the thread must be alive and we can use it to access flinger and
+    // it's lock.
+    if (mClient != NULL) {
+        audioFlinger = mClient->audioFlinger();
+    } else {
+        LOGW("mClient is NULL, flinger's mutex will be accessed through mThread");
+        sp<ThreadBase> thread = mThread.promote();
+        audioFlinger = thread->mAudioFlinger;
+    }
+    Mutex::Autolock _l(audioFlinger->mLock);
+#endif
     if (mCblk) {
         mCblk->~audio_track_cblk_t();   // destroy our shared-structure.
         if (mClient == NULL) {
@@ -3726,7 +3774,9 @@ AudioFlinger::ThreadBase::TrackBase::~TrackBase()
     }
     mCblkMemory.clear();            // and free the shared memory
     if (mClient != NULL) {
+#ifndef OMAP_ENHANCEMENT
         Mutex::Autolock _l(mClient->audioFlinger()->mLock);
+#endif
         mClient.clear();
     }
 }
@@ -3786,7 +3836,12 @@ void* AudioFlinger::ThreadBase::TrackBase::getBuffer(uint32_t offset, uint32_t f
 
     // Check validity of returned pointer in case the track control block would have been corrupted.
     if (bufferStart < mBuffer || bufferStart > bufferEnd || bufferEnd > mBufferEnd ||
+#ifdef OMAP_ENHANCEMENT //DOLBY_DDPDEC51_MULTICHANNEL
+        //Changed this to % from &frameSize -1 as this is only valid for 2 channel case
+        ((unsigned long)bufferStart % (unsigned long)cblk->frameSize)) {
+#else
         ((unsigned long)bufferStart & (unsigned long)(cblk->frameSize - 1))) {
+#endif
         LOGE("TrackBase::getBuffer buffer out of range:\n    start: %p, end %p , mBuffer %p mBufferEnd %p\n    \
                 server %d, serverBase %d, user %d, userBase %d",
                 bufferStart, bufferEnd, mBuffer, mBufferEnd,
@@ -4242,6 +4297,14 @@ AudioFlinger::PlaybackThread::OutputTrack::OutputTrack(
     if (mCblk != NULL) {
         mCblk->flags |= CBLK_DIRECTION_OUT;
         mCblk->buffers = (char*)mCblk + sizeof(audio_track_cblk_t);
+#ifdef OMAP_ENHANCEMENT //DOLBY_DDPDEC51_MULTICHANNEL
+        // Align to multiple of framesize. Take care of framesize which are not power of 2
+        int channelCount = popcount(channelMask);
+        size_t nOffset = channelCount*sizeof(int16_t);
+        if ((channelCount != 2) && ((unsigned long int)mCblk->buffers % nOffset)) {
+            mCblk->buffers  = (char*)mCblk->buffers  + (nOffset - ((unsigned long int)mCblk->buffers % nOffset));
+        }
+#endif
         mCblk->volume[0] = mCblk->volume[1] = 0x1000;
         mOutBuffer.frameCount = 0;
         playbackThread->mTracks.add(this);

@@ -141,6 +141,12 @@ private:
         SLOW_DECODER_HACK   = 0x40000,
     };
 
+#ifdef OMAP_ENHANCEMENT
+    enum {
+        MAX_RESOLUTION      = 414720, // 864x480(WVGA) - 720x576(D1-PAL)
+    };
+#endif
+
     mutable Mutex mLock;
     Mutex mMiscStateLock;
     mutable Mutex mStatsLock;

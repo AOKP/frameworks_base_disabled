@@ -690,15 +690,29 @@ void OMXCodec::findMatchingCodecs(
         const char *componentName;
 
         if (createEncoder) {
+#if defined (OMAP_ENHANCEMENT) && defined (TARGET_OMAP3)
+            componentName = GetCodec(
+                    kOMAP3EncoderInfo,
+                    sizeof(kOMAP3EncoderInfo) / sizeof(kOMAP3EncoderInfo[0]),
+                    mime, index);
+#else
             componentName = GetCodec(
                     kEncoderInfo,
                     sizeof(kEncoderInfo) / sizeof(kEncoderInfo[0]),
                     mime, index);
+#endif
         } else {
+#if defined (OMAP_ENHANCEMENT) && defined (TARGET_OMAP3)
+            componentName = GetCodec(
+                    kOMAP3DecoderInfo,
+                    sizeof(kOMAP3DecoderInfo) / sizeof(kOMAP3DecoderInfo[0]),
+                    mime, index);
+#else
             componentName = GetCodec(
                     kDecoderInfo,
                     sizeof(kDecoderInfo) / sizeof(kDecoderInfo[0]),
                     mime, index);
+#endif
         }
 
         if (!componentName) {

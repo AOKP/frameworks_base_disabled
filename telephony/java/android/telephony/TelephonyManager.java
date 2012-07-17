@@ -524,6 +524,26 @@ public class TelephonyManager {
         return getNetworkTypeName(getNetworkType());
     }
 
+    /**
+     * @hide
+     */
+    public void toggle2G(boolean twoGees) {
+        try {
+            getITelephony().toggle2G(twoGees);
+        } catch (RemoteException e) {
+        }
+    }
+
+    /**
+     * @hide
+     */
+    public void toggleLTE(boolean lte) {
+        try {
+            getITelephony().toggleLTE(lte);
+        } catch (RemoteException e) {
+        }
+    }
+
     /** {@hide} */
     public static String getNetworkTypeName(int type) {
         switch (type) {

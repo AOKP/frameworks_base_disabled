@@ -76,6 +76,9 @@ private:
     int mOutputFd;
     sp<AudioSource> mAudioSourceNode;
 
+#ifdef OMAP_ENHANCEMENT
+    sp<MediaSource> mVidEncoder;
+#endif
     audio_source_t mAudioSource;
     video_source mVideoSource;
     output_format mOutputFormat;
@@ -104,6 +107,15 @@ private:
     int32_t mLongitudex10000;
     int32_t mStartTimeOffsetMs;
 
+#ifdef OMAP_ENHANCEMENT
+    //Added for wifi display
+    bool mWFDEnable;
+    int32_t mSourceAVRtpPort;
+    int32_t mSinkAVRtpPort;
+
+    String8 mSourceIPAddr;
+    String8 mSinkIPAddr;
+#endif
     bool mCaptureTimeLapse;
     int64_t mTimeBetweenTimeLapseFrameCaptureUs;
     sp<CameraSourceTimeLapse> mCameraSourceTimeLapse;
@@ -132,12 +144,20 @@ private:
         sp<MediaWriter> *mediaWriter);
     void setupMPEG4MetaData(int64_t startTimeUs, int32_t totalBitRate,
         sp<MetaData> *meta);
+#ifdef OMAP_ENHANCEMENT
+    //Added for wifi display
+    void setupMPEG2TSRTPMetaData(sp<MetaData> *meta);
+#endif
     status_t startMPEG4Recording();
     status_t startAMRRecording();
     status_t startAACRecording();
     status_t startRawAudioRecording();
     status_t startRTPRecording();
     status_t startMPEG2TSRecording();
+#ifdef OMAP_ENHANCEMENT
+    //Added for wifi display
+    status_t startMPEG2TSRTPRecording();
+#endif
     sp<MediaSource> createAudioSource();
     status_t checkVideoEncoderCapabilities();
     status_t checkAudioEncoderCapabilities();
@@ -178,6 +198,11 @@ private:
     status_t setParamMovieTimeScale(int32_t timeScale);
     status_t setParamGeoDataLongitude(int64_t longitudex10000);
     status_t setParamGeoDataLatitude(int64_t latitudex10000);
+#ifdef OMAP_ENHANCEMENT
+    //Added for wifi display
+    status_t setParamAVRTPPort(int32_t rtpPort, bool source) ;
+    status_t setParamIPAddr(String8 &ipAddr, bool source);
+#endif
     void clipVideoBitRate();
     void clipVideoFrameRate();
     void clipVideoFrameWidth();

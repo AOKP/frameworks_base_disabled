@@ -179,6 +179,26 @@ bool findMetadata(const Metadata::Filter& filter, const int32_t val)
 
 namespace android {
 
+#ifdef OMAP_ENHANCEMENT //DOLBY_DDPDEC51_MULTICHANNEL
+//map channel count to Android channel map descriptors
+//This is not flexible enough to fully describe the complete set
+//of channel mappings that we might see.
+//The mapping chosen here will only be correct in the most oft used
+//cases such as 5.1 and stereo. More obscure mappings such as 3.1
+//will be misreprented here.
+
+const int nChanMapTable[8] = {
+                                 (AUDIO_CHANNEL_OUT_MONO), //1
+                                 (AUDIO_CHANNEL_OUT_STEREO), //2
+                                 (AUDIO_CHANNEL_OUT_STEREO | AUDIO_CHANNEL_OUT_FRONT_CENTER), //3
+                                 (AUDIO_CHANNEL_OUT_QUAD), //4
+                                 (AUDIO_CHANNEL_OUT_5POINT1 & (~AUDIO_CHANNEL_OUT_LOW_FREQUENCY)), //5
+                                 (AUDIO_CHANNEL_OUT_5POINT1),//6
+                                 (AUDIO_CHANNEL_OUT_7POINT1 & (~AUDIO_CHANNEL_OUT_LOW_FREQUENCY)), //7
+                                 (AUDIO_CHANNEL_OUT_7POINT1) //8
+                             };
+#endif
+
 static bool checkPermission(const char* permissionString) {
 #ifndef HAVE_ANDROID_OS
     return true;
@@ -1419,15 +1439,39 @@ status_t MediaPlayerService::AudioOutput::open(
 
     frameCount = (sampleRate*afFrameCount*bufferCount)/afSampleRate;
 
+#ifdef OMAP_ENHANCEMENT //DOLBY_DDPDEC51_MULTICHANNEL
+    int channels = 0;
+    int outputflag = 0;
+
+    LOGI("Channelcount = %d", channelCount);
+
+    channels |= nChanMapTable[channelCount-1];
+    // Channels is a bitfield that describes the channel mapping.
+    // Eg., 5.1 is 3F (AUDIO_CHANNEL_OUT_5POINT1)
+    LOGV("Channel Map Enum: %x", channels);
+
+    // Direct output enabled for more than 2 channels
+    if (channelCount > 2) {
+        outputflag |= AUDIO_POLICY_OUTPUT_FLAG_DIRECT;
+        LOGV("channelCount >2 -> AUDIO_POLICY_OUTPUT_FLAG_DIRECT");
+    }
+#endif
+
     AudioTrack *t;
     if (mCallback != NULL) {
         t = new AudioTrack(
                 mStreamType,
                 sampleRate,
                 format,
+#ifdef OMAP_ENHANCEMENT //DOLBY_DDPDEC51_MULTICHANNEL
+                channels,
+                frameCount,
+                outputflag,
+#else
                 (channelCount == 2) ? AUDIO_CHANNEL_OUT_STEREO : AUDIO_CHANNEL_OUT_MONO,
                 frameCount,
                 0 /* flags */,
+#endif
                 CallbackWrapper,
                 this,
                 0,
@@ -1437,9 +1481,15 @@ status_t MediaPlayerService::AudioOutput::open(
                 mStreamType,
                 sampleRate,
                 format,
+#ifdef OMAP_ENHANCEMENT //DOLBY_DDPDEC51_MULTICHANNEL
+                channels,
+                frameCount,
+                outputflag,
+#else
                 (channelCount == 2) ? AUDIO_CHANNEL_OUT_STEREO : AUDIO_CHANNEL_OUT_MONO,
                 frameCount,
                 0,
+#endif
                 NULL,
                 NULL,
                 0,

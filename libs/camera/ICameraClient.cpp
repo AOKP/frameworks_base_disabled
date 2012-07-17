@@ -60,6 +60,10 @@ public:
         data.writeInt32(msgType);
         data.writeStrongBinder(imageData->asBinder());
         if (metadata) {
+#ifdef OMAP_ENHANCEMENT
+            data.writeInt32(metadata->exposure_time);
+            data.writeInt32(metadata->analog_gain);
+#endif
             data.writeInt32(metadata->number_of_faces);
             data.write(metadata->faces, sizeof(camera_face_t) * metadata->number_of_faces);
         }
@@ -104,6 +108,10 @@ status_t BnCameraClient::onTransact(
             camera_frame_metadata_t *metadata = NULL;
             if (data.dataAvail() > 0) {
                 metadata = new camera_frame_metadata_t;
+#ifdef OMAP_ENHANCEMENT
+                metadata->exposure_time = data.readInt32();
+                metadata->analog_gain = data.readInt32();
+#endif
                 metadata->number_of_faces = data.readInt32();
                 metadata->faces = (camera_face_t *) data.readInplace(
                         sizeof(camera_face_t) * metadata->number_of_faces);

@@ -19,8 +19,15 @@
 
 #include <utils/KeyedVector.h>
 #include <utils/String8.h>
+#ifdef OMAP_ENHANCEMENT_CPCAM
+#include <camera/CameraParametersBase.h>
+#endif
 
 namespace android {
+
+#ifdef OMAP_ENHANCEMENT_CPCAM
+class CameraParameters : public CameraParametersBase
+#else // OMAP_ENHANCEMENT_CPCAM
 
 struct Size {
     int width;
@@ -51,9 +58,14 @@ struct FPSRange{
    };
 };
 #endif
+#endif //OMAP_ENHANCEMENT_CPCAM
 class CameraParameters
 {
 public:
+#ifdef OMAP_ENHANCEMENT_CPCAM
+    CameraParameters() : CameraParametersBase() { }
+    CameraParameters(const String8 &params) : CameraParametersBase(params) { }
+#else
     CameraParameters();
     CameraParameters(const String8 &params) { unflatten(params); }
     ~CameraParameters();
@@ -69,6 +81,7 @@ public:
     float getFloat(const char *key) const;
 
     void remove(const char *key);
+#endif
 
     void setPreviewSize(int width, int height);
     void getPreviewSize(int *width, int *height) const;
@@ -125,8 +138,10 @@ public:
 
     void getMeteringAreaCenter(int * x, int *y) const;
 
+#ifndef OMAP_ENHANCEMENT_CPCAM
     void dump() const;
     status_t dump(int fd, const Vector<String16>& args) const;
+#endif
 
     // Parameter keys to communicate between camera application and driver.
     // The access (read/write, read only, or write only) is viewed from the
@@ -189,10 +204,6 @@ public:
     static const char CAPTURE_MODE_HDR[];
     static const char CAPTURE_MODE_HJR[];
     static const char CAPTURE_MODE_PANORAMA[];
-    static const char KEY_PANORAMA_MODE[];
-    static const char PANORAMA_MODE_NOT_INPROGRESS[];
-    static const char PANORAMA_MODE_INPROGRESS[];
-    static const char KEY_TAKING_PICTURE_ZOOM[]; 
 #endif
     // The dimensions for captured pictures in pixels (width x height).
     // Example value: "1024x768". Read/write.
@@ -938,8 +949,10 @@ public:
     void getSupportedHfrSizes(Vector<Size> &sizes) const;
 #endif
 
+#ifndef OMAP_ENHANCEMENT_CPCAM
 private:
     DefaultKeyedVector<String8,String8>    mMap;
+#endif
 };
 
 }; // namespace android

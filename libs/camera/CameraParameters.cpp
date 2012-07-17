@@ -399,17 +399,27 @@ void CameraParameters::setOrientation(int orientation)
 }
 #endif
 
-
+#ifdef OMAP_ENHANCEMENT_CPCAM
+CameraParametersBase::CameraParametersBase()
+#else
 CameraParameters::CameraParameters()
                 : mMap()
+#endif
 {
 }
 
+#ifdef OMAP_ENHANCEMENT_CPCAM
+CameraParametersBase::~CameraParametersBase()
+#else
 CameraParameters::~CameraParameters()
 {
 }
 
+#ifdef OMAP_ENHANCEMENT_CPCAM
+String8 CameraParametersBase::flatten() const
+#else
 String8 CameraParameters::flatten() const
+#endif
 {
     String8 flattened("");
     size_t size = mMap.size();
@@ -429,7 +439,11 @@ String8 CameraParameters::flatten() const
     return flattened;
 }
 
+#ifdef OMAP_ENHANCEMENT_CPCAM
+void CameraParametersBase::unflatten(const String8 &params)
+#else
 void CameraParameters::unflatten(const String8 &params)
+#endif
 {
     const char *a = params.string();
     const char *b;
@@ -462,7 +476,11 @@ void CameraParameters::unflatten(const String8 &params)
 }
 
 
+#ifdef OMAP_ENHANCEMENT_CPCAM
+void CameraParametersBase::set(const char *key, const char *value)
+#else
 void CameraParameters::set(const char *key, const char *value)
+#endif
 {
     // XXX i think i can do this with strspn()
     if (strchr(key, '=') || strchr(key, ';')) {
@@ -478,21 +496,33 @@ void CameraParameters::set(const char *key, const char *value)
     mMap.replaceValueFor(String8(key), String8(value));
 }
 
+#ifdef OMAP_ENHANCEMENT_CPCAM
+void CameraParametersBase::set(const char *key, int value)
+#else
 void CameraParameters::set(const char *key, int value)
+#endif
 {
     char str[16];
     snprintf(str, sizeof(str), "%d", value);
     set(key, str);
 }
 
+#ifdef OMAP_ENHANCEMENT_CPCAM
+void CameraParametersBase::setFloat(const char *key, float value)
+#else
 void CameraParameters::setFloat(const char *key, float value)
+#endif
 {
     char str[16];  // 14 should be enough. We overestimate to be safe.
     snprintf(str, sizeof(str), "%g", value);
     set(key, str);
 }
 
+#ifdef OMAP_ENHANCEMENT_CPCAM
+const char *CameraParametersBase::get(const char *key) const
+#else
 const char *CameraParameters::get(const char *key) const
+#endif
 {
     String8 v = mMap.valueFor(String8(key));
     if (v.length() == 0)
@@ -500,7 +530,11 @@ const char *CameraParameters::get(const char *key) const
     return v.string();
 }
 
+#ifdef OMAP_ENHANCEMENT_CPCAM
+int CameraParametersBase::getInt(const char *key) const
+#else
 int CameraParameters::getInt(const char *key) const
+#endif
 {
     const char *v = get(key);
     if (v == 0)
@@ -508,14 +542,22 @@ int CameraParameters::getInt(const char *key) const
     return strtol(v, 0, 0);
 }
 
+#ifdef OMAP_ENHANCEMENT_CPCAM
+float CameraParametersBase::getFloat(const char *key) const
+#else
 float CameraParameters::getFloat(const char *key) const
+#endif
 {
     const char *v = get(key);
     if (v == 0) return -1;
     return strtof(v, 0);
 }
 
+#ifdef OMAP_ENHANCEMENT_CPCAM
+void CameraParametersBase::remove(const char *key)
+#else
 void CameraParameters::remove(const char *key)
+#endif
 {
     mMap.removeItem(String8(key));
 }
@@ -740,7 +782,11 @@ const char *CameraParameters::getPictureFormat() const
     return get(KEY_PICTURE_FORMAT);
 }
 
+#ifdef OMAP_ENHANCEMENT_CPCAM
+void CameraParametersBase::dump() const
+#else
 void CameraParameters::dump() const
+#endif
 {
     LOGD("dump: mMap.size = %d", mMap.size());
     for (size_t i = 0; i < mMap.size(); i++) {
@@ -816,7 +862,12 @@ void CameraParameters::getTouchIndexAf(int *x, int *y) const
 }
 #endif
 
+
+#ifdef OMAP_ENHANCEMENT_CPCAM
+status_t CameraParametersBase::dump(int fd, const Vector<String16>& args) const
+#else
 status_t CameraParameters::dump(int fd, const Vector<String16>& args) const
+#endif
 {
     const size_t SIZE = 256;
     char buffer[SIZE];

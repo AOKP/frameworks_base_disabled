@@ -10,6 +10,12 @@ LOCAL_SRC_FILES:= \
 	ICameraRecordingProxy.cpp \
 	ICameraRecordingProxyListener.cpp
 
+ifdef OMAP_ENHANCEMENT_CPCAM
+LOCAL_SRC_FILES += \
+        ShotParameters.cpp \
+        CameraMetadata.cpp
+endif
+
 ifeq ($(BOARD_OVERLAY_BASED_CAMERA_HAL),true)
     LOCAL_CFLAGS += -DUSE_OVERLAY_CPP
     LOCAL_SRC_FILES += Overlay.cpp

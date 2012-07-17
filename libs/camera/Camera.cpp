@@ -293,13 +293,29 @@ status_t Camera::cancelAutoFocus()
     return c->cancelAutoFocus();
 }
 
+#ifdef OMAP_ENHANCEMENT_CPCAM
+// take a picture
+status_t Camera::takePicture(int msgType, const String8& params)
+{
+    LOGV("takePicture: 0x%x", msgType);
+    sp <ICamera> c = mCamera;
+    if (c == 0) return NO_INIT;
+    return c->takePicture(msgType, params);
+}
+#endif
+
 // take a picture
 status_t Camera::takePicture(int msgType)
 {
     ALOGV("takePicture: 0x%x", msgType);
     sp <ICamera> c = mCamera;
     if (c == 0) return NO_INIT;
+#ifdef OMAP_ENHANCEMENT_CPCAM
+    String8 dummy_params;
+    return c->takePicture(msgType, dummy_params);
+#else
     return c->takePicture(msgType);
+#endif
 }
 
 // set preview/capture parameters - key/value pairs
@@ -405,6 +421,31 @@ void Camera::dataCallbackTimestamp(nsecs_t timestamp, int32_t msgType, const sp<
         releaseRecordingFrame(dataPtr);
     }
 }
+
+#ifdef OMAP_ENHANCEMENT_CPCAM
+status_t Camera::reprocess(int msgType, const String8& params)
+{
+    LOGV("reprocess: 0x%x", msgType);
+    sp <ICamera> c = mCamera;
+    if (c == 0) return NO_INIT;
+    return c->reprocess(msgType, params);
+}
+
+// pass the buffered ISurfaceTexture to the camera service
+status_t Camera::setBufferSource(const sp<ISurfaceTexture>& tapin,
+                                 const sp<ISurfaceTexture>& tapout)
+{
+    LOGV("setBufferSource(%p,%p)", tapin.get(), tapout.get());
+    sp <ICamera> c = mCamera;
+    if (c == 0) return NO_INIT;
+    if ((tapin != 0) || (tapout != 0)) {
+        return c->setBufferSource(tapin, tapout);
+    } else {
+        LOGD("app passed NULL surface");
+        return c->setBufferSource(0, 0);
+    }
+}
+#endif
 
 void Camera::binderDied(const wp<IBinder>& who) {
     ALOGW("ICamera died");

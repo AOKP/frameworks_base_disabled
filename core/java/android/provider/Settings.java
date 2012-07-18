@@ -4007,14 +4007,6 @@ public final class Settings {
                 "cdma_cell_broadcast_sms";
 
         /**
-         * The cdma subscription 0 = Subscription from RUIM, when available
-         *                       1 = Subscription from NV
-         * @hide
-         */
-        public static final String PREFERRED_CDMA_SUBSCRIPTION =
-                "preferred_cdma_subscription";
-
-        /**
          * Whether the enhanced voice privacy mode is enabled.
          * 0 = normal voice privacy
          * 1 = enhanced voice privacy

@@ -2334,11 +2334,16 @@ public final class Settings {
         public static final String WIFI_WATCHDOG_PING_TIMEOUT_MS =
             Secure.WIFI_WATCHDOG_PING_TIMEOUT_MS;
 
-        /**
+         /**
          * Whether the UI is initiated in tablet UI (false = phone UI)
          * @hide
          */
         public static final String TABLET_UI = "tablet_ui";
+
+        /**
+         * @hide
+         */
+        public static final String STATUS_BAR_BRIGHTNESS_SLIDER = "statusbar_brightness_slider";
     }
 
     /**

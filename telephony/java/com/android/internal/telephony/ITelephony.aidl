@@ -45,6 +45,20 @@ interface ITelephony {
     void call(String number);
 
     /**
+     * Toggle between 3G and LTE (NT_MODE_CDMA, NT_MODE_GLOBAL)
+     * @param boolean to turn on and off LTE
+     * @hide
+     */
+     void toggleLTE(boolean on);
+
+     /**
+      * Toggle between 2G and 3G (NT_MODE_GSM, NT_MODE_WCDMA_PREF)
+      * @param boolean to turn on and off 2G
+      * @hide
+      */
+      void toggle2G(boolean on);
+
+    /**
      * If there is currently a call in progress, show the call screen.
      * The DTMF dialpad may or may not be visible initially, depending on
      * whether it was up when the user last exited the InCallScreen.

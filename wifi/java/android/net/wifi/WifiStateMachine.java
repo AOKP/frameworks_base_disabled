@@ -359,11 +359,6 @@ public class WifiStateMachine extends StateMachine {
     public static final int WIFI_ENABLE_PENDING           = BASE + 131;
     public static final int P2P_ENABLE_PROCEED            = BASE + 132;
 
-
-    /* wpa_supplicant v6 doesnt report the intf disabled event */
-    static final int CMD_FORCE_STOPPED_STATE              = BASE + 153; // 0x20099
-
-
     private static final int CONNECT_MODE   = 1;
     private static final int SCAN_ONLY_MODE = 2;
 
@@ -1895,7 +1890,7 @@ public class WifiStateMachine extends StateMachine {
                     deferMessage(message);
                     break;
                 default:
-                    loge("Error! unhandled message" + message);
+                    loge("Error! unhandled message" + (message.what - BASE));
                     break;
             }
             return HANDLED;
@@ -2665,31 +2660,17 @@ public class WifiStateMachine extends StateMachine {
         public void enter() {
             if (DBG) log(getName() + "\n");
             EventLog.writeEvent(EVENTLOG_WIFI_STATE_CHANGED, getName());
-            sendMessageDelayed(CMD_FORCE_STOPPED_STATE, 2000);
         }
         @Override
         public boolean processMessage(Message message) {
             if (DBG) log(getName() + message.toString() + "\n");
             switch(message.what) {
-                case CMD_FORCE_STOPPED_STATE:
-                    log("forced stopped state");
-                    forceTransitionToStopped(SupplicantState.INTERFACE_DISABLED);
-                    break;
                 case WifiMonitor.SUPPLICANT_STATE_CHANGE_EVENT:
                     SupplicantState state = handleSupplicantStateChange(message);
                     if (state == SupplicantState.INTERFACE_DISABLED) {
-                        log("Received INTERFACE_DISABLED message");
                         transitionTo(mDriverStoppedState);
                     }
                     break;
-
-                case CMD_ENABLE_ALL_NETWORKS:
-                    loge("ENABLE_ALL_NETWORKS command received in stopping state, restarting wifi");
-                    // send DRIVER_HUNG_EVENT to mDefaultState to disable/enable the wifi...
-                    transitionTo(mDefaultState);
-                    sendMessage(WifiMonitor.DRIVER_HUNG_EVENT);
-                    return HANDLED;
-
                     /* Queue driver commands */
                 case CMD_START_DRIVER:
                 case CMD_STOP_DRIVER:

@@ -85,6 +85,12 @@
            android:src="@drawable/ic_notify_clear"
            android:contentDescription="@string/accessibility_clear_all"
         />
+        <include layout="@layout/battery_cluster_view2" 
+            android:id="@+id/battery_notification"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+        />
     </FrameLayout>
 
 </LinearLayout>

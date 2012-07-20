@@ -41,6 +41,13 @@
         <item name="android:textColor">@android:color/holo_blue_light</item>
     </style>
 
+    <style name="TextAppearance.StatusBar.BatteryTextOnly" parent="@*android:style/TextAppearance.StatusBar.Icon">
+        <!-- Note: must be dp to fit in status bar -->
+        <item name="android:textSize">16dp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">@android:color/holo_blue_light</item>
+    </style>
+
     <style name="TextAppearance.StatusBar.Date" parent="@*android:style/TextAppearance.StatusBar.Icon">
         <item name="android:textSize">16dp</item>
         <item name="android:textStyle">normal</item>
@@ -92,6 +99,21 @@
         parent="@*android:style/TextAppearance.StatusBar.Ticker">
         <!-- Note: must be dp to fit in status bar -->
         <item name="android:textSize">14dp</item>
+    </style>
+
+    <style name="Battery_Offset">
+    	<item name="android:layout_marginRight">4dp</item>
+    	<item name="android:paddingBottom">1dp</item>
+    	<item name="android:layout_gravity">left|bottom</item>
+    	<item name="android:textSize">11dp</item>
+    	<item name="android:textStyle">bold</item>
+    </style>
+    
+    <style name="Battery_Center">
+    	<item name="android:layout_marginRight">0dp</item>
+    	<item name="android:layout_gravity">center</item>
+    	<item name="android:textSize">9dp</item>
+    	<item name="android:textStyle">bold</item>
     </style>
 
     <style name="brucekey_icon">

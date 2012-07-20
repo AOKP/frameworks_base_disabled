@@ -65,6 +65,9 @@
          master volume stream and nothing else . -->
     <bool name="config_useMasterVolume">false</bool>
 
+    <!-- Compatibility for tegra3 (specifically htc) headsets -->
+    <bool name="config_tegraHeadsetCompat">false</bool>
+
     <!-- Array of integer pairs controlling the rate at which the master volume changes
          in response to volume up and down key events.
          The first integer of each pair is compared against the current master volume

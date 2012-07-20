@@ -21,6 +21,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Resources;
 import android.os.Handler;
 import android.os.Message;
 import android.os.PowerManager;
@@ -79,6 +80,9 @@ class WiredAccessoryObserver extends UEventObserver {
         }
 
         public int computeNewHeadsetState(int headsetState, int switchState) {
+            if (mTegraHeadsetCompat) {
+                switchState = (127 & switchState); // Mask out bit (1 << 7)
+            }
             int preserveMask = ~(mState1Bits | mState2Bits);
             int setBits = ((switchState == 1) ? mState1Bits :
                           ((switchState == 2) ? mState2Bits : 0));
@@ -138,11 +142,14 @@ class WiredAccessoryObserver extends UEventObserver {
 
     private final Context mContext;
     private final WakeLock mWakeLock;  // held while there is a pending route change
+    private static boolean mTegraHeadsetCompat = false;
 
     private final AudioManager mAudioManager;
 
     public WiredAccessoryObserver(Context context) {
         mContext = context;
+        mTegraHeadsetCompat = mContext.getResources().getBoolean(
+                       com.android.internal.R.bool.config_tegraHeadsetCompat);
         PowerManager pm = (PowerManager)context.getSystemService(Context.POWER_SERVICE);
         mWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "WiredAccessoryObserver");
         mWakeLock.setReferenceCounted(false);

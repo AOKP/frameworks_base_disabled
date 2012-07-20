@@ -91,21 +91,21 @@ public:
 
     ~CameraHardwareInterface()
     {
-        LOGI("Destroying camera %s", mName.string());
+        ALOGI("Destroying camera %s", mName.string());
         if(mDevice) {
             int rc = mDevice->common.close(&mDevice->common);
             if (rc != OK)
-                LOGE("Could not close camera %s: %d", mName.string(), rc);
+                ALOGE("Could not close camera %s: %d", mName.string(), rc);
         }
     }
 
     status_t initialize(hw_module_t *module)
     {
-        LOGI("Opening camera %s", mName.string());
+        ALOGI("Opening camera %s", mName.string());
         int rc = module->methods->open(module, mName.string(),
                                        (hw_device_t **)&mDevice);
         if (rc != OK) {
-            LOGE("Could not open camera %s: %d", mName.string(), rc);
+            ALOGE("Could not open camera %s: %d", mName.string(), rc);
             return rc;
         }
 #ifdef OMAP_ENHANCEMENT_CPCAM
@@ -121,11 +121,11 @@ public:
     /** Set the ANativeWindow to which preview frames are sent */
     status_t setPreviewWindow(const sp<ANativeWindow>& buf)
     {
-        LOGV("%s(%s) buf %p", __FUNCTION__, mName.string(), buf.get());
+        ALOGV("%s(%s) buf %p", __FUNCTION__, mName.string(), buf.get());
 
         if (mDevice->ops->set_preview_window) {
 #ifdef QCOM_HARDWARE
-            LOGV("%s buf %p mPreviewWindow %p", __FUNCTION__, buf.get(), mPreviewWindow.get());
+            ALOGV("%s buf %p mPreviewWindow %p", __FUNCTION__, buf.get(), mPreviewWindow.get());
             if (mPreviewWindow.get() && (buf.get() != mPreviewWindow.get())) {
                  mDevice->ops->set_preview_window(mDevice, 0);
             }
@@ -137,7 +137,7 @@ public:
 #else
             mHalPreviewWindow.user = this;
 #endif
-            LOGV("%s &mHalPreviewWindow %p mHalPreviewWindow.user %p", __FUNCTION__,
+            ALOGV("%s &mHalPreviewWindow %p mHalPreviewWindow.user %p", __FUNCTION__,
                     &mHalPreviewWindow, mHalPreviewWindow.user);
             return mDevice->ops->set_preview_window(mDevice,
                     buf.get() ? &mHalPreviewWindow.nw : 0);
@@ -156,7 +156,7 @@ public:
         mDataCbTimestamp = data_cb_timestamp;
         mCbUser = user;
 
-        LOGV("%s(%s)", __FUNCTION__, mName.string());
+        ALOGV("%s(%s)", __FUNCTION__, mName.string());
 
         if (mDevice->ops->set_callbacks) {
             mDevice->ops->set_callbacks(mDevice,
@@ -179,7 +179,7 @@ public:
      */
     void enableMsgType(int32_t msgType)
     {
-        LOGV("%s(%s)", __FUNCTION__, mName.string());
+        ALOGV("%s(%s)", __FUNCTION__, mName.string());
         if (mDevice->ops->enable_msg_type)
             mDevice->ops->enable_msg_type(mDevice, msgType);
     }
@@ -196,7 +196,7 @@ public:
      */
     void disableMsgType(int32_t msgType)
     {
-        LOGV("%s(%s)", __FUNCTION__, mName.string());
+        ALOGV("%s(%s)", __FUNCTION__, mName.string());
         if (mDevice->ops->disable_msg_type)
             mDevice->ops->disable_msg_type(mDevice, msgType);
     }
@@ -208,7 +208,7 @@ public:
      */
     int msgTypeEnabled(int32_t msgType)
     {
-        LOGV("%s(%s)", __FUNCTION__, mName.string());
+        ALOGV("%s(%s)", __FUNCTION__, mName.string());
         if (mDevice->ops->msg_type_enabled)
             return mDevice->ops->msg_type_enabled(mDevice, msgType);
         return false;
@@ -219,7 +219,7 @@ public:
      */
     status_t startPreview()
     {
-        LOGV("%s(%s)", __FUNCTION__, mName.string());
+        ALOGV("%s(%s)", __FUNCTION__, mName.string());
         if (mDevice->ops->start_preview)
             return mDevice->ops->start_preview(mDevice);
         return INVALID_OPERATION;
@@ -230,7 +230,7 @@ public:
      */
     void stopPreview()
     {
-        LOGV("%s(%s)", __FUNCTION__, mName.string());
+        ALOGV("%s(%s)", __FUNCTION__, mName.string());
         if (mDevice->ops->stop_preview)
             mDevice->ops->stop_preview(mDevice);
     }
@@ -240,7 +240,7 @@ public:
      */
     int previewEnabled()
     {
-        LOGV("%s(%s)", __FUNCTION__, mName.string());
+        ALOGV("%s(%s)", __FUNCTION__, mName.string());
         if (mDevice->ops->preview_enabled)
             return mDevice->ops->preview_enabled(mDevice);
         return false;
@@ -280,7 +280,7 @@ public:
 
     status_t storeMetaDataInBuffers(int enable)
     {
-        LOGV("%s(%s)", __FUNCTION__, mName.string());
+        ALOGV("%s(%s)", __FUNCTION__, mName.string());
         if (mDevice->ops->store_meta_data_in_buffers)
             return mDevice->ops->store_meta_data_in_buffers(mDevice, enable);
         return enable ? INVALID_OPERATION: OK;
@@ -297,7 +297,7 @@ public:
      */
     status_t startRecording()
     {
-        LOGV("%s(%s)", __FUNCTION__, mName.string());
+        ALOGV("%s(%s)", __FUNCTION__, mName.string());
         if (mDevice->ops->start_recording)
             return mDevice->ops->start_recording(mDevice);
         return INVALID_OPERATION;
@@ -308,7 +308,7 @@ public:
      */
     void stopRecording()
     {
-        LOGV("%s(%s)", __FUNCTION__, mName.string());
+        ALOGV("%s(%s)", __FUNCTION__, mName.string());
         if (mDevice->ops->stop_recording)
             mDevice->ops->stop_recording(mDevice);
     }
@@ -318,7 +318,7 @@ public:
      */
     int recordingEnabled()
     {
-        LOGV("%s(%s)", __FUNCTION__, mName.string());
+        ALOGV("%s(%s)", __FUNCTION__, mName.string());
         if (mDevice->ops->recording_enabled)
             return mDevice->ops->recording_enabled(mDevice);
         return false;
@@ -336,7 +336,7 @@ public:
      */
     void releaseRecordingFrame(const sp<IMemory>& mem)
     {
-        LOGV("%s(%s)", __FUNCTION__, mName.string());
+        ALOGV("%s(%s)", __FUNCTION__, mName.string());
         if (mDevice->ops->release_recording_frame) {
             ssize_t offset;
             size_t size;
@@ -353,7 +353,7 @@ public:
      */
     status_t autoFocus()
     {
-        LOGV("%s(%s)", __FUNCTION__, mName.string());
+        ALOGV("%s(%s)", __FUNCTION__, mName.string());
         if (mDevice->ops->auto_focus)
             return mDevice->ops->auto_focus(mDevice);
         return INVALID_OPERATION;
@@ -367,7 +367,7 @@ public:
      */
     status_t cancelAutoFocus()
     {
-        LOGV("%s(%s)", __FUNCTION__, mName.string());
+        ALOGV("%s(%s)", __FUNCTION__, mName.string());
         if (mDevice->ops->cancel_auto_focus)
             return mDevice->ops->cancel_auto_focus(mDevice);
         return INVALID_OPERATION;
@@ -379,7 +379,7 @@ public:
 #ifdef OMAP_ENHANCEMENT_CPCAM
     status_t takePicture(const ShotParameters &params)
     {
-        LOGV("%s(%s)", __FUNCTION__, mName.string());
+        ALOGV("%s(%s)", __FUNCTION__, mName.string());
         if (mDevice->ops->take_picture)
             return mDevice->ops->take_picture(mDevice,
                                               params.flatten().string());
@@ -388,7 +388,7 @@ public:
 #else
     status_t takePicture()
     {
-        LOGV("%s(%s)", __FUNCTION__, mName.string());
+        ALOGV("%s(%s)", __FUNCTION__, mName.string());
         if (mDevice->ops->take_picture)
             return mDevice->ops->take_picture(mDevice);
         return INVALID_OPERATION;
@@ -401,7 +401,7 @@ public:
      */
     status_t cancelPicture()
     {
-        LOGV("%s(%s)", __FUNCTION__, mName.string());
+        ALOGV("%s(%s)", __FUNCTION__, mName.string());
         if (mDevice->ops->cancel_picture)
             return mDevice->ops->cancel_picture(mDevice);
         return INVALID_OPERATION;
@@ -412,7 +412,7 @@ public:
      * invalid or not supported. */
     status_t setParameters(const CameraParameters &params)
     {
-        LOGV("%s(%s)", __FUNCTION__, mName.string());
+        ALOGV("%s(%s)", __FUNCTION__, mName.string());
         if (mDevice->ops->set_parameters)
             return mDevice->ops->set_parameters(mDevice,
                                                params.flatten().string());
@@ -422,7 +422,7 @@ public:
     /** Return the camera parameters. */
     CameraParameters getParameters() const
     {
-        LOGV("%s(%s)", __FUNCTION__, mName.string());
+        ALOGV("%s(%s)", __FUNCTION__, mName.string());
         CameraParameters parms;
         if (mDevice->ops->get_parameters) {
             char *temp = mDevice->ops->get_parameters(mDevice);
@@ -441,7 +441,7 @@ public:
      */
     status_t sendCommand(int32_t cmd, int32_t arg1, int32_t arg2)
     {
-        LOGV("%s(%s)", __FUNCTION__, mName.string());
+        ALOGV("%s(%s)", __FUNCTION__, mName.string());
         if (mDevice->ops->send_command)
             return mDevice->ops->send_command(mDevice, cmd, arg1, arg2);
         return INVALID_OPERATION;
@@ -452,7 +452,7 @@ public:
      * *not* done in the destructor.
      */
     void release() {
-        LOGV("%s(%s)", __FUNCTION__, mName.string());
+        ALOGV("%s(%s)", __FUNCTION__, mName.string());
         if (mDevice->ops->release)
             mDevice->ops->release(mDevice);
     }
@@ -462,7 +462,7 @@ public:
     status_t setBufferSource(const sp<ANativeWindow>& tapin,
                              const sp<ANativeWindow>& tapout)
     {
-        LOGV("%s(%s)", __FUNCTION__, mName.string());
+        ALOGV("%s(%s)", __FUNCTION__, mName.string());
 
         if (mDevice->ops->set_buffer_source) {
             status_t err;
@@ -480,7 +480,7 @@ public:
 
     status_t reprocess(const ShotParameters &params)
     {
-        LOGV("%s(%s)", __FUNCTION__, mName.string());
+        ALOGV("%s(%s)", __FUNCTION__, mName.string());
         if (mDevice->ops->reprocess)
             return mDevice->ops->reprocess(mDevice,
                                            params.flatten().string());
@@ -493,7 +493,7 @@ public:
      */
     status_t dump(int fd, const Vector<String16>& args) const
     {
-        LOGV("%s(%s)", __FUNCTION__, mName.string());
+        ALOGV("%s(%s)", __FUNCTION__, mName.string());
         if (mDevice->ops->dump)
             return mDevice->ops->dump(mDevice, fd);
         return OK; // It's fine if the HAL doesn't implement dump()
@@ -506,7 +506,7 @@ private:
     static void __notify_cb(int32_t msg_type, int32_t ext1,
                             int32_t ext2, void *user)
     {
-        LOGV("%s", __FUNCTION__);
+        ALOGV("%s", __FUNCTION__);
         CameraHardwareInterface *__this =
                 static_cast<CameraHardwareInterface *>(user);
         __this->mNotifyCb(msg_type, ext1, ext2, __this->mCbUser);
@@ -517,19 +517,20 @@ private:
                           camera_frame_metadata_t *metadata,
                           void *user)
     {
-        LOGV("%s", __FUNCTION__);
+        ALOGV("%s", __FUNCTION__);
         CameraHardwareInterface *__this =
                 static_cast<CameraHardwareInterface *>(user);
         if (data != NULL) {
-          sp<CameraHeapMemory> mem(static_cast<CameraHeapMemory *>(data->handle));
-          if (index >= mem->mNumBufs) {
-            LOGE("%s: invalid buffer index %d, max allowed is %d", __FUNCTION__,
-                 index, mem->mNumBufs);
-            return;
-          }
-          __this->mDataCb(msg_type, mem->mBuffers[index], metadata, __this->mCbUser);
+            sp<CameraHeapMemory> mem(static_cast<CameraHeapMemory *>(data->handle));
+            if (index >= mem->mNumBufs) {
+                ALOGE("%s: invalid buffer index %d, max allowed is %d", __FUNCTION__,
+                    index, mem->mNumBufs);
+                return;
+            }
+            __this->mDataCb(msg_type, mem->mBuffers[index], metadata, __this->mCbUser);
         } else {
-          __this->mDataCb(msg_type, NULL, metadata, __this->mCbUser);
+            ALOGW("%s: QCOM CHANGE ! Null Buffer Data Callback", __FUNCTION__);
+            __this->mDataCb(msg_type, NULL, metadata, __this->mCbUser);
         }
     }
 
@@ -537,7 +538,7 @@ private:
                              const camera_memory_t *data, unsigned index,
                              void *user)
     {
-        LOGV("%s", __FUNCTION__);
+        ALOGV("%s", __FUNCTION__);
         CameraHardwareInterface *__this =
                 static_cast<CameraHardwareInterface *>(user);
         // Start refcounting the heap object from here on.  When the clients
@@ -545,7 +546,7 @@ private:
         // MemoryHeapBase.
         sp<CameraHeapMemory> mem(static_cast<CameraHeapMemory *>(data->handle));
         if (index >= mem->mNumBufs) {
-            LOGE("%s: invalid buffer index %d, max allowed is %d", __FUNCTION__,
+            ALOGE("%s: invalid buffer index %d, max allowed is %d", __FUNCTION__,
                  index, mem->mNumBufs);
             return;
         }

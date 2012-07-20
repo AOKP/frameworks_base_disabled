@@ -1177,12 +1177,7 @@ status_t ACodec::setSupportedOutputFormat() {
     CHECK(format.eColorFormat == OMX_COLOR_FormatYUV420Planar
            || format.eColorFormat == OMX_COLOR_FormatYUV420SemiPlanar
            || format.eColorFormat == OMX_COLOR_FormatCbYCrY
-           || format.eColorFormat == OMX_TI_COLOR_FormatYUV420PackedSemiPlanar
-#ifdef QCOM_HARDWARE
-           || format.eColorFormat == (OMX_COLOR_FORMATTYPE)OMX_QCOM_COLOR_FormatYVU420SemiPlanar
-           || format.eColorFormat ==  (OMX_COLOR_FORMATTYPE)QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka
-#endif
-           || format.eColorFormat == OMX_QCOM_COLOR_FormatYVU420SemiPlanar);
+           || format.eColorFormat == OMX_TI_COLOR_FormatYUV420PackedSemiPlanar);
 
     return mOMX->setParameter(
             mNode, OMX_IndexParamVideoPortFormat,
@@ -2190,6 +2185,23 @@ void ACodec::UninitializedState::onSetup(
     for (size_t matchIndex = 0; matchIndex < matchingCodecs.size();
             ++matchIndex) {
         componentName = matchingCodecs.itemAt(matchIndex).string();
+
+	int32_t width = 0, height = 0;
+
+	if (!strncasecmp(mime.c_str(), "video/", 6)) {
+		msg->findInt32("width", &width);
+		msg->findInt32("height", &height);
+		if ((width * height) <= 414720) {
+			if (strcmp(componentName.c_str(),
+				"OMX.TI.Video.Decoder")) {
+				continue;
+			}
+		}
+	} else if (!strcasecmp(mime.c_str(), MEDIA_MIMETYPE_AUDIO_AAC)) {
+		if (strcmp(componentName.c_str(), "OMX.google.aac.decoder")) {
+			continue;
+		}
+	}
 
         pid_t tid = androidGetTid();
         int prevPriority = androidGetThreadPriority(tid);

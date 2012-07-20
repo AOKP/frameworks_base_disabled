@@ -81,7 +81,6 @@ public class MediaRecorder
         System.loadLibrary("media_jni");
         native_init();
     }
-
     private final static String TAG = "MediaRecorder";
     private final static String IOBUSY_VOTE = "com.android.server.CpuGovernorService.action.IOBUSY_VOTE";
     private final static String IOBUSY_UNVOTE = "com.android.server.CpuGovernorService.action.IOBUSY_UNVOTE";

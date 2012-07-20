@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-//#define LOG_NDEBUG 0
-#define LOG_TAG "OMXMaster"
+//#define ALOG_NDEBUG 0
+#define ALOG_TAG "OMXMaster"
 #include <utils/Log.h>
 
 #include "OMXMaster.h"
@@ -55,7 +55,7 @@ void OMXMaster::addPlugin(const char *libname) {
     mVendorLibHandle = dlopen(libname, RTLD_NOW);
 
     if (mVendorLibHandle == NULL) {
-        LOGE("dlopen() failed.");
+        ALOGE("dlopen(%s) failed.", libname);
         return;
     }
 
@@ -86,7 +86,7 @@ void OMXMaster::addPlugin(OMXPluginBase *plugin) {
         String8 name8(name);
 
         if (mPluginByComponentName.indexOfKey(name8) >= 0) {
-            LOGE("A component of name '%s' already exists, ignoring this one.",
+            ALOGE("A component of name '%s' already exists, ignoring this one.",
                  name8.string());
 
             continue;
@@ -96,7 +96,7 @@ void OMXMaster::addPlugin(OMXPluginBase *plugin) {
     }
 
     if (err != OMX_ErrorNoMore) {
-        LOGE("OMX plugin failed w/ error 0x%08x after registering %d "
+        ALOGE("OMX plugin failed w/ error 0x%08x after registering %d "
              "components", err, mPluginByComponentName.size());
     }
 }

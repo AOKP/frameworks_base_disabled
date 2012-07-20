@@ -51,7 +51,6 @@ bool ColorConverter::isValid() const {
     switch (mSrcFormat) {
         case OMX_COLOR_FormatYUV420Planar:
         case OMX_COLOR_FormatCbYCrY:
-        case OMX_QCOM_COLOR_FormatYVU420SemiPlanar:
         case OMX_COLOR_FormatYUV420SemiPlanar:
         case OMX_TI_COLOR_FormatYUV420PackedSemiPlanar:
 #ifdef QCOM_HARDWARE
@@ -118,10 +117,6 @@ status_t ColorConverter::convert(
 
         case OMX_COLOR_FormatCbYCrY:
             err = convertCbYCrY(src, dst);
-            break;
-
-        case OMX_QCOM_COLOR_FormatYVU420SemiPlanar:
-            err = convertQCOMYUV420SemiPlanar(src, dst);
             break;
 
         case OMX_COLOR_FormatYUV420SemiPlanar:

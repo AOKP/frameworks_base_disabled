@@ -380,15 +380,6 @@ private:
         kAvoidMemcopyInputRecordingFrames     = 2048,
         kRequiresLargerEncoderOutputBuffer    = 4096,
         kOutputBuffersAreUnreadable           = 8192,
-#ifdef QCOM_HARDWARE
-        kStoreMetaDataInInputVideoBuffers     = 16384,
-        kRequiresGlobalFlush                  = 0x20000000, // 2^29
-        kRequiresWMAProComponent              = 0x40000000, //2^30
-#endif
-        kDecoderNeedsPortReconfiguration      = 16384,
-        kDecoderCantRenderSmallClips          = 32768,
-        kInterlacedOutputContent              = 65535,
-        kThumbnailMode                        = 131072,
     };
 
     enum BufferStatus {
@@ -406,7 +397,7 @@ private:
         void *mData;
         MediaBuffer *mMediaBuffer;
         OMX_U8 *mAllocatedBuffer;
-        size_t mAllocatedSize;
+        OMX_U32 mAllocatedSize;
     };
 
     struct CodecSpecificData {

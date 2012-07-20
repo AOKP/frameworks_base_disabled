@@ -76,6 +76,9 @@ static const int OMX_SEC_COLOR_FormatNV12LPhysicalAddress = 0x7F000002;
 static const int OMX_SEC_COLOR_FormatNV12LVirtualAddress = 0x7F000003;
 static const int OMX_SEC_COLOR_FormatNV12Tiled = 0x7FC00002;
 #endif
+#ifdef OMAP_ENHANCEMENT
+#define DVD_RESOLUTION 423936
+#endif
 
 // Treat time out as an error if we have not received any output
 // buffers after 3 seconds.
@@ -611,19 +614,7 @@ uint32_t OMXCodec::getComponentQuirks(
         quirks |= kRequiresAllocateBufferOnOutputPorts;
         quirks |= kDefersOutputBufferAllocation;
     }
-    if (!strcmp(componentName, "OMX.TI.Video.Decoder") ||
-            !strcmp(componentName, "OMX.TI.720P.Decoder")) {
-        // TI Video Decoder and TI 720p Decoder must use buffers allocated
-        // by Overlay for output port. So, I cannot call OMX_AllocateBuffer
-        // on output port. I must use OMX_UseBuffer on input port to ensure
-        // 128 byte alignment.
-        quirks |= kRequiresAllocateBufferOnInputPorts;
-        quirks |= kInputBufferSizesAreBogus;
 
-        if(kPreferThumbnailMode) {
-                quirks |= OMXCodec::kRequiresAllocateBufferOnOutputPorts;
-        }
-    }
     if (!strcmp(componentName, "OMX.TI.DUCATI1.VIDEO.DECODER")) {
         quirks |= kRequiresAllocateBufferOnInputPorts;
         quirks |= kRequiresAllocateBufferOnOutputPorts;
@@ -4112,8 +4103,6 @@ void OMXCodec::onStateChange(OMX_STATETYPE newState) {
                         // component teardown to zero out any protected buffers
                         // without the risk of scanning out one of those buffers.
                         pushBlankBuffersToNativeWindow();
-                    }
-#ifdef QCOM_HARDWARE
                 }
 #endif
 
@@ -5933,34 +5922,6 @@ static const char *colorFormatString(OMX_COLOR_FORMATTYPE type) {
 
     if (type == OMX_TI_COLOR_FormatYUV420PackedSemiPlanar) {
         return "OMX_TI_COLOR_FormatYUV420PackedSemiPlanar";
-	}
-#ifdef SAMSUNG_CODEC_SUPPORT
-    if (type == OMX_SEC_COLOR_FormatNV12TPhysicalAddress) {
-        return "OMX_SEC_COLOR_FormatNV12TPhysicalAddress";
-    }
-    if (type == OMX_SEC_COLOR_FormatNV12LPhysicalAddress) {
-        return "OMX_SEC_COLOR_FormatNV12LPhysicalAddress";
-    }
-    if (type == OMX_SEC_COLOR_FormatNV12LVirtualAddress) {
-        return "OMX_SEC_COLOR_FormatNV12LVirtualAddress";
-    }
-    if (type == OMX_SEC_COLOR_FormatNV12Tiled) {
-        return "OMX_SEC_COLOR_FormatNV12Tiled";
-    }
-#endif
-    else if (type == OMX_QCOM_COLOR_FormatYVU420SemiPlanar) {
-        return "OMX_QCOM_COLOR_FormatYVU420SemiPlanar";
-#ifdef QCOM_HARDWARE
-    } else if (type == QOMX_COLOR_FormatYVU420PackedSemiPlanar32m4ka) {
-        return "QOMX_COLOR_FormatYVU420PackedSemiPlanar32m4ka";
-    } else if (type == QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka) {
-        return "QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka";
-    }
-    /*else if (type ==  OMX_QCOM_COLOR_FormatYVU420SemiPlanarInterlace) {
-        return "OMX_QCOM_COLOR_FormatYVU420SemiPlanarInterlace";
-    } */
-    else if (type < 0 || (size_t)type >= numNames) {
-#else
     } else if (type < 0 || (size_t)type >= numNames) {
 #endif
         return "UNKNOWN";

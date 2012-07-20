@@ -143,8 +143,7 @@ static int translateColorToOmxEnumValue(int color) {
             return OMX_COLOR_FormatYUV420Planar;
         default:
             fprintf(stderr, "Custom OMX color format: %d\n", color);
-            if (color == OMX_TI_COLOR_FormatYUV420PackedSemiPlanar ||
-                color == OMX_QCOM_COLOR_FormatYVU420SemiPlanar) {
+            if (color == OMX_TI_COLOR_FormatYUV420PackedSemiPlanar) {
                 return color;
             }
     }

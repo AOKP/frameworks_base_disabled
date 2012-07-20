@@ -202,7 +202,7 @@ ssize_t ChromiumHTTPDataSource::readAt(off64_t offset, void *data, size_t size) 
             LOG_PRI(ANDROID_LOG_INFO, LOG_TAG, "Read data timeout");
             mState = preState;
             return -EAGAIN;
-            }
+        }
     }
 
     if (mIOResult < OK) {

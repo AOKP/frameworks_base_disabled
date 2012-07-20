@@ -2334,6 +2334,20 @@ public final class Settings {
         public static final String WIFI_WATCHDOG_PING_TIMEOUT_MS =
             Secure.WIFI_WATCHDOG_PING_TIMEOUT_MS;
 
+        /**
+         * Setting to enable volume options.
+         *
+         * @hide
+         */
+        public static final String ENABLE_VOLUME_OPTIONS = "enable_volume_options";
+
+        /**
+         * Setting to Link Ringtone and Notification.
+         *
+         * @hide
+         */
+        public static final String VOLUME_LINK_NOTIFICATION = "volume_link_notification";
+
          /**
          * Whether the UI is initiated in tablet UI (false = phone UI)
          * @hide

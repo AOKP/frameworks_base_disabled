@@ -3028,6 +3028,13 @@ public final class Settings {
         public static final String RECENT_KILL_ALL_BUTTON = "recent_kill_all_button";
 
         /**
+         * whether to enable end app on back longpress functionality
+         *
+         * @hide
+         */
+        public static final String KILL_APP_LONGPRESS_BACK = "kill_app_longpress_back";
+
+        /**
          * Whether to show statusbar signal text
          *
          * @hide

@@ -1327,6 +1327,7 @@
   <java-symbol type="layout" name="screen_title" />
   <java-symbol type="layout" name="screen_title_icons" />
   <java-symbol type="string" name="abbrev_wday_month_day_no_year" />
+  <java-symbol type="string" name="app_killed_message" />
   <java-symbol type="string" name="android_upgrading_title" />
   <java-symbol type="string" name="faceunlock_multiple_failures" />
   <java-symbol type="string" name="global_action_power_off" />
@@ -1445,6 +1446,7 @@
   <java-symbol type="id" name="replace_app_icon" />
   <java-symbol type="id" name="replace_message" />
   <java-symbol type="fraction" name="config_dimBehindFadeDuration" />
+  <java-symbol type="integer" name="config_backKillTimeout" />
   <java-symbol type="integer" name="config_carDockKeepsScreenOn" />
   <java-symbol type="integer" name="config_criticalBatteryWarningLevel" />
   <java-symbol type="integer" name="config_datause_notification_type" />

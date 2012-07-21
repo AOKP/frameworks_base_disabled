@@ -191,14 +191,16 @@ public class Clock extends TextView {
         
         SpannableStringBuilder formatted = new SpannableStringBuilder(result);
 
-        if (mAmPmStyle != AM_PM_STYLE_NORMAL) {
-            if (mAmPmStyle == AM_PM_STYLE_GONE) {
-                formatted.delete(result.length() - 3, result.length());
-            } else {
-                if (mAmPmStyle == AM_PM_STYLE_SMALL) {
-                    CharacterStyle style = new RelativeSizeSpan(0.7f);
-                    formatted.setSpan(style, result.length() - 3, result.length(),
-                                      Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
+        if (!b24) {
+        	if (mAmPmStyle != AM_PM_STYLE_NORMAL) {
+                if (mAmPmStyle == AM_PM_STYLE_GONE) {
+                    formatted.delete(result.length() - 3, result.length());
+                } else {
+                    if (mAmPmStyle == AM_PM_STYLE_SMALL) {
+                        CharacterStyle style = new RelativeSizeSpan(0.7f);
+                        formatted.setSpan(style, result.length() - 3, result.length(),
+                                          Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
+                    }
                 }
             }
         }

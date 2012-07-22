@@ -20,9 +20,11 @@ import com.android.internal.app.IBatteryStats;
 import com.android.server.am.BatteryStatsService;
 
 import android.app.ActivityManagerNative;
+import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.BatteryManager;
 import android.os.Binder;
@@ -103,6 +105,10 @@ class BatteryService extends Binder {
     private boolean mBatteryLevelCritical;
     private int mInvalidCharger;
 
+    private int mDockBatteryStatus;
+    private int mDockBatteryLevel;
+    private String mDockBatteryPresent;
+
     private int mLastBatteryStatus;
     private int mLastBatteryHealth;
     private boolean mLastBatteryPresent;
@@ -114,6 +120,8 @@ class BatteryService extends Binder {
 
     private int mLowBatteryWarningLevel;
     private int mLowBatteryCloseWarningLevel;
+
+    private boolean mHasDockBattery;
 
     private int mPlugType;
     private int mLastPlugType = -1; // Extra state so we can detect first run
@@ -137,12 +145,19 @@ class BatteryService extends Binder {
         mLowBatteryCloseWarningLevel = mContext.getResources().getInteger(
                 com.android.internal.R.integer.config_lowBatteryCloseWarningLevel);
 
+        mHasDockBattery = mContext.getResources().getBoolean(
+                com.android.internal.R.bool.config_hasDockBattery);
+
         mPowerSupplyObserver.startObserving("SUBSYSTEM=power_supply");
 
         // watch for invalid charger messages if the invalid_charger switch exists
         if (new File("/sys/devices/virtual/switch/invalid_charger/state").exists()) {
             mInvalidChargerObserver.startObserving("DEVPATH=/devices/virtual/switch/invalid_charger");
         }
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Intent.ACTION_DOCK_EVENT);
+        mContext.registerReceiver(mDockBroadcastReceiver, filter);
 
         // set initial status
         update();
@@ -390,6 +405,12 @@ class BatteryService extends Binder {
         intent.putExtra(BatteryManager.EXTRA_TECHNOLOGY, mBatteryTechnology);
         intent.putExtra(BatteryManager.EXTRA_INVALID_CHARGER, mInvalidCharger);
 
+        if (mHasDockBattery){
+            intent.putExtra(BatteryManager.EXTRA_DOCK_STATUS, mDockBatteryStatus);
+            intent.putExtra(BatteryManager.EXTRA_DOCK_LEVEL, mDockBatteryLevel);
+            intent.putExtra(BatteryManager.EXTRA_DOCK_AC_ONLINE, false);
+        }
+
         if (false) {
             Slog.d(TAG, "level:" + mBatteryLevel +
                     " scale:" + BATTERY_SCALE + " status:" + mBatteryStatus +
@@ -541,6 +562,24 @@ class BatteryService extends Binder {
             }
         }
     }
+
+    private BroadcastReceiver mDockBroadcastReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+            final int state = intent.getIntExtra(Intent.EXTRA_DOCK_STATE,
+                                                 Intent.EXTRA_DOCK_STATE_UNDOCKED);
+
+            Slog.d(TAG, "Got dock event, state = " + state + ", hasDockBatter: " + mHasDockBattery);
+            if (mHasDockBattery && state != Intent.EXTRA_DOCK_STATE_UNDOCKED)
+            {
+                Slog.d(TAG, "Updating battery from dock intent");
+                update();
+            }
+        }
+
+    };
 
     class Led {
         private LightsService mLightsService;

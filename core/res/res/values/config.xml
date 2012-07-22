@@ -928,4 +928,7 @@
          setting is used to determine, whether lidOpenRotation has to be
          applied. -->
     <bool name="config_hasRemovableLid">false</bool>
+
+    <!-- Asus dock compatibility disabled by default -->
+    <bool name="config_hasDockBattery">false</bool>
 </resources>

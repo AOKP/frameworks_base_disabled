@@ -3816,4 +3816,6 @@
 
  <!-- Tablets and docks -->
   <java-symbol type="bool" name="config_hasRemovableLid" />
+  <java-symbol type="bool" name="config_hasDockBattery" />
+
 </resources>

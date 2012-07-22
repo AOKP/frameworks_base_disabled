@@ -1153,6 +1153,7 @@ package android {
     field public static final int holo_purple = 17170458; // 0x106001a
     field public static final int holo_red_dark = 17170455; // 0x1060017
     field public static final int holo_red_light = 17170454; // 0x1060016
+    field public static final int holo_white_light = 17170460; // 0x106001c
     field public static final int primary_text_dark = 17170433; // 0x1060001
     field public static final int primary_text_dark_nodisable = 17170434; // 0x1060002
     field public static final int primary_text_light = 17170435; // 0x1060003
@@ -1355,6 +1356,7 @@ package android {
     field public static final int title_bar = 17301653; // 0x1080095
     field public static final int title_bar_tall = 17301670; // 0x10800a6
     field public static final int toast_frame = 17301654; // 0x1080096
+    field public static final int weather_condition = 17301684; // 0x10800b4
     field public static final int zoom_plate = 17301655; // 0x1080097
   }
 
@@ -1507,6 +1509,7 @@ package android {
     field public static final int status_bar_notification_info_overflow = 17039383; // 0x1040017
     field public static final int unknownName = 17039374; // 0x104000e
     field public static final int untitled = 17039375; // 0x104000f
+    field public static final int weatherpanel_slash = 17039384; // 0x1040018
     field public static final int yes = 17039379; // 0x1040013
   }
 
@@ -11473,10 +11476,10 @@ package android.media {
     field public static final int AMR_NB = 1; // 0x1
     field public static final int AMR_WB = 2; // 0x2
     field public static final int DEFAULT = 0; // 0x0
-    field public static final int HE_AAC = 4; // 0x4
     field public static final int EVRC = 6; // 0x6
-    field public static final int QCELP = 7; // 0x7
+    field public static final int HE_AAC = 4; // 0x4
     field public static final int LPCM = 8; // 0x8
+    field public static final int QCELP = 7; // 0x7
   }
 
   public final class MediaRecorder.AudioSource {
@@ -18522,7 +18525,6 @@ package android.provider {
     field public static final java.lang.String SETUP_WIZARD_HAS_RUN = "setup_wizard_has_run";
     field public static final java.lang.String SHOW_GTALK_SERVICE_STATUS = "SHOW_GTALK_SERVICE_STATUS";
     field public static final java.lang.String SHOW_PROCESSES = "show_processes";
-    field public static final java.lang.String SHOW_STATUSBAR_IME_SWITCHER = "show_statusbar_ime_switcher";
     field public static final deprecated java.lang.String SHOW_WEB_SUGGESTIONS = "show_web_suggestions";
     field public static final java.lang.String SOUND_EFFECTS_ENABLED = "sound_effects_enabled";
     field public static final java.lang.String STAY_ON_WHILE_PLUGGED_IN = "stay_on_while_plugged_in";

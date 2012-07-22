@@ -42,6 +42,8 @@ public class CdmaLteServiceStateTracker extends CdmaServiceStateTracker {
 
     private ServiceState  mLteSS;  // The last LTE state from Voice Registration
 
+    private boolean getSVDO = SystemProperties.getBoolean(TelephonyProperties.PROPERTY_SVDATA, false);
+
     public CdmaLteServiceStateTracker(CDMALTEPhone phone) {
         super(phone);
         mCdmaLtePhone = phone;
@@ -478,10 +480,11 @@ public class CdmaLteServiceStateTracker extends CdmaServiceStateTracker {
 
     @Override
     public boolean isConcurrentVoiceAndDataAllowed() {
-        // Note: it needs to be confirmed which CDMA network types
-        // can support voice and data calls concurrently.
-        // For the time-being, the return value will be false.
-        return (networkType == ServiceState.RADIO_TECHNOLOGY_LTE);
+        if (mLteSS.getRadioTechnology() !=
+                    ServiceState.RIL_RADIO_TECHNOLOGY_1xRTT)
+            return getSVDO;
+        else
+            return (mLteSS.getCssIndicator() == 1);
     }
 
     /**

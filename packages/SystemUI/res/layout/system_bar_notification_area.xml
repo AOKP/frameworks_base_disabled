@@ -122,11 +122,10 @@
                 android:paddingLeft="4dip"
                 android:visibility="gone"
                 />
-            <ImageView
-                android:id="@+id/battery"
-                android:layout_height="wrap_content"
+            <include layout="@layout/battery_cluster_view" 
+                android:id="@+id/battery_cluster"
                 android:layout_width="wrap_content"
-                android:paddingLeft="4dip"
+                android:layout_height="wrap_content"
                 />
         </LinearLayout>
     </LinearLayout>

@@ -505,12 +505,6 @@ public:
         return getEventHub()->hasScanCode(mId, code);
     }
 
-    bool hasAbsoluteAxis(int32_t code) {
-        RawAbsoluteAxisInfo info;
-        getEventHub()->getAbsoluteAxisInfo(mId, code, &info);
-        return info.valid;
-    }
-
     bool isKeyPressed(int32_t code) {
         return getEventHub()->getScanCodeState(mId, code) == AKEY_STATE_DOWN;
     }
@@ -632,11 +626,9 @@ public:
     int32_t getToolType() const;
     bool isToolActive() const;
     bool isHovering() const;
-    bool hasStylus() const;
 
 private:
     bool mHaveBtnTouch;
-    bool mHaveStylus;
 
     bool mBtnTouch;
     bool mBtnStylus;
@@ -824,11 +816,10 @@ public:
     MultiTouchMotionAccumulator();
     ~MultiTouchMotionAccumulator();
 
-    void configure(InputDevice* device, size_t slotCount, bool usingSlotsProtocol);
+    void configure(size_t slotCount, bool usingSlotsProtocol);
     void reset(InputDevice* device);
     void process(const RawEvent* rawEvent);
     void finishSync();
-    bool hasStylus() const;
 
     inline size_t getSlotCount() const { return mSlotCount; }
     inline const Slot* getSlot(size_t index) const { return &mSlots[index]; }
@@ -838,7 +829,6 @@ private:
     Slot* mSlots;
     size_t mSlotCount;
     bool mUsingSlotsProtocol;
-    bool mHaveStylus;
 
     void clearSlots(int32_t initialSlot);
 };
@@ -1266,7 +1256,6 @@ protected:
     virtual void parseCalibration();
     virtual void resolveCalibration();
     virtual void dumpCalibration(String8& dump);
-    virtual bool hasStylus() const = 0;
 
     virtual void syncTouch(nsecs_t when, bool* outHavePointerIds) = 0;
 
@@ -1615,7 +1604,6 @@ public:
 protected:
     virtual void syncTouch(nsecs_t when, bool* outHavePointerIds);
     virtual void configureRawPointerAxes();
-    virtual bool hasStylus() const;
 
 private:
     SingleTouchMotionAccumulator mSingleTouchMotionAccumulator;
@@ -1633,7 +1621,6 @@ public:
 protected:
     virtual void syncTouch(nsecs_t when, bool* outHavePointerIds);
     virtual void configureRawPointerAxes();
-    virtual bool hasStylus() const;
 
 private:
     MultiTouchMotionAccumulator mMultiTouchMotionAccumulator;

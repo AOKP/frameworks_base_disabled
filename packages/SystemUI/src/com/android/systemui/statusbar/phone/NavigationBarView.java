@@ -109,6 +109,12 @@ public class NavigationBarView extends LinearLayout {
     final static String ACTION_NULL = "**null**";
 
     int mNumberOfButtons = 3;
+    
+    /* 0 = Phone UI
+     * 1 = Tablet UI
+     * 2 = Phablet UI
+     */
+    int mTablet_UI = 0;
 
     public String[] mClickActions = new String[5];
     public String[] mLongpressActions = new String[5];
@@ -702,7 +708,11 @@ public class NavigationBarView extends LinearLayout {
         for (int i=0; i<4; i++) {
             mRotatedViews[i].setVisibility(View.GONE);
         }
-        mCurrentView = mRotatedViews[rot];
+        if (mTablet_UI !=0) { // this is either a tablet of Phablet.  Need to stay at Rot_0
+            mCurrentView = mRotatedViews[Surface.ROTATION_0];  
+        } else {
+            mCurrentView = mRotatedViews[rot];
+        }
         mCurrentView.setVisibility(View.VISIBLE);
 
         // force the low profile & disabled states into compliance
@@ -815,7 +825,8 @@ public class NavigationBarView extends LinearLayout {
 
         currentVisibility = Settings.System.getInt(resolver,
                 Settings.System.MENU_VISIBILITY, VISIBILITY_SYSTEM);
-        
+        mTablet_UI = Settings.System.getInt(resolver,
+                Settings.System.TABLET_UI,0);
         mNumberOfButtons = Settings.System.getInt(resolver,
                 Settings.System.NAVIGATION_BAR_BUTTONS_QTY, 0);
         if (mNumberOfButtons == 0) {

@@ -2351,6 +2351,9 @@ public final class Settings {
          /**
          * Whether the UI is initiated in tablet UI (false = phone UI)
          * @hide
+         *  0 = Phone UI
+         *  1 = Tablet UI
+         *  2 = Phablet UI
          */
         public static final String TABLET_UI = "tablet_ui";
 

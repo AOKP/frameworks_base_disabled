@@ -204,7 +204,6 @@
                 <category android:name="com.android.systemui.SHORTCUT" />
             </intent-filter>
         </activity>
-
         <activity
             android:name="com.android.systemui.NavbarToggle"
             android:label="@string/toggle_navbar"
@@ -223,6 +222,11 @@
             <intent-filter>
                 <action android:name="android.intent.action.CREATE_SHORTCUT" />
                 <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+		<activity android:name="com.android.systemui.WidgetSelectActivity" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
     </application>

@@ -379,6 +379,8 @@
 
     <!-- Content text for do-not-disturb mode notification -->
     <string name="notifications_off_text">Tap here to turn notifications back on.</string>
+    
+    <string name="widgets">Widgets</string>
 
     <!-- Description of the button in the phone-style notification panel that controls auto-rotation, when auto-rotation is on. [CHAR LIMIT=NONE] -->
     <string name="accessibility_rotation_lock_off">Screen will rotate automatically.</string>

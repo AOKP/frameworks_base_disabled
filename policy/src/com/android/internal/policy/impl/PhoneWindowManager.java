@@ -1078,14 +1078,20 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             // 0-599dp: "phone" UI with a separate status & navigation bar
             mHasSystemNavBar = false;
             mNavigationBarCanMove = true;
+            Settings.System.putInt(mContext.getContentResolver(),
+                    Settings.System.TABLET_UI, 0);
         } else if (shortSizeDp < 720) {
             // 600-719dp: "phone" UI with modifications for larger screens
             mHasSystemNavBar = false;
             mNavigationBarCanMove = false;
+            Settings.System.putInt(mContext.getContentResolver(),
+                    Settings.System.TABLET_UI, 2);
         } else {
             // 720dp: "tablet" UI with a single combined status & navigation bar
             mHasSystemNavBar = true;
             mNavigationBarCanMove = false;
+            Settings.System.putInt(mContext.getContentResolver(),
+                    Settings.System.TABLET_UI, 1);
         }
 
         if (!mHasSystemNavBar) {
@@ -1110,8 +1116,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             // this should quickly get over-ridden by the settings observer if it was
             // disabled by the user.
         }
-
-        Settings.System.putBoolean(mContext.getContentResolver(), Settings.System.TABLET_UI, mHasNavigationBar);
 
         if (mHasSystemNavBar) {
             // The system bar is always at the bottom.  If you are watching

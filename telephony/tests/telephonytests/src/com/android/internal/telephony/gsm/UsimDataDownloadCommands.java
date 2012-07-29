@@ -611,4 +611,15 @@ class UsimDataDownloadCommands extends BaseCommands {
 
     @Override
     public boolean needsOldRilFeature(String feature) { return false; }
+
+    @Override
+    public void setOnCatSendSmsResult(Handler h, int what, Object obj) {
+    }
+
+    @Override
+    public void unSetOnCatSendSmsResult(Handler h) {
+    }
+
+    public void getVoiceRadioTechnology(Message response) {
+    }
 }

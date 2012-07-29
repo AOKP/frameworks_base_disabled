@@ -426,4 +426,7 @@ class SipCommandInterface extends BaseCommands implements CommandsInterface {
 
     public void unSetOnCatSendSmsResult(Handler h) {
     }
+
+    public void getVoiceRadioTechnology(Message result) {
+    }
 }

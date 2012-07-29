@@ -2626,14 +2626,14 @@ public final class Settings {
 
         /**
          * How long to keep the notification LED on (in milliseconds)
-         * 
+         *
          * @hide
          */
         public static final String NOTIFICATION_LIGHT_ON = "notification_light_on";
 
         /**
          * How long to keep the notification LED off (in milliseconds)
-         * 
+         *
          * @hide
          */
         public static final String NOTIFICATION_LIGHT_OFF = "notification_light_off";
@@ -3097,6 +3097,13 @@ public final class Settings {
          * 0 = only allow installing from Google Play
          */
         public static final String INSTALL_NON_MARKET_APPS = "install_non_market_apps";
+
+        /**
+         * Whether to blink the LED when screen is on
+         *
+         * @hide
+         */
+        public static final String LED_SCREEN_ON = "led_screen_on";
 
         /**
          * Comma-separated list of location providers that activities may access.

@@ -2654,6 +2654,12 @@ public final class Settings {
          * @hide
          */
         public static final String NOTIFICATION_LIGHT_COLOR = "notification_light_color";
+
+        /**
+	 *
+	 * @hide
+	 */
+        public static final String NAVIGATION_BAR_BUTTON_ALPHA = "navigation_bar_button_alpha";
     }
 
     /**

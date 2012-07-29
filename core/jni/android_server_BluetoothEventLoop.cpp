@@ -289,6 +289,14 @@ static jboolean setUpEventLoop(native_data_t *nat) {
         }
 
         dbus_bus_add_match(nat->conn,
+                "type='signal',interface='"BLUEZ_DBUS_BASE_IFC".Control'",
+                &err);
+        if (dbus_error_is_set(&err)) {
+            LOG_AND_FREE_DBUS_ERROR(&err);
+            return JNI_FALSE;
+        }
+
+        dbus_bus_add_match(nat->conn,
                 "type='signal',interface='"BLUEZ_DBUS_BASE_IFC".HealthDevice'",
                 &err);
         if (dbus_error_is_set(&err)) {
@@ -454,6 +462,12 @@ static void tearDownEventLoop(native_data_t *nat) {
             LOG_AND_FREE_DBUS_ERROR(&err);
         }
         dbus_bus_remove_match(nat->conn,
+                "type='signal',interface='"BLUEZ_DBUS_BASE_IFC".Control'",
+                &err);
+        if (dbus_error_is_set(&err)) {
+            LOG_AND_FREE_DBUS_ERROR(&err);
+        }
+        dbus_bus_remove_match(nat->conn,
                 "type='signal',interface='"BLUEZ_DBUS_BASE_IFC".Device'",
                 &err);
         if (dbus_error_is_set(&err)) {
@@ -523,7 +537,7 @@ dbus_bool_t dbusAddWatch(DBusWatch *watch, void *data) {
         char control = EVENT_LOOP_ADD;
         write(nat->controlFdW, &control, sizeof(char));
 
-        int fd = dbus_watch_get_fd(watch);
+        int fd = dbus_watch_get_unix_fd(watch);
         write(nat->controlFdW, &fd, sizeof(int));
 
         unsigned int flags = dbus_watch_get_flags(watch);
@@ -540,7 +554,7 @@ void dbusRemoveWatch(DBusWatch *watch, void *data) {
     char control = EVENT_LOOP_REMOVE;
     write(nat->controlFdW, &control, sizeof(char));
 
-    int fd = dbus_watch_get_fd(watch);
+    int fd = dbus_watch_get_unix_fd(watch);
     write(nat->controlFdW, &fd, sizeof(int));
 
     unsigned int flags = dbus_watch_get_flags(watch);

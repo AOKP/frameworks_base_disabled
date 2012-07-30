@@ -193,28 +193,30 @@
         android:visibility="gone"
         android:paddingTop="0dp"
         >
-
+        
         <RelativeLayout
-	    android:layout_height="match_parent"
-	    android:layout_width="match_parent">
+	        android:layout_height="match_parent"
+	        android:layout_width="match_parent">
 
-	    <com.android.systemui.statusbar.policy.BatteryBarController
-	        android:layout_width="1dp"
-		android:layout_height="match_parent"
-		android:visibility="gone"
-		android:layout_alignParentLeft="true"
-		systemui:viewLocation="2"
-	        android:rotation="180" />
+            <com.android.systemui.statusbar.policy.BatteryBarController
+				android:layout_width="wrap_content"
+				android:layout_height="match_parent"
+				android:orientation="vertical"
+				android:visibility="gone"
+				android:layout_alignParentLeft="true"
+				systemui:viewLocation="2"
+				android:rotation="180" />
 
-	    <com.android.systemui.statusbar.policy.BatteryBarController
-		android:layout_width="1dp"
-		android:layout_height="match_parent"
-		android:visibility="gone"
-		android:layout_alignParentRight="true"
-		systemui:viewLocation="3"
-		android:rotation="180" />
+			<com.android.systemui.statusbar.policy.BatteryBarController
+				android:layout_width="wrap_content"
+				android:layout_height="match_parent"
+				android:orientation="vertical"
+				android:visibility="gone"
+				android:layout_alignParentRight="true"
+				systemui:viewLocation="3"
+				android:rotation="180" />
 
-	</RelativeLayout>
+	    </RelativeLayout>
 
         <LinearLayout 
             android:layout_height="match_parent"
@@ -283,6 +285,7 @@
                 android:layout_weight="0"
                 android:visibility="invisible"
                 />
+
         </LinearLayout>
 
         <!-- lights out layout to match exactly -->

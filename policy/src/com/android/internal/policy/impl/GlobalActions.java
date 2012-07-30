@@ -888,10 +888,16 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                     public void onClick(DialogInterface dialog, int which) {
                         mWindowManagerFuncs.reboot(rebootReasons[rebootIndex]);
                     }
-                }).create();
+                })
+                .setCancelable(false)
+                .create();
 
         d.getListView().setItemsCanFocus(true);
-        d.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG);
+        if (mKeyguardShowing) {
+            d.getWindow().setType(WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG);
+        } else {
+            d.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG);
+        }
 
         return d;
     }

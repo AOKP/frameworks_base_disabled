@@ -1,0 +1,9 @@
+Change-Id: I86f476b4c22bdd2dd76eed31577868816e5e2090
+Code-Review+2: Khas Mek <boushh@gmail.com>
+Verified+1: Khas Mek <boushh@gmail.com>
+Code-Review+1: Steve Spear <stephen.k.spear@gmail.com>
+Submitted-by: Khas Mek <boushh@gmail.com>
+Submitted-at: Tue, 31 Jul 2012 10:55:44 -0400
+Reviewed-on: http://gerrit.sudoservers.com/2146
+Project: AOKP/frameworks_base
+Branch: refs/heads/jb

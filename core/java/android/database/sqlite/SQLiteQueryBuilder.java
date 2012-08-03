@@ -372,7 +372,7 @@ public class SQLiteQueryBuilder
     public Cursor query(SQLiteDatabase db, String[] projectionIn,
             String selection, String[] selectionArgs, String groupBy,
             String having, String sortOrder, String limit, CancellationSignal cancellationSignal) {
-        if (mTables == null) {
+        if (db == null || mTables == null) {
             return null;
         }
 

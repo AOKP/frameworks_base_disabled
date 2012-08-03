@@ -935,6 +935,8 @@
   <java-symbol type="drawable" name="sym_app_on_sd_unavailable_icon" />
   <java-symbol type="drawable" name="text_edit_side_paste_window" />
   <java-symbol type="drawable" name="text_edit_paste_window" />
+  <java-symbol type="drawable" name="aokplogo" />
+  <java-symbol type="drawable" name="aokplogo_alt" />
   <java-symbol type="drawable" name="btn_check_off" />
   <java-symbol type="drawable" name="btn_code_lock_default_holo" />
   <java-symbol type="drawable" name="btn_code_lock_touched_holo" />

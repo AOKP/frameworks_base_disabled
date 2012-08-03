@@ -187,6 +187,24 @@
             </intent-filter>
         </activity>
 
+        <!-- also ... started from ... somewhere -->
+        <activity
+            android:name=".UnicornSack"
+            android:exported="true"
+            android:label="UnicornSack"
+            android:icon="@drawable/redunicorn"
+            android:theme="@android:style/Theme.Wallpaper.NoTitleBar.Fullscreen"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:excludeFromRecents="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="com.android.internal.category.AOKPLOGO" />
+<!--            <category android:name="android.intent.category.LAUNCHER" />-->
+            </intent-filter>
+        </activity>
+
         <activity
             android:name="com.android.systemui.Torch"
             android:label="@string/toggle_torch"

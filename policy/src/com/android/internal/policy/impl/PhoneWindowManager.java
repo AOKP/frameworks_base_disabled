@@ -390,6 +390,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     int mLongPressOnPowerBehavior = -1;
     boolean mScreenOnEarly = false;
     boolean mScreenOnFully = false;
+    int mScreenOffReason;
     boolean mOrientationSensorEnabled = false;
     int mCurrentAppOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
     boolean mHasSoftInput = false;
@@ -558,6 +559,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     private boolean mVolumeUpKeyTriggered;
     private boolean mPowerKeyTriggered;
     private long mPowerKeyTime;
+    private boolean mVolumeWakeScreen;
 
     ShortcutManager mShortcutManager;
     PowerManager.WakeLock mBroadcastWakeLock;
@@ -620,6 +622,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     Settings.System.POINTER_LOCATION), false, this);
             resolver.registerContentObserver(Settings.Secure.getUriFor(
                     Settings.Secure.DEFAULT_INPUT_METHOD), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.VOLUME_WAKE_SCREEN), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     "fancy_rotation_anim"), false, this);
             resolver.registerContentObserver(Settings.Secure.getUriFor(
@@ -1394,6 +1398,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 updateOrientationListenerLp();
             }
 
+            mVolumeWakeScreen = (Settings.System.getInt(resolver,
+                    Settings.System.VOLUME_WAKE_SCREEN, 0) == 1);
+
             if (mSystemReady) {
                 int pointerLocation = Settings.System.getInt(resolver,
                         Settings.System.POINTER_LOCATION, 0);
@@ -2005,7 +2012,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     @Override
     public long interceptKeyBeforeDispatching(WindowState win, KeyEvent event, int policyFlags) {
         final boolean keyguardOn = keyguardOn();
-        final int keyCode = event.getKeyCode();
+        int keyCode = event.getKeyCode();
         final int repeatCount = event.getRepeatCount();
         final int metaState = event.getMetaState();
         final int flags = event.getFlags();
@@ -3594,8 +3601,24 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         if (keyCode == KeyEvent.KEYCODE_POWER) {
             policyFlags |= WindowManagerPolicy.FLAG_WAKE;
         }
-        final boolean isWakeKey = (policyFlags & (WindowManagerPolicy.FLAG_WAKE
-                | WindowManagerPolicy.FLAG_WAKE_DROPPED)) != 0;
+        boolean isWakeKey = (policyFlags
+                & (WindowManagerPolicy.FLAG_WAKE | WindowManagerPolicy.FLAG_WAKE_DROPPED)) != 0 ||
+                             ((keyCode == KeyEvent.KEYCODE_VOLUME_UP) && mVolumeWakeScreen) ||
+                             ((keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) && mVolumeWakeScreen);
+
+            // volume-wake: heed to proximity sensor
+            final boolean isOffByProx = (mScreenOffReason == WindowManagerPolicy.OFF_BECAUSE_OF_PROX_SENSOR);
+            if (isWakeKey
+                    && (!mVolumeWakeScreen || isOffByProx)
+                    && ((keyCode == KeyEvent.KEYCODE_VOLUME_UP) || (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN))) {
+                isWakeKey = false;
+            }
+
+            // volume-wake: fake a power key press
+            if (mVolumeWakeScreen && isWakeKey && ((keyCode == KeyEvent.KEYCODE_VOLUME_UP)
+                    || (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN)))
+                    mKeyguardMediator.onWakeKeyWhenKeyguardShowingTq(KeyEvent.KEYCODE_POWER,
+                                mDockMode != Intent.EXTRA_DOCK_STATE_UNDOCKED);
 
         // Basic policy based on screen state and keyguard.
         // FIXME: This policy isn't quite correct.  We shouldn't care whether the screen
@@ -3963,6 +3986,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         synchronized (mLock) {
             updateOrientationListenerLp();
             updateLockScreenTimeout();
+            mScreenOffReason = why;
         }
     }
 

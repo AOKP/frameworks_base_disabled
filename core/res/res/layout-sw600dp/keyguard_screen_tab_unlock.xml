@@ -21,17 +21,27 @@
   state of the device, as well as instructions on how to get past it
   depending on the state of the device.  It is the same for landscape
   and portrait.-->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tabunlock="http://schemas.android.com/apk/res/com.android.tabunlock"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:id="@+id/root">
+<RelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tabunlock="http://schemas.android.com/apk/res/com.android.tabunlock"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent">
+
+    <com.android.internal.policy.impl.LockscreenWallpaper
+	android:id="@+id/lockscreen_wallpaper"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent" />
+
+    <LinearLayout
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical"
+	android:id="@+id/root">
 
     <!-- top: status -->
     <RelativeLayout
         android:layout_height="0dip"
-        android:layout_weight="0.42"
+        android:layout_weight="1"
         android:layout_width="match_parent"
         android:gravity="center">
 
@@ -68,7 +78,7 @@
     <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dip"
-            android:layout_weight="0.58"
+            android:layout_weight="1"
             android:orientation="vertical"
             android:gravity="bottom">
 
@@ -121,4 +131,4 @@
     </LinearLayout>
 
 </LinearLayout>
-
+</RelativeLayout>

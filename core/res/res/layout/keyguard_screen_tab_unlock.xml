@@ -21,12 +21,22 @@
   state of the device, as well as instructions on how to get past it
   depending on the state of the device.  It is the same for landscape
   and portrait.-->
-<GridLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="center_horizontal">
+<RelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:gravity="center_horizontal">
+
+    <com.android.internal.policy.impl.LockscreenWallpaper
+	android:id="@+id/lockscreen_wallpaper"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent" />
+
+    <GridLayout
+	android:orientation="vertical"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:gravity="center_horizontal">
 
     <com.android.internal.widget.DigitalClock android:id="@+id/time"
         android:layout_marginTop="@dimen/keyguard_lockscreen_status_line_clockfont_top_margin"
@@ -204,3 +214,4 @@
 
 </GridLayout>
 
+</RelativeLayout>

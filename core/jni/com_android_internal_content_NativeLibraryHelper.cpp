@@ -15,7 +15,7 @@
  */
 
 #define LOG_TAG "NativeLibraryHelper"
-//#define LOG_NDEBUG 0
+#define LOG_NDEBUG 0
 
 #include <android_runtime/AndroidRuntime.h>
 

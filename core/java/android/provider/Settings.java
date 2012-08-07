@@ -2700,6 +2700,12 @@ public final class Settings {
         public static final String NOTIFICATION_BATTERY_DISPLAY = "notification_battery_display";
 
         /**
+         * Setting to allow % on lockscreen always showing.
+         * @hide
+         */
+        public static final String LOCKSCREEN_BATTERY = "lockscreen_battery";
+
+        /**
          * Whether to show the battery bar
          *
          * @hide

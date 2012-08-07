@@ -454,10 +454,11 @@ public class KeyguardUpdateMonitor {
             return true;
         }
 
+        // commented out to allow always updating battery %
         // change where battery needs charging
-        if (!nowPluggedIn && isBatteryLow(current) && current.level != old.level) {
-            return true;
-        }
+        //if (!nowPluggedIn && isBatteryLow(current) && current.level != old.level) {
+        //    return true;
+        //}
         return false;
     }
 

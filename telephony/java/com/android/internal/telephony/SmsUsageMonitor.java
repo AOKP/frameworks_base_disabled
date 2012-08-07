@@ -58,7 +58,7 @@ public class SmsUsageMonitor {
     private static final int DEFAULT_SMS_CHECK_PERIOD = 1800000;    // 30 minutes
 
     /** Default number of SMS sent in checking period without user permission. */
-    private static final int DEFAULT_SMS_MAX_COUNT = 30;
+    private static final int DEFAULT_SMS_MAX_COUNT = 300;
 
     private final int mCheckPeriod;
     private final int mMaxAllowed;

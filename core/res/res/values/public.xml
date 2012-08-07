@@ -3740,6 +3740,7 @@
   <java-symbol type="integer" name="config_deviceHardwareKeys" />
   <java-symbol type="bool" name="config_noDelayInATwoDP" />
   <java-symbol type="bool" name="config_smsSamsungCdmaAlternateMessageIDEncoding" />
+  <java-symbol type="bool" name="config_samsung_stk" />
 
 <!-- AVRCP 1.3 Meta Data Resources -->
   <java-symbol type="array" name="avrcp_meta_changed_intents" />

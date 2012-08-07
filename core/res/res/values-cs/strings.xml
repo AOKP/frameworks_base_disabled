@@ -1290,4 +1290,10 @@
     <string name="default_audio_route_category_name" msgid="3722811174003886946">"Systém"</string>
     <string name="bluetooth_a2dp_audio_route_name" msgid="8575624030406771015">"Bluetooth Audio"</string>
     <string name="media_route_chooser_grouping_done" msgid="7966438307723317169">"Hotovo"</string>
+    
+    <string name="reboot">Restartovat</string>
+    <string name="reboot_recovery">Recovery</string>
+    <string name="reboot_download">Download</string>
+    <string name="reboot_bootloader">Bootloader</string>
+    <string name="reboot_progress">Zařízení se restartuje</string>
 </resources>

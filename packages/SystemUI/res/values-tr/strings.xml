@@ -1,148 +1,145 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- 
-/**
- * Copyright (c) 2009, The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); 
- * you may not use this file except in compliance with the License. 
- * You may obtain a copy of the License at 
- *
- *     http://www.apache.org/licenses/LICENSE-2.0 
- *
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, 
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- * See the License for the specific language governing permissions and 
- * limitations under the License.
- */
- -->
-
-<resources xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="app_label" msgid="7164937344850004466">"Sist Arayüzü"</string>
-    <string name="status_bar_clear_all_button" msgid="7774721344716731603">"Temizle"</string>
-    <string name="status_bar_do_not_disturb_button" msgid="5812628897510997853">"Rahatsız etmeyin"</string>
-    <string name="status_bar_please_disturb_button" msgid="3345398298841572813">"Bildirimleri göster"</string>
-    <string name="status_bar_recent_remove_item_title" msgid="6026395868129852968">"Listeden kaldır"</string>
-    <string name="status_bar_recent_inspect_item_title" msgid="7793624864528818569">"Uygulama bilgileri"</string>
-    <string name="status_bar_no_recent_apps" msgid="6576392951053994640">"Son uygulama yok"</string>
-    <string name="status_bar_accessibility_dismiss_recents" msgid="4576076075226540105">"Son uygulamaları kapat"</string>
-  <plurals name="status_bar_accessibility_recent_apps">
-    <item quantity="one" msgid="5854176083865845541">"1 tane son uygulama"</item>
-    <item quantity="other" msgid="1040784359794890744">"%d tane son uygulama"</item>
-  </plurals>
-    <string name="status_bar_no_notifications_title" msgid="4755261167193833213">"Bildirim yok"</string>
-    <string name="status_bar_ongoing_events_title" msgid="1682504513316879202">"Sürüyor"</string>
-    <string name="status_bar_latest_events_title" msgid="6594767438577593172">"Bildirimler"</string>
-    <string name="battery_low_title" msgid="2783104807551211639">"Şarj cihazını bağla"</string>
-    <string name="battery_low_subtitle" msgid="1752040062087829196">"Pil azalıyor."</string>
-    <string name="battery_low_percent_format" msgid="1077244949318261761">"<xliff:g id="NUMBER">%d%%</xliff:g> kaldı"</string>
-    <string name="invalid_charger" msgid="4549105996740522523">"USB üzerinden şarj desteklenmiyor."\n"Yalnızca ürünle birlikte verilen şarj cihazını kullanın."</string>
-    <string name="battery_low_why" msgid="7279169609518386372">"Pil kullanımı"</string>
-    <string name="status_bar_settings_settings_button" msgid="3023889916699270224">"Ayarlar"</string>
-    <string name="status_bar_settings_wifi_button" msgid="1733928151698311923">"Kablosuz"</string>
-    <string name="status_bar_settings_airplane" msgid="4879879698500955300">"Uçak modu"</string>
-    <string name="status_bar_settings_auto_rotation" msgid="3790482541357798421">"Ekranı otomatik döndür"</string>
-    <string name="status_bar_settings_mute_label" msgid="554682549917429396">"KAPAT"</string>
-    <string name="status_bar_settings_auto_brightness_label" msgid="511453614962324674">"OTOMTK"</string>
-    <string name="status_bar_settings_notifications" msgid="397146176280905137">"Bildirimler"</string>
-    <string name="bluetooth_tethered" msgid="7094101612161133267">"Bluetooth paylaşımı tamam"</string>
-    <string name="status_bar_input_method_settings_configure_input_methods" msgid="3504292471512317827">"Giriş yöntemlerini ayarla"</string>
-    <string name="status_bar_use_physical_keyboard" msgid="7551903084416057810">"Fiziksel klavye"</string>
-    <string name="usb_device_permission_prompt" msgid="834698001271562057">"<xliff:g id="APPLICATION">%1$s</xliff:g> uygulamasının USB cihazına erişmesine izin verilsin mi?"</string>
-    <string name="usb_accessory_permission_prompt" msgid="5171775411178865750">"<xliff:g id="APPLICATION">%1$s</xliff:g> uygulamasının USB aksesuarına erişmesine izin verilsin mi?"</string>
-    <string name="usb_device_confirm_prompt" msgid="5161205258635253206">"Bu USB cihaz bağlandığında <xliff:g id="ACTIVITY">%1$s</xliff:g> açılsın mı?"</string>
-    <string name="usb_accessory_confirm_prompt" msgid="3808984931830229888">"Bu USB aksesuarı bağlandığında <xliff:g id="ACTIVITY">%1$s</xliff:g> açılsın mı?"</string>
-    <string name="usb_accessory_uri_prompt" msgid="513450621413733343">"Bu USB aksesuarıyla çalışan yüklü uygulama yok. Bu aksesuar hakkında bilgi içn: <xliff:g id="URL">%1$s</xliff:g>"</string>
-    <string name="title_usb_accessory" msgid="4966265263465181372">"USB aksesuarı"</string>
-    <string name="label_view" msgid="6304565553218192990">"Görüntüle"</string>
-    <string name="always_use_device" msgid="1450287437017315906">"Bu USB cihazı için varsayılan olarak kullan"</string>
-    <string name="always_use_accessory" msgid="1210954576979621596">"Bu USB aksesuar için varsayılan olarak kullan"</string>
-    <string name="compat_mode_on" msgid="6623839244840638213">"Yakınlaştır (ekranı kaplasın)"</string>
-    <string name="compat_mode_off" msgid="4434467572461327898">"Genişlet (ekran kapansın)"</string>
-    <string name="compat_mode_help_header" msgid="7969493989397529910">"Uyumluluk yakınlaştırması"</string>
-    <string name="compat_mode_help_body" msgid="4946726776359270040">"Uygulama küçük bir ekran için tasarlanmışsa saatin yanında bir yakınlaştırma denetimi görünür."</string>
-    <string name="screenshot_saving_ticker" msgid="7403652894056693515">"Ekran görüntüsü kaydediliyor..."</string>
-    <string name="screenshot_saving_title" msgid="8242282144535555697">"Ekran görüntüsü kaydediliyor..."</string>
-    <string name="screenshot_saving_text" msgid="2419718443411738818">"Ekran görüntüsü kaydediliyor."</string>
-    <string name="screenshot_saved_title" msgid="6461865960961414961">"Ekran görüntüsü alındı."</string>
-    <string name="screenshot_saved_text" msgid="1152839647677558815">"Ekran görüntünüzü izlemek için dokunun."</string>
-    <string name="screenshot_failed_title" msgid="705781116746922771">"Ekran görüntüsü alınamadı."</string>
-    <string name="screenshot_failed_text" msgid="8134011269572415402">"Ekran görüntüsü kaydedilemedi. Depolama birimi kullanımda olabilir."</string>
-    <string name="usb_preference_title" msgid="6551050377388882787">"USB dosya aktarım seçenekleri"</string>
-    <string name="use_mtp_button_title" msgid="4333504413563023626">"Medya oynatıcı olarak ekle (MTP)"</string>
-    <string name="use_ptp_button_title" msgid="7517127540301625751">"Kamera olarak ekle (PTP)"</string>
-    <string name="installer_cd_button_title" msgid="2312667578562201583">"Mac için Android File Transfer uygulamasını yükle"</string>
-    <string name="accessibility_back" msgid="567011538994429120">"Geri"</string>
-    <string name="accessibility_home" msgid="8217216074895377641">"Ana sayfa"</string>
-    <string name="accessibility_menu" msgid="316839303324695949">"Menü"</string>
-    <string name="accessibility_recent" msgid="8571350598987952883">"Son uygulamalar"</string>
-    <string name="accessibility_ime_switch_button" msgid="5032926134740456424">"Giriş yöntemini değiştirme düğmesi."</string>
-    <string name="accessibility_compatibility_zoom_button" msgid="8461115318742350699">"Uyumluluk zum düğmesi."</string>
-    <string name="accessibility_compatibility_zoom_example" msgid="4220687294564945780">"Daha büyük ekrana daha küçük yakınlaştır."</string>
-    <string name="accessibility_bluetooth_connected" msgid="2707027633242983370">"Bluetooth bağlandı."</string>
-    <string name="accessibility_bluetooth_disconnected" msgid="7416648669976870175">"Bluetooth bağlantısı kesildi."</string>
-    <string name="accessibility_no_battery" msgid="358343022352820946">"Pil yok."</string>
-    <string name="accessibility_battery_one_bar" msgid="7774887721891057523">"Pil gücü bir çubuk."</string>
-    <string name="accessibility_battery_two_bars" msgid="8500650438735009973">"Pil gücü iki çubuk."</string>
-    <string name="accessibility_battery_three_bars" msgid="2302983330865040446">"Pil gücü üç çubuk."</string>
-    <string name="accessibility_battery_full" msgid="8909122401720158582">"Pil tam dolu."</string>
-    <string name="accessibility_no_phone" msgid="4894708937052611281">"Telefon sinyali yok."</string>
-    <string name="accessibility_phone_one_bar" msgid="687699278132664115">"Telefon sinyali bir çubuk."</string>
-    <string name="accessibility_phone_two_bars" msgid="8384905382804815201">"Telefon sinyali iki çubuk."</string>
-    <string name="accessibility_phone_three_bars" msgid="8521904843919971885">"Telefon sinyali üç çubuk."</string>
-    <string name="accessibility_phone_signal_full" msgid="6471834868580757898">"Telefon sinyali tam."</string>
-    <string name="accessibility_no_data" msgid="4791966295096867555">"Veri yok."</string>
-    <string name="accessibility_data_one_bar" msgid="1415625833238273628">"Veri sinyali bir çubuk."</string>
-    <string name="accessibility_data_two_bars" msgid="6166018492360432091">"Veri sinyali iki çubuk."</string>
-    <string name="accessibility_data_three_bars" msgid="9167670452395038520">"Veri sinyali üç çubuk."</string>
-    <string name="accessibility_data_signal_full" msgid="2708384608124519369">"Veri sinyali tam."</string>
-    <string name="accessibility_no_wifi" msgid="7455607460517331976">"Kablosuz yok."</string>
-    <string name="accessibility_wifi_one_bar" msgid="6854947280074467207">"Kablosuz gücü tek çubukta."</string>
-    <string name="accessibility_wifi_two_bars" msgid="3344340012058984348">"Kablosuz sinyal gücü iki çubuk."</string>
-    <string name="accessibility_wifi_three_bars" msgid="928322805193265041">"Kablosuz sinyal gücü üç çubuk."</string>
-    <string name="accessibility_wifi_signal_full" msgid="1275764416228473932">"Kablosuz sinyali tam."</string>
-    <string name="accessibility_no_wimax" msgid="4329180129727630368">"WiMAX yok."</string>
-    <string name="accessibility_wimax_one_bar" msgid="4170994299011863648">"WiMAX tek çubuk."</string>
-    <string name="accessibility_wimax_two_bars" msgid="9176236858336502288">"WiMAX iki çubuk."</string>
-    <string name="accessibility_wimax_three_bars" msgid="6116551636752103927">"WiMAX üç çubuk."</string>
-    <string name="accessibility_wimax_signal_full" msgid="2768089986795579558">"WiMAX sinyali tam."</string>
-    <string name="accessibility_data_connection_gprs" msgid="1606477224486747751">"GPRS"</string>
-    <string name="accessibility_data_connection_3g" msgid="8628562305003568260">"3G"</string>
-    <string name="accessibility_data_connection_3.5g" msgid="8664845609981692001">"3.5G"</string>
-    <string name="accessibility_data_connection_4g" msgid="7741000750630089612">"4G"</string>
-    <string name="accessibility_data_connection_cdma" msgid="6132648193978823023">"CDMA"</string>
-    <string name="accessibility_data_connection_edge" msgid="4477457051631979278">"Edge"</string>
-    <string name="accessibility_data_connection_wifi" msgid="2324496756590645221">"Kablosuz"</string>
-    <string name="accessibility_no_sim" msgid="8274017118472455155">"SIM kart yok."</string>
-    <string name="accessibility_bluetooth_tether" msgid="4102784498140271969">"Bluetooth İnternet paylaşımı"</string>
-    <string name="accessibility_airplane_mode" msgid="834748999790763092">"Uçak modu."</string>
-    <string name="accessibility_battery_level" msgid="7451474187113371965">"Pil yüzdesi: <xliff:g id="NUMBER">%d</xliff:g>"</string>
-    <string name="accessibility_settings_button" msgid="799583911231893380">"Sistem ayarları."</string>
-    <string name="accessibility_notifications_button" msgid="4498000369779421892">"Bildirimler."</string>
-    <string name="accessibility_remove_notification" msgid="3603099514902182350">"Bildirimi temizle."</string>
-    <string name="accessibility_gps_enabled" msgid="3511469499240123019">"GPS etkin."</string>
-    <string name="accessibility_gps_acquiring" msgid="8959333351058967158">"GPS alınıyor."</string>
-    <string name="accessibility_tty_enabled" msgid="4613200365379426561">"TeleTypewriter etkin."</string>
-    <string name="accessibility_ringer_vibrate" msgid="666585363364155055">"Telefon zili titreşim."</string>
-    <string name="accessibility_ringer_silent" msgid="9061243307939135383">"Telefon zili sessiz."</string>
-    <string name="accessibility_recents_item_dismissed" msgid="6803574935084867070">"<xliff:g id="APP">%s</xliff:g> kaldırıldı."</string>
-    <string name="data_usage_disabled_dialog_3g_title" msgid="5257833881698644687">"2G-3G verileri devre dışı bırakıldı"</string>
-    <string name="data_usage_disabled_dialog_4g_title" msgid="4789143363492682629">"4G verileri devre dışı"</string>
-    <string name="data_usage_disabled_dialog_mobile_title" msgid="1046047248844821202">"Mobil veriler devre dışı"</string>
-    <string name="data_usage_disabled_dialog_title" msgid="2086815304858964954">"Veriler devre dışı"</string>
-    <string name="data_usage_disabled_dialog" msgid="3853117269051806280">"Belirtilen veri kullanım limitine ulaştınız."\n\n"Verileri yeniden etkinleştirirseniz, operatör sizden ücret talep edebilir."</string>
-    <string name="data_usage_disabled_dialog_enable" msgid="7729772039208664606">"Veriyi yeniden etkinleştir"</string>
-    <string name="status_bar_settings_signal_meter_disconnected" msgid="1940231521274147771">"İnternet bağlantısı yok"</string>
-    <string name="status_bar_settings_signal_meter_wifi_nossid" msgid="6557486452774597820">"Kablosuz bağlandı"</string>
-    <string name="gps_notification_searching_text" msgid="8574247005642736060">"GPS aranıyor"</string>
-    <string name="gps_notification_found_text" msgid="4619274244146446464">"Konum GPS ile belirlendi"</string>
-    <string name="accessibility_clear_all" msgid="5235938559247164925">"Tüm bildirimleri temizle"</string>
-    <string name="dreams_dock_launcher" msgid="3541196417659166245">"Ekran koruyucuyu etkinleştir"</string>
-    <string name="status_bar_notification_inspect_item_title" msgid="1163547729015390250">"Uygulama bilgileri"</string>
-    <string name="notifications_off_title" msgid="8936620513608443224">"Bildirimler kapalı"</string>
-    <string name="notifications_off_text" msgid="2529001315769385273">"Bildirimleri tekrar açmak için buraya hafifçe vurun."</string>
-    <string name="accessibility_rotation_lock_off" msgid="4062780228931590069">"Ekran otomatik olarak dönecektir."</string>
-    <string name="accessibility_rotation_lock_on_landscape" msgid="6731197337665366273">"Ekran yatay yönde kilitlendi."</string>
-    <string name="accessibility_rotation_lock_on_portrait" msgid="5809367521644012115">"Ekran dikey yönde kilitlendi."</string>
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_label">Sist Arayüzü</string>
+    <string name="status_bar_clear_all_button">Temizle</string>
+    <string name="status_bar_do_not_disturb_button">Rahatsız etmeyin</string>
+    <string name="status_bar_please_disturb_button">Bildirimleri göster</string>
+    <string name="status_bar_recent_remove_item_title">Listeden kaldır</string>
+    <string name="status_bar_recent_inspect_item_title">Uygulama bilgileri</string>
+    <string name="status_bar_no_recent_apps">Son uygulama yok</string>
+    <string name="status_bar_accessibility_dismiss_recents">Son uygulamaları kapat</string>
+    <string name="status_bar_no_notifications_title">Bildirim yok</string>
+    <string name="status_bar_ongoing_events_title">Sürüyor</string>
+    <string name="status_bar_latest_events_title">Bildirimler</string>
+    <string name="battery_low_title">Şarj cihazını bağla</string>
+    <string name="battery_low_subtitle">Pil azalıyor.</string>
+    <string name="battery_low_percent_format">%d%% kaldı</string>
+    <string name="invalid_charger">"USB üzerinden şarj desteklenmiyor.\nYalnızca ürünle birlikte verilen şarj cihazını kullanın."</string>
+    <string name="battery_low_why">Pil kullanımı</string>
+    <string name="status_bar_settings_settings_button">Ayarlar</string>
+    <string name="status_bar_settings_wifi_button">Kablosuz</string>
+    <string name="status_bar_settings_airplane">Uçak modu</string>
+    <string name="status_bar_settings_auto_rotation">Ekranı otomatik döndür</string>
+    <string name="status_bar_settings_mute_label">KAPAT</string>
+    <string name="status_bar_settings_auto_brightness_label">OTOMTK</string>
+    <string name="status_bar_settings_notifications">Bildirimler</string>
+    <string name="bluetooth_tethered">Bluetooth paylaşımı tamam</string>
+    <string name="status_bar_input_method_settings_configure_input_methods">Giriş yöntemlerini ayarla</string>
+    <string name="status_bar_use_physical_keyboard">Fiziksel klavye</string>
+    <string name="usb_device_permission_prompt">%1$s uygulamasının USB cihazına erişmesine izin verilsin mi?</string>
+    <string name="usb_accessory_permission_prompt">%1$s uygulamasının USB aksesuarına erişmesine izin verilsin mi?</string>
+    <string name="usb_device_confirm_prompt">Bu USB cihaz bağlandığında %1$s açılsın mı?</string>
+    <string name="usb_accessory_confirm_prompt">Bu USB aksesuarı bağlandığında %1$s açılsın mı?</string>
+    <string name="usb_accessory_uri_prompt">Bu USB aksesuarıyla çalışan yüklü uygulama yok. Bu aksesuar hakkında bilgi içn: %1$s</string>
+    <string name="title_usb_accessory">USB aksesuarı</string>
+    <string name="label_view">Görüntüle</string>
+    <string name="always_use_device">Bu USB cihazı için varsayılan olarak kullan</string>
+    <string name="always_use_accessory">Bu USB aksesuar için varsayılan olarak kullan</string>
+    <string name="compat_mode_on">Yakınlaştır (ekranı kaplasın)</string>
+    <string name="compat_mode_off">Genişlet (ekran kapansın)</string>
+    <string name="compat_mode_help_header">Uyumluluk yakınlaştırması</string>
+    <string name="compat_mode_help_body">Uygulama küçük bir ekran için tasarlanmışsa saatin yanında bir yakınlaştırma denetimi görünür.</string>
+    <string name="screenshot_saving_ticker">Ekran görüntüsü kaydediliyor...</string>
+    <string name="screenshot_saving_title">Ekran görüntüsü kaydediliyor...</string>
+    <string name="screenshot_saving_text">Ekran görüntüsü kaydediliyor.</string>
+    <string name="screenshot_saved_title">Ekran görüntüsü alındı.</string>
+    <string name="screenshot_saved_text">Ekran görüntünüzü izlemek için dokunun.</string>
+    <string name="screenshot_failed_title">Ekran görüntüsü alınamadı.</string>
+    <string name="screenshot_failed_text">Ekran görüntüsü kaydedilemedi. Depolama birimi kullanımda olabilir.</string>
+    <string name="usb_preference_title">USB dosya aktarım seçenekleri</string>
+    <string name="use_mtp_button_title">Medya oynatıcı olarak ekle (MTP)</string>
+    <string name="use_ptp_button_title">Kamera olarak ekle (PTP)</string>
+    <string name="installer_cd_button_title">Mac için Android File Transfer uygulamasını yükle</string>
+    <string name="accessibility_back">Geri</string>
+    <string name="accessibility_home">Ana sayfa</string>
+    <string name="accessibility_menu">Menü</string>
+    <string name="accessibility_recent">Son uygulamalar</string>
+    <string name="accessibility_ime_switch_button">Giriş yöntemini değiştirme düğmesi.</string>
+    <string name="accessibility_compatibility_zoom_button">Uyumluluk zum düğmesi.</string>
+    <string name="accessibility_compatibility_zoom_example">Daha büyük ekrana daha küçük yakınlaştır.</string>
+    <string name="accessibility_bluetooth_connected">Bluetooth bağlandı.</string>
+    <string name="accessibility_bluetooth_disconnected">Bluetooth bağlantısı kesildi.</string>
+    <string name="accessibility_no_battery">Pil yok.</string>
+    <string name="accessibility_battery_one_bar">Pil gücü bir çubuk.</string>
+    <string name="accessibility_battery_two_bars">Pil gücü iki çubuk.</string>
+    <string name="accessibility_battery_three_bars">Pil gücü üç çubuk.</string>
+    <string name="accessibility_battery_full">Pil tam dolu.</string>
+    <string name="accessibility_no_phone">Telefon sinyali yok.</string>
+    <string name="accessibility_phone_one_bar">Telefon sinyali bir çubuk.</string>
+    <string name="accessibility_phone_two_bars">Telefon sinyali iki çubuk.</string>
+    <string name="accessibility_phone_three_bars">Telefon sinyali üç çubuk.</string>
+    <string name="accessibility_phone_signal_full">Telefon sinyali tam.</string>
+    <string name="accessibility_no_data">Veri yok.</string>
+    <string name="accessibility_data_one_bar">Veri sinyali bir çubuk.</string>
+    <string name="accessibility_data_two_bars">Veri sinyali iki çubuk.</string>
+    <string name="accessibility_data_three_bars">Veri sinyali üç çubuk.</string>
+    <string name="accessibility_data_signal_full">Veri sinyali tam.</string>
+    <string name="accessibility_no_wifi">Kablosuz yok.</string>
+    <string name="accessibility_wifi_one_bar">Kablosuz gücü tek çubukta.</string>
+    <string name="accessibility_wifi_two_bars">Kablosuz sinyal gücü iki çubuk.</string>
+    <string name="accessibility_wifi_three_bars">Kablosuz sinyal gücü üç çubuk.</string>
+    <string name="accessibility_wifi_signal_full">Kablosuz sinyali tam.</string>
+    <string name="accessibility_no_wimax">WiMAX yok.</string>
+    <string name="accessibility_wimax_one_bar">WiMAX tek çubuk.</string>
+    <string name="accessibility_wimax_two_bars">WiMAX iki çubuk.</string>
+    <string name="accessibility_wimax_three_bars">WiMAX üç çubuk.</string>
+    <string name="accessibility_wimax_signal_full">WiMAX sinyali tam.</string>
+    <string name="accessibility_data_connection_gprs">GPRS</string>
+    <string name="accessibility_data_connection_3g">3G</string>
+    <string name="accessibility_data_connection_3.5g">3.5G</string>
+    <string name="accessibility_data_connection_4g">4G</string>
+    <string name="accessibility_data_connection_cdma">CDMA</string>
+    <string name="accessibility_data_connection_edge">Edge</string>
+    <string name="accessibility_data_connection_wifi">Kablosuz</string>
+    <string name="accessibility_no_sim">SIM kart yok.</string>
+    <string name="accessibility_bluetooth_tether">Bluetooth İnternet paylaşımı</string>
+    <string name="accessibility_airplane_mode">Uçak modu.</string>
+    <string name="accessibility_battery_level">Pil yüzdesi: %d</string>
+    <string name="accessibility_settings_button">Sistem ayarları.</string>
+    <string name="accessibility_notifications_button">Bildirimler.</string>
+    <string name="accessibility_remove_notification">Bildirimi temizle.</string>
+    <string name="accessibility_gps_enabled">GPS etkin.</string>
+    <string name="accessibility_gps_acquiring">GPS alınıyor.</string>
+    <string name="accessibility_tty_enabled">TeleTypewriter etkin.</string>
+    <string name="accessibility_ringer_vibrate">Telefon zili titreşim.</string>
+    <string name="accessibility_ringer_silent">Telefon zili sessiz.</string>
+    <string name="accessibility_recents_item_dismissed">%s kaldırıldı.</string>
+    <string name="data_usage_disabled_dialog_3g_title">2G-3G verileri devre dışı bırakıldı</string>
+    <string name="data_usage_disabled_dialog_4g_title">4G verileri devre dışı</string>
+    <string name="data_usage_disabled_dialog_mobile_title">Mobil veriler devre dışı</string>
+    <string name="data_usage_disabled_dialog_title">Veriler devre dışı</string>
+    <string name="data_usage_disabled_dialog">"Belirtilen veri kullanım limitine ulaştınız.\n\nVerileri yeniden etkinleştirirseniz, operatör sizden ücret talep edebilir."</string>
+    <string name="data_usage_disabled_dialog_enable">Veriyi yeniden etkinleştir</string>
+    <string name="status_bar_settings_signal_meter_disconnected">İnternet bağlantısı yok</string>
+    <string name="status_bar_settings_signal_meter_wifi_nossid">Kablosuz bağlandı</string>
+    <string name="gps_notification_searching_text">GPS aranıyor</string>
+    <string name="gps_notification_found_text">Konum GPS ile belirlendi</string>
+    <string name="accessibility_clear_all">Tüm bildirimleri temizle</string>
+    <string name="dreams_dock_launcher">Ekran koruyucuyu etkinleştir</string>
+    <string name="status_bar_notification_inspect_item_title">Uygulama bilgileri</string>
+    <string name="notifications_off_title">Bildirimler kapalı</string>
+    <string name="notifications_off_text">Bildirimleri tekrar açmak için buraya hafifçe vurun.</string>
+    <string name="accessibility_rotation_lock_off">Ekran otomatik olarak dönecektir.</string>
+    <string name="accessibility_rotation_lock_on_landscape">Ekran yatay yönde kilitlendi.</string>
+    <string name="accessibility_rotation_lock_on_portrait">Ekran dikey yönde kilitlendi.</string>
+    <string name="toggle_bt">BT</string>
+    <string name="toggle_data">Veri</string>
+    <string name="toggle_lte">LTE</string>
+    <string name="toggle_rotate">Oto-Dön</string>
+    <string name="toggle_wifi">Wi-Fi</string>
+    <string name="toggle_gps">GPS</string>
+    <string name="toggle_2g">2G</string>
+    <string name="toggle_wifiap">Wi-Fi AP</string>
+    <string name="toggle_airplane">UçakMod</string>
+    <string name="toggle_vibrate">Titreşim</string>
+    <string name="toggle_silent">Sessiz</string>
+    <string name="toggle_torch">Fener</string>
+    <string name="toggle_sync">Senk.</string>
+    <string name="toggle_swagger">Swagger</string>
+    <string name="toggle_fcharge">Hşarj</string>
+    <string name="toggle_tether">Paylş.</string>
+    <string name="toggle_nfc">NFC</string>
+    <string name="status_bar_settings_toggles">Kısayollar</string>
+    <string name="brightness_label">Parlaklık</string>
+    <string name="battery_test">99</string>
 </resources>

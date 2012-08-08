@@ -3732,7 +3732,6 @@
   <java-symbol type="bool" name="config_autoBrightnessButtonKeyboard" />
   <java-symbol type="string" name="config_deviceKeyHandlerLib" />
   <java-symbol type="string" name="config_deviceKeyHandlerClass" />
-  <java-symbol type="bool" name="config_noDelayInATwoDP" />
   <java-symbol type="bool" name="config_smsSamsungCdmaAlternateMessageIDEncoding" />
 
 <!-- Always show battery status on lockscreen -->

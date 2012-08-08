@@ -50,7 +50,9 @@ public abstract class Toggle implements OnCheckedChangeListener {
 
     protected boolean mSystemChange = false;
     final boolean useAltButtonLayout;
-    final int defaultColor;
+    final int enabledColor;
+    final int disabledColor;
+    final float toggleAlpha;
 
     public Toggle(Context context) {
         mContext = context;
@@ -59,12 +61,27 @@ public abstract class Toggle implements OnCheckedChangeListener {
                 context.getContentResolver(),
                 Settings.System.STATUSBAR_TOGGLES_USE_BUTTONS, 1) == 1;
 
-        float[] hsv = new float[3];
-        int color = context.getResources().getColor(
-                com.android.internal.R.color.holo_blue_light);
-        Color.colorToHSV(color, hsv);
-        hsv[2] *= 0.7f; // value component
-        defaultColor = Color.HSVToColor(hsv);
+        int enabledColorValue = Settings.System.getInt(
+                context.getContentResolver(),
+                Settings.System.STATUSBAR_TOGGLES_ENABLED_COLOR, 0xFF33B5E5);
+
+        int disabledColorValue = Settings.System.getInt(
+                context.getContentResolver(),
+                Settings.System.STATUSBAR_TOGGLES_DISABLED_COLOR, 0xFF4C4C4C);
+
+        toggleAlpha = Settings.System.getFloat(
+                context.getContentResolver(),
+                Settings.System.STATUSBAR_TOGGLES_ALPHA, 0.7f);
+
+        float[] enabledHsv = new float[3];
+        float[] disabledHsv = new float[3];
+        Color.colorToHSV(enabledColorValue, enabledHsv);
+        Color.colorToHSV(disabledColorValue, disabledHsv);
+        enabledHsv[2] *= 1.0f;
+        disabledHsv[2] *= 1.0f;
+        enabledColor = Color.HSVToColor(enabledHsv);
+        disabledColor = Color.HSVToColor(disabledHsv);
+
 
         mView = View.inflate(mContext,
                 useAltButtonLayout ? R.layout.toggle_button : R.layout.toggle,
@@ -94,9 +111,10 @@ public abstract class Toggle implements OnCheckedChangeListener {
         Drawable bg = mContext.getResources().getDrawable(
                 toggle ? R.drawable.btn_on : R.drawable.btn_off);
         if (toggle)
-            bg.setColorFilter(defaultColor, PorterDuff.Mode.SRC_ATOP);
+            bg.setColorFilter(enabledColor, PorterDuff.Mode.SRC_ATOP);
         else
-            bg.setColorFilter(null);
+            bg.setColorFilter(disabledColor, PorterDuff.Mode.SRC_ATOP);
+        bg.setAlpha((int) (toggleAlpha * 255));
         mToggle.setBackgroundDrawable(bg);
     }
 

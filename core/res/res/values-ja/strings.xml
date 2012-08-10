@@ -318,6 +318,8 @@
     <string name="permdesc_clearAppCache" product="default" msgid="5067988373366292186">"アプリのキャッシュディレクトリからファイルを削除して携帯端末のストレージの空き領域を増やすことをアプリに許可します。アクセスは通常システムプロセスのみに制限されています。"</string>
     <string name="permlab_movePackage" msgid="3289890271645921411">"アプリのリソースの移動"</string>
     <string name="permdesc_movePackage" msgid="319562217778244524">"内部メディアと外部メディアの間でアプリのリソースを移動することをアプリに許可します。"</string>
+    <string name="permlab_preventpower">prevent power key電源ボタン無効</string>
+    <string name="permdesc_preventpower">アプリケーションが電源ボタンを無効にするのを許可します。</string>
     <string name="permlab_readLogs" msgid="6615778543198967614">"機密ログデータの読み取り"</string>
     <string name="permdesc_readLogs" product="tablet" msgid="82061313293455151">"システムの各種ログファイルの読み取りをアプリに許可します。許可すると、アプリではタブレットの使用に関する全般的な情報を読み取れるようになります。この情報には個人情報や機密情報が含まれる場合があります。"</string>
     <string name="permdesc_readLogs" product="default" msgid="2063438140241560443">"システムの各種ログファイルの読み取りをアプリに許可します。許可すると、アプリでは携帯端末の使用に関する全般的な情報を読み取れるようになります。この情報には個人情報や機密情報が含まれる場合があります。"</string>
@@ -702,6 +704,8 @@
     <string name="lockscreen_charged" msgid="4938930459620989972">"充電完了"</string>
     <string name="lockscreen_battery_short" msgid="4477264849386850266">"<xliff:g id="NUMBER">%d</xliff:g><xliff:g id="PERCENT">%%</xliff:g>"</string>
     <string name="lockscreen_low_battery" msgid="1482873981919249740">"充電してください"</string>
+    <string name="lockscreen_always_battery">放電中, <xliff:g id="number">%d</xliff:g><xliff:g id="percent">%%</xliff:g></string>
+    <string name="lockscreen_always_low_battery">充電器に接続してください, <xliff:g id="number">%d</xliff:g><xliff:g id="percent">%%</xliff:g></string>
     <string name="lockscreen_missing_sim_message_short" msgid="7381499217732227295">"SIMカードが挿入されていません"</string>
     <string name="lockscreen_missing_sim_message" product="tablet" msgid="151659196095791474">"タブレット内にSIMカードがありません。"</string>
     <string name="lockscreen_missing_sim_message" product="default" msgid="2186920585695169078">"SIMカードが挿入されていません"</string>
@@ -771,6 +775,130 @@
     <string name="autofill_address_summary_name_format" msgid="3268041054899214945">"$3$2$1"</string>
     <string name="autofill_address_summary_separator" msgid="7483307893170324129">"、 "</string>
     <string name="autofill_address_summary_format" msgid="4874459455786827344">"$1$2$3"</string>
+
+    <!-- Do not translate. Regex used by AutoFill. -->
+    <string name="autofill_attention_ignored_re">attention|attn</string>
+
+    <!-- Do not translate. Regex used by AutoFill. -->
+    <string name="autofill_region_ignored_re">province|region|other<!-- es -->|provincia<!-- pt-BR, pt-PT -->|bairro|suburb</string>
+
+    <!-- Do not translate. Regex used by AutoFill. -->
+    <string name="autofill_company_re">company|business|organization|organisation|department<!-- de-DE -->|firma|firmenname<!-- es -->|empresa<!-- fr-FR -->|societe|société<!-- it-IT -->|ragione.?sociale<!-- ja-JP -->|会社<!-- ru -->|название.?компании<!-- zh-CN -->|单位|公司</string>
+
+    <!-- Do not translate. Regex used by AutoFill. -->
+    <string name="autofill_address_line_1_re">address.?line|address1|addr1|street<!-- de-DE -->|strasse|straße|hausnummer|housenumber<!-- en-GB -->|house.?name<!-- es -->|direccion|dirección<!-- fr-FR -->|adresse<!-- it-IT -->|indirizzo<!-- ja-JP -->|住所1<!-- pt-BR, pt-PT -->|morada|endereço<!-- ru -->|Адрес<!-- zh-CN -->|地址</string>
+
+    <!-- Do not translate. Regex used by AutoFill. -->
+    <string name="autofill_address_line_1_label_re">address<!-- fr-FR -->|adresse<!-- it-IT -->|indirizzo<!-- ja-JP -->|住所<!-- zh-CN -->|地址</string>
+
+    <!-- Do not translate. Regex used by AutoFill. -->
+    <string name="autofill_address_line_2_re">address.?line2|address2|addr2|street|suite|unit<!-- de-DE -->|adresszusatz|ergänzende.?angaben<!-- es -->|direccion2|colonia|adicional<!-- fr-FR -->|addresssuppl|complementnom|appartement<!-- it-IT -->|indirizzo2<!-- ja-JP -->|住所2</string>
+
+    <!-- Do not translate. Regex used by AutoFill. -->
+    <string name="autofill_address_line_3_re">address.?line3|address3|addr3|street|line3<!-- es -->|municipio<!-- fr-FR -->|batiment|residence<!-- it-IT -->|indirizzo3</string>
+
+    <!-- Do not translate. Regex used by AutoFill. -->
+    <string name="autofill_country_re">country|location<!-- ja-JP -->|国<!-- zh-CN -->|国家</string>
+
+    <!-- Do not translate. Regex used by AutoFill. -->
+    <string name="autofill_zip_code_re">zip|postal|post code|pcode|^1z$<!-- de-DE -->|postleitzahl<!-- es -->|cp<!-- fr-FR -->|cdp<!-- it-IT -->|cap<!-- ja-JP -->|郵便番号<!-- pt-BR, pt-PT -->|codigo|codpos|cep<!-- ru -->|Почтовый.?Индекс<!--zh-CN -->|邮政编码|邮编<!-- zh-TW -->|郵遞區號</string>
+
+    <!-- Do not translate. Regex used by AutoFill. -->
+    <string name="autofill_zip_4_re">zip|^-$|post2<!-- pt-BR, pt-PT -->|codpos2</string>
+
+    <!-- Do not translate. Regex used by AutoFill. -->
+    <string name="autofill_city_re">city|town<!-- de-DE -->|ort|stadt<!-- en-AU -->|suburb<!-- es -->|ciudad|provincia|localidad|poblacion<!-- fr-FR -->|ville|commune<!-- it-IT -->|localita<!-- ja-JP -->|市区町村<!-- pt-BR, pt-PT -->|cidade<!-- ru -->|Город<!-- zh-CN -->|市<!-- zh-TW -->|分區</string>
+
+    <!-- Do not translate. Regex used by AutoFill. -->
+    <string name="autofill_state_re">state|county|region|province<!-- de-DE -->|land<!-- en-UK -->|county|principality<!-- ja-JP -->|都道府県<!-- pt-BR, pt-PT -->|estado|provincia<!-- ru -->|область<!-- zh-CN -->|省<!-- zh-TW -->|地區</string>
+
+    <!-- Do not translate. Regex used by AutoFill. -->
+    <string name="autofill_address_type_same_as_re">same as</string>
+
+    <!-- Do not translate. Regex used by AutoFill. -->
+    <string name="autofill_address_type_use_my_re">use my</string>
+
+    <!-- Do not translate. Regex used by AutoFill. -->
+    <string name="autofill_billing_designator_re">bill</string>
+
+    <!-- Do not translate. Regex used by AutoFill. -->
+    <string name="autofill_shipping_designator_re">ship</string>
+
+    <!-- Do not translate. Regex used by AutoFill. -->
+    <string name="autofill_email_re">e.?mail<!-- ja-JP -->|メールアドレス<!-- ru -->|Электронной.?Почты<!-- zh-CN -->|邮件|邮箱<!-- zh-TW -->|電郵地址</string>
+
+    <!-- Do not translate. Regex used by AutoFill. -->
+    <string name="autofill_username_re">user.?name|user.?id<!-- de-DE -->|vollständiger.?name<!-- zh-CN -->|用户名</string>
+
+    <!-- Do not translate. Regex used by AutoFill. -->
+    <string name="autofill_name_re">^name|full.?name|your.?name|customer.?name|firstandlastname<!-- es -->|nombre.*y.*apellidos<!-- fr-FR -->|^nom<!-- ja-JP -->|お名前|氏名<!-- pt-BR, pt-PT -->|^nome<!-- zh-CN -->|姓名</string>
+
+    <!-- Do not translate. Regex used by AutoFill. -->
+    <string name="autofill_name_specific_re">^name<!-- fr-FR -->|^nom<!-- pt-BR, pt-PT -->|^nome</string>
+
+    <!-- Do not translate. Regex used by AutoFill. -->
+
+    <string name="autofill_first_name_re">irst.*name|initials|fname|first$<!-- de-DE -->|vorname<!-- es -->|nombre<!-- fr-FR -->|forename|prénom|prenom<!-- ja-JP -->|名<!-- pt-BR, pt-PT -->|nome<!-- ru -->|Имя</string>
+
+    <!-- Do not translate. Regex used by AutoFill. -->
+    <string name="autofill_middle_initial_re">middle.*initial|m\\.i\\.|mi$</string>
+
+    <!-- Do not translate. Regex used by AutoFill. -->
+    <string name="autofill_middle_name_re">middle.*name|mname|middle$<!-- es -->|apellido.?materno|lastlastname</string>
+
+    <!-- Do not translate. Regex used by AutoFill. -->
+    <string name="autofill_last_name_re">last.*name|lname|surname|last$<!-- de-DE -->|nachname<!-- es -->|apellidos<!-- fr-FR -->|famille|^nom<!-- it-IT -->|cognome<!-- ja-JP -->|姓<!-- pt-BR, pt-PT -->|morada|apelidos|surename|sobrenome<!-- ru -->|Фамилия</string>
+
+    <!-- Do not translate. Regex used by AutoFill. -->
+    <string name="autofill_phone_re">phone<!-- de-DE -->|telefonnummer<!-- es -->|telefono|teléfono<!-- fr-FR -->|telfixe<!-- ja-JP -->|電話<!-- pt-BR, pt-PT -->|telefone|telemovel<!-- ru -->|телефон<!-- zh-CN -->|电话</string>
+
+    <!-- Do not translate. Regex used by AutoFill. -->
+    <string name="autofill_area_code_re">area.*code|acode|area</string>
+
+    <!-- Do not translate. Regex used by AutoFill. -->
+    <string name="autofill_phone_prefix_re">prefix<!-- fr-FR -->|preselection<!-- pt-BR, pt-PT -->|ddd</string>
+
+    <!-- Do not translate. Regex used by AutoFill. -->
+    <string name="autofill_phone_suffix_re">suffix</string>
+
+    <!-- Do not translate. Regex used by AutoFill. -->
+    <string name="autofill_phone_extension_re">ext<!-- pt-BR, pt-PT -->|ramal</string>
+
+    <!-- Do not translate. Regex used by AutoFill. -->
+    <string name="autofill_name_on_card_re">card.?holder|name.?on.?card|ccname|owner<!-- de-DE -->|karteninhaber<!-- es -->|nombre.*tarjeta<!-- fr-FR -->|nom.*carte<!-- it-IT -->|nome.*cart<!-- ja-JP -->|名前<!-- ru -->|Имя.*карты<!-- zh-CN -->|信用卡开户名|开户名|持卡人姓名<!-- zh-TW -->|持卡人姓名</string>
+
+    <!-- Do not translate. Regex used by AutoFill. -->
+    <string name="autofill_name_on_card_contextual_re">name</string>
+
+    <!-- Do not translate. Regex used by AutoFill. -->
+    <string name="autofill_card_cvc_re">verification|card identification|cvn|security code|cvv code|cvc</string>
+
+    <!-- Do not translate. Regex used by AutoFill. -->
+    <string name="autofill_card_number_re">number|card.?#|card.?no|ccnum<!-- de-DE -->|nummer<!-- es -->|credito|numero|número<!-- fr-FR -->|numéro<!-- ja-JP -->|カード番号<!-- ru -->|Номер.*карты<!-- zh-CN -->|信用卡号|信用卡号码<!-- zh-TW -->|信用卡卡號</string>
+
+    <!-- Do not translate. Regex used by AutoFill. -->
+    <string name="autofill_expiration_month_re">expir|exp.*month|exp.*date|ccmonth<!-- de-DE -->|gueltig|gültig|monat<!-- es -->|fecha<!-- fr-FR -->|date.*exp<!-- it-IT -->|scadenza<!-- ja-JP -->|有効期限<!-- pt-BR, pt-PT -->|validade<!-- ru -->|Срок действия карты<!-- zh-CN -->|月</string>
+
+    <!-- Do not translate. Regex used by AutoFill. -->
+    <string name="autofill_expiration_date_re">exp|^/|year<!-- de-DE -->|ablaufdatum|gueltig|gültig|yahr<!-- es -->|fecha<!-- it-IT -->|scadenza<!-- ja-JP -->|有効期限<!-- pt-BR, pt-PT -->|validade<!-- ru -->|Срок действия карты<!-- zh-CN -->|年|有效期</string>
+
+    <!-- Do not translate. Regex used by AutoFill. -->
+    <string name="autofill_card_ignored_re">^card</string>
+
+    <!-- Do not translate. Regex used by AutoFill. -->
+    <string name="autofill_fax_re">fax<!-- fr-FR -->|télécopie|telecopie<!-- ja-JP -->|ファックス<!-- ru -->|факс<!-- zh-CN -->|传真<!-- zh-TW -->|傳真</string>
+
+    <!-- Do not translate. Regex used by AutoFill. -->
+    <string name="autofill_country_code_re">country.*code|ccode|_cc</string>
+
+    <!-- Do not translate. Regex used by AutoFill. -->
+    <string name="autofill_area_code_notext_re">^\\($</string>
+
+    <!-- Do not translate. Regex used by AutoFill. -->
+    <string name="autofill_phone_prefix_separator_re">^-$|^\\)$</string>
+
+    <!-- Do not translate. Regex used by AutoFill. -->
+    <string name="autofill_phone_suffix_separator_re">^-$</string>
     <string name="autofill_province" msgid="2231806553863422300">"地方"</string>
     <string name="autofill_postal_code" msgid="4696430407689377108">"郵便番号"</string>
     <string name="autofill_state" msgid="6988894195520044613">"州"</string>
@@ -1010,9 +1138,9 @@
     <item quantity="one" msgid="1634101450343277345">"Wi-Fiオープンネットワークが利用できます"</item>
     <item quantity="other" msgid="7915895323644292768">"Wi-Fiオープンネットワークが利用できます"</item>
   </plurals>
+
+    <!-- A notification is shown when a captive portal network is detected.  This is the notification's title. -->
     <string name="wifi_available_sign_in" msgid="4029489716605255386">"Wi-Fiネットワークにログイン"</string>
-    <!-- no translation found for wifi_available_sign_in_detailed (6797764740339907572) -->
-    <skip />
     <string name="wifi_watchdog_network_disabled" msgid="7904214231651546347">"Wi-Fiに接続できませんでした"</string>
     <string name="wifi_watchdog_network_disabled_detailed" msgid="5548780776418332675">" はインターネット接続に問題があります。"</string>
     <string name="wifi_p2p_dialog_title" msgid="97611782659324517">"Wi-Fi Direct"</string>
@@ -1290,4 +1418,18 @@
     <string name="default_audio_route_category_name" msgid="3722811174003886946">"システム"</string>
     <string name="bluetooth_a2dp_audio_route_name" msgid="8575624030406771015">"Bluetooth音声"</string>
     <string name="media_route_chooser_grouping_done" msgid="7966438307723317169">"完了"</string>
+    <!-- Reboot -->
+    <string name="reboot">再起動</string>
+
+    <!-- Reboot recovery option -->
+    <string name="reboot_recovery">リカバリー</string>
+
+    <!-- Reboot recovery option -->
+    <string name="reboot_download">ダウンロード</string>
+
+    <!-- Reboot recovery option -->
+    <string name="reboot_bootloader">ブートローダー</string>
+
+    <!-- Rebooting message -->
+    <string name="reboot_progress">"再起動中..."</string>
 </resources>

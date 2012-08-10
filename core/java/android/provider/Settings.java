@@ -4948,6 +4948,14 @@ public final class Settings {
         /** Timeout for package verification. {@hide} */
         public static final String PACKAGE_VERIFIER_TIMEOUT = "verifier_timeout";
 
+        /**
+         * use the lock screen timeout settings when the user turns the power off manually?
+         * Boolean value
+         *
+         * @hide
+         */
+        public static final String LOCK_SCREEN_LOCK_USER_OVERRIDE = "lock_screen_lock_suer_override";
+
         /** {@hide} */
         public static final String
                 READ_EXTERNAL_STORAGE_ENFORCED_DEFAULT = "read_external_storage_enforced_default";

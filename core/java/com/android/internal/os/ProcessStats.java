@@ -154,7 +154,7 @@ public class ProcessStats {
 
     private boolean mFirst = true;
 
-    private byte[] mBuffer = new byte[256];
+    private byte[] mBuffer = new byte[4096];
 
     /**
      * The time in microseconds that the CPU has been running at each speed.
@@ -556,7 +556,7 @@ public class ProcessStats {
     private long[] getCpuSpeedTimes(long[] out) {
         long[] tempTimes = out;
         long[] tempSpeeds = mCpuSpeeds;
-        final int MAX_SPEEDS = 20;
+        final int MAX_SPEEDS = 60;
         if (out == null) {
             tempTimes = new long[MAX_SPEEDS]; // Hopefully no more than that
             tempSpeeds = new long[MAX_SPEEDS];
@@ -702,7 +702,9 @@ public class ProcessStats {
 
         long sampleTime = mCurrentSampleTime - mLastSampleTime;
         long sampleRealTime = mCurrentSampleRealTime - mLastSampleRealTime;
-        long percAwake = sampleRealTime > 0 ? ((sampleTime*100) / sampleRealTime) : 0;
+        long percAwake = ((sampleRealTime > 0)
+            ? (sampleTime*100) / sampleRealTime
+            : 100);
         if (percAwake != 100) {
             pw.print(" with ");
             pw.print(percAwake);

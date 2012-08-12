@@ -26,7 +26,7 @@ public class FChargeToggle extends Toggle {
 
         setLabel(R.string.toggle_fcharge);
         IntentFilter f = new IntentFilter();
-        f.addAction("com.roman.romcontrol.FCHARGE_CHANGED");
+        f.addAction("com.aokp.romcontrol.FCHARGE_CHANGED");
         context.registerReceiver(mIntentReceiver, f);
         updateState();
     }
@@ -81,7 +81,7 @@ public class FChargeToggle extends Toggle {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if (action.equals("com.roman.romcontrol.FCHARGE_CHANGED")) {
+            if (action.equals("com.aokp.romcontrol.FCHARGE_CHANGED")) {
                 updateState();
             }
         }

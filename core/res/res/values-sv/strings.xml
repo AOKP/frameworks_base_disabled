@@ -1290,4 +1290,20 @@
     <string name="default_audio_route_category_name" msgid="3722811174003886946">"System"</string>
     <string name="bluetooth_a2dp_audio_route_name" msgid="8575624030406771015">"Bluetooth-ljud"</string>
     <string name="media_route_chooser_grouping_done" msgid="7966438307723317169">"Klar"</string>
+
+    <!-- Reboot -->
+    <string name="reboot">Omstart</string>
+
+    <!-- Reboot recovery option -->
+    <string name="reboot_recovery">Recovery</string>
+
+    <!-- Reboot recovery option -->
+    <string name="reboot_download">Ladda ner</string>
+
+    <!-- Reboot recovery option -->
+    <string name="reboot_bootloader">Bootloader</string>
+
+    <!-- Rebooting message -->
+    <string name="reboot_progress">Din enhet startar om</string>
+
 </resources>

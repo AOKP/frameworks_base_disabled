@@ -1101,32 +1101,38 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     Settings.System.TABLET_UI, 1);
         }
 
-        if (!mHasSystemNavBar) {
-        final int showByDefault = mContext.getResources().getBoolean(
-                com.android.internal.R.bool.config_showNavigationBar) ? 1 : 0;
-        mHasNavigationBar = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.NAVIGATION_BAR_SHOW, showByDefault) == 1;
-        // Allow a system property to override this. Used by the emulator.
-        // See also hasNavigationBar().
-        String navBarOverride = SystemProperties.get("qemu.hw.mainkeys");
-        if (! "".equals(navBarOverride)) {
-            if      (navBarOverride.equals("1")) mHasNavigationBar = false;
-            else if (navBarOverride.equals("0")) mHasNavigationBar = true;
-        } else {
-            mHasNavigationBar = false;
-        }
+        if (mHasSystemNavBar) {
+            final int showByDefault = mContext.getResources().getBoolean(
+                    com.android.internal.R.bool.config_showNavigationBar) ? 1 : 0;
+            mHasNavigationBar = Settings.System.getInt(mContext.getContentResolver(),
+                    Settings.System.NAVIGATION_BAR_SHOW, showByDefault) == 1;
 
-        if (mNavBarFirstBootFlag){
-            mHasNavigationBar = (showByDefault == 1);
-            mNavBarFirstBootFlag = false;
-            // at first boot up, we need to make sure navbar gets created (or obey framework setting).
-            // this should quickly get over-ridden by the settings observer if it was
-            // disabled by the user.
+            /*
+             * at first boot up, we need to make sure navbar gets created
+             * (or obey framework setting). 
+             * this should quickly get over-ridden by the settings observer
+             * if it was disabled by the user.
+            */
+            if (mNavBarFirstBootFlag) {
+                mHasNavigationBar = (showByDefault == 1);
+                mNavBarFirstBootFlag = false;
+            }
+        } else {
+            // Allow a system property to override this. Used by the emulator.
+            // See also hasNavigationBar().
+            String navBarOverride = SystemProperties.get("qemu.hw.mainkeys");
+            if (!"".equals(navBarOverride)) {
+                if (navBarOverride.equals("1"))
+                    mHasNavigationBar = false;
+                else if (navBarOverride.equals("0"))
+                    mHasNavigationBar = true;
+            }
         }
 
         if (mHasSystemNavBar) {
-            // The system bar is always at the bottom.  If you are watching
-            // a video in landscape, we don't need to hide it if we can still
+            // The system bar is always at the bottom. If you are watching
+            // a video in landscape, we don't need to hide it if we can
+            // still
             // show a 16:9 aspect ratio with it.
             int longSizeDp = longSize
                     * DisplayMetrics.DENSITY_DEFAULT
@@ -1134,15 +1140,15 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             int barHeightDp = mNavigationBarHeightForRotation[mLandscapeRotation]
                     * DisplayMetrics.DENSITY_DEFAULT
                     / DisplayMetrics.DENSITY_DEVICE;
-            int aspect = ((shortSizeDp-barHeightDp) * 16) / longSizeDp;
+            int aspect = ((shortSizeDp - barHeightDp) * 16) / longSizeDp;
             // We have computed the aspect ratio with the bar height taken
-            // out to be 16:aspect.  If this is less than 9, then hiding
+            // out to be 16:aspect. If this is less than 9, then hiding
             // the navigation bar will provide more useful space for wide
             // screen movies.
             mCanHideNavigationBar = aspect < 9;
         } else if (mHasNavigationBar) {
-            // The navigation bar is at the right in landscape; it seems always
-            // useful to hide it for showing a video.
+            // The navigation bar is at the right in landscape; it seems
+            // always useful to hide it for showing a video.
             mCanHideNavigationBar = true;
         } else {
             mCanHideNavigationBar = false;
@@ -1153,8 +1159,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         } else {
             mHdmiRotation = mLandscapeRotation;
         }
-      }
     }
+
     public void updateSettings() {
         ContentResolver resolver = mContext.getContentResolver();
         boolean updateRotation = false;
@@ -1228,6 +1234,15 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         }
         if (updateRotation) {
             updateRotation(true);
+        }
+        final int showByDefault = mContext.getResources().getBoolean(
+                com.android.internal.R.bool.config_showNavigationBar) ? 1 : 0;
+        boolean showNavBarNow = Settings.System.getInt(resolver,
+                Settings.System.NAVIGATION_BAR_SHOW, showByDefault) == 1;
+        if (mHasNavigationBar != showNavBarNow) {
+            mHasNavigationBar = showNavBarNow;
+            if(mDisplay != null)
+                setInitialDisplaySize(mDisplay, mUnrestrictedScreenWidth, mUnrestrictedScreenHeight);
         }
     }
 

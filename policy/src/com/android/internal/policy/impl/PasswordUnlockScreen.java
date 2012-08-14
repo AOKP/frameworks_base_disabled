@@ -182,6 +182,7 @@ public class PasswordUnlockScreen extends LinearLayout implements KeyguardScreen
                             mLockPatternUtils.checkPassword(entry)) {
                             mCallback.keyguardDone(true);
                             mCallback.reportSuccessfulUnlockAttempt();
+                            KeyStore.getInstance().password(entry);
                     }
                 }
             }

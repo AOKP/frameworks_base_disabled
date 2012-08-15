@@ -23,6 +23,7 @@ import com.android.systemui.statusbar.policy.ToggleSlider.Listener;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.ContentObserver;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.IPowerManager;
@@ -35,6 +36,7 @@ import android.util.Slog;
 import android.view.IWindowManager;
 import android.view.View;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 
 public class BrightnessSlider implements ToggleSlider.Listener {
     private static final String TAG = "StatusBar.BrightnessController";
@@ -43,10 +45,13 @@ public class BrightnessSlider implements ToggleSlider.Listener {
     // doesn't set the backlight to 0 and get stuck
     private int mScreenBrightnessDim = android.os.PowerManager.BRIGHTNESS_DIM;
 
+    private float backgroundAlpha;
+
     private static final int MAXIMUM_BACKLIGHT = android.os.PowerManager.BRIGHTNESS_ON;
 
     private Context mContext;
     private ToggleSlider mControl;
+    private ImageView mBackground;
     private IPowerManager mPower;
     private View mView;
 
@@ -60,11 +65,18 @@ public class BrightnessSlider implements ToggleSlider.Listener {
 
         mControl = (ToggleSlider) mView.findViewById(R.id.brightness);
 
+        mBackground = (ImageView) mView.findViewById(R.id.toggle_background);
+
         mScreenBrightnessDim = mContext.getResources().getInteger(
                 com.android.internal.R.integer.config_screenBrightnessDim);
 
         boolean automaticAvailable = context.getResources().getBoolean(
                 com.android.internal.R.bool.config_automatic_brightness_available);
+
+        backgroundAlpha = Settings.System.getFloat(mContext.getContentResolver(),
+                Settings.System.STATUSBAR_TOGGLES_BACKGROUND, 0.0f);
+        Drawable bg = mContext.getResources().getDrawable(R.drawable.toggle_background);
+
         mPower = IPowerManager.Stub.asInterface(ServiceManager.getService("power"));
 
         if (automaticAvailable) {
@@ -94,6 +106,9 @@ public class BrightnessSlider implements ToggleSlider.Listener {
         mControl.setValue(value - mScreenBrightnessDim);
 
         mControl.setOnChangedListener(this);
+
+        bg.setAlpha((int) (backgroundAlpha * 255));
+        mBackground.setBackgroundDrawable(bg);
 
         SettingsObserver so = new SettingsObserver(new Handler());
         so.observe();

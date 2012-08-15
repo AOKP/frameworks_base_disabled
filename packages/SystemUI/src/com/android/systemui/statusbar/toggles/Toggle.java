@@ -47,12 +47,15 @@ public abstract class Toggle implements OnCheckedChangeListener {
     protected ImageView mIcon;
     protected TextView mText;
     protected CompoundButton mToggle;
+    protected ImageView mBackground;
 
     protected boolean mSystemChange = false;
     final boolean useAltButtonLayout;
-    final int enabledColor;
-    final int disabledColor;
-    final float toggleAlpha;
+    protected int enabledColor;
+    protected int disabledColor;
+    protected int textColor;
+    protected float toggleAlpha;
+    protected float toggleBgAlpha;
 
     public Toggle(Context context) {
         mContext = context;
@@ -60,6 +63,10 @@ public abstract class Toggle implements OnCheckedChangeListener {
         useAltButtonLayout = Settings.System.getInt(
                 context.getContentResolver(),
                 Settings.System.STATUSBAR_TOGGLES_USE_BUTTONS, 1) == 1;
+
+        textColor = Settings.System.getInt(
+                context.getContentResolver(),
+                Settings.System.STATUSBAR_TOGGLES_TEXT_COLOR, 0xFF33B5E5);
 
         int enabledColorValue = Settings.System.getInt(
                 context.getContentResolver(),
@@ -72,6 +79,10 @@ public abstract class Toggle implements OnCheckedChangeListener {
         toggleAlpha = Settings.System.getFloat(
                 context.getContentResolver(),
                 Settings.System.STATUSBAR_TOGGLES_ALPHA, 0.7f);
+
+        toggleBgAlpha = Settings.System.getFloat(
+                context.getContentResolver(),
+                Settings.System.STATUSBAR_TOGGLES_BACKGROUND, 0.0f);
 
         float[] enabledHsv = new float[3];
         float[] disabledHsv = new float[3];
@@ -90,6 +101,7 @@ public abstract class Toggle implements OnCheckedChangeListener {
         mIcon = (ImageView) mView.findViewById(R.id.icon);
         mToggle = (CompoundButton) mView.findViewById(R.id.toggle);
         mText = (TextView) mView.findViewById(R.id.label);
+        mBackground = (ImageView) mView.findViewById(R.id.toggle_background);
 
         mToggle.setOnCheckedChangeListener(this);
         mToggle.setOnLongClickListener(new OnLongClickListener() {
@@ -105,6 +117,10 @@ public abstract class Toggle implements OnCheckedChangeListener {
     }
 
     public void updateDrawable(boolean toggle) {
+        Drawable toggleBg = mContext.getResources().getDrawable(R.drawable.toggle_background);
+        toggleBg.setAlpha((int) (toggleBgAlpha * 255));
+        mBackground.setBackgroundDrawable(toggleBg);
+        mText.setTextColor(textColor);
         if (!useAltButtonLayout)
             return;
 

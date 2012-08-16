@@ -216,6 +216,7 @@ public class NetworkController extends BroadcastReceiver {
 
         // broadcasts
         IntentFilter filter = new IntentFilter();
+        filter.addAction("com.aokp.romcontrol.LABEL_CHANGED");
         filter.addAction(WifiManager.RSSI_CHANGED_ACTION);
         filter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
         filter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
@@ -344,6 +345,8 @@ public class NetworkController extends BroadcastReceiver {
         } else if (action.equals(ConnectivityManager.CONNECTIVITY_ACTION) ||
                  action.equals(ConnectivityManager.INET_CONDITION_ACTION)) {
             updateConnectivity(intent);
+            refreshViews();
+        } else if (action.equals("com.aokp.romcontrol.LABEL_CHANGED")) {
             refreshViews();
         } else if (action.equals(Intent.ACTION_CONFIGURATION_CHANGED)) {
             refreshViews();
@@ -918,6 +921,8 @@ public class NetworkController extends BroadcastReceiver {
         String mobileLabel = "";
         int N;
         final boolean emergencyOnly = (mServiceState != null && mServiceState.isEmergencyOnly());
+        final String customLabel = Settings.System.getString(mContext.getContentResolver(),
+            Settings.System.CUSTOM_CARRIER_LABEL);
 
         if (!mHasMobileDataFeature) {
             mDataSignalIconId = mPhoneSignalIconId = 0;
@@ -1065,6 +1070,12 @@ public class NetworkController extends BroadcastReceiver {
             } else if (mPhone.isNetworkRoaming()) {
                 mDataTypeIconId = R.drawable.stat_sys_data_connected_roam;
             }
+        }
+
+        if (customLabel != null && customLabel.length() > 0) {
+            combinedLabel = customLabel;
+            mobileLabel = customLabel;
+            wifiLabel = customLabel;
         }
 
         if (DEBUG) {

@@ -3365,6 +3365,10 @@ public class RIL extends BaseCommands implements CommandsInterface {
        // Determine the radio access type
        String radioString = SystemProperties.get(
                TelephonyProperties.PROPERTY_DATA_NETWORK_TYPE, "unknown");
+       if (radioString.contains(":")) {
+           String[] parts = radioString.split(":");
+           radioString = parts[0];
+       }
        int radioType;
        if (radioString.equals("GPRS")) {
            radioType = NETWORK_TYPE_GPRS;

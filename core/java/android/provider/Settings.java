@@ -2734,6 +2734,13 @@ public final class Settings {
         public static final String NOTIFICATION_LIGHT_COLOR = "notification_light_color";
 
         /**
+         * Custom string for package;color|pacakge;color
+         * so we can change custom colors per app
+         * @hide
+         */
+        public static final String LED_CUSTOM_VALUES = "led_custom_values";
+
+        /**
 	     *
 	     * @hide
 	     */

@@ -1,0 +1,8 @@
+Change-Id: I302574a5cba62ae84665fc412a7802f77a095dfd
+Code-Review+2: Stephen Bird <sebird@open-devices.net>
+Verified+1: Stephen Bird <sebird@open-devices.net>
+Submitted-by: Stephen Bird <sebird@open-devices.net>
+Submitted-at: Thu, 16 Aug 2012 08:45:43 +0100
+Reviewed-on: http://gerrit.sudoservers.com/2005
+Project: AOKP/frameworks_base
+Branch: refs/heads/jb

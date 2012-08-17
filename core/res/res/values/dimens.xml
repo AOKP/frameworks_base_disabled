@@ -185,7 +185,7 @@
     <dimen name="keyguard_lockscreen_status_line_font_right_margin">42dip</dimen>
 
     <!-- Size of top margin on Clock font to edge on unlock LockScreen -->
-    <dimen name="keyguard_lockscreen_status_line_clockfont_top_margin">22dip</dimen>
+    <dimen name="keyguard_lockscreen_status_line_clockfont_top_margin">20dip</dimen>
 
     <!-- Size of top margin on Clock font to edge on unlock LockScreen -->
     <dimen name="keyguard_lockscreen_status_line_clockfont_bottom_margin">12dip</dimen>

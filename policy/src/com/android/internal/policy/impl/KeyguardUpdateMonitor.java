@@ -107,6 +107,7 @@ public class KeyguardUpdateMonitor {
     protected static final int MSG_DPM_STATE_CHANGED = 309;
     protected static final int MSG_USER_CHANGED = 310;
     private static final int MSG_WEATHER_CHANGED = 311;
+    private static final int MSG_CALENDAR_CHANGED = 312;
 
     protected static final boolean DEBUG_SIM_STATES = DEBUG || false;
 
@@ -218,6 +219,9 @@ public class KeyguardUpdateMonitor {
                         break;
                     case MSG_WEATHER_CHANGED:
                         handleWeatherChanged((Intent)msg.obj);
+                        break;
+                    case MSG_CALENDAR_CHANGED:
+                        handleCalendarChanged();
                         break;
                 }
             }
@@ -450,6 +454,16 @@ public class KeyguardUpdateMonitor {
     }
 
     /**
+     * Handle {@link #MSG_CALENDAR_CHANGED}
+     */
+    private void handleCalendarChanged() {
+        if (DEBUG) Log.d(TAG, "handleCalendarChanged");
+        for (int i = 0; i < mInfoCallbacks.size(); i++) {
+            mInfoCallbacks.get(i).onRefreshCalendarInfo();
+        }
+    }
+
+    /**
      * @param pluggedIn state from {@link android.os.BatteryManager#EXTRA_PLUGGED}
      * @return Whether the device is considered "plugged in."
      */
@@ -542,6 +556,7 @@ public class KeyguardUpdateMonitor {
     interface InfoCallback {
         void onRefreshBatteryInfo(boolean showBatteryInfo, boolean pluggedIn, int batteryLevel);
         void onRefreshWeatherInfo(Intent weatherIntent);
+        void onRefreshCalendarInfo();
         void onTimeChanged();
 
         /**
@@ -620,6 +635,9 @@ public class KeyguardUpdateMonitor {
         }
 
         public void onRefreshWeatherInfo(Intent weatherIntent) {
+        }
+
+        public void onRefreshCalendarInfo() {
         }
     }
 

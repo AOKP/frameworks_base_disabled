@@ -20,7 +20,7 @@
 <!-- This is the general lock screen which shows information about the
   state of the device, as well as instructions on how to get past it
   depending on the state of the device.  It is the same for landscape
-  and portrait.-->
+  and portrait.--> 
 <RelativeLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="match_parent"
@@ -38,85 +38,12 @@
 	android:layout_height="match_parent"
 	android:gravity="center_horizontal">
 
-    <com.android.internal.widget.DigitalClock android:id="@+id/time"
-        android:layout_marginTop="@dimen/keyguard_lockscreen_status_line_clockfont_top_margin"
-        android:layout_marginBottom="12dip"
-        android:layout_marginRight="@dimen/keyguard_lockscreen_status_line_font_right_margin"
-        android:layout_gravity="right">
-
-        <!-- Because we can't have multi-tone fonts, we render two TextViews, one on
-        top of the other. Hence the redundant layout... -->
-        <TextView android:id="@+id/timeDisplayBackground"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:singleLine="true"
-            android:ellipsize="none"
-            android:textSize="@dimen/keyguard_lockscreen_clock_font_size"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:layout_marginBottom="6dip"
-            android:textColor="@color/lockscreen_clock_background"
-            />
-
-        <TextView android:id="@+id/timeDisplayForeground"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:singleLine="true"
-            android:ellipsize="none"
-            android:textSize="@dimen/keyguard_lockscreen_clock_font_size"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:layout_marginBottom="6dip"
-            android:textColor="@color/lockscreen_clock_foreground"
-            android:layout_alignLeft="@id/timeDisplayBackground"
-            android:layout_alignTop="@id/timeDisplayBackground"
-            />
-
-    </com.android.internal.widget.DigitalClock>
-
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_gravity="right"
-        android:layout_marginRight="@dimen/keyguard_lockscreen_status_line_font_right_margin">
-
-        <TextView
-            android:id="@+id/date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:singleLine="true"
-            android:ellipsize="marquee"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textSize="@dimen/keyguard_lockscreen_status_line_font_size"
-            />
-
-        <TextView
-            android:id="@+id/alarm_status"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="16dip"
-            android:singleLine="true"
-            android:ellipsize="marquee"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textSize="@dimen/keyguard_lockscreen_status_line_font_size"
-            android:drawablePadding="4dip"
-            />
-
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/status1"
-        android:layout_gravity="right"
-        android:layout_marginRight="@dimen/keyguard_lockscreen_status_line_font_right_margin"
-        android:singleLine="true"
-        android:ellipsize="marquee"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textSize="@dimen/keyguard_lockscreen_status_line_font_size"
-        android:drawablePadding="4dip"
-        />
-
     <include
-        layout="@layout/weatherpanel"
-        android:layout_gravity="right"
-		android:layout_marginRight="@dimen/keyguard_lockscreen_status_line_font_right_margin"
-		android:drawablePadding="4dip" />
+        android:id="@+id/screen_info"
+        layout="@layout/keyguard_screen_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="@dimen/keyguard_lockscreen_status_line_font_right_margin" />
 
     <Space android:layout_gravity="fill" />
 
@@ -135,17 +62,19 @@
         android:visibility="gone"
         />
 
-    <RelativeLayout
+    <FrameLayout
         android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:gravity="bottom"
         android:layout_height="302dip">
 
         <com.android.internal.widget.multiwaveview.GlowPadView
             android:id="@+id/unlock_widget"
             android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignParentBottom="true"
-            android:gravity="top|center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="top"
             android:focusable="true"
 
             android:targetDrawables="@array/lockscreen_targets_with_camera"
@@ -166,7 +95,7 @@
             android:id="@+id/carrier"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
+            android:layout_gravity="bottom"
             android:layout_marginBottom="12dip"
             android:gravity="center_horizontal"
             android:singleLine="true"
@@ -176,7 +105,7 @@
             android:textColor="?android:attr/textColorSecondary"
             />
 
-    </RelativeLayout>
+    </FrameLayout>
 
     <LinearLayout
         android:orientation="horizontal"
@@ -205,7 +134,7 @@
         layout="@layout/keyguard_transport_control"
         android:layout_row="0"
         android:layout_column="0"
-        android:layout_rowSpan="5"
+        android:layout_rowSpan="2"
         android:layout_columnSpan="1"
         android:layout_gravity="fill"
         android:layout_width="0dip"

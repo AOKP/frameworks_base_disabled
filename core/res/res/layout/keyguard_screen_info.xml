@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" >
+
+    <com.android.internal.widget.DigitalClock android:id="@+id/time"
+        android:layout_marginTop="@dimen/keyguard_lockscreen_status_line_clockfont_top_margin"
+        android:layout_marginBottom="8dip"
+        android:layout_gravity="right"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+
+        <!-- Because we can't have multi-tone fonts, we render two TextViews, one on
+        top of the other. Hence the redundant layout... -->
+        <TextView android:id="@+id/timeDisplayBackground"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:ellipsize="none"
+            android:textSize="@dimen/keyguard_lockscreen_clock_font_size"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_marginBottom="6dip"
+            android:textColor="@color/lockscreen_clock_background"
+            />
+
+        <TextView android:id="@+id/timeDisplayForeground"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:ellipsize="none"
+            android:textSize="@dimen/keyguard_lockscreen_clock_font_size"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_marginBottom="6dip"
+            android:textColor="@color/lockscreen_clock_foreground"
+            android:layout_alignLeft="@id/timeDisplayBackground"
+            android:layout_alignTop="@id/timeDisplayBackground"
+            />
+
+    </com.android.internal.widget.DigitalClock>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_gravity="right"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:ellipsize="marquee"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textSize="@dimen/keyguard_lockscreen_status_line_font_size"
+            />
+
+        <TextView
+            android:id="@+id/alarm_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dip"
+            android:singleLine="true"
+            android:ellipsize="marquee"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textSize="@dimen/keyguard_lockscreen_status_line_font_size"
+            android:drawablePadding="4dip"
+            />
+
+    </LinearLayout>
+
+    <com.android.internal.policy.impl.WeatherText
+        android:id="@+id/weather"
+        android:layout_gravity="right"
+        android:singleLine="true"
+        android:ellipsize="end"
+        android:gravity="right"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textSize="@dimen/keyguard_lockscreen_status_line_font_size"
+        android:drawablePadding="4dip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        />
+
+    <ViewFlipper
+        android:id="@+id/calendar"
+        android:inAnimation="@anim/calendar_fadein"
+        android:outAnimation="@anim/calendar_fadeout"
+        android:layout_gravity="right"
+        android:drawablePadding="4dip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/status1"
+        android:layout_gravity="right"
+        android:singleLine="true"
+        android:ellipsize="marquee"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textSize="@dimen/keyguard_lockscreen_status_line_font_size"
+        android:drawablePadding="4dip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <include
+        layout="@layout/weatherpanel"
+        android:layout_gravity="right"
+        android:drawablePadding="4dip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>

@@ -117,9 +117,7 @@
     <string name="accessibility_no_sim" msgid="8274017118472455155">"无 SIM 卡。"</string>
     <string name="accessibility_bluetooth_tether" msgid="4102784498140271969">"蓝牙共享网络。"</string>
     <string name="accessibility_airplane_mode" msgid="834748999790763092">"飞行模式。"</string>
-    <!-- String.format failed for translation -->
-    <!-- no translation found for accessibility_battery_level (7451474187113371965) -->
-    <skip />
+    <string name="accessibility_battery_level">电量 <xliff:g id="number">%d</xliff:g> 百分比</string>
     <string name="accessibility_settings_button" msgid="799583911231893380">"系统设置。"</string>
     <string name="accessibility_notifications_button" msgid="4498000369779421892">"通知。"</string>
     <string name="accessibility_remove_notification" msgid="3603099514902182350">"清除通知。"</string>
@@ -147,4 +145,25 @@
     <string name="accessibility_rotation_lock_off" msgid="4062780228931590069">"屏幕会自动旋转。"</string>
     <string name="accessibility_rotation_lock_on_landscape" msgid="6731197337665366273">"屏幕锁定为横向模式。"</string>
     <string name="accessibility_rotation_lock_on_portrait" msgid="5809367521644012115">"屏幕锁定为纵向模式。"</string>
+    <string name="toggle_bt">蓝牙</string>
+    <string name="toggle_data">数据</string>
+    <string name="toggle_lte">LTE</string>
+    <string name="toggle_rotate">旋转</string>
+    <string name="toggle_wifi">WiFi</string>
+    <string name="toggle_gps">GPS</string>
+    <string name="toggle_2g">2G</string>
+    <string name="toggle_wifiap">热点</string>
+    <string name="toggle_airplane">飞行</string>
+    <string name="toggle_vibrate">振动</string>
+    <string name="toggle_silent">静音</string>
+    <string name="toggle_torch">灯光</string>
+    <string name="toggle_sync">同步</string>
+    <string name="toggle_swagger">自爆</string>
+    <string name="toggle_fcharge">快充</string>
+    <string name="toggle_tether">共享</string>
+    <string name="toggle_nfc">NFC</string>
+    <string name="status_bar_settings_toggles">开关</string>
+
+    <!-- Label in drop down to identify brightness slider -->
+    <string name="brightness_label">亮度</string>
 </resources>

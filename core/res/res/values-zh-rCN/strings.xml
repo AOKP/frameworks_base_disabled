@@ -318,6 +318,8 @@
     <string name="permdesc_clearAppCache" product="default" msgid="5067988373366292186">"允许应用删除应用缓存目录中的文件，从而释放手机的存储空间。对系统进程的访问权限通常受到很大的限制。"</string>
     <string name="permlab_movePackage" msgid="3289890271645921411">"移动应用资源"</string>
     <string name="permdesc_movePackage" msgid="319562217778244524">"允许应用在内部与外部媒体之间移动应用资源。"</string>
+    <string name="permlab_preventpower">阻止电源键</string>
+    <string name="permdesc_preventpower">允许应用程序重定义电源键</string>
     <string name="permlab_readLogs" msgid="6615778543198967614">"查阅敏感日志数据"</string>
     <string name="permdesc_readLogs" product="tablet" msgid="82061313293455151">"允许应用从系统的各种日志文件中读取信息。这样，应用就可以发现关于您平板电脑使用情况的一般信息，其中可能包含个人信息或隐私信息。"</string>
     <string name="permdesc_readLogs" product="default" msgid="2063438140241560443">"允许应用从系统的各个日志文件中读取信息。这样，应用就可以发现关于您手机使用情况的一般信息，其中可能包含个人信息或隐私信息。"</string>
@@ -702,6 +704,8 @@
     <string name="lockscreen_charged" msgid="4938930459620989972">"已充满。"</string>
     <string name="lockscreen_battery_short" msgid="4477264849386850266">"<xliff:g id="NUMBER">%d</xliff:g><xliff:g id="PERCENT">%%</xliff:g>"</string>
     <string name="lockscreen_low_battery" msgid="1482873981919249740">"连接您的充电器。"</string>
+    <string name="lockscreen_always_battery">当前电量： <xliff:g id="number">%d</xliff:g><xliff:g id="percent">%%</xliff:g></string>
+    <string name="lockscreen_always_low_battery">连接您的充电器： <xliff:g id="number">%d</xliff:g><xliff:g id="percent">%%</xliff:g></string>
     <string name="lockscreen_missing_sim_message_short" msgid="7381499217732227295">"没有 SIM 卡"</string>
     <string name="lockscreen_missing_sim_message" product="tablet" msgid="151659196095791474">"平板电脑中没有 SIM 卡。"</string>
     <string name="lockscreen_missing_sim_message" product="default" msgid="2186920585695169078">"手机中无 SIM 卡"</string>
@@ -1290,4 +1294,19 @@
     <string name="default_audio_route_category_name" msgid="3722811174003886946">"系统"</string>
     <string name="bluetooth_a2dp_audio_route_name" msgid="8575624030406771015">"蓝牙音频"</string>
     <string name="media_route_chooser_grouping_done" msgid="7966438307723317169">"完成"</string>
+
+    <!-- Reboot -->
+    <string name="reboot">重新启动</string>
+
+    <!-- Reboot recovery option -->
+    <string name="reboot_recovery">恢复模式</string>
+
+    <!-- Reboot recovery option -->
+    <string name="reboot_download">刷机模式</string>
+
+    <!-- Reboot recovery option -->
+    <string name="reboot_bootloader">引导模式</string>
+
+    <!-- Rebooting message -->
+    <string name="reboot_progress">您的设备正在重新启动...</string>
 </resources>

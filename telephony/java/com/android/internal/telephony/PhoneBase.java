@@ -19,7 +19,6 @@ package com.android.internal.telephony;
 import android.app.ActivityManagerNative;
 import android.app.IActivityManager;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.SharedPreferences;
 import android.net.LinkCapabilities;
@@ -36,7 +35,6 @@ import android.provider.Settings;
 import android.telephony.ServiceState;
 import android.text.TextUtils;
 import android.util.Log;
-import java.util.*;
 
 import com.android.internal.R;
 import com.android.internal.telephony.gsm.UsimServiceTable;
@@ -105,11 +103,6 @@ public abstract class PhoneBase extends Handler implements Phone {
     protected static final int EVENT_SET_ENHANCED_VP                = 24;
     protected static final int EVENT_EMERGENCY_CALLBACK_MODE_ENTER  = 25;
     protected static final int EVENT_EXIT_EMERGENCY_CALLBACK_RESPONSE = 26;
-    /* FIXME-HASH Added Motorola Events */
-    protected static final int EVENT_ICC_CHANGED                    = 27;
-    protected static final int EVENT_ICC_RECORD_EVENTS              = 28;
-    protected static final int EVENT_RUIM_READY                     = 29;
-    private static final int EVENT_UNSOL_OEM_HOOK_RAW               = 40;
 
     // Key used to read/write current CLIR setting
     public static final String CLIR_KEY = "clir_key";
@@ -252,8 +245,6 @@ public abstract class PhoneBase extends Handler implements Phone {
         // Initialize device storage and outgoing SMS usage monitors for SMSDispatchers.
         mSmsStorageMonitor = new SmsStorageMonitor(this);
         mSmsUsageMonitor = new SmsUsageMonitor(context.getContentResolver());
-        /* FIXME-HASH Added for Motorola Code */
-        mCM.setOnUnsolOemHookRaw(this, EVENT_UNSOL_OEM_HOOK_RAW, null);
     }
 
     public void dispose() {
@@ -307,19 +298,7 @@ public abstract class PhoneBase extends Handler implements Phone {
                 }
                 break;
 
-            case EVENT_UNSOL_OEM_HOOK_RAW:
-                ar = (AsyncResult)msg.obj;
-                byte abyte0[] = (byte[])(byte[])ar.result;
-                Log.d(LOG_TAG, "Event EVENT_UNSOL_OEM_HOOK_RAW data=" + IccUtils.bytesToHexString(abyte0));
-                if (ar.exception == null) {
-                    Intent intent = new Intent("com.motorola.android.intent.action.ACTION_UNSOL_OEM_HOOK_RAW");
-                    intent.putExtra("data", abyte0);
-                    getContext().sendBroadcast(intent);
-                }
-                break;
-
             default:
-                Log.e(LOG_TAG, "Undefined Event in PhoneBase::handleMessage(" + msg.what + ") stat=" + getState());
                 throw new RuntimeException("unexpected event not handled");
         }
     }

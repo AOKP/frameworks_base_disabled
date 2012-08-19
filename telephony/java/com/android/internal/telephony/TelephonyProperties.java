@@ -187,10 +187,4 @@ public interface TelephonyProperties
      * in commercial configuration.
      */
     static final String PROPERTY_TEST_CSIM = "persist.radio.test-csim";
-
-    /**
-     * Set to true to indicate a Motorola phone which supports the New Architecure
-     * for handling LTE/CDMA/GSM
-     */
-    static final String PROPERTY_MOTO_NEWARCH = "ro.ril.moto.newarch";
 }

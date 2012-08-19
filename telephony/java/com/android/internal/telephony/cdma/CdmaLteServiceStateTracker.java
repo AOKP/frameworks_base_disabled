@@ -196,8 +196,6 @@ public class CdmaLteServiceStateTracker extends CdmaServiceStateTracker {
                         RILConstants.PREFERRED_NETWORK_MODE);
                 if (DBG) log("pollState: network mode here is = " + networkMode);
                 if ((networkMode == RILConstants.NETWORK_MODE_GLOBAL)
-                        || (networkMode == RILConstants.NETWORK_MODE_LTE_CDMA_EVDO)
-                        || (networkMode == RILConstants.NETWORK_MODE_LTE_CMDA_EVDO_GSM_WCDMA)
                         || (networkMode == RILConstants.NETWORK_MODE_LTE_ONLY)) {
                     pollingContext[0]++;
                     // RIL_REQUEST_DATA_REGISTRATION_STATE

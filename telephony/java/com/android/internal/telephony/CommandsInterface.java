@@ -1653,10 +1653,6 @@ public interface CommandsInterface {
      */
     public boolean needsOldRilFeature(String feature);
 
-    /* FIXME HASH: Added Motorola Code */
-    public void setOnUnsolOemHookRaw(Handler handler, int i, Object obj);
-    public void unSetOnUnsolOemHookRaw(Handler h);
-
     /**
      * @hide
      * samsung stk service implementation - set up registrant for sending

@@ -168,7 +168,6 @@ public class CDMAPhone extends PhoneBase {
                 mIccFileHandler, mIccCard, mRuimSmsInterfaceManager);
 
         mCM.registerForAvailable(this, EVENT_RADIO_AVAILABLE, null);
-        mIccRecords.registerForRecordsEvents(this, EVENT_ICC_RECORD_EVENTS, null);
         mIccRecords.registerForRecordsLoaded(this, EVENT_RUIM_RECORDS_LOADED, null);
         mCM.registerForOffOrNotAvailable(this, EVENT_RADIO_OFF_OR_NOT_AVAILABLE, null);
         mCM.registerForOn(this, EVENT_RADIO_ON, null);
@@ -222,8 +221,6 @@ public class CDMAPhone extends PhoneBase {
             log("dispose");
 
             //Unregister from all former registered events
-            /* FIXME HASH: Added Motorola Code */
-            mIccRecords.unregisterForRecordsEvents(this); //EVENT_RECORD_EVENTS
             mIccRecords.unregisterForRecordsLoaded(this); //EVENT_RUIM_RECORDS_LOADED
             mCM.unregisterForAvailable(this); //EVENT_RADIO_AVAILABLE
             mCM.unregisterForOffOrNotAvailable(this); //EVENT_RADIO_OFF_OR_NOT_AVAILABLE

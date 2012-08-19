@@ -37,7 +37,6 @@ public final class CdmaLteUiccFileHandler extends IccFileHandler {
         case EF_CSIM_LI:
         case EF_CSIM_MDN:
         case EF_CSIM_IMSIM:
-        case EF_CSIM_SF_EUIMID:
         case EF_CSIM_CDMAHOME:
         case EF_CSIM_EPRL:
             return MF_SIM + DF_CDMA;

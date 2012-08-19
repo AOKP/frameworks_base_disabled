@@ -175,7 +175,6 @@ public class CatService extends Handler implements AppInterface {
         CommandParams cmdParams = null;
         switch (rilMsg.mId) {
         case MSG_ID_EVENT_NOTIFY:
-        CatLog.d(this, ">>> CatService::handleRilMsg MSG_ID_EVENT_NOTIFY == " + rilMsg.mResCode);
             if (rilMsg.mResCode == ResultCode.OK) {
                 cmdParams = (CommandParams) rilMsg.mData;
                 if (cmdParams != null) {
@@ -184,7 +183,6 @@ public class CatService extends Handler implements AppInterface {
             }
             break;
         case MSG_ID_PROACTIVE_COMMAND:
-        CatLog.d(this, ">>> CatService::handleRilMsg MSG_ID_PROACTIVE_COMMAND == " + rilMsg.mResCode);
             try {
                 cmdParams = (CommandParams) rilMsg.mData;
             } catch (ClassCastException e) {
@@ -207,18 +205,15 @@ public class CatService extends Handler implements AppInterface {
             }
             break;
         case MSG_ID_REFRESH:
-        CatLog.d(this, ">>> CatService::handleRilMsg MSG_ID_REFRESH == " + rilMsg.mResCode);
             cmdParams = (CommandParams) rilMsg.mData;
             if (cmdParams != null) {
                 handleCommand(cmdParams, false);
             }
             break;
         case MSG_ID_SESSION_END:
-        CatLog.d(this, ">>> CatService::handleRilMsg MSG_ID_SESSION_END == " + rilMsg.mResCode);
             handleSessionEnd();
             break;
         case MSG_ID_CALL_SETUP:
-        CatLog.d(this, ">>> CatService::handleRilMsg MSG_ID_CALL_SETUP == " + rilMsg.mResCode);
             // prior event notify command supplied all the information
             // needed for set up call processing.
             break;

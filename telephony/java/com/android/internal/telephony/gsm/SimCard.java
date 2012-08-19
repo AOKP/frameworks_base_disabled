@@ -71,28 +71,4 @@ public final class SimCard extends IccCard {
         return mPhone.mIccRecords.getServiceProviderName();
     }
 
-    /* FIXME HASH: Added for Motorola Code */
-    protected String getServicePhoneName() {
-        String s;
-        if(mPhone != null)
-            s = mPhone.getPhoneName();
-        else
-            s = "GSM";
-        return s;
-    }
-
-    public int getServicePhoneType() {
-        int i;
-        if(mPhone != null)
-            i = mPhone.getPhoneType();
-        else
-            i = Phone.PHONE_TYPE_GSM;
-        return i;
-    }
-
-    protected void handleSimReadyInCdma() {
-        broadcastIccStateChangedIntent(IccCard.INTENT_VALUE_ICC_READY, null);
-        ((SIMRecords)mPhone.mIccRecords).onSimReadyInCdmaMode();
-        return;
-    }
 }

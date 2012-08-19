@@ -51,7 +51,6 @@ public final class CdmaLteUiccRecords extends SIMRecords {
     private String mPrlVersion;
     private String mHomeSystemId;
     private String mHomeNetworkId;
-    private String mSfEuimid;
 
     private final IsimUiccRecords mIsimUiccRecords = new IsimUiccRecords();
 
@@ -241,15 +240,6 @@ public final class CdmaLteUiccRecords extends SIMRecords {
         }
     }
 
-    private class EfCsimSfEuimidLoaded implements IccRecordLoaded {
-        public String getEfName() {
-            return "EF_CSIM_SF_EUIMID";
-        }
-        public void onRecordLoaded(AsyncResult ar) {
-            onGetCsimSfEuimidDone(ar);
-        }
-    }
-
     @Override
     protected void onRecordLoaded() {
         // One record loaded successfully or failed, In either case
@@ -319,10 +309,6 @@ public final class CdmaLteUiccRecords extends SIMRecords {
                 obtainMessage(EVENT_GET_ICC_RECORD_DONE, new EfCsimEprlLoaded()));
         recordsToLoad++;
 
-        iccFh.loadEFTransparent(EF_CSIM_SF_EUIMID,
-                obtainMessage(EVENT_GET_ICC_RECORD_DONE, new EfCsimSfEuimidLoaded()));
-        recordsToLoad++;
-
         // load ISIM records
         recordsToLoad += mIsimUiccRecords.fetchIsimRecords(iccFh, this);
     }
@@ -348,12 +334,6 @@ public final class CdmaLteUiccRecords extends SIMRecords {
             mPrlVersion = Integer.toString(prlId);
         }
         if (DBG) log("CSIM PRL version=" + mPrlVersion);
-    }
-
-    private void onGetCsimSfEuimidDone(AsyncResult ar) {
-        byte[] data = (byte[]) ar.result;
-        mSfEuimid = IccUtils.bytesToHexString(data);
-        log("CSIM SF_EUIMID is " + mSfEuimid);
     }
 
     private void setLocaleFromCsim() {
@@ -433,10 +413,6 @@ public final class CdmaLteUiccRecords extends SIMRecords {
 
     public String getPrlVersion() {
         return mPrlVersion;
-    }
-
-    public String getEuimid() {
-        return mSfEuimid;
     }
 
     public boolean getCsimSpnDisplayCondition() {

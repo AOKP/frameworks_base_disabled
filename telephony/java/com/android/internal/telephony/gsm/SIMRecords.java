@@ -1302,12 +1302,6 @@ public class SIMRecords extends IccRecords {
         fetchSimRecords();
     }
 
-    /* FIXME HASH: Added for Motorola Code */
-    public void onSimReadyInCdmaMode() {
-        Log.v("GSM", "SIMRecords: fetch icc id in cdma");
-        phone.getIccFileHandler().loadEFTransparent(EF_ICCID, obtainMessage(EVENT_GET_ICCID_DONE));
-    }
-
     protected void fetchSimRecords() {
         recordsRequested = true;
         IccFileHandler iccFh = phone.getIccFileHandler();

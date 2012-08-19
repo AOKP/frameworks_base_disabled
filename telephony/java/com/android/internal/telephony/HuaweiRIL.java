@@ -791,8 +791,8 @@ public class HuaweiRIL extends RIL implements CommandsInterface {
 
             case RIL_UNSOL_OEM_HOOK_RAW:
                 if (RILJ_LOGD) unsljLogvRet(response, IccUtils.bytesToHexString((byte[])ret));
-                if (mUnsolOemHookRawRegistrants != null) {
-                    mUnsolOemHookRawRegistrants.notifyRegistrants(new AsyncResult(null, ret, null));
+                if (mUnsolOemHookRawRegistrant != null) {
+                    mUnsolOemHookRawRegistrant.notifyRegistrant(new AsyncResult(null, ret, null));
                 }
                 break;
 

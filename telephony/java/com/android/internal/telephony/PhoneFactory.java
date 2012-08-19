@@ -50,8 +50,6 @@ public class PhoneFactory {
     static private Context sContext;
 
     static final int preferredCdmaSubscription = RILConstants.PREFERRED_CDMA_SUBSCRIPTION;
-    /* FIXME HASH: Added Motorola Code */
-    static int cdmaSubscription = RILConstants.SUBSCRIPTION_FROM_NV; //SUBSCRIPTION_FROM_RUIM;
 
     //***** Class Methods
 
@@ -264,10 +262,5 @@ public class PhoneFactory {
      */
     public static SipPhone makeSipPhone(String sipUri) {
         return SipPhoneFactory.makePhone(sipUri, sContext, sPhoneNotifier);
-    }
-
-    /* FIXME HASH: Added Motorola Code */
-    public static int getCdmaSubscription() {
-        return cdmaSubscription;
     }
 }

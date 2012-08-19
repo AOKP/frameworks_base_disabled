@@ -102,13 +102,6 @@ public abstract class IccCard {
     private static final int EVENT_ICC_STATUS_CHANGED = 12;
     private static final int EVENT_CARD_REMOVED = 13;
     private static final int EVENT_CARD_ADDED = 14;
-    /* Motorola OEM EVENTS BEGIN */
-    protected static final int EVENT_ICC_ERROR = 15;
-    private static final int EVENT_CHANGE_NETWORK_LOCK_DONE = 16;
-    private static final int EVENT_QUERY_FACILITY_PN_LOCK_DONE = 17;
-    protected static final int EVENT_SIM_STATUS_CHANGED = 101;
-    protected static final int EVENT_RADIO_AVAILABLE = 102;
-    /* Motorola OEM EVENTS END */
 
     /*
       UNKNOWN is a transient state, for example, after uesr inputs ICC pin under
@@ -389,9 +382,6 @@ public abstract class IccCard {
      }
 
 
-    protected abstract String getServicePhoneName();
-    public abstract int getServicePhoneType();
-
     /**
      * Returns service provider name stored in ICC card.
      * If there is no service provider name associated or the record is not
@@ -473,17 +463,6 @@ public abstract class IccCard {
             if (mDbg) log("Notify SIM permanently disabled.");
             broadcastIccStateChangedIntent(INTENT_VALUE_ICC_ABSENT,
                     INTENT_VALUE_ABSENT_ON_PERM_DISABLED);
-        } else {
-            /* FIXME HASH: Added for Motorola Code */
-            if (getServicePhoneType() == Phone.PHONE_TYPE_GSM) {
-                if (mDbg) log("fetch common items in SimCard when it is not activated.");
-                handleSimReadyInCdma();
-            } else { // if (mIsSwitchedToCdma)
-                if (PhoneFactory.getCdmaSubscription() == RILConstants.SUBSCRIPTION_FROM_NV) {
-                    if (mDbg) log("Notify SIM ready in cdma mode");
-                    handleSimReadyInCdma();
-                }
-            }
         }
 
         if (isIccCardRemoved) {
@@ -704,40 +683,6 @@ public abstract class IccCard {
                 case EVENT_CARD_ADDED:
                     onIccSwap(true);
                     break;
-/* Motorola OEM EVENTS BEGIN */
-                case EVENT_ICC_ERROR:
-                    Log.e(mLogTag, "IccCard[MOTO]::EVENT_ICC_ERROR");
-                    mPhone.mCM.getIccCardStatus(obtainMessage(EVENT_GET_ICC_STATUS_DONE));
-                    break;
-                case EVENT_CHANGE_NETWORK_LOCK_DONE:
-                    Log.e(mLogTag, "IccCard[MOTO]::EVENT_CHANGE_NETWORK_LOCK_DONE");
-/*
-                    AsyncResult asyncresult3 = (AsyncResult)message.obj;
-                    if(asyncresult3.exception == null) {
-			mIccNetworkLocked = mDesiredNetworkLocked;
-			if(mDbg)
-			    log((new StringBuilder()).append("EVENT_CHANGE_NETWORK_LOCK_DONE: mIccNetwotkLocked= ").append(mIccNetworkLocked).toString());
-                    }
-                    else {
-                        Log.e(mLogTag, (new StringBuilder()).append("Error change Netwotk lock with exception ").append(asyncresult3.exception).toString());
-                    }
-                    AsyncResult.forMessage((Message)asyncresult3.userObj, asyncresult3.result, asyncresult3.exception);
-                    ((Message)asyncresult3.userObj).sendToTarget();
-*/
-                    break;
-                case EVENT_QUERY_FACILITY_PN_LOCK_DONE:
-                    Log.e(mLogTag, "IccCard[MOTO]::EVENT_QUERY_FACILITY_PN_LOCK_DONE");
-//                  onQueryFacilityPnLock((AsyncResult)message.obj);
-                    break;
-                case EVENT_SIM_STATUS_CHANGED:
-                    Log.e(mLogTag, "IccCard[MOTO]::EVENT_SIM_STATUS_CHANGED");
-                    mPhone.mCM.getIccCardStatus(obtainMessage(EVENT_GET_ICC_STATUS_DONE));
-                    break;
-                case EVENT_RADIO_AVAILABLE:
-                    Log.e(mLogTag, "IccCard[MOTO]::EVENT_RADIO_AVAILABLE");
-                    mPhone.mCM.getIccCardStatus(obtainMessage(EVENT_GET_ICC_STATUS_DONE));
-                    break;
-/* Motorola OEM EVENTS END */
                 default:
                     Log.e(mLogTag, "[IccCard] Unknown Event " + msg.what);
             }
@@ -870,11 +815,6 @@ public abstract class IccCard {
         return false;
     }
 
-    /* FIXME HASH: Added Motorola Code */
-    protected void handleSimReadyInCdma() {
-        Log.e(mLogTag, "handleSimReadyInCdma shouldn't be called here");
-    }
-
     /**
      * @return true if a ICC card is present
      */
@@ -882,15 +822,8 @@ public abstract class IccCard {
         if (mIccCardStatus == null) {
             return false;
         } else {
-            // FIXME-HASH: Added Motorola Code
-            if (getServicePhoneName().equals("GSM"))
-                return mIccCardStatus.getCardState().isCardPresent();
-            else
-                return false;
-/* 
             // Returns ICC card status for both GSM and CDMA mode
             return mIccCardStatus.getCardState().isCardPresent();
-*/
         }
     }
 

@@ -151,7 +151,6 @@ public class GSMPhone extends PhoneBase {
                 mSimSmsIntManager);
 
         mCM.registerForAvailable(this, EVENT_RADIO_AVAILABLE, null);
-        mIccRecords.registerForRecordsEvents(this, EVENT_ICC_RECORD_EVENTS, null);
         mIccRecords.registerForRecordsLoaded(this, EVENT_SIM_RECORDS_LOADED, null);
         mCM.registerForOffOrNotAvailable(this, EVENT_RADIO_OFF_OR_NOT_AVAILABLE, null);
         mCM.registerForOn(this, EVENT_RADIO_ON, null);
@@ -205,8 +204,6 @@ public class GSMPhone extends PhoneBase {
 
             //Unregister from all former registered events
             mCM.unregisterForAvailable(this); //EVENT_RADIO_AVAILABLE
-            /* FIXME HASH: Added Motorola Code */
-            mIccRecords.unregisterForRecordsEvents(this); //EVENT_RECORD_EVENTS
             mIccRecords.unregisterForRecordsLoaded(this); //EVENT_SIM_RECORDS_LOADED
             mCM.unregisterForOffOrNotAvailable(this); //EVENT_RADIO_OFF_OR_NOT_AVAILABLE
             mCM.unregisterForOn(this); //EVENT_RADIO_ON

@@ -35,7 +35,6 @@ public abstract class IccRecords extends Handler implements IccConstants {
 
     protected PhoneBase phone;
     protected RegistrantList recordsLoadedRegistrants = new RegistrantList();
-    protected RegistrantList mRecordsEventsRegistrants = new RegistrantList();
 
     protected int recordsToLoad;  // number of pending load requests
 
@@ -109,15 +108,6 @@ public abstract class IccRecords extends Handler implements IccConstants {
         return adnCache;
     }
 
-    /**
-     * @deprecated Method registerForRecordsEvents is deprecated
-     */
-
-    public void registerForRecordsEvents(Handler h, int what, Object obj) {
-        Registrant r = new Registrant(h, what, obj);
-        mRecordsEventsRegistrants.add(r);
-    }
-
     public void registerForRecordsLoaded(Handler h, int what, Object obj) {
         Registrant r = new Registrant(h, what, obj);
         recordsLoadedRegistrants.add(r);
@@ -125,14 +115,6 @@ public abstract class IccRecords extends Handler implements IccConstants {
         if (recordsToLoad == 0 && recordsRequested == true) {
             r.notifyRegistrant(new AsyncResult(null, null, null));
         }
-    }
-
-    /**
-     * @deprecated Method unregisterForRecordsEvents is deprecated
-     */
-
-    public void unregisterForRecordsEvents(Handler h) {
-        mRecordsEventsRegistrants.remove(h);
     }
 
     public void unregisterForRecordsLoaded(Handler h) {

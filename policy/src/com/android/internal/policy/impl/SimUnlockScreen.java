@@ -44,8 +44,6 @@ import com.android.internal.R;
  */
 public class SimUnlockScreen extends LinearLayout implements KeyguardScreen, View.OnClickListener {
 
-    private boolean mCheckInProgress;
-
     private static final int DIGIT_PRESS_WAKE_MILLIS = 5000;
 
     private final KeyguardUpdateMonitor mUpdateMonitor;
@@ -117,11 +115,6 @@ public class SimUnlockScreen extends LinearLayout implements KeyguardScreen, Vie
                 lockpatternutils, callback, false);
 
         setFocusableInTouchMode(true);
-    }
-
-    /** {@inheritDoc} */
-    public boolean checkInProgress() {
-        return mCheckInProgress;
     }
 
     /** {@inheritDoc} */
@@ -252,15 +245,12 @@ public class SimUnlockScreen extends LinearLayout implements KeyguardScreen, Vie
             mCallback.pokeWakelock();
             return;
         }
-
-        mCheckInProgress = true;
         getSimUnlockProgressDialog().show();
 
         new CheckSimPin(mPinText.getText().toString()) {
             void onSimLockChangedResponse(final boolean success) {
                 mPinText.post(new Runnable() {
                     public void run() {
-                        mCheckInProgress = false;
                         if (mSimUnlockProgressDialog != null) {
                             mSimUnlockProgressDialog.hide();
                         }

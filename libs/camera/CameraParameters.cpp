@@ -119,11 +119,13 @@ const char CameraParameters::KEY_SMOOTH_ZOOM_SUPPORTED[] = "smooth-zoom-supporte
 const char CameraParameters::KEY_FOCUS_DISTANCES[] = "focus-distances";
 const char CameraParameters::KEY_VIDEO_FRAME_FORMAT[] = "video-frame-format";
 #ifdef QCOM_HARDWARE
-const char CameraParameters::KEY_ISO_MODE[] = "iso";
-const char CameraParameters::KEY_SUPPORTED_ISO_MODES[] = "iso-values";
 const char CameraParameters::KEY_LENSSHADE[] = "lensshade";
 const char CameraParameters::KEY_SUPPORTED_LENSSHADE_MODES[] = "lensshade-values";
+#ifdef SAMSUNG_CAMERA_QCOM
+const char CameraParameters::KEY_AUTO_EXPOSURE[] = "metering";
+#else
 const char CameraParameters::KEY_AUTO_EXPOSURE[] = "auto-exposure";
+#endif
 const char CameraParameters::KEY_SUPPORTED_AUTO_EXPOSURE[] = "auto-exposure-values";
 const char CameraParameters::KEY_DENOISE[] = "denoise";
 const char CameraParameters::KEY_SUPPORTED_DENOISE[] = "denoise-values";
@@ -139,11 +141,17 @@ const char CameraParameters::KEY_REDEYE_REDUCTION[] = "redeye-reduction";
 const char CameraParameters::KEY_SUPPORTED_REDEYE_REDUCTION[] = "redeye-reduction-values";
 const char CameraParameters::KEY_HIGH_DYNAMIC_RANGE_IMAGING[] = "hdr";
 const char CameraParameters::KEY_SUPPORTED_HDR_IMAGING_MODES[] = "hdr-values";
+#ifndef SAMSUNG_CAMERA_HARDWARE
+const char CameraParameters::KEY_ISO_MODE[] = "iso";
+const char CameraParameters::KEY_SUPPORTED_ISO_MODES[] = "iso-values";
+#endif
 #endif
 #ifdef SAMSUNG_CAMERA_HARDWARE
 const char CameraParameters::KEY_METERING[] = "metering";
 const char CameraParameters::KEY_WDR[] = "wdr";
 const char CameraParameters::KEY_ANTI_SHAKE_MODE[] = "anti-shake";
+const char CameraParameters::KEY_ISO_MODE[] = "iso";
+const char CameraParameters::KEY_SUPPORTED_ISO_MODES[] = "iso-values";
 #endif
 const char CameraParameters::KEY_VIDEO_SIZE[] = "video-size";
 const char CameraParameters::KEY_SUPPORTED_VIDEO_SIZES[] = "video-size-values";
@@ -228,7 +236,7 @@ const char CameraParameters::SCENE_MODE_FIREWORKS[] = "fireworks";
 const char CameraParameters::SCENE_MODE_SPORTS[] = "sports";
 const char CameraParameters::SCENE_MODE_PARTY[] = "party";
 const char CameraParameters::SCENE_MODE_CANDLELIGHT[] = "candlelight";
-#ifdef QCOM_HARDWARE
+#if defined(QCOM_HARDWARE) && !defined(SAMSUNG_CAMERA_QCOM)
 const char CameraParameters::SCENE_MODE_BACKLIGHT[] = "backlight";
 const char CameraParameters::SCENE_MODE_FLOWERS[] = "flowers";
 #endif
@@ -290,9 +298,15 @@ const char CameraParameters::LENSSHADE_ENABLE[] = "enable";
 const char CameraParameters::LENSSHADE_DISABLE[] = "disable";
 
 // Values for auto exposure settings.
+#ifdef SAMSUNG_CAMERA_QCOM
+const char CameraParameters::AUTO_EXPOSURE_FRAME_AVG[] = "matrix";
+const char CameraParameters::AUTO_EXPOSURE_CENTER_WEIGHTED[] = "center";
+const char CameraParameters::AUTO_EXPOSURE_SPOT_METERING[] = "spot";
+#else
 const char CameraParameters::AUTO_EXPOSURE_FRAME_AVG[] = "frame-average";
 const char CameraParameters::AUTO_EXPOSURE_CENTER_WEIGHTED[] = "center-weighted";
 const char CameraParameters::AUTO_EXPOSURE_SPOT_METERING[] = "spot-metering";
+#endif
 
 const char CameraParameters::KEY_GPS_LATITUDE_REF[] = "gps-latitude-ref";
 const char CameraParameters::KEY_GPS_LONGITUDE_REF[] = "gps-longitude-ref";
@@ -311,21 +325,21 @@ const char CameraParameters::SKIN_TONE_ENHANCEMENT_ENABLE[] = "enable";
 const char CameraParameters::SKIN_TONE_ENHANCEMENT_DISABLE[] = "disable";
 
 const char CameraParameters::KEY_SHARPNESS[] = "sharpness";
-#ifdef QCOM_HARDWARE
+#if defined(QCOM_HARDWARE) && !defined(SAMSUNG_CAMERA_QCOM)
 const char CameraParameters::KEY_MAX_SHARPNESS[] = "sharpness-max";
 const char CameraParameters::KEY_MIN_SHARPNESS[] = "sharpness-min";
 #else
 const char CameraParameters::KEY_MAX_SHARPNESS[] = "max-sharpness";
 #endif
 const char CameraParameters::KEY_CONTRAST[] = "contrast";
-#ifdef QCOM_HARDWARE
+#if defined(QCOM_HARDWARE) && !defined(SAMSUNG_CAMERA_QCOM)
 const char CameraParameters::KEY_MAX_CONTRAST[] = "contrast-max";
 const char CameraParameters::KEY_MIN_CONTRAST[] = "contrast-min";
 #else
 const char CameraParameters::KEY_MAX_CONTRAST[] = "max-contrast";
 #endif
 const char CameraParameters::KEY_SATURATION[] = "saturation";
-#ifdef QCOM_HARDWARE
+#if defined(QCOM_HARDWARE) && !defined(SAMSUNG_CAMERA_QCOM)
 const char CameraParameters::KEY_MAX_SATURATION[] = "saturation-max";
 const char CameraParameters::KEY_MIN_SATURATION[] = "saturation-min";
 #else
@@ -370,6 +384,30 @@ const char CameraParameters::ZSL_ON[] = "on";
 const char CameraParameters::AE_BRACKET_HDR_OFF[] = "Off";
 const char CameraParameters::AE_BRACKET_HDR[] = "HDR";
 const char CameraParameters::AE_BRACKET[] = "AE-Bracket";
+
+#ifdef SAMSUNG_CAMERA_QCOM
+const char CameraParameters::FOCUS_MODE_FACEDETECT[] = "facedetect";
+const char CameraParameters::FOCUS_MODE_TOUCHAF[] = "touchaf";
+const char CameraParameters::ISO_50[] = "ISO50";
+const char CameraParameters::KEY_ANTI_SHAKE_MODE[] = "antishake";
+const char CameraParameters::KEY_AUTO_CONTRAST[] = "auto-contrast";
+const char CameraParameters::KEY_BEAUTY_MODE[] = "beauty";
+const char CameraParameters::KEY_BLUR_MODE[] = "blur";
+const char CameraParameters::KEY_VINTAGE_MODE[] = "vintagemode";
+const char CameraParameters::KEY_WDR_MODE[] = "wdr";
+const char CameraParameters::VINTAGE_MODE_BNW[] = "bnw";
+const char CameraParameters::VINTAGE_MODE_COOL[] = "cool";
+const char CameraParameters::VINTAGE_MODE_NORMAL[] = "normal";
+const char CameraParameters::VINTAGE_MODE_OFF[] = "off";
+const char CameraParameters::VINTAGE_MODE_WARM[] = "warm";
+const char CameraParameters::SCENE_MODE_BACKLIGHT[] = "back-light";
+const char CameraParameters::SCENE_MODE_DAWN[] = "dusk-dawn";
+const char CameraParameters::SCENE_MODE_DUSKDAWN[] = "dusk-dawn";
+const char CameraParameters::SCENE_MODE_FALL[] = "fall-color";
+const char CameraParameters::SCENE_MODE_FALL_COLOR[] = "fall-color";
+const char CameraParameters::SCENE_MODE_FLOWERS[] = "flowers";
+const char CameraParameters::SCENE_MODE_TEXT[] = "text";
+#endif
 
 static const char* portrait = "portrait";
 static const char* landscape = "landscape";

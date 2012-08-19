@@ -4879,12 +4879,13 @@ public final class ActivityThread {
         Process.setArgV0("<pre-initialized>");
 
         Looper.prepareMainLooper();
-        if (sMainThreadHandler == null) {
-            sMainThreadHandler = new Handler();
-        }
 
         ActivityThread thread = new ActivityThread();
         thread.attach(false);
+
+        if (sMainThreadHandler == null) {
+            sMainThreadHandler = thread.getHandler();
+        }
 
         AsyncTask.init();
 

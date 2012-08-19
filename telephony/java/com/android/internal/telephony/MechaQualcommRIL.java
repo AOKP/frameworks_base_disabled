@@ -32,6 +32,15 @@ import com.android.internal.telephony.RILConstants;
 import java.util.ArrayList;
 
 /**
+  THIS RIL IS MADE BY THE LIQUID SMOOTH DEVELOPMENT
+  TEAM, UNPERMITTED REDISTRIBUTION WILL BE REQUESTED
+  TO BE REMOVED IF THIS IS KANGED/REBUILT IN ANY ROM
+  WE DO NOT SUPPORT OR ON A FORUM/BLOG/THREAD THAT WE
+  DO NOT APPROVE OF. THANKS FOR UNDERSTANDING. AND
+  OBVIOUSLY. IF YOU ARE READING THIS YOU ARE
+  SOMEWHERE YOU ARE NOT SUPPOSE TO BE!
+ */
+/**
  * Custom Qualcomm NvReady RIL for Mecha
  *
  * {@hide}
@@ -183,7 +192,6 @@ public class MechaQualcommRIL extends RIL implements CommandsInterface {
             case 106: ret = responseString(p); break; // RIL_REQUEST_CDMA_PRL_VERSION
             case 107: ret = responseInts(p); break; // RIL_REQUEST_IMS_REGISTRATION_STATE
             case 108: ret = responseSMS(p); break; // RIL_REQUEST_IMS_SEND_SMS
-            case 109: ret = responseVoid(p); break; // RIL_REQUEST_GET_DATA_CALL_PROFILE
 
             default:
                 throw new RuntimeException("Unrecognized solicited response: " + rr.mRequest);
@@ -310,7 +318,6 @@ public class MechaQualcommRIL extends RIL implements CommandsInterface {
             case 2:
                 radioState = CommandsInterface.RadioState.NV_READY;
                 break;
-
             default:
                 throw new RuntimeException("Unrecognized RIL_RadioState: " + stateCode);
         }

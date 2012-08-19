@@ -268,6 +268,13 @@ public class NavigationBarView extends LinearLayout {
                         mLongpressActions[j],
                         mPortraitIcons[j]);
                 v.setTag((landscape ? "key_land_" : "key_") + j);
+                if(j == 0) {
+                     //dirty hack to set proper icon after showing alt icon
+                    if(landscape)
+                        mBackLandIcon = v.getDrawable();
+                    else
+                        mBackIcon = v.getDrawable();
+                }
 
                 addButton(navButtonLayout, v, landscape);
                 addLightsOutButton(lightsOut, v, landscape, false);
@@ -477,11 +484,10 @@ public class NavigationBarView extends LinearLayout {
         if (getBackButton() != null) {
         	getBackButton().setAlpha(
         			(0 != (hints & StatusBarManager.NAVIGATION_HINT_BACK_NOP)) ? 0.5f : 1.0f);
-        	// Disable this for the moment
-        	/*((ImageView)getBackButton()).setImageDrawable(
-                (0 != (hints & StatusBarManager.NAVIGATION_HINT_BACK_ALT))
+            ((ImageView)getBackButton()).setImageDrawable(
+                    (0 != (hints & StatusBarManager.NAVIGATION_HINT_BACK_ALT))
                     ? (mVertical ? mBackAltLandIcon : mBackAltIcon)
-                    : (mVertical ? mBackLandIcon : mBackIcon)); */
+                    : (mVertical ? mBackLandIcon : mBackIcon));
         }
         if (getHomeButton()!=null) {
         	getHomeButton().setAlpha(

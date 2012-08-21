@@ -145,7 +145,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_alignParentBottom="true"
-            android:gravity="top"
+            android:gravity="top|center_horizontal"
             android:focusable="true"
 
             android:targetDrawables="@array/lockscreen_targets_with_camera"

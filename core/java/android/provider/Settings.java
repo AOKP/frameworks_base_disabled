@@ -2253,7 +2253,8 @@ public final class Settings {
         public static final String UI_FORCE_OVERFLOW_BUTTON = "ui_force_overflow_button";
 
         /**
-         * Whether national data Roming should be used.
+         * Whether national data roaming should be used.
+         * @hide
          */
         public static final String MVNO_ROAMING = "mvno_roaming";
 

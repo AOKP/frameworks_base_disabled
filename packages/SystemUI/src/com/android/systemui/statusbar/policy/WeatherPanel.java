@@ -1,5 +1,5 @@
 
-package com.android.internal.policy.impl;
+package com.android.systemui.statusbar.policy;
 
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
@@ -13,6 +13,8 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.android.systemui.R;
 
 public class WeatherPanel extends FrameLayout {
 
@@ -122,7 +124,7 @@ public class WeatherPanel extends FrameLayout {
         public void onClick(View v) {
             Intent weatherintent = new Intent("com.aokp.romcontrol.INTENT_WEATHER_REQUEST");
 
-            if (v.getId() == com.android.internal.R.id.condition_image) {
+            if (v.getId() == R.id.condition_image) {
                 weatherintent.putExtra("com.aokp.romcontrol.INTENT_EXTRA_TYPE", "startapp");
                 weatherintent.putExtra("com.aokp.romcontrol.INTENT_EXTRA_ISMANUAL", true);
             } else {
@@ -138,25 +140,25 @@ public class WeatherPanel extends FrameLayout {
     public WeatherPanel(Context context, AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
-        // setOnClickListener(mPanelOnClickListener);
+        setOnClickListener(mPanelOnClickListener);
     }
 
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        mHighTemp = (TextView) this.findViewById(com.android.internal.R.id.high_temp);
-        mLowTemp = (TextView) this.findViewById(com.android.internal.R.id.low_temp);
-        mCurrentTemp = (TextView) this.findViewById(com.android.internal.R.id.current_temp);
-        mCity = (TextView) this.findViewById(com.android.internal.R.id.city);
-        mHumidity = (TextView) this.findViewById(com.android.internal.R.id.humidity);
-        mWinds = (TextView) this.findViewById(com.android.internal.R.id.winds);
-        mCondition = (TextView) this.findViewById(com.android.internal.R.id.condition);
-        mConditionImage = (ImageView) this.findViewById(com.android.internal.R.id.condition_image);
-        mSlash = (TextView) this.findViewById(com.android.internal.R.id.weatherpanel_slash);
+        mHighTemp = (TextView) this.findViewById(R.id.high_temp);
+        mLowTemp = (TextView) this.findViewById(R.id.low_temp);
+        mCurrentTemp = (TextView) this.findViewById(R.id.current_temp);
+        mCity = (TextView) this.findViewById(R.id.city);
+        mHumidity = (TextView) this.findViewById(R.id.humidity);
+        mWinds = (TextView) this.findViewById(R.id.winds);
+        mCondition = (TextView) this.findViewById(R.id.condition);
+        mConditionImage = (ImageView) this.findViewById(R.id.condition_image);
+        mSlash = (TextView) this.findViewById(R.id.weatherpanel_slash);
 
-        // if (mConditionImage != null) {
-        // mConditionImage.setOnClickListener(mPanelOnClickListener);
-        // }
+        if (mConditionImage != null) {
+            mConditionImage.setOnClickListener(mPanelOnClickListener);
+        }
 
         if (!mAttached) {
             mAttached = true;

@@ -35,87 +35,24 @@
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	android:orientation="vertical"
-	android:rowCount="8"
+	android:rowCount="3"
 	android:id="@+id/root"
 	android:clipChildren="false">
 
     <!-- Column 0 -->
-    <com.android.internal.widget.DigitalClock android:id="@+id/time"
-        android:layout_marginTop="80dip"
-        android:layout_marginBottom="8dip"
-        android:layout_gravity="right">
-
-       <!-- Because we can't have multi-tone fonts, we render two TextViews, one on
-        top of the other. Hence the redundant layout... -->
-        <TextView android:id="@+id/timeDisplayBackground"
+        <include
+            android:id="@+id/screen_info"
+            android:layout_column="0"
+            android:layout_row="0"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:singleLine="true"
-            android:ellipsize="none"
-            android:textSize="@dimen/keyguard_lockscreen_clock_font_size"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:layout_marginBottom="6dip"
-            android:textColor="@color/lockscreen_clock_background"
-            />
+                layout="@layout/keyguard_screen_info" />
 
-        <TextView android:id="@+id/timeDisplayForeground"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:singleLine="true"
-            android:ellipsize="none"
-            android:textSize="@dimen/keyguard_lockscreen_clock_font_size"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:layout_marginBottom="6dip"
-            android:textColor="@color/lockscreen_clock_foreground"
-            android:layout_alignLeft="@id/timeDisplayBackground"
-            android:layout_alignTop="@id/timeDisplayBackground"
-            />
 
-    </com.android.internal.widget.DigitalClock>
-
-    <TextView
-        android:id="@+id/date"
-        android:layout_width="0dip"
-        android:layout_gravity="fill_horizontal"
-        android:gravity="right"
-        android:layout_marginTop="6dip"
-        android:singleLine="true"
-        android:ellipsize="marquee"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textSize="@dimen/keyguard_lockscreen_status_line_font_size"
-        />
-
-    <TextView
-        android:id="@+id/alarm_status"
-        android:singleLine="true"
-        android:ellipsize="marquee"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textSize="@dimen/keyguard_lockscreen_status_line_font_size"
-        android:drawablePadding="4dip"
-        android:layout_marginTop="4dip"
-        android:layout_gravity="right"
-        />
-
-    <TextView
-        android:id="@+id/status1"
-        android:layout_width="0dip"
-        android:layout_gravity="fill_horizontal"
-        android:gravity="right"
-        android:layout_marginTop="4dip"
-        android:singleLine="true"
-        android:ellipsize="marquee"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textSize="@dimen/keyguard_lockscreen_status_line_font_size"
-        android:drawablePadding="4dip"
-        />
-
-    <include
-        layout="@layout/weatherpanel"
-        android:layout_gravity="right"
-        android:layout_marginTop="4dip"
-		android:drawablePadding="4dip" />
-
-    <Space android:layout_gravity="fill" />
+    <Space
+        android:layout_gravity="fill"
+        android:layout_column="0"
+        android:layout_row="1" />
 
     <TextView
         android:id="@+id/carrier"
@@ -143,14 +80,14 @@
         />
 
     <!-- Column 1 -->
-    <Space android:layout_width="64dip" android:layout_rowSpan="8" />
+    <Space android:layout_width="16dip" android:layout_rowSpan="3" />
 
     <!-- Column 2 -->
     <com.android.internal.widget.multiwaveview.GlowPadView
         android:id="@+id/unlock_widget"
         android:layout_width="302dip"
         android:layout_height="match_parent"
-        android:layout_rowSpan="8"
+        android:layout_rowSpan="3"
         android:gravity="left|center_vertical"
         android:focusable="true"
 
@@ -173,8 +110,8 @@
         layout="@layout/keyguard_transport_control"
         android:layout_row="0"
         android:layout_column="0"
-        android:layout_rowSpan="6"
-        android:layout_columnSpan="1"
+        android:layout_rowSpan="3"
+        android:layout_columnSpan="2"
         android:layout_gravity="fill"
         android:layout_width="0dip"
         android:layout_height="0dip"

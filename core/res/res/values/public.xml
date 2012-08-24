@@ -1743,6 +1743,7 @@
   <java-symbol type="id" name="high_temp" />
   <java-symbol type="id" name="humidity" />
   <java-symbol type="id" name="low_temp" />
+  <java-symbol type="id" name="weather" />
   <java-symbol type="id" name="weatherpanel" />
   <java-symbol type="id" name="weatherpanel_slash" />
   <java-symbol type="id" name="winds" />
@@ -3740,10 +3741,6 @@
   <java-symbol type="bool" name="config_noDelayInATwoDP" />
   <java-symbol type="bool" name="config_smsSamsungCdmaAlternateMessageIDEncoding" />
 
-<!-- Always show battery status on lockscreen -->
-  <java-symbol type="string" name="lockscreen_always_battery" />
-  <java-symbol type="string" name="lockscreen_always_low_battery" />
-
 <!-- AVRCP 1.3 Meta Data Resources -->
   <java-symbol type="array" name="avrcp_meta_changed_intents" />
   <java-symbol type="array" name="avrcp_playstate_changed_intents" />
@@ -3757,5 +3754,23 @@
   <java-symbol type="string" name="com.amazon.mp3.playstatechanged_artist" />
   <java-symbol type="string" name="com.amazon.mp3.playstatechanged_album" />
   <java-symbol type="string" name="com.amazon.mp3.playstatechanged_id" />
+
+ <!-- AOKP lockscreen -->
+  <java-symbol type="id" name="screen_info" />
+
+ <!-- Calendar -->
+  <java-symbol type="id" name="calendar" />
+  <java-symbol type="id" name="event_title" />
+  <java-symbol type="id" name="event_details" />
+  <java-symbol type="layout" name="calendar_entry" />
+  <java-symbol type="string" name="lockscreen_calendar_tomorrow" />
+
+ <!-- Always show battery status on lockscreen -->
+  <java-symbol type="string" name="lockscreen_always_battery" />
+  <java-symbol type="string" name="lockscreen_always_low_battery" />
+
+ <!-- Weather -->
+  <public type="string" name="weatherpanel_slash" />
+  <public type="drawable" name="weather_condition" />
 
 </resources>

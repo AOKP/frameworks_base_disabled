@@ -667,8 +667,8 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
         Settings.System.putInt(cr,
                 Settings.System.MODE_RINGER_STREAMS_AFFECTED, mRingerModeAffectedStreams);
 
-        mLinkNotificationWithVolume = Settings.System.getInt(cr,
-                Settings.System.VOLUME_LINK_NOTIFICATION, 1) == 1;
+        mLinkNotificationWithVolume = Settings.System.getBoolean(cr,
+                Settings.System.VOLUME_LINK_NOTIFICATION, true);
 
         mMuteAffectedStreams = System.getInt(cr,
                 System.MUTE_STREAMS_AFFECTED,
@@ -3192,8 +3192,8 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
                     setRingerModeInt(getRingerMode(), false);
                 }
 
-                mLinkNotificationWithVolume = Settings.System.getInt(mContentResolver,
-                        Settings.System.VOLUME_LINK_NOTIFICATION, 1) == 1;
+                mLinkNotificationWithVolume = Settings.System.getBoolean(mContentResolver,
+                        Settings.System.VOLUME_LINK_NOTIFICATION, true);
                 if (mLinkNotificationWithVolume) {
                     mStreamVolumeAlias[AudioSystem.STREAM_NOTIFICATION] = AudioSystem.STREAM_RING;
                 } else {

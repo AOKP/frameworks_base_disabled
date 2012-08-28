@@ -18,7 +18,7 @@ public class CalendarEntry extends LinearLayout {
     TextView mDetailsView;
     Context mContext;
     int mWidth;
-    
+
     public CalendarEntry(Context context, String title, String details, int width) {
         super(context);
         mContext = context;
@@ -32,9 +32,7 @@ public class CalendarEntry extends LinearLayout {
     }
 
     public void setColor(int color) {
-        Log.d(TAG, "setting color?");
         if (mTitleView != null) {
-            Log.d(TAG, "SETTING COLOR!");
             mTitleView.setTextColor(color);
         }
         if (mDetailsView != null) {

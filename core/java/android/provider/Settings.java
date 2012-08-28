@@ -2362,6 +2362,12 @@ public final class Settings {
         public static final String ENABLE_VOLUME_OPTIONS = "enable_volume_options";
 
         /**
+         * Whether to use the menu key to unlock the screen
+         * @hide
+         */
+        public static final String LOCKSCREEN_MENU_UNLOCK = "lockscreen_menu_unlock";
+
+        /**
          * Whether to use the custom quick unlock screen control
          * @hide
          */

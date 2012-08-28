@@ -412,4 +412,7 @@
     <string name="brightness_label">Brightness</string>
 
     <string name="battery_test">99</string>
+
+    <string name="recents_kill_all_button_text">Kill all </string>
+
 </resources>

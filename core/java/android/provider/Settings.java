@@ -2983,6 +2983,14 @@ public final class Settings {
         public static final String LED_CUSTOM_VALUES = "led_custom_values";
 
         /**
+         * What brightness to use for the notificaion LED
+         *
+         * @hide
+         */
+        public static final String LED_BRIGHTNESS = "led_brightness";
+
+
+        /**
 	     *
 	     * @hide
 	     */

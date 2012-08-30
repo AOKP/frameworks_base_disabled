@@ -48,7 +48,8 @@
             android:layout_gravity="center_horizontal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingRight="4dip" />
+            android:paddingRight="4dip"
+            android:textColor="@color/bright_foreground_dark" />
 
         <SeekBar
             android:id="@+id/mediacontroller_progress"
@@ -67,7 +68,8 @@
             android:layout_gravity="center_horizontal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingLeft="4dip" />
+            android:paddingLeft="4dip"
+            android:textColor="@color/bright_foreground_dark" />
     </LinearLayout>
 
 </LinearLayout>

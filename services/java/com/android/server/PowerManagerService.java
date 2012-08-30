@@ -298,13 +298,6 @@ public class PowerManagerService extends IPowerManager.Stub
     private int mAnimationSetting = ANIM_SETTING_OFF;
     private float mWindowScaleAnimation;
 
-    // When using software auto-brightness, determines whether (true) button
-    // and keyboard backlights should also be under automatic brightness
-    // control (i.e., for dimmable backlights), or (false) if they should use
-    // hard-coded brightness settings that timeout-to-off in subsequent screen
-    // power states.
-    private boolean mAutoBrightnessButtonKeyboard;
-
     // Must match with the ISurfaceComposer constants in C++.
     private static final int ANIM_SETTING_ON = 0x01;
     private static final int ANIM_SETTING_OFF = 0x10;
@@ -687,8 +680,6 @@ public class PowerManagerService extends IPowerManager.Stub
         // read settings for auto-brightness
         mUseSoftwareAutoBrightness = resources.getBoolean(
                 com.android.internal.R.bool.config_automatic_brightness_available);
-        mAutoBrightnessButtonKeyboard = mUseSoftwareAutoBrightness && resources.getBoolean(
-                com.android.internal.R.bool.config_autoBrightnessButtonKeyboard);
         if (mUseSoftwareAutoBrightness) {
             mAutoBrightnessLevels = resources.getIntArray(
                     com.android.internal.R.array.config_autoBrightnessLevels);
@@ -914,7 +905,7 @@ public class PowerManagerService extends IPowerManager.Stub
             switch (wl.flags & LOCK_MASK)
             {
                 case PowerManager.FULL_WAKE_LOCK:
-                    if (mAutoBrightnessButtonKeyboard) {
+                    if (mUseSoftwareAutoBrightness) {
                         wl.minState = SCREEN_BRIGHT;
                     } else {
                         wl.minState = (mKeyboardVisible ? ALL_BRIGHT : SCREEN_BUTTON_BRIGHT);
@@ -1283,7 +1274,6 @@ public class PowerManagerService extends IPowerManager.Stub
                     + " mLightSensorButtonBrightness=" + mLightSensorButtonBrightness
                     + " mLightSensorKeyboardBrightness=" + mLightSensorKeyboardBrightness);
             pw.println("  mUseSoftwareAutoBrightness=" + mUseSoftwareAutoBrightness);
-            pw.println("  mAutoBrightnessButtonKeyboard=" + mAutoBrightnessButtonKeyboard);
             pw.println("  mAutoBrightessEnabled=" + mAutoBrightessEnabled);
             mScreenBrightnessAnimator.dump(pw, "mScreenBrightnessAnimator: ");
 
@@ -1878,7 +1868,7 @@ public class PowerManagerService extends IPowerManager.Stub
                 return;
             }
 
-            if (!mBootCompleted && !mAutoBrightnessButtonKeyboard) {
+            if (!mBootCompleted && !mUseSoftwareAutoBrightness) {
                 newState |= ALL_BRIGHT;
             }
 
@@ -2278,17 +2268,11 @@ public class PowerManagerService extends IPowerManager.Stub
                         }
                         long elapsed = SystemClock.uptimeMillis() - tStart;
                         if ((mask & BUTTON_BRIGHT_BIT) != 0) {
-                            // Use sensor-determined brightness values when the button (or keyboard)
-                            // light is on, since users may want to specify a custom brightness setting
-                            // that disables the button (or keyboard) backlight entirely in low-ambient
-                            // light situations.
-                            mButtonLight.setBrightness(mLightSensorButtonBrightness >= 0 && value > 0 ?
-                                    mLightSensorButtonBrightness : value);
+                            mButtonLight.setBrightness(value);
                         }
 
                         if ((mask & KEYBOARD_BRIGHT_BIT) != 0) {
-                            mKeyboardLight.setBrightness(mLightSensorKeyboardBrightness >= 0 && value > 0 ?
-                                    mLightSensorKeyboardBrightness : value);
+                            mKeyboardLight.setBrightness(value);
                         }
 
                         if ((mask & SCREEN_BRIGHT_BIT) != 0) {
@@ -2503,7 +2487,7 @@ public class PowerManagerService extends IPowerManager.Stub
         }
         if (mButtonBrightnessOverride >= 0) {
             brightness = mButtonBrightnessOverride;
-        } else if (mLightSensorButtonBrightness >= 0 && mAutoBrightnessButtonKeyboard) {
+        } else if (mLightSensorButtonBrightness >= 0 && mUseSoftwareAutoBrightness) {
             brightness = mLightSensorButtonBrightness;
         }
         if (brightness > 0) {
@@ -2525,7 +2509,7 @@ public class PowerManagerService extends IPowerManager.Stub
             brightness = 0;
         } else if (mButtonBrightnessOverride >= 0) {
             brightness = mButtonBrightnessOverride;
-        } else if (mLightSensorKeyboardBrightness >= 0 && mAutoBrightnessButtonKeyboard) {
+        } else if (mLightSensorKeyboardBrightness >= 0 && mUseSoftwareAutoBrightness) {
             brightness =  mLightSensorKeyboardBrightness;
         }
         if (brightness > 0) {
@@ -2655,11 +2639,9 @@ public class PowerManagerService extends IPowerManager.Stub
             if (mLastEventTime <= time || force) {
                 mLastEventTime = time;
                 if ((mUserActivityAllowed && !mProximitySensorActive) || force) {
-                    if (!mAutoBrightnessButtonKeyboard) {
-                        // Turn on button (and keyboard) backlights on any event, so that they
-                        // don't suddenly disappear when the lock screen is unlocked (OTHER_EVENT),
-                        // and so capacitive buttons can be found on devices where they lack
-                        // identifying surface features.
+                    // Only turn on button backlights if a button was pressed
+                    // and auto brightness is disabled
+                    if (eventType == BUTTON_EVENT && !mUseSoftwareAutoBrightness) {
                         mUserState = (mKeyboardVisible ? ALL_BRIGHT : SCREEN_BUTTON_BRIGHT);
                     } else {
                         // don't clear button/keyboard backlights when the screen is touched.
@@ -2997,10 +2979,10 @@ public class PowerManagerService extends IPowerManager.Stub
                     }
                     mLastLcdValue = value;
                 }
-                if (mButtonBrightnessOverride < 0 && mAutoBrightnessButtonKeyboard) {
+                if (mButtonBrightnessOverride < 0) {
                     mButtonLight.setBrightness(buttonValue);
                 }
-                if ((mButtonBrightnessOverride < 0 || !mKeyboardVisible) && mAutoBrightnessButtonKeyboard) {
+                if (mButtonBrightnessOverride < 0 || !mKeyboardVisible) {
                     mKeyboardLight.setBrightness(keyboardValue);
                 }
             }
@@ -3482,7 +3464,7 @@ public class PowerManagerService extends IPowerManager.Stub
         // wait until sensors are enabled before turning on screen.
         // some devices will not activate the light sensor properly on boot
         // unless we do this.
-        if (mAutoBrightnessButtonKeyboard) {
+        if (mUseSoftwareAutoBrightness) {
             // turn the screen on
             setPowerState(SCREEN_BRIGHT);
         } else {

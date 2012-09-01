@@ -117,17 +117,17 @@ public class NavigationBarView extends LinearLayout {
      */
     int mTablet_UI = 0;
 
-    public String[] mClickActions = new String[5];
-    public String[] mLongpressActions = new String[5];
-    public String[] mPortraitIcons = new String[5];
+    public String[] mClickActions = new String[7];
+    public String[] mLongpressActions = new String[7];
+    public String[] mPortraitIcons = new String[7];
 
     public final static int StockButtonsQty = 3;
     public final static String[] StockClickActions = {
-            "**back**", "**home**", "**recents**", "**null**", "**null**"
+            "**back**", "**home**", "**recents**", "**null**", "**null**", "**null**", "**null**"
     };
 
     public final static String[] StockLongpress = {
-            "**null**", "**null**", "**null**", "**null**", "**null**"
+            "**null**", "**null**", "**null**", "**null**", "**null**", "**null**", "**null**"
     };
     FrameLayout rot0;
     FrameLayout rot90;
@@ -795,7 +795,7 @@ public class NavigationBarView extends LinearLayout {
                     Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_BUTTONS_QTY), false,
                     this);
 
-            for (int j = 0; j < 5; j++) { // watch all 5 settings for changes.
+            for (int j = 0; j < 7; j++) { // watch all 5 settings for changes.
                 resolver.registerContentObserver(
                         Settings.System.getUriFor(Settings.System.NAVIGATION_CUSTOM_ACTIVITIES[j]),
                         false,
@@ -837,7 +837,7 @@ public class NavigationBarView extends LinearLayout {
                     Settings.System.NAVIGATION_BAR_BUTTONS_QTY, StockButtonsQty);
         }
 
-        for (int j = 0; j < 5; j++) {
+        for (int j = 0; j < 7; j++) {
             mClickActions[j] = Settings.System.getString(resolver,
                     Settings.System.NAVIGATION_CUSTOM_ACTIVITIES[j]);
             if (mClickActions[j] == null) {

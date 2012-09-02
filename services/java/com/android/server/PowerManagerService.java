@@ -2386,7 +2386,10 @@ public class PowerManagerService extends IPowerManager.Stub
 
         public void animateTo(int target, int sensorTarget, int mask, int animationDuration) {
             synchronized(this) {
-                if ((mask & SCREEN_BRIGHT_BIT) == 0) {
+                // NOTE(tgascoigne): For some reason this never happens. 
+                // I don't have the time to work out why, if anyone finds 
+                // a better fix please let me know!
+                /*if ((mask & SCREEN_BRIGHT_BIT) == 0) {
                     // We only animate keyboard and button when passed in with SCREEN_BRIGHT_BIT.
                     if ((mask & BUTTON_BRIGHT_BIT) != 0) {
                         mButtonLight.setBrightness(target);
@@ -2395,7 +2398,9 @@ public class PowerManagerService extends IPowerManager.Stub
                         mKeyboardLight.setBrightness(target);
                     }
                     return;
-                }
+                }*/
+                mButtonLight.setBrightness(target);
+                mKeyboardLight.setBrightness(target);
                 if (isAnimating() && (mask ^ currentMask) != 0) {
                     // current animation is unrelated to new animation, jump to final values
                     cancelAnimation();

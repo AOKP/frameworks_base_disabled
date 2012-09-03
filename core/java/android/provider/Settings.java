@@ -4914,12 +4914,6 @@ public final class Settings {
         public static final String DEFAULT_INSTALL_LOCATION = "default_install_location";
 
         /**
-         * Whether to allow killing of the foreground app by long-pressing the Back button
-         * @hide
-         */
-        public static final String KILL_APP_LONGPRESS_BACK = "kill_app_longpress_back";
-
-        /**
          * The bandwidth throttle polling freqency in seconds
          * @hide
          */

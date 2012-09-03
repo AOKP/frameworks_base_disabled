@@ -878,11 +878,7 @@
     <!-- Set to true to add links to Cell Broadcast app from Settings and MMS app. -->
     <bool name="config_cellBroadcastAppLinks">false</bool>
 
-    <!-- IceColdJelly CHANGES START HERE -->
-
-    <!-- Timeout in MS for how long you have to long-press the back key to
-         kill the foreground app. -->
-    <integer name="config_backKillTimeout">2000</integer>
+    <!-- CM CHANGES START HERE -->
 
     <!-- LUN file to be used by legacy USB manager.
          The existence of this file will be used to determine in the

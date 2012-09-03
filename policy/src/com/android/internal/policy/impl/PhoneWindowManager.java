@@ -16,9 +16,7 @@
 package com.android.internal.policy.impl;
 
 import android.app.ActivityManager;
-import android.app.ActivityManager.RunningAppProcessInfo;
 import android.app.ActivityManagerNative;
-import android.app.IActivityManager;
 import android.app.IUiModeManager;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
@@ -34,7 +32,6 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.content.res.CompatibilityInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -55,7 +52,6 @@ import android.os.Looper;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.PowerManager;
-import android.os.Process;
 import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.os.SystemClock;
@@ -149,14 +145,12 @@ import android.view.KeyCharacterMap.FallbackAction;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.Constructor;
-import java.util.List;
 
 /**
  * WindowManagerPolicy implementation for the Android phone UI.  This
@@ -395,7 +389,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     boolean mOrientationSensorEnabled = false;
     int mCurrentAppOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
     boolean mHasSoftInput = false;
-    int mBackKillTimeout;
     int mDeviceHardwareKeys;
     boolean mHasHomeKey;
     boolean mHasMenuKey;
@@ -836,50 +829,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         }
     };
 
-    Runnable mBackLongPress = new Runnable() {
-        public void run() {
-            try {
-                final Intent intent = new Intent(Intent.ACTION_MAIN);
-                String defaultHomePackage = "com.android.launcher";
-                intent.addCategory(Intent.CATEGORY_HOME);
-                final ResolveInfo res = mContext.getPackageManager().resolveActivity(intent, 0);
-                if (res.activityInfo != null && !res.activityInfo.packageName.equals("android")) {
-                    defaultHomePackage = res.activityInfo.packageName;
-                }
-                boolean targetKilled = false;
-                IActivityManager am = ActivityManagerNative.getDefault();
-                List<RunningAppProcessInfo> apps = am.getRunningAppProcesses();
-                for (RunningAppProcessInfo appInfo : apps) {
-                    int uid = appInfo.uid;
-                    // Make sure it's a foreground user application (not system,
-                    // root, phone, etc.)
-                    if (uid >= Process.FIRST_APPLICATION_UID && uid <= Process.LAST_APPLICATION_UID
-                            && appInfo.importance == RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
-                        if (appInfo.pkgList != null && (appInfo.pkgList.length > 0)) {
-                            for (String pkg : appInfo.pkgList) {
-                                if (!pkg.equals("com.android.systemui") && !pkg.equals(defaultHomePackage)) {
-                                    am.forceStopPackage(pkg);
-                                    targetKilled = true;
-                                    break;
-                                }
-                            }
-                        } else {
-                            Process.killProcess(appInfo.pid);
-                            targetKilled = true;
-                        }
-                    }
-                    if (targetKilled) {
-                        performHapticFeedbackLw(null, HapticFeedbackConstants.LONG_PRESS, false);
-                        Toast.makeText(mContext, R.string.app_killed_message, Toast.LENGTH_SHORT).show();
-                        break;
-                    }
-                }
-            } catch (RemoteException remoteException) {
-                // Do nothing; just let it go.
-            }
-        }
-    };
-
     void showGlobalActionsDialog() {
         if (mGlobalActions == null) {
             mGlobalActions = new GlobalActions(mContext, mWindowManagerFuncs);
@@ -1085,8 +1034,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 com.android.internal.R.integer.config_lidNavigationAccessibility);
         mLidControlsSleep = mContext.getResources().getBoolean(
                 com.android.internal.R.bool.config_lidControlsSleep);
-        mBackKillTimeout = mContext.getResources().getInteger(
-                com.android.internal.R.integer.config_backKillTimeout);
         mDeviceHardwareKeys = mContext.getResources().getInteger(
                 com.android.internal.R.integer.config_deviceHardwareKeys);
         mHasHomeKey = ((mDeviceHardwareKeys & KEY_MASK_HOME) != 0);
@@ -2068,10 +2015,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             }
         }
 
-        if (keyCode == KeyEvent.KEYCODE_BACK && !down) {
-            mHandler.removeCallbacks(mBackLongPress);
-        }
-
         // First we always handle the home key here, so applications
         // can never break it, although if keyguard is on, we do let
         // it handle it, because that gives us the correct 5 second
@@ -2285,13 +2228,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 }
             }
             return -1;
-        } else if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (Settings.Secure.getInt(mContext.getContentResolver(),
-                    Settings.Secure.KILL_APP_LONGPRESS_BACK, 0) == 1) {
-                if (down && repeatCount == 0) {
-                    mHandler.postDelayed(mBackLongPress, mBackKillTimeout);
-                }
-            }
         }
 
         // Shortcuts are invoked through Search+key, so intercept those here

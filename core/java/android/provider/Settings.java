@@ -3027,6 +3027,20 @@ public final class Settings {
          * @hide
          */
         public static final String STATUSBAR_HIDE_SIGNAL_BARS = "statusbar_hide_signal_bars";
+
+        /**
+         * Whether to show statusbar WiFi signal text
+         *
+         * @hide
+         */
+        public static final String STATUSBAR_WIFI_SIGNAL_TEXT = "statusbar_wifi_signal_text";
+
+        /**
+         * statusbar WIFI signal text color
+         *
+         * @hide
+         */
+        public static final String STATUSBAR_WIFI_SIGNAL_TEXT_COLOR = "statusbar_wifi_signal_text_color";
     }
 
     /**

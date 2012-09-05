@@ -931,4 +931,7 @@
 
     <!-- Asus dock compatibility disabled by default -->
     <bool name="config_hasDockBattery">false</bool>
+
+    <!-- Set to true for Tegra3 devices -->
+    <bool name="config_isTegra3">false</bool>
 </resources>

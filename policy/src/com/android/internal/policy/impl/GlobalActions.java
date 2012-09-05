@@ -29,6 +29,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.UserInfo;
 import android.database.ContentObserver;
+import android.hardware.input.InputManager;
 import android.media.AudioManager;
 import android.net.ConnectivityManager;
 import android.os.Handler;
@@ -36,6 +37,7 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.RemoteException;
 import android.os.ServiceManager;
+import android.os.SystemClock;
 import android.os.SystemProperties;
 import android.os.Vibrator;
 import android.provider.Settings;
@@ -43,7 +45,10 @@ import android.telephony.PhoneStateListener;
 import android.telephony.ServiceState;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.view.InputDevice;
 import android.view.IWindowManager;
+import android.view.KeyCharacterMap;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -81,6 +86,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
     private Action mSilentModeAction;
     private ToggleAction mAirplaneModeOn;
+    private NavBarAction mNavBarHideToggle;
 
     private MyAdapter mAdapter;
 
@@ -90,6 +96,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
     private boolean mIsWaitingForEcmExit = false;
     private boolean mHasTelephony;
     private boolean mHasVibrator;
+    private boolean mEnableNavBarHideToggle = true;
 
     private IWindowManager mIWindowManager;
 
@@ -170,6 +177,11 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         } else {
             mSilentModeAction = new SilentModeTriStateAction(mContext, mAudioManager, mHandler);
         }
+
+        mEnableNavBarHideToggle= Settings.System.getBoolean(mContext.getContentResolver(),
+                Settings.System.POWER_DIALOG_SHOW_NAVBAR_HIDE, false);
+        mNavBarHideToggle = new NavBarAction(mHandler);
+
         mAirplaneModeOn = new ToggleAction(
                 R.drawable.ic_lock_airplane_mode,
                 R.drawable.ic_lock_airplane_mode_off,
@@ -264,6 +276,11 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
         // next: airplane mode
         mItems.add(mAirplaneModeOn);
+
+        // Next NavBar Hide
+        if(mEnableNavBarHideToggle) {
+            mItems.add(mNavBarHideToggle);
+        }
 
         // last: silent mode
         if (SHOW_SILENT_TOGGLE) {
@@ -745,6 +762,123 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             mAudioManager.setRingerMode(indexToRingerMode(index));
             mHandler.sendEmptyMessageDelayed(MESSAGE_DISMISS, DIALOG_DISMISS_DELAY);
         }
+    }
+
+    private static class NavBarAction implements Action, View.OnClickListener {
+
+        private final int[] ITEM_IDS = { R.id.navbartoggle, R.id.navbarhome, R.id.navbarback,R.id.navbarmenu };
+
+        public Context mContext;
+        public boolean mNavbarVisible;
+        private final Handler mHandler;
+        private int mInjectKeycode;
+        long mDownTime;
+
+        NavBarAction(Handler handler) {
+            mHandler = handler;
+        }
+
+
+        public View create(Context context, View convertView, ViewGroup parent,
+                LayoutInflater inflater) {
+            mContext = context;
+            mNavbarVisible = Settings.System.getBoolean(mContext.getContentResolver(),
+                    Settings.System.NAVIGATION_BAR_SHOW, false);
+
+            View v = inflater.inflate(R.layout.global_actions_navbar_mode, parent, false);
+
+            for (int i = 0; i < 4; i++) {
+                View itemView = v.findViewById(ITEM_IDS[i]);
+                itemView.setSelected((i==0)&&(mNavbarVisible));
+                // Set up click handler
+                itemView.setTag(i);
+                itemView.setOnClickListener(this);
+            }
+            return v;
+        }
+
+        public void onPress() {
+        }
+
+        public boolean onLongPress() {
+            return false;
+        }
+
+        public boolean showDuringKeyguard() {
+            return false;
+        }
+
+        public boolean showBeforeProvisioning() {
+            return false;
+        }
+
+        public boolean isEnabled() {
+            return true;
+        }
+
+        void willCreate() {
+        }
+
+        public void onClick(View v) {
+            if (!(v.getTag() instanceof Integer)) return;
+
+            int index = (Integer) v.getTag();
+
+            switch (index) {
+
+            case 0 :
+                mNavbarVisible = !mNavbarVisible;
+                Settings.System.putBoolean(mContext.getContentResolver(),
+                        Settings.System.NAVIGATION_BAR_SHOW,
+                         mNavbarVisible );
+                v.setSelected(mNavbarVisible);
+                mHandler.sendEmptyMessage(MESSAGE_DISMISS);
+                break;
+
+            case 1:
+                injectKeyDelayed(KeyEvent.KEYCODE_HOME,SystemClock.uptimeMillis());
+                break;
+
+            case 2:
+                injectKeyDelayed(KeyEvent.KEYCODE_BACK,SystemClock.uptimeMillis());
+                break;
+
+            case 3:
+                injectKeyDelayed(KeyEvent.KEYCODE_MENU,SystemClock.uptimeMillis());
+                break;
+            }
+        }
+        public void injectKeyDelayed(int keycode,long downtime){
+            mInjectKeycode = keycode;
+            mDownTime = downtime;
+            mHandler.sendEmptyMessage(MESSAGE_DISMISS);
+            mHandler.removeCallbacks(onInjectKey_Down);
+            mHandler.removeCallbacks(onInjectKey_Up);
+            mHandler.postDelayed(onInjectKey_Down,25);// wait a few ms to let Dialog dismiss
+            mHandler.postDelayed(onInjectKey_Up,50); // introduce small delay to handle key press
+        }
+
+        final Runnable onInjectKey_Down = new Runnable() {
+            public void run() {
+                final KeyEvent ev = new KeyEvent(mDownTime, SystemClock.uptimeMillis(), KeyEvent.ACTION_DOWN, mInjectKeycode, 0,
+                        0, KeyCharacterMap.VIRTUAL_KEYBOARD, 0,
+                        KeyEvent.FLAG_FROM_SYSTEM | KeyEvent.FLAG_VIRTUAL_HARD_KEY,
+                        InputDevice.SOURCE_KEYBOARD);
+                InputManager.getInstance().injectInputEvent(ev,
+                        InputManager.INJECT_INPUT_EVENT_MODE_WAIT_FOR_RESULT);
+            }
+        };
+
+        final Runnable onInjectKey_Up = new Runnable() {
+            public void run() {
+                final KeyEvent ev = new KeyEvent(mDownTime, SystemClock.uptimeMillis(), KeyEvent.ACTION_UP, mInjectKeycode, 0,
+                        0, KeyCharacterMap.VIRTUAL_KEYBOARD, 0,
+                        KeyEvent.FLAG_FROM_SYSTEM | KeyEvent.FLAG_VIRTUAL_HARD_KEY,
+                        InputDevice.SOURCE_KEYBOARD);
+                InputManager.getInstance().injectInputEvent(ev,
+                        InputManager.INJECT_INPUT_EVENT_MODE_WAIT_FOR_RESULT);
+            }
+        };
     }
 
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {

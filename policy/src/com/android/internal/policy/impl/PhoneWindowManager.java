@@ -608,6 +608,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.NAVIGATION_BAR_SHOW), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.NAVIGATION_BAR_SHOW_NOW), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.NAVIGATION_BAR_HEIGHT), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.NAVIGATION_BAR_HEIGHT_LANDSCAPE), false, this);
@@ -1229,8 +1231,11 @@ public class PhoneWindowManager implements WindowManagerPolicy {
              * if it was disabled by the user.
             */
             if (mNavBarFirstBootFlag) {
-                mHasNavigationBar = (showByDefault);
                 mNavBarFirstBootFlag = false;
+            } else {
+                mHasNavigationBar = mHasNavigationBar &&
+                        Settings.System.getBoolean(mContext.getContentResolver(),
+                                Settings.System.NAVIGATION_BAR_SHOW_NOW, mHasNavigationBar);
             }
         } else {
             // Allow a system property to override this. Used by the emulator.
@@ -1366,10 +1371,12 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         if (updateRotation) {
             updateRotation(true);
         }
-        final boolean showByDefault = mContext.getResources().getBoolean(
+        boolean showByDefault = mContext.getResources().getBoolean(
                 com.android.internal.R.bool.config_showNavigationBar);
+        showByDefault = showByDefault || Settings.System.getBoolean(resolver,
+                        Settings.System.NAVIGATION_BAR_SHOW, showByDefault);
         boolean showNavBarNow = Settings.System.getBoolean(resolver,
-                Settings.System.NAVIGATION_BAR_SHOW, showByDefault);
+                Settings.System.NAVIGATION_BAR_SHOW_NOW, showByDefault);
         int NavHeight = Settings.System.getInt(resolver,
                 Settings.System.NAVIGATION_BAR_HEIGHT, 0);
         int NavHeightLand = Settings.System.getInt(resolver,

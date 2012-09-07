@@ -51,7 +51,7 @@
         >
 
         <LinearLayout
-			android:id="@+id/notification_icon_area"
+            android:id="@+id/notification_icon_area"
             android:layout_width="0dip"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -90,6 +90,13 @@
                 android:id="@+id/signal_cluster"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
+                />
+            <include layout="@layout/signal_cluster_view_alt"
+                android:id="@+id/signal_cluster_alt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
                 />
             <include layout="@layout/battery_cluster_view" 
                 android:id="@+id/battery_cluster"

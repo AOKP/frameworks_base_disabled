@@ -106,6 +106,7 @@ public class NavigationBarView extends LinearLayout {
     final static String ACTION_POWER = "**power**";
     final static String ACTION_NOTIFICATIONS = "**notifications**";
     final static String ACTION_RECENTS = "**recents**";
+    final static String ACTION_IME = "**ime**";
     final static String ACTION_KILL = "**kill**";
     final static String ACTION_NULL = "**null**";
 
@@ -881,6 +882,8 @@ public class NavigationBarView extends LinearLayout {
                 return getResources().getDrawable(R.drawable.ic_sysbar_search);
             } else if (uri.equals(ACTION_MENU)) {
                 return getResources().getDrawable(R.drawable.ic_sysbar_menu_big);
+            } else if (uri.equals(ACTION_IME)) {
+                return getResources().getDrawable(R.drawable.ic_sysbar_ime_switcher);
             } else if (uri.equals(ACTION_KILL)) {
                 return getResources().getDrawable(R.drawable.ic_sysbar_killtask);
             } else if (uri.equals(ACTION_POWER)) {

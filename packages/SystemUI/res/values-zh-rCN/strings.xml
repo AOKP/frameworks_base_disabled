@@ -166,4 +166,5 @@
 
     <!-- Label in drop down to identify brightness slider -->
     <string name="brightness_label">亮度</string>
+    <string name="recents_kill_all_button_text">全部结束</string>
 </resources>

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/* 
+** Copyright 2011, The Android Open Source Project
+**
+** Licensed under the Apache License, Version 2.0 (the "License"); 
+** you may not use this file except in compliance with the License. 
+** You may obtain a copy of the License at 
+**
+**     http://www.apache.org/licenses/LICENSE-2.0 
+**
+** Unless required by applicable law or agreed to in writing, software 
+** distributed under the License is distributed on an "AS IS" BASIS, 
+** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+** See the License for the specific language governing permissions and 
+** limitations under the License.
+*/
+-->
+
+<level-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:maxLevel="0" android:drawable="@drawable/stat_sys_honey_battery_0" />
+    <item android:maxLevel="1" android:drawable="@drawable/stat_sys_honey_battery_1" />
+    <item android:maxLevel="2" android:drawable="@drawable/stat_sys_honey_battery_2" />
+    <item android:maxLevel="3" android:drawable="@drawable/stat_sys_honey_battery_3" />
+    <item android:maxLevel="4" android:drawable="@drawable/stat_sys_honey_battery_4" />
+    <item android:maxLevel="5" android:drawable="@drawable/stat_sys_honey_battery_5" />
+    <item android:maxLevel="6" android:drawable="@drawable/stat_sys_honey_battery_6" />
+    <item android:maxLevel="7" android:drawable="@drawable/stat_sys_honey_battery_7" />
+    <item android:maxLevel="8" android:drawable="@drawable/stat_sys_honey_battery_8" />
+    <item android:maxLevel="9" android:drawable="@drawable/stat_sys_honey_battery_9" />
+    <item android:maxLevel="10" android:drawable="@drawable/stat_sys_honey_battery_10" />
+    <item android:maxLevel="11" android:drawable="@drawable/stat_sys_honey_battery_11" />
+    <item android:maxLevel="12" android:drawable="@drawable/stat_sys_honey_battery_12" />
+    <item android:maxLevel="13" android:drawable="@drawable/stat_sys_honey_battery_13" />
+    <item android:maxLevel="14" android:drawable="@drawable/stat_sys_honey_battery_14" />
+    <item android:maxLevel="15" android:drawable="@drawable/stat_sys_honey_battery_15" />
+    <item android:maxLevel="16" android:drawable="@drawable/stat_sys_honey_battery_16" />
+    <item android:maxLevel="17" android:drawable="@drawable/stat_sys_honey_battery_17" />
+    <item android:maxLevel="18" android:drawable="@drawable/stat_sys_honey_battery_18" />
+    <item android:maxLevel="19" android:drawable="@drawable/stat_sys_honey_battery_19" />
+    <item android:maxLevel="20" android:drawable="@drawable/stat_sys_honey_battery_20" />
+    <item android:maxLevel="21" android:drawable="@drawable/stat_sys_honey_battery_21" />
+    <item android:maxLevel="22" android:drawable="@drawable/stat_sys_honey_battery_22" />
+    <item android:maxLevel="23" android:drawable="@drawable/stat_sys_honey_battery_23" />
+    <item android:maxLevel="24" android:drawable="@drawable/stat_sys_honey_battery_24" />
+    <item android:maxLevel="25" android:drawable="@drawable/stat_sys_honey_battery_25" />
+    <item android:maxLevel="26" android:drawable="@drawable/stat_sys_honey_battery_26" />
+    <item android:maxLevel="27" android:drawable="@drawable/stat_sys_honey_battery_27" />
+    <item android:maxLevel="28" android:drawable="@drawable/stat_sys_honey_battery_28" />
+    <item android:maxLevel="29" android:drawable="@drawable/stat_sys_honey_battery_29" />
+    <item android:maxLevel="30" android:drawable="@drawable/stat_sys_honey_battery_30" />
+    <item android:maxLevel="31" android:drawable="@drawable/stat_sys_honey_battery_31" />
+    <item android:maxLevel="32" android:drawable="@drawable/stat_sys_honey_battery_32" />
+    <item android:maxLevel="33" android:drawable="@drawable/stat_sys_honey_battery_33" />
+    <item android:maxLevel="34" android:drawable="@drawable/stat_sys_honey_battery_34" />
+    <item android:maxLevel="35" android:drawable="@drawable/stat_sys_honey_battery_35" />
+    <item android:maxLevel="36" android:drawable="@drawable/stat_sys_honey_battery_36" />
+    <item android:maxLevel="37" android:drawable="@drawable/stat_sys_honey_battery_37" />
+    <item android:maxLevel="38" android:drawable="@drawable/stat_sys_honey_battery_38" />
+    <item android:maxLevel="39" android:drawable="@drawable/stat_sys_honey_battery_39" />
+    <item android:maxLevel="40" android:drawable="@drawable/stat_sys_honey_battery_40" />
+    <item android:maxLevel="41" android:drawable="@drawable/stat_sys_honey_battery_41" />
+    <item android:maxLevel="42" android:drawable="@drawable/stat_sys_honey_battery_42" />
+    <item android:maxLevel="43" android:drawable="@drawable/stat_sys_honey_battery_43" />
+    <item android:maxLevel="44" android:drawable="@drawable/stat_sys_honey_battery_44" />
+    <item android:maxLevel="45" android:drawable="@drawable/stat_sys_honey_battery_45" />
+    <item android:maxLevel="46" android:drawable="@drawable/stat_sys_honey_battery_46" />
+    <item android:maxLevel="47" android:drawable="@drawable/stat_sys_honey_battery_47" />
+    <item android:maxLevel="48" android:drawable="@drawable/stat_sys_honey_battery_48" />
+    <item android:maxLevel="49" android:drawable="@drawable/stat_sys_honey_battery_49" />
+    <item android:maxLevel="50" android:drawable="@drawable/stat_sys_honey_battery_50" />
+    <item android:maxLevel="51" android:drawable="@drawable/stat_sys_honey_battery_51" />
+    <item android:maxLevel="52" android:drawable="@drawable/stat_sys_honey_battery_52" />
+    <item android:maxLevel="53" android:drawable="@drawable/stat_sys_honey_battery_53" />
+    <item android:maxLevel="54" android:drawable="@drawable/stat_sys_honey_battery_54" />
+    <item android:maxLevel="55" android:drawable="@drawable/stat_sys_honey_battery_55" />
+    <item android:maxLevel="56" android:drawable="@drawable/stat_sys_honey_battery_56" />
+    <item android:maxLevel="57" android:drawable="@drawable/stat_sys_honey_battery_57" />
+    <item android:maxLevel="58" android:drawable="@drawable/stat_sys_honey_battery_58" />
+    <item android:maxLevel="59" android:drawable="@drawable/stat_sys_honey_battery_59" />
+    <item android:maxLevel="60" android:drawable="@drawable/stat_sys_honey_battery_60" />
+    <item android:maxLevel="61" android:drawable="@drawable/stat_sys_honey_battery_61" />
+    <item android:maxLevel="62" android:drawable="@drawable/stat_sys_honey_battery_62" />
+    <item android:maxLevel="63" android:drawable="@drawable/stat_sys_honey_battery_63" />
+    <item android:maxLevel="64" android:drawable="@drawable/stat_sys_honey_battery_64" />
+    <item android:maxLevel="65" android:drawable="@drawable/stat_sys_honey_battery_65" />
+    <item android:maxLevel="66" android:drawable="@drawable/stat_sys_honey_battery_66" />
+    <item android:maxLevel="67" android:drawable="@drawable/stat_sys_honey_battery_67" />
+    <item android:maxLevel="68" android:drawable="@drawable/stat_sys_honey_battery_68" />
+    <item android:maxLevel="69" android:drawable="@drawable/stat_sys_honey_battery_69" />
+    <item android:maxLevel="70" android:drawable="@drawable/stat_sys_honey_battery_70" />
+    <item android:maxLevel="71" android:drawable="@drawable/stat_sys_honey_battery_71" />
+    <item android:maxLevel="72" android:drawable="@drawable/stat_sys_honey_battery_72" />
+    <item android:maxLevel="73" android:drawable="@drawable/stat_sys_honey_battery_73" />
+    <item android:maxLevel="74" android:drawable="@drawable/stat_sys_honey_battery_74" />
+    <item android:maxLevel="75" android:drawable="@drawable/stat_sys_honey_battery_75" />
+    <item android:maxLevel="76" android:drawable="@drawable/stat_sys_honey_battery_76" />
+    <item android:maxLevel="77" android:drawable="@drawable/stat_sys_honey_battery_77" />
+    <item android:maxLevel="78" android:drawable="@drawable/stat_sys_honey_battery_78" />
+    <item android:maxLevel="79" android:drawable="@drawable/stat_sys_honey_battery_79" />
+    <item android:maxLevel="80" android:drawable="@drawable/stat_sys_honey_battery_80" />
+    <item android:maxLevel="81" android:drawable="@drawable/stat_sys_honey_battery_81" />
+    <item android:maxLevel="82" android:drawable="@drawable/stat_sys_honey_battery_82" />
+    <item android:maxLevel="83" android:drawable="@drawable/stat_sys_honey_battery_83" />
+    <item android:maxLevel="84" android:drawable="@drawable/stat_sys_honey_battery_84" />
+    <item android:maxLevel="85" android:drawable="@drawable/stat_sys_honey_battery_85" />
+    <item android:maxLevel="86" android:drawable="@drawable/stat_sys_honey_battery_86" />
+    <item android:maxLevel="87" android:drawable="@drawable/stat_sys_honey_battery_87" />
+    <item android:maxLevel="88" android:drawable="@drawable/stat_sys_honey_battery_88" />
+    <item android:maxLevel="89" android:drawable="@drawable/stat_sys_honey_battery_89" />
+    <item android:maxLevel="90" android:drawable="@drawable/stat_sys_honey_battery_90" />
+    <item android:maxLevel="91" android:drawable="@drawable/stat_sys_honey_battery_91" />
+    <item android:maxLevel="92" android:drawable="@drawable/stat_sys_honey_battery_92" />
+    <item android:maxLevel="93" android:drawable="@drawable/stat_sys_honey_battery_93" />
+    <item android:maxLevel="94" android:drawable="@drawable/stat_sys_honey_battery_94" />
+    <item android:maxLevel="95" android:drawable="@drawable/stat_sys_honey_battery_95" />
+    <item android:maxLevel="96" android:drawable="@drawable/stat_sys_honey_battery_96" />
+    <item android:maxLevel="97" android:drawable="@drawable/stat_sys_honey_battery_97" />
+    <item android:maxLevel="98" android:drawable="@drawable/stat_sys_honey_battery_98" />
+    <item android:maxLevel="99" android:drawable="@drawable/stat_sys_honey_battery_99" />
+    <item android:maxLevel="100" android:drawable="@drawable/stat_sys_honey_battery_100" />
+</level-list>
+
+

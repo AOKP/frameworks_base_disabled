@@ -18,25 +18,55 @@ package com.android.systemui;
 
 import android.animation.LayoutTransition;
 import android.app.ActivityOptions;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.SearchManager;
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningAppProcessInfo;
+import android.app.ActivityManagerNative;
+import android.app.IActivityManager;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
+import android.content.res.Configuration;
 import android.content.Context;
+import android.content.ContentResolver;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.content.pm.ActivityInfo;
+import android.content.pm.ActivityInfo;
+import android.content.ServiceConnection;
+import android.database.ContentObserver;
+import android.graphics.drawable.Drawable;
 import android.os.Vibrator;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.SystemClock;
+import android.os.PowerManager;
+import android.os.Process;
+import android.os.ServiceManager;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
 import android.provider.Settings;
 import android.util.AttributeSet;
 import android.util.Slog;
+import android.util.Log;
+import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnPreDrawListener;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import com.android.internal.widget.multiwaveview.GlowPadView;
 import com.android.internal.widget.multiwaveview.GlowPadView.OnTriggerListener;
+import com.android.internal.widget.multiwaveview.TargetDrawable;
 import com.android.systemui.R;
 import com.android.systemui.recent.StatusBarTouchProxy;
 import com.android.systemui.statusbar.BaseStatusBar;
@@ -44,6 +74,12 @@ import com.android.systemui.statusbar.CommandQueue;
 import com.android.systemui.statusbar.phone.PhoneStatusBar;
 import com.android.systemui.statusbar.tablet.StatusBarPanel;
 import com.android.systemui.statusbar.tablet.TabletStatusBar;
+import com.android.internal.widget.multiwaveview.TargetDrawable;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 
 public class SearchPanelView extends FrameLayout implements
         StatusBarPanel, ActivityOptions.OnAnimationStartedListener {
@@ -60,6 +96,14 @@ public class SearchPanelView extends FrameLayout implements
     private View mSearchTargetsContainer;
     private GlowPadView mGlowPadView;
 
+    private PackageManager mPackageManager;
+    private Resources mResources;
+    private TargetObserver mTargetObserver;
+    private ContentResolver mContentResolver;
+    private List<String> targetList;
+
+    private int mNavRingAmount;
+
     public SearchPanelView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
@@ -67,6 +111,22 @@ public class SearchPanelView extends FrameLayout implements
     public SearchPanelView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         mContext = context;
+        mPackageManager = mContext.getPackageManager();
+        mResources = mContext.getResources();
+
+        mContentResolver = mContext.getContentResolver();
+        mTargetObserver = new TargetObserver(new Handler());
+
+        mNavRingAmount = Settings.System.getInt(mContext.getContentResolver(),
+                         Settings.System.SYSTEMUI_NAVRING_AMOUNT, 1);
+
+        targetList = Arrays.asList(Settings.System.SYSTEMUI_NAVRING_1, Settings.System.SYSTEMUI_NAVRING_2,
+                                   Settings.System.SYSTEMUI_NAVRING_3, Settings.System.SYSTEMUI_NAVRING_4,
+                                   Settings.System.SYSTEMUI_NAVRING_5);
+
+        for (int i = 0; i < targetList.size(); i++) {
+            mContentResolver.registerContentObserver(Settings.System.getUriFor(targetList.get(i)), false, mTargetObserver);
+        }
     }
 
     private void startAssistActivity() {
@@ -87,6 +147,77 @@ public class SearchPanelView extends FrameLayout implements
         }
     }
 
+    private boolean launchTarget(int target) {
+        String targetKey;
+
+        int targetListOffset;
+        if (screenLayout() == Configuration.SCREENLAYOUT_SIZE_LARGE
+                || screenLayout() == Configuration.SCREENLAYOUT_SIZE_XLARGE) {
+            targetListOffset = 0;
+        } else {
+            if (isScreenPortrait() == true) {
+                targetListOffset = 0;
+            } else {
+                targetListOffset = -2;
+            }
+        }
+
+        if (target <= targetList.size()) {
+            targetKey = Settings.System.getString(mContext.getContentResolver(), targetList.get(target + targetListOffset));
+        } else {
+            return false;
+        }
+
+        if (targetKey == null || targetKey.equals("")) {
+            return false;
+        }
+
+        if (targetKey.startsWith("app:")) {
+            String activity = targetKey.substring(4);
+            ComponentName component = ComponentName.unflattenFromString(activity);
+
+            /* Try to launch the activity from history, if available.*/
+            ActivityManager activityManager = (ActivityManager) mContext
+                    .getSystemService(Context.ACTIVITY_SERVICE);
+            for (ActivityManager.RecentTaskInfo task : activityManager.getRecentTasks(20,
+                    ActivityManager.RECENT_IGNORE_UNAVAILABLE)) {
+                if (task != null && task.origActivity != null &&
+                        task.origActivity.equals(component)) {
+                        if (task.id > 0) {
+                           activityManager.moveTaskToFront(task.id, ActivityManager.MOVE_TASK_WITH_HOME);
+                    return true;
+                    }
+                }
+            }
+
+            vibrate();
+            Intent intent = new Intent();
+            intent.addCategory(Intent.CATEGORY_LAUNCHER);
+            intent.setComponent(component);
+            intent.addFlags(Intent.FLAG_ACTIVITY_TASK_ON_HOME
+                    | Intent.FLAG_ACTIVITY_NEW_TASK);
+            mContext.startActivity(intent);
+            return true;
+        } else if (targetKey.equals("screenoff")) {
+            vibrate();
+            screenOff();
+            return true;
+        } else if (targetKey.equals("killcurrent")) {
+            vibrate();
+            killProcess();
+            return true;
+        } else if (targetKey.equals("screenshot")) {
+            vibrate();
+            takeScreenshot();
+            return true;
+        } else if (targetKey.equals("power")) {
+            vibrate();
+            powerMenu();
+            return true;
+        }
+    return false;
+    }
+
     class GlowPadTriggerListener implements GlowPadView.OnTriggerListener {
         boolean mWaitingForLaunch;
 
@@ -104,6 +235,9 @@ public class SearchPanelView extends FrameLayout implements
 
         public void onTrigger(View v, final int target) {
             final int resId = mGlowPadView.getResourceIdForTarget(target);
+
+            boolean launch = launchTarget(target);
+
             switch (resId) {
                 case com.android.internal.R.drawable.ic_action_assist_generic:
                     mWaitingForLaunch = true;
@@ -137,6 +271,105 @@ public class SearchPanelView extends FrameLayout implements
         // TODO: fetch views
         mGlowPadView = (GlowPadView) findViewById(R.id.glow_pad_view);
         mGlowPadView.setOnTriggerListener(mGlowPadViewListener);
+
+        setDrawables();
+    }
+
+    private void setDrawables() {
+        String target3 = Settings.System.getString(mContext.getContentResolver(), Settings.System.SYSTEMUI_NAVRING_3);
+        if (target3 == null || target3.equals("")) {
+            Settings.System.putString(mContext.getContentResolver(), Settings.System.SYSTEMUI_NAVRING_3, "assist");
+        }
+
+        // Custom Targets
+        ArrayList<TargetDrawable> storedDraw = new ArrayList<TargetDrawable>();
+
+        int startPosOffset;
+        int endPosOffset;
+
+        if (screenLayout() == Configuration.SCREENLAYOUT_SIZE_XLARGE) {
+            startPosOffset = 1;
+            endPosOffset = 8;
+        } else if (screenLayout() == Configuration.SCREENLAYOUT_SIZE_LARGE) {
+            if (mNavRingAmount == 4 || mNavRingAmount == 2) {
+            startPosOffset = 0;
+            endPosOffset = 1;
+            } else {
+            startPosOffset = 0;
+            endPosOffset = 3;
+            }
+        } else {
+            if (isScreenPortrait() == true) {
+                if (mNavRingAmount == 4 || mNavRingAmount == 2) {
+                startPosOffset = 0;
+                endPosOffset = 1;
+                } else {
+                startPosOffset = 0;
+                endPosOffset = 3;
+                }
+            } else {
+                if (mNavRingAmount == 4 || mNavRingAmount == 2) {
+                startPosOffset = 2;
+                endPosOffset = 0;
+                } else {
+                startPosOffset = 2;
+                endPosOffset = 1;
+                }
+            }
+        }
+
+        List<String> targetActivities = Arrays.asList(Settings.System.getString(
+                                                               mContext.getContentResolver(), targetList.get(0)),
+                                                      Settings.System.getString(
+                                                               mContext.getContentResolver(), targetList.get(1)),
+                                                      Settings.System.getString(
+                                                               mContext.getContentResolver(), targetList.get(2)),
+                                                      Settings.System.getString(
+                                                               mContext.getContentResolver(), targetList.get(3)),
+                                                      Settings.System.getString(
+                                                               mContext.getContentResolver(), targetList.get(4)));
+
+        // Place Holder Targets
+        TargetDrawable cDrawable = new TargetDrawable(mResources, mResources.getDrawable(com.android.internal.R.drawable.ic_lockscreen_camera));
+        cDrawable.setEnabled(false);
+
+        // Add Initial Place Holder Targets
+        for (int i = 0; i < startPosOffset; i++) {
+            storedDraw.add(cDrawable);
+        }
+
+        // Add User Targets
+        for (int i = 0; i < targetActivities.size(); i++)
+            if (targetActivities.get(i) == null || targetActivities.get(i).equals("") || targetActivities.get(i).equals("none")) {
+                storedDraw.add(cDrawable);
+            } else if (targetActivities.get(i).equals("screenshot")) {
+                storedDraw.add(new TargetDrawable(mResources, mResources.getDrawable(R.drawable.ic_navbar_screenshot)));
+            } else if (targetActivities.get(i).equals("killcurrent")) {
+                storedDraw.add(new TargetDrawable(mResources, mResources.getDrawable(R.drawable.ic_navbar_killtask)));
+            } else if (targetActivities.get(i).equals("power")) {
+                storedDraw.add(new TargetDrawable(mResources, mResources.getDrawable(R.drawable.ic_navbar_power)));
+            } else if (targetActivities.get(i).equals("screenoff")) {
+                storedDraw.add(new TargetDrawable(mResources, mResources.getDrawable(R.drawable.ic_navbar_power)));
+            } else if (targetActivities.get(i).equals("assist")) {
+                storedDraw.add(new TargetDrawable(mResources, com.android.internal.R.drawable.ic_action_assist_generic));
+            } else if (targetActivities.get(i).startsWith("app:")) {
+                try {
+                    ActivityInfo activityInfo= mPackageManager.getActivityInfo(
+                            ComponentName.unflattenFromString(targetActivities.get(i).substring(4)),
+                            PackageManager.GET_RECEIVERS);
+                    Drawable activityIcon = activityInfo.loadIcon(mPackageManager);
+
+                    storedDraw.add(new TargetDrawable(mResources, activityIcon));
+            } catch (Exception e) { ///
+            }
+        }
+
+        // Add End Place Holder Targets
+        for (int i = 0; i < endPosOffset; i++) {
+            storedDraw.add(cDrawable);
+        }
+
+        mGlowPadView.setTargetResources(storedDraw);
     }
 
     private void maybeSwapSearchIcon() {
@@ -182,9 +415,8 @@ public class SearchPanelView extends FrameLayout implements
         Context context = getContext();
         if (Settings.System.getInt(context.getContentResolver(),
                 Settings.System.HAPTIC_FEEDBACK_ENABLED, 1) != 0) {
-            Resources res = context.getResources();
             Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-            vibrator.vibrate(res.getInteger(R.integer.config_search_panel_view_vibration_duration));
+            vibrator.vibrate(mResources.getInteger(R.integer.config_search_panel_view_vibration_duration));
         }
     }
 
@@ -279,4 +511,200 @@ public class SearchPanelView extends FrameLayout implements
     public boolean isAssistantAvailable() {
         return SearchManager.getAssistIntent(mContext) != null;
     }
+
+    private void screenOff() {
+        PowerManager pm = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
+        pm.goToSleep(SystemClock.uptimeMillis() + 1);
+    }
+
+    private void killProcess() {
+        try {
+            final Intent intent = new Intent(Intent.ACTION_MAIN);
+            String defaultHomePackage = "com.android.launcher";
+            intent.addCategory(Intent.CATEGORY_HOME);
+            final ResolveInfo res = mContext.getPackageManager().resolveActivity(intent, 0);
+            if (res.activityInfo != null && !res.activityInfo.packageName.equals("android")) {
+                defaultHomePackage = res.activityInfo.packageName;
+            }
+            boolean targetKilled = false;
+            IActivityManager am = ActivityManagerNative.getDefault();
+            List<RunningAppProcessInfo> apps = am.getRunningAppProcesses();
+            for (RunningAppProcessInfo appInfo : apps) {
+                int uid = appInfo.uid;
+                // Make sure it's a foreground user application (not system,
+                // root, phone, etc.)
+                if (uid >= Process.FIRST_APPLICATION_UID && uid <= Process.LAST_APPLICATION_UID
+                        && appInfo.importance == RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
+                    if (appInfo.pkgList != null && (appInfo.pkgList.length > 0)) {
+                        for (String pkg : appInfo.pkgList) {
+                            if (!pkg.equals("com.android.systemui") && !pkg.equals(defaultHomePackage)) {
+                                am.forceStopPackage(pkg);
+                                targetKilled = true;
+                                break;
+                            }
+                        }
+                    } else {
+                        Process.killProcess(appInfo.pid);
+                        targetKilled = true;
+                    }
+                }
+                if (targetKilled) {
+                    Toast.makeText(mContext, R.string.app_killed_message, Toast.LENGTH_SHORT).show();
+                    break;
+                }
+            }
+        } catch (RemoteException remoteException) {
+            // Do nothing; just let it go.
+        }
+    }
+
+    /**
+     * functions needed for taking screenhots. This leverages the built in ICS
+     * screenshot functionality
+     */
+    final Object mScreenshotLock = new Object();
+    ServiceConnection mScreenshotConnection = null;
+
+    final Runnable mScreenshotTimeout = new Runnable() {
+        @Override
+        public void run() {
+            synchronized (mScreenshotLock) {
+                if (mScreenshotConnection != null) {
+                    mContext.unbindService(mScreenshotConnection);
+                    mScreenshotConnection = null;
+                }
+            }
+        }
+    };
+
+    private void takeScreenshot() {
+        synchronized (mScreenshotLock) {
+            if (mScreenshotConnection != null) {
+                return;
+            }
+            ComponentName cn = new ComponentName("com.android.systemui",
+                    "com.android.systemui.screenshot.TakeScreenshotService");
+            Intent intent = new Intent();
+            intent.setComponent(cn);
+            ServiceConnection conn = new ServiceConnection() {
+                @Override
+                public void onServiceConnected(ComponentName name, IBinder service) {
+                    synchronized (mScreenshotLock) {
+                        if (mScreenshotConnection != this) {
+                            return;
+                        }
+                        Messenger messenger = new Messenger(service);
+                        Message msg = Message.obtain(null, 1);
+                        final ServiceConnection myConn = this;
+                        Handler h = new Handler(H.getLooper()) {
+                            @Override
+                            public void handleMessage(Message msg) {
+                                synchronized (mScreenshotLock) {
+                                    if (mScreenshotConnection == myConn) {
+                                        mContext.unbindService(mScreenshotConnection);
+                                        mScreenshotConnection = null;
+                                        H.removeCallbacks(mScreenshotTimeout);
+                                    }
+                                }
+                            }
+                        };
+                        msg.replyTo = new Messenger(h);
+                        msg.arg1 = msg.arg2 = 0;
+
+                        /*
+                         * remove for the time being if (mStatusBar != null &&
+                         * mStatusBar.isVisibleLw()) msg.arg1 = 1; if
+                         * (mNavigationBar != null &&
+                         * mNavigationBar.isVisibleLw()) msg.arg2 = 1;
+                         */
+
+                        /* wait for the dialog box to close */
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException ie) {
+                        }
+
+                        /* take the screenshot */
+                        try {
+                            messenger.send(msg);
+                        } catch (RemoteException e) {
+                        }
+                    }
+                }
+
+                @Override
+                public void onServiceDisconnected(ComponentName name) {
+                }
+            };
+            if (mContext.bindService(intent, conn, Context.BIND_AUTO_CREATE)) {
+                mScreenshotConnection = conn;
+                H.postDelayed(mScreenshotTimeout, 10000);
+            }
+        }
+    }
+
+    private void powerMenu() {
+        final CharSequence[] item_entries = {"Shutdown", "Reboot", "Recovery", "Bootloader"};
+        final CharSequence[] item_values = {"shutdown", "", "recovery", "bootloader"};
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        builder.setTitle("Power Menu");
+        builder.setItems(item_entries, new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // TODO Auto-generated method stub
+                if (which == 1
+                        || which == 2
+                        || which == 3) {
+                        PowerManager pm = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
+                        pm.reboot((String)item_values[which]);
+                }
+            }
+        });
+        builder.setNegativeButton("Cancel", new Dialog.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // TODO Auto-generated method stub
+                dialog.dismiss();
+            }
+        });
+        builder.create().show();
+     }
+
+    private Handler H = new Handler() {
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+
+            }
+        }
+    };
+
+    public int screenLayout() {
+        final int screenSize = Resources.getSystem().getConfiguration().screenLayout &
+                Configuration.SCREENLAYOUT_SIZE_MASK;
+        return screenSize;
+    }
+
+    public boolean isScreenPortrait() {
+        return mResources.getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
+    }
+
+    public class TargetObserver extends ContentObserver {
+        public TargetObserver(Handler handler) {
+            super(handler);
+        }
+
+        @Override
+        public boolean deliverSelfNotifications() {
+            return super.deliverSelfNotifications();
+        }
+
+        @Override
+        public void onChange(boolean selfChange) {
+            super.onChange(selfChange);
+            setDrawables();
+        }
+    }
+
 }

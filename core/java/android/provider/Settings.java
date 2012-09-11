@@ -2060,6 +2060,13 @@ public final class Settings {
         public static final String NOTIFICATION_LIGHT_PULSE = "notification_light_pulse";
 
         /**
+         * Whether the button backlights should be turned on when a notification came in.
+         * The value is boolean (1 or 0).
+         * @hide
+         */
+         public static final String NOTIFICATION_USE_BUTTON_BACKLIGHT = "notification_use_button_backlight";
+
+        /**
          * Show pointer location on screen?
          * 0 = no
          * 1 = yes
@@ -2965,6 +2972,12 @@ public final class Settings {
          * @hide
          */
         public static final String QUIET_HOURS_DIM = "quiet_hours_dim";
+
+        /**
+         * Whether disable Bln during quiet hours.
+         * @hide
+         */
+        public static final String QUIET_HOURS_BLN = "quiet_hours_bln";
 
         /**
          * where to show the legacy menu key

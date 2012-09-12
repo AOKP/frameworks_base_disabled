@@ -103,6 +103,7 @@ public class CallerInfo {
     // including the send to voicemail flag and the ringtone
     // uri reference.
     public Uri contactRingtoneUri;
+    public Uri contactVibrationUri;
     public boolean shouldSendToVoicemail;
 
     /**
@@ -225,6 +226,15 @@ public class CallerInfo {
                     info.contactRingtoneUri = Uri.parse(cursor.getString(columnIndex));
                 } else {
                     info.contactRingtoneUri = null;
+                }
+
+                // look for the custom vibration, create from the string stored
+                // in the database.
+                columnIndex = cursor.getColumnIndex(PhoneLookup.CUSTOM_VIBRATION);
+                if ((columnIndex != -1) && (cursor.getString(columnIndex) != null)) {
+                    info.contactVibrationUri = Uri.parse(cursor.getString(columnIndex));
+                } else {
+                    info.contactVibrationUri = null;
                 }
 
                 // look for the send to voicemail flag, set it to true only
@@ -603,7 +613,8 @@ public class CallerInfo {
                     .append("\nperson_id: " + person_id)
                     .append("\nneedUpdate: " + needUpdate)
                     .append("\ncontactRefUri: " + contactRefUri)
-                    .append("\ncontactRingtoneUri: " + contactRefUri)
+                    .append("\ncontactRingtoneUri: " + contactRingtoneUri)
+                    .append("\ncontactVibrationUri: " + contactVibrationUri)
                     .append("\nshouldSendToVoicemail: " + shouldSendToVoicemail)
                     .append("\ncachedPhoto: " + cachedPhoto)
                     .append("\nisCachedPhotoCurrent: " + isCachedPhotoCurrent)

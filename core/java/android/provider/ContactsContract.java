@@ -833,6 +833,13 @@ public final class ContactsContract {
         public static final String CUSTOM_RINGTONE = "custom_ringtone";
 
         /**
+         * URI for a custom vibration associated with the contact. If null or missing,
+         * the default vibration is used.
+         * <P>Type: TEXT (URI to the vibration)</P>
+         */
+        public static final String CUSTOM_VIBRATION = "custom_vibration";
+
+        /**
          * Whether the contact should always be sent to voicemail. If missing,
          * defaults to false.
          * <P>Type: INTEGER (0 for false, 1 for true)</P>

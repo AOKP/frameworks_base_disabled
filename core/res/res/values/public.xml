@@ -3802,4 +3802,9 @@
   <java-symbol type="id" name="title_aokp" />
   <java-symbol type="id" name="title_stock" />
 
+  <!-- Custom Vibrations -->
+  <java-symbol type="string" name="vibration_picker_title"/>
+  <java-symbol type="string" name="vibration_picker_del_title"/>
+  <java-symbol type="layout" name="vibration_picker_dialog"/>
+
 </resources>

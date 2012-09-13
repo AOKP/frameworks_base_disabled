@@ -17,6 +17,7 @@
 ** limitations under the License.
 */
 -->
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
     android:paddingLeft="20dip"
     android:paddingTop="20dip"
@@ -36,3 +37,4 @@
         android:layout_height="wrap_content" 
         android:text="@string/keyguard_label_text" />
 </LinearLayout>
+

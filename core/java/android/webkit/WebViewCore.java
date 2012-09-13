@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2007 The Android Open Source Project
- * Copyright (c) 2011, Code Aurora Forum. All rights reserved.
+ * Copyright (c) 2012, Code Aurora Forum. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -728,6 +728,7 @@ public final class WebViewCore {
                                     mPerf.cpuSetOptions(Performance.CPUOPT_CPU0_PWRCLSP,0);
                                     mPerf.cpuSetOptions(Performance.CPUOPT_CPU0_FREQMIN,MIN_FREQ_DURING_SCROLLING);
                                 }
+
                                 break;
 
                             case RESUME_PRIORITY:
@@ -754,6 +755,7 @@ public final class WebViewCore {
                                     mPerf.cpuSetOptions(Performance.CPUOPT_CPU0_PWRCLSP,1);
                                     mPerf.cpuSetOptions(Performance.CPUOPT_CPU0_FREQMIN,0);
                                 }
+
                                 break;
 
                             case EventHub.ADD_PACKAGE_NAME:

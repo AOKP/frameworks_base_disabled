@@ -31,10 +31,8 @@ import android.os.Message;
 import android.os.RemoteException;
 import android.os.SystemClock;
 import android.os.ParcelFileDescriptor;
-import android.os.SystemProperties;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.os.SystemProperties;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -83,8 +81,6 @@ import java.util.concurrent.locks.ReentrantLock;
 public class SurfaceView extends View {
     static private final String TAG = "SurfaceView";
     static private final boolean DEBUG = false;
-
-    static final String COMPAT_PROPERTY = "ro.disable.compat";
 
     final ArrayList<SurfaceHolder.Callback> mCallbacks
             = new ArrayList<SurfaceHolder.Callback>();
@@ -445,11 +441,8 @@ public class SurfaceView extends View {
                               | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
                               | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
                               ;
-                boolean mCompatOverride = SystemProperties.get(COMPAT_PROPERTY).equalsIgnoreCase("true");
-                if (!mCompatOverride) {
-                    if (!getContext().getResources().getCompatibilityInfo().supportsScreen()) {
-                        mLayout.flags |= WindowManager.LayoutParams.FLAG_COMPATIBLE_WINDOW;
-                    }
+                if (!getContext().getResources().getCompatibilityInfo().supportsScreen()) {
+                    mLayout.flags |= WindowManager.LayoutParams.FLAG_COMPATIBLE_WINDOW;
                 }
 
                 if (mWindow == null) {
@@ -526,15 +519,6 @@ public class SurfaceView extends View {
                         }
                     }
 
-                    if (SystemProperties.OMAP_ENHANCEMENT) {
-                        if (!mNewSurface.isValid()) {
-                            // If the surface is invalid, it makes no sense to do
-                            // anything with it (e.g. mark it for redraw, etc).
-
-                            return;
-                        }
-                    }
-
                     mSurface.transferFrom(mNewSurface);
 
                     if (visible) {
@@ -546,9 +530,7 @@ public class SurfaceView extends View {
                                 callbacks = getSurfaceCallbacks();
                             }
                             for (SurfaceHolder.Callback c : callbacks) {
-                                if (mSurface.isValid()) {
-                                    c.surfaceCreated(mSurfaceHolder);
-                                }
+                                c.surfaceCreated(mSurfaceHolder);
                             }
                         }
                         if (creating || formatChanged || sizeChanged
@@ -559,9 +541,7 @@ public class SurfaceView extends View {
                                 callbacks = getSurfaceCallbacks();
                             }
                             for (SurfaceHolder.Callback c : callbacks) {
-                                if (mSurface.isValid()) {
-                                    c.surfaceChanged(mSurfaceHolder, mFormat, myWidth, myHeight);
-                                }
+                                c.surfaceChanged(mSurfaceHolder, mFormat, myWidth, myHeight);
                             }
                         }
                         if (redrawNeeded) {
@@ -571,10 +551,8 @@ public class SurfaceView extends View {
                             }
                             for (SurfaceHolder.Callback c : callbacks) {
                                 if (c instanceof SurfaceHolder.Callback2) {
-                                    if (mSurface.isValid()) {
-                                        ((SurfaceHolder.Callback2)c).surfaceRedrawNeeded(
-                                                mSurfaceHolder);
-                                    }
+                                    ((SurfaceHolder.Callback2)c).surfaceRedrawNeeded(
+                                            mSurfaceHolder);
                                 }
                             }
                         }

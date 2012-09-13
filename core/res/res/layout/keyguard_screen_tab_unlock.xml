@@ -286,12 +286,14 @@
 
     </LinearLayout>
 
+
         <com.android.internal.widget.multiwaveview.MultiWaveView
             android:id="@+id/unlock_widget"
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_alignParentBottom="true"
+
             android:targetDrawables="@array/lockscreen_targets_with_camera"
             android:targetDescriptions="@array/lockscreen_target_descriptions_with_camera"
             android:directionDescriptions="@array/lockscreen_direction_descriptions"
@@ -358,3 +360,4 @@
         />
 
 </GridLayout>
+

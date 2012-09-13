@@ -314,9 +314,7 @@ public class DropBoxManager {
      * @return whether events with that tag would be accepted
      */
     public boolean isTagEnabled(String tag) {
-        try { return mService.isTagEnabled(tag); }
-        catch (RemoteException e) { return false; }
-        catch (NullPointerException n) { return false; }
+        try { return mService.isTagEnabled(tag); } catch (RemoteException e) { return false; }
     }
 
     /**

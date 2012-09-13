@@ -36,8 +36,10 @@ public class StatusBarManager {
 
     public static final int DISABLE_EXPAND = View.STATUS_BAR_DISABLE_EXPAND;
     public static final int DISABLE_NOTIFICATION_ICONS = View.STATUS_BAR_DISABLE_NOTIFICATION_ICONS;
-    public static final int DISABLE_NOTIFICATION_ALERTS = View.STATUS_BAR_DISABLE_NOTIFICATION_ALERTS;
-    public static final int DISABLE_NOTIFICATION_TICKER = View.STATUS_BAR_DISABLE_NOTIFICATION_TICKER;
+    public static final int DISABLE_NOTIFICATION_ALERTS
+            = View.STATUS_BAR_DISABLE_NOTIFICATION_ALERTS;
+    public static final int DISABLE_NOTIFICATION_TICKER
+            = View.STATUS_BAR_DISABLE_NOTIFICATION_TICKER;
     public static final int DISABLE_SYSTEM_INFO = View.STATUS_BAR_DISABLE_SYSTEM_INFO;
     public static final int DISABLE_HOME = View.STATUS_BAR_DISABLE_HOME;
     public static final int DISABLE_RECENT = View.STATUS_BAR_DISABLE_RECENT;
@@ -45,7 +47,8 @@ public class StatusBarManager {
     public static final int DISABLE_CLOCK = View.STATUS_BAR_DISABLE_CLOCK;
 
     @Deprecated
-    public static final int DISABLE_NAVIGATION = View.STATUS_BAR_DISABLE_HOME | View.STATUS_BAR_DISABLE_RECENT;
+    public static final int DISABLE_NAVIGATION = 
+            View.STATUS_BAR_DISABLE_HOME | View.STATUS_BAR_DISABLE_RECENT;
 
     public static final int DISABLE_NONE = 0x00000000;
 

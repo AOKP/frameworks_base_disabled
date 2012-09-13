@@ -20,6 +20,7 @@
 <!-- This is the screen that shows the 9 circle unlock widget and instructs
      the user how to unlock their device, or make an emergency call.  This
      is the portrait layout.  -->
+
 <GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/root"
     android:orientation="vertical"
@@ -136,6 +137,7 @@
     </LinearLayout>
 
     <!-- Column 1: lock pattern -->
+
     <com.android.internal.widget.LockPatternView android:id="@+id/lockPattern"
          android:layout_width="match_parent"
          android:layout_height="match_parent"
@@ -144,6 +146,7 @@
          android:layout_marginBottom="8dip"
          android:layout_marginLeft="8dip"
          android:layout_rowSpan="7"/>
+
 
     <!-- Music transport control -->
     <include android:id="@+id/transport"

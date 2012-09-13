@@ -140,7 +140,6 @@ public class Camera {
     private static final int CAMERA_MSG_STATS_DATA       = 0x800;
     private static final int CAMERA_MSG_META_DATA        = 0x8000;
     private static final int CAMERA_MSG_PREVIEW_METADATA = 0x400;
-    private static final int CAMERA_MSG_BURST_IMAGE      = 0x800;
     private static final int CAMERA_MSG_ALL_MSGS         = 0x4FF;
 
     private int mNativeContext; // accessed by native methods
@@ -213,11 +212,13 @@ public class Camera {
 
         /**
          * The facing of the camera is the same as that of the screen.
+         * @hide
          */
         public static final int CAMERA_SUPPORT_MODE_ZSL = 2;
 
         /**
          * The facing of the camera is the same as that of the screen.
+         * @hide
          */
         public static final int CAMERA_SUPPORT_MODE_NONZSL = 3;
 
@@ -1620,7 +1621,7 @@ public class Camera {
     public class Parameters {
         // Parameter keys to communicate with the camera driver.
         private static final String KEY_PREVIEW_SIZE = "preview-size";
-	    private static final String KEY_HFR_SIZE = "hfr-size";
+	private static final String KEY_HFR_SIZE = "hfr-size";
         private static final String KEY_PREVIEW_FORMAT = "preview-format";
         private static final String KEY_PREVIEW_FRAME_RATE = "preview-frame-rate";
         private static final String KEY_PREVIEW_FPS_RANGE = "preview-fps-range";
@@ -1655,7 +1656,7 @@ public class Camera {
         private static final String KEY_SCENE_DETECT = "scene-detect";
         private static final String KEY_FLASH_MODE = "flash-mode";
         private static final String KEY_FOCUS_MODE = "focus-mode";
-		private static final String KEY_ISO_MODE = "iso";
+        private static final String KEY_ISO_MODE = "iso";
         private static final String KEY_LENSSHADE = "lensshade";
         private static final String KEY_HISTOGRAM = "histogram";
         private static final String KEY_SKIN_TONE_ENHANCEMENT = "skinToneEnhancement";
@@ -1702,7 +1703,7 @@ public class Camera {
         private static final String KEY_SELECTABLE_ZONE_AF = "selectable-zone-af";
         private static final String KEY_FACE_DETECTION = "face-detection";
         private static final String KEY_MEMORY_COLOR_ENHANCEMENT = "mce";
-	    private static final String KEY_REDEYE_REDUCTION = "redeye-reduction";
+        private static final String KEY_REDEYE_REDUCTION = "redeye-reduction";
         private static final String KEY_ZSL = "zsl";
         private static final String KEY_CAMERA_MODE = "camera-mode";
         private static final String KEY_VIDEO_HIGH_FRAME_RATE = "video-hfr";
@@ -1735,58 +1736,88 @@ public class Camera {
         public static final String EFFECT_AQUA = "aqua";
 
         // Values for touch af/aec settings.
+        /** @hide */
         public static final String TOUCH_AF_AEC_OFF = "touch-off";
+        /** @hide */
         public static final String TOUCH_AF_AEC_ON = "touch-on";
 
         // Values for auto exposure settings.
+        /** @hide */
         public static final String AUTO_EXPOSURE_FRAME_AVG = "frame-average";
+        /** @hide */
         public static final String AUTO_EXPOSURE_CENTER_WEIGHTED = "center-weighted";
+        /** @hide */
         public static final String AUTO_EXPOSURE_SPOT_METERING = "spot-metering";
         // Values for antibanding settings.
         public static final String ANTIBANDING_AUTO = "auto";
         public static final String ANTIBANDING_50HZ = "50hz";
         public static final String ANTIBANDING_60HZ = "60hz";
         public static final String ANTIBANDING_OFF = "off";
-        //Values for ISO settings
 
+        //Values for ISO settings
+        /** @hide */
         public static final String ISO_AUTO = "auto";
+        /** @hide */
         public static final String ISO_HJR = "ISO_HJR";
+        /** @hide */
         public static final String ISO_100 = "ISO100";
+        /** @hide */
         public static final String ISO_200 = "ISO200";
+        /** @hide */
         public static final String ISO_400 = "ISO400";
+        /** @hide */
         public static final String ISO_800 = "ISO800";
+        /** @hide */
         public static final String ISO_1600 = "ISO1600";
 
         //Values for Lens Shading
 
+        /** @hide */
         public static final String LENSSHADE_ENABLE = "enable";
+        /** @hide */
         public static final String LENSSHADE_DISABLE= "disable";
 
+        /** @hide */
         public static final String HISTOGRAM_ENABLE = "enable";
+        /** @hide */
         public static final String HISTOGRAM_DISABLE= "disable";
 
+        /** @hide */
         public static final String SKIN_TONE_ENHANCEMENT_ENABLE = "enable";
+        /** @hide */
         public static final String SKIN_TONE_ENHANCEMENT_DISABLE= "disable";
 
         // Values for MCE settings.
+        /** @hide */
         public static final String MCE_ENABLE = "enable";
+        /** @hide */
         public static final String MCE_DISABLE = "disable";
 
         // Values for ZSL settings.
+        /** @hide */
         public static final String ZSL_ON = "on";
+        /** @hide */
         public static final String ZSL_OFF = "off";
 
         // Values for HDR Bracketing settings.
+        /** @hide */
         public static final String AE_BRACKET_HDR_OFF = "Off";
+        /** @hide */
         public static final String AE_BRACKET_HDR = "HDR";
+        /** @hide */
         public static final String AE_BRACKET = "AE-Bracket";
 
         // Values for HFR settings.
+        /** @hide */
         public static final String VIDEO_HFR_OFF = "off";
+        /** @hide */
         public static final String VIDEO_HFR_2X = "60";
+        /** @hide */
         public static final String VIDEO_HFR_3X = "90";
+        /** @hide */
         public static final String VIDEO_HFR_4X = "120";
 
+        /** @hide */
         public static final String KEY_AE_BRACKET_HDR = "ae-bracket-hdr";
 
         // Values for flash mode settings.
@@ -1820,6 +1851,7 @@ public class Camera {
 
         /**
          * Scene mode is off.
+         * @hide
          */
         public static final String SCENE_MODE_ASD = "asd";
 
@@ -1899,11 +1931,15 @@ public class Camera {
          * Capture the naturally warm color of scenes lit by candles.
          */
         public static final String SCENE_MODE_CANDLELIGHT = "candlelight";
+        /** @hide */
         public static final String SCENE_MODE_BACKLIGHT = "backlight";
+        /** @hide */
         public static final String SCENE_MODE_FLOWERS = "flowers";
 
         // Values for auto scene detection settings.
+        /** @hide */
         public static final String SCENE_DETECT_OFF = "off";
+        /** @hide */
         public static final String SCENE_DETECT_ON = "on";
 
         /**
@@ -1943,6 +1979,7 @@ public class Camera {
          * Normal focus mode. Applications should call
          * {@link #autoFocus(AutoFocusCallback)} to start the focus in this
          * mode.
+         * @hide
          */
         public static final String FOCUS_MODE_NORMAL = "normal";
 
@@ -2046,22 +2083,34 @@ public class Camera {
 
         //Values for Continuous AF
 
+        /** @hide */
         public static final String CONTINUOUS_AF_OFF = "caf-off";
+        /** @hide */
         public static final String CONTINUOUS_AF_ON = "caf-on";
+        /** @hide */
         public static final String DENOISE_OFF = "denoise-off";
+        /** @hide */
         public static final String DENOISE_ON = "denoise-on";
 	// Values for Redeye Reduction settings.
+        /** @hide */
         public static final String REDEYE_REDUCTION_ENABLE = "enable";
+        /** @hide */
         public static final String REDEYE_REDUCTION_DISABLE = "disable";
 
         // Values for selectable zone af settings.
+        /** @hide */
         public static final String SELECTABLE_ZONE_AF_AUTO = "auto";
+        /** @hide */
         public static final String SELECTABLE_ZONE_AF_SPOTMETERING = "spot-metering";
+        /** @hide */
         public static final String SELECTABLE_ZONE_AF_CENTER_WEIGHTED = "center-weighted";
+        /** @hide */
         public static final String SELECTABLE_ZONE_AF_FRAME_AVERAGE = "frame-average";
 
         // Values for Face Detection settings.
+        /** @hide */
         public static final String FACE_DETECTION_OFF = "off";
+        /** @hide */
         public static final String FACE_DETECTION_ON = "on";
 
         private HashMap<String, String> mMap;
@@ -3738,7 +3787,7 @@ public class Camera {
          * @hide
          * Gets the supported ISO values.
          *
-         * @return a List of FLASH_MODE_XXX string constants. null if flash mode
+         * @return a list of ISO_XXX string constants. null if ISO
          *         setting is not supported.
          */
         public List<String> getSupportedIsoValues() {
@@ -4325,7 +4374,6 @@ public class Camera {
          * disable video stabilization.
          * @see #isVideoStabilizationSupported()
          * @see #getVideoStabilization()
-         * @hide
          */
         public void setVideoStabilization(boolean toggle) {
             set(KEY_VIDEO_STABILIZATION, toggle ? TRUE : FALSE);
@@ -4336,7 +4384,7 @@ public class Camera {
          * changed after setting face detection.
          *
          * @param value FACE_DETECTION_XXX string constants.
-         *
+         * @hide
          */
         public void setFaceDetectionMode(String value) {
             set(KEY_FACE_DETECTION, value);
@@ -4349,7 +4397,6 @@ public class Camera {
          * @return true if video stabilization is enabled
          * @see #isVideoStabilizationSupported()
          * @see #setVideoStabilization(boolean)
-         * @hide
          */
         public boolean getVideoStabilization() {
             String str = get(KEY_VIDEO_STABILIZATION);
@@ -4363,7 +4410,6 @@ public class Camera {
          * @return true if video stabilization is supported
          * @see #setVideoStabilization(boolean)
          * @see #getVideoStabilization()
-         * @hide
          */
         public boolean isVideoStabilizationSupported() {
             String str = get(KEY_VIDEO_STABILIZATION_SUPPORTED);

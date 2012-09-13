@@ -196,6 +196,7 @@
                 android:textColor="?android:attr/textColorPrimary" />
 
         </RelativeLayout>
+
     </RelativeLayout>
 
     <Space android:layout_gravity="fill" />
@@ -234,6 +235,7 @@
         android:layout_width="200dip"
         android:layout_height="match_parent"
         android:layout_rowSpan="7"
+
         android:targetDrawables="@array/lockscreen_targets_with_camera"
         android:targetDescriptions="@array/lockscreen_target_descriptions_with_camera"
         android:directionDescriptions="@array/lockscreen_direction_descriptions"

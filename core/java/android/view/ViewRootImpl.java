@@ -115,8 +115,7 @@ public final class ViewRootImpl extends Handler implements ViewParent,
      * Set this system property to true to force the view hierarchy to render
      * at 60 Hz. This can be used to measure the potential framerate.
      */
-    private static final String PROPERTY_PROFILE_RENDERING = "viewancestor.profile_rendering";
-    static final String COMPAT_PROPERTY = "ro.disable.compat";
+    private static final String PROPERTY_PROFILE_RENDERING = "viewancestor.profile_rendering";    
     
     private static final boolean MEASURE_LATENCY = false;
     private static LatencyTimer lt;
@@ -450,12 +449,9 @@ public final class ViewRootImpl extends Handler implements ViewParent,
                 }
                 if (DEBUG_LAYOUT) Log.d(TAG, "WindowLayout in setView:" + attrs);
 
-                boolean mCompatOverride = SystemProperties.get(COMPAT_PROPERTY).equalsIgnoreCase("true");
-                if (!mCompatOverride) {
-                    if (!compatibilityInfo.supportsScreen()) {
-                        attrs.flags |= WindowManager.LayoutParams.FLAG_COMPATIBLE_WINDOW;
-                        mLastInCompatMode = true;
-                    }
+                if (!compatibilityInfo.supportsScreen()) {
+                    attrs.flags |= WindowManager.LayoutParams.FLAG_COMPATIBLE_WINDOW;
+                    mLastInCompatMode = true;
                 }
 
                 mSoftInputMode = attrs.softInputMode;

@@ -33,7 +33,6 @@ public class DecoderCapabilities
      */
     public enum VideoDecoder {
         VIDEO_DECODER_WMV,
-        VIDEO_DECODER_MPEG2,
     };
 
     /**

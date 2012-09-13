@@ -24,23 +24,6 @@
 #include <media/stagefright/MediaSource.h>
 #include <media/stagefright/MediaBuffer.h>
 
-
-#ifndef DISALLOW_COPY_AND_ASSIGN
-// Convenience Macro to make copy constructor and assignment operator private
-// (thereby disallowing copying and assigning).
-#define DISALLOW_COPY_AND_ASSIGN(TypeName) \
-  TypeName(const TypeName&);               \
-  void operator=(const TypeName&)
-#endif
-
-#ifndef DISALLOW_IMPLICIT_CONSTRUCTORS
-// A macro to disallow all the implicit constructors, namely the
-// default constructor, copy constructor and operator= functions.
-#define DISALLOW_IMPLICIT_CONSTRUCTORS(TypeName) \
-  TypeName();                                    \
-  DISALLOW_COPY_AND_ASSIGN(TypeName)
-#endif
-
 namespace android {
 // ----------------------------------------------------------------------------
 
@@ -128,7 +111,7 @@ public:
     // Make sure this is called when the mutex is locked
     virtual status_t onFrameReceivedLocked();
 
-    virtual status_t setScalingMode(int mode) { return OK; } // no op for encoding
+    virtual status_t setScalingMode(int mode) { } // no op for encoding
     virtual int query(int what, int* value);
 
     // Just confirming to the ISurfaceTexture interface as of now
@@ -208,11 +191,6 @@ public:
     // isMetaDataStoredInVideoBuffers tells the encoder whether we will
     // pass metadata through the buffers. Currently, it is force set to true
     bool isMetaDataStoredInVideoBuffers() const;
-
-#ifdef OMAP_ENHANCEMENT
-    // Just confirming to the ISurfaceTexture interface as of now
-    virtual status_t setLayout(uint32_t layout) { return OK; }
-#endif
 
 protected:
 

@@ -178,6 +178,21 @@ public:
     static const char KEY_SUPPORTED_PREVIEW_FRAME_RATE_MODES[];
     static const char KEY_PREVIEW_FRAME_RATE_AUTO_MODE[];
     static const char KEY_PREVIEW_FRAME_RATE_FIXED_MODE[];
+    static const char KEY_CAPTURE_MODE[];
+    static const char KEY_SUPPORTED_CAPTURE_MODES[];
+    static const char KEY_PICTURE_COUNT[];
+    static const char KEY_MAX_BURST_PICTURE_COUNT[];
+    static const char KEY_SUPPORTED_CONTINUOUS_AF[];
+    static const char CAPTURE_MODE_NORMAL[];
+    static const char CAPTURE_MODE_BURST[];
+    static const char CAPTURE_MODE_CONTI_BURST[];
+    static const char CAPTURE_MODE_HDR[];
+    static const char CAPTURE_MODE_HJR[];
+    static const char CAPTURE_MODE_PANORAMA[];
+    static const char KEY_PANORAMA_MODE[];
+    static const char PANORAMA_MODE_NOT_INPROGRESS[];
+    static const char PANORAMA_MODE_INPROGRESS[];
+    static const char KEY_TAKING_PICTURE_ZOOM[]; 
 #endif
     // The dimensions for captured pictures in pixels (width x height).
     // Example value: "1024x768". Read/write.
@@ -569,8 +584,6 @@ public:
     static const char KEY_FULL_VIDEO_SNAP_SUPPORTED[];
 
 #ifdef QCOM_HARDWARE
-    static const char KEY_ISO_MODE[];
-    static const char KEY_SUPPORTED_ISO_MODES[];
     static const char KEY_LENSSHADE[] ;
     static const char KEY_SUPPORTED_LENSSHADE_MODES[] ;
 
@@ -582,6 +595,10 @@ public:
     static const char KEY_GPS_ALTITUDE_REF[];
     static const char KEY_GPS_STATUS[];
     static const char KEY_EXIF_DATETIME[];
+#ifndef SAMSUNG_CAMERA_HARDWARE
+    static const char KEY_ISO_MODE[];
+    static const char KEY_SUPPORTED_ISO_MODES[];
+#endif
 #endif
 
     // The state of the video stabilization. If set to true, both the
@@ -604,6 +621,7 @@ public:
 
     static const char KEY_ZSL[];
     static const char KEY_SUPPORTED_ZSL_MODES[];
+
     static const char KEY_CAMERA_MODE[];
 
     static const char KEY_VIDEO_HIGH_FRAME_RATE[];
@@ -644,9 +662,11 @@ public:
 #endif
 
 #ifdef SAMSUNG_CAMERA_HARDWARE
-     static const char KEY_METERING[];
-     static const char KEY_WDR[];
-     static const char KEY_ANTI_SHAKE_MODE[];
+    static const char KEY_METERING[];
+    static const char KEY_WDR[];
+    static const char KEY_ANTI_SHAKE_MODE[];
+    static const char KEY_ISO_MODE[];
+    static const char KEY_SUPPORTED_ISO_MODES[];
 #endif
 
     // Values for white balance settings.
@@ -721,6 +741,7 @@ public:
     static const char SCENE_MODE_BACKLIGHT[];
     static const char SCENE_MODE_FLOWERS[];
     static const char SCENE_MODE_AR[];
+    static const char SCENE_MODE_OFF[];
 #endif
     // Applications are looking for a barcode. Camera driver will be optimized
     // for barcode reading.
@@ -748,7 +769,7 @@ public:
 #ifdef QCOM_HARDWARE
     static const char PIXEL_FORMAT_RAW[];
     static const char PIXEL_FORMAT_YV12[]; // NV21
-    static const char PIXEL_FORMAT_NV12[]; // NV12
+    static const char PIXEL_FORMAT_NV12[]; //NV12
 #endif
 
     // Values for focus mode settings.
@@ -803,6 +824,16 @@ public:
     static const char FOCUS_MODE_CONTINUOUS_PICTURE[];
 
 #ifdef QCOM_HARDWARE
+    static const char FOCUS_MODE_CONTINUOUS_CAMERA[];
+
+    // Values for Continuous AF
+    static const char CAF_OFF[] ;
+    static const char CAF_ON[] ;
+    // Proprietaries from CodeAurora use these...
+    static const char CONTINUOUS_AF_OFF[] ;
+    static const char CONTINUOUS_AF_ON[] ;
+    static const char KEY_CONTINUOUS_AF[] ;
+
     // Normal focus mode. Applications should call
     // CameraHardwareInterface.autoFocus to start the focus in this mode.
     static const char FOCUS_MODE_NORMAL[];
@@ -824,10 +855,19 @@ public:
 
     static const char KEY_SHARPNESS[];
     static const char KEY_MAX_SHARPNESS[];
+#ifdef QCOM_HARDWARE
+    static const char KEY_MIN_SHARPNESS[];
+#endif
     static const char KEY_CONTRAST[];
     static const char KEY_MAX_CONTRAST[];
+#ifdef QCOM_HARDWARE
+    static const char KEY_MIN_CONTRAST[];
+#endif
     static const char KEY_SATURATION[];
     static const char KEY_MAX_SATURATION[];
+#ifdef QCOM_HARDWARE
+    static const char KEY_MIN_SATURATION[];
+#endif
 
     static const char KEY_HISTOGRAM[] ;
     static const char KEY_SUPPORTED_HISTOGRAM_MODES[] ;
@@ -894,6 +934,7 @@ public:
     int getOrientation() const;
     void setOrientation(int orientation);
     void setPreviewFpsRange(int minFPS,int maxFPS);
+    void setPostviewSize(int x,int y);
     void getSupportedHfrSizes(Vector<Size> &sizes) const;
 #endif
 

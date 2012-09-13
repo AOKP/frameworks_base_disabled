@@ -270,7 +270,6 @@ static const KeycodeLabel FLAGS[] = {
     { "LAUNCHER", 0x00000080 },
     { "VIRTUAL", 0x00000100 },
     { "FUNCTION", 0x00000200 },
-    { "UNLOCK", 0x00000400 },
     { NULL, 0 }
 };
 

@@ -67,11 +67,12 @@ status_t NuPlayerDriver::setUID(uid_t uid) {
 status_t NuPlayerDriver::setDataSource(
         const char *url, const KeyedVector<String8, String8> *headers) {
     CHECK_EQ((int)mState, (int)UNINITIALIZED);
-    status_t nRet = mPlayer->setDataSource(url, headers);
-    LOGV("creating source %d",nRet);
+
+    mPlayer->setDataSource(url, headers);
+
     mState = STOPPED;
 
-    return nRet;
+    return OK;
 }
 
 status_t NuPlayerDriver::setDataSource(int fd, int64_t offset, int64_t length) {
@@ -319,7 +320,6 @@ status_t NuPlayerDriver::dump(int fd, const Vector<String16> &args) const {
 void NuPlayerDriver::notifyListener(int msg, int ext1, int ext2) {
     if (msg == MEDIA_PLAYBACK_COMPLETE || msg == MEDIA_ERROR) {
         mAtEOS = true;
-        pause();
     }
 
     sendEvent(msg, ext1, ext2);

@@ -380,7 +380,7 @@ private:
             const void *data, size_t size,
             unsigned *profile, unsigned *level, const sp<MetaData> &meta);
 #ifdef QCOM_HARDWARE
-    void parseFlags();
+    void parseFlags( uint32_t flags );
 #endif
 
     OMXCodec(const OMXCodec &);

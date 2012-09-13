@@ -66,32 +66,14 @@ LOCAL_SHARED_LIBRARIES := \
 LOCAL_C_INCLUDES := \
     external/skia/include/core
 
-ifeq ($(TARGET_BOARD_PLATFORM),msm7x30)
-    LOCAL_SRC_FILES+= OverlayHtc.cpp
-endif
-
-ifeq ($(BOARD_HAVE_HDMI_SUPPORT),SAMSUNG_HDMI_SUPPORT)
-LOCAL_CFLAGS += -DSAMSUNG_HDMI_SUPPORT
-LOCAL_SHARED_LIBRARIES += libhdmiclient
-LOCAL_C_INCLUDES += $(TARGET_HAL_PATH)/libhdmi/libhdmiservice
-LOCAL_C_INCLUDES += $(TARGET_HAL_PATH)/include
-endif
-
-ifeq ($(TARGET_SOC),exynos4210)
-LOCAL_CFLAGS += -DSAMSUNG_EXYNOS4210
-endif
-
-ifeq ($(TARGET_SOC),exynos4x12)
-LOCAL_CFLAGS += -DSAMSUNG_EXYNOS4x12
-endif
-
-ifeq ($(TARGET_SOC),exynos5250)
-LOCAL_CFLAGS += -DSAMSUNG_EXYNOS5250
+ifeq ($(BOARD_USES_HTC_CAMERA),true)
+    LOCAL_SRC_FILES += OverlayHtc.cpp
 endif
 
 LOCAL_MODULE:= libui
 
 include $(BUILD_SHARED_LIBRARY)
+
 
 # Include subdirectory makefiles
 # ============================================================

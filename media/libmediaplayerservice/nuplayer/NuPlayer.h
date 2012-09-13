@@ -39,7 +39,7 @@ struct NuPlayer : public AHandler {
 
     void setDataSource(const sp<IStreamSource> &source);
 
-    status_t setDataSource(
+    void setDataSource(
             const char *url, const KeyedVector<String8, String8> *headers);
 
     void setVideoSurfaceTexture(const sp<ISurfaceTexture> &surfaceTexture);
@@ -54,8 +54,6 @@ struct NuPlayer : public AHandler {
 
     // Will notify the driver through "notifySeekComplete" once finished.
     void seekToAsync(int64_t seekTimeUs);
-public:
-    struct DASHHTTPLiveSource;
 
 protected:
     virtual ~NuPlayer();
@@ -100,18 +98,9 @@ private:
 
     bool mAudioEOS;
     bool mVideoEOS;
-    bool mIsHttpLive;
 
     bool mScanSourcesPending;
     int32_t mScanSourcesGeneration;
-
-    enum NuSourceType {
-      kHttpLiveSource = 0,
-      kHttpDashSource,
-      kRtspSource,
-      kStreamingSource,
-      kDefaultSource,
-    };
 
     enum FlushStatus {
         NONE,
@@ -122,8 +111,6 @@ private:
         FLUSHED,
         SHUT_DOWN,
     };
-
-    NuSourceType mLiveSourceType;
 
     // Once the current flush is complete this indicates whether the
     // notion of time has changed.
@@ -157,10 +144,6 @@ private:
 
     void finishReset();
     void postScanSources();
-
-    sp<Source> LoadCreateDashHttpSource(const char * uri, const KeyedVector<String8,
-                                        String8> *headers, bool uidValid, uid_t uid);
-
 
     DISALLOW_EVIL_CONSTRUCTORS(NuPlayer);
 };

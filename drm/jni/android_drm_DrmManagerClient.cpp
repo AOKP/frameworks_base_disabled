@@ -225,32 +225,25 @@ static sp<DrmManagerClientImpl> getDrmManagerClientImpl(JNIEnv* env, jobject thi
 }
 
 static jint android_drm_DrmManagerClient_initialize(
-        JNIEnv* env, jobject thiz) {
+        JNIEnv* env, jobject thiz, jobject weak_thiz) {
     ALOGV("initialize - Enter");
 
     int uniqueId = 0;
     sp<DrmManagerClientImpl> drmManager = DrmManagerClientImpl::create(&uniqueId, false);
     drmManager->addClient(uniqueId);
 
+    // Set the listener to DrmManager
+    sp<DrmManagerClient::OnInfoListener> listener = new JNIOnInfoListener(env, thiz, weak_thiz);
+    drmManager->setOnInfoListener(uniqueId, listener);
+
     setDrmManagerClientImpl(env, thiz, drmManager);
     ALOGV("initialize - Exit");
+
     return uniqueId;
 }
 
-static void android_drm_DrmManagerClient_setListeners(
-        JNIEnv* env, jobject thiz, jint uniqueId, jobject weak_thiz) {
-    ALOGV("setListeners - Enter");
-
-    // Set the listener to DrmManager
-    sp<DrmManagerClient::OnInfoListener> listener = new JNIOnInfoListener(env, thiz, weak_thiz);
-    getDrmManagerClientImpl(env, thiz)->setOnInfoListener(uniqueId, listener);
-
-    ALOGV("setListeners - Exit");
-}
-
-static void android_drm_DrmManagerClient_release(
-        JNIEnv* env, jobject thiz, jint uniqueId) {
-    ALOGV("release - Enter");
+static void android_drm_DrmManagerClient_finalize(JNIEnv* env, jobject thiz, jint uniqueId) {
+    ALOGV("finalize - Enter");
     DrmManagerClientImpl::remove(uniqueId);
     getDrmManagerClientImpl(env, thiz)->setOnInfoListener(uniqueId, NULL);
 
@@ -721,14 +714,11 @@ static jobject android_drm_DrmManagerClient_closeConvertSession(
 
 static JNINativeMethod nativeMethods[] = {
 
-    {"_initialize", "()I",
+    {"_initialize", "(Ljava/lang/Object;)I",
                                     (void*)android_drm_DrmManagerClient_initialize},
 
-    {"_setListeners", "(ILjava/lang/Object;)V",
-                                    (void*)android_drm_DrmManagerClient_setListeners},
-
-    {"_release", "(I)V",
-                                    (void*)android_drm_DrmManagerClient_release},
+    {"_finalize", "(I)V",
+                                    (void*)android_drm_DrmManagerClient_finalize},
 
     {"_getConstraints", "(ILjava/lang/String;I)Landroid/content/ContentValues;",
                                     (void*)android_drm_DrmManagerClient_getConstraintsFromContent},

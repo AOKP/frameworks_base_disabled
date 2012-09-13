@@ -429,7 +429,7 @@ void rsi_Allocation1DData(Context *rsc, RsAllocation va, uint32_t xoff, uint32_t
 }
 
 void rsi_Allocation2DElementData(Context *rsc, RsAllocation va, uint32_t x, uint32_t y, uint32_t lod, RsAllocationCubemapFace face,
-                                 const void *data, uint32_t sizeBytes, size_t eoff) { 
+                                 const void *data, uint32_t sizeBytes, size_t eoff) {
     Allocation *a = static_cast<Allocation *>(va);
     a->elementData(rsc, x, y, data, eoff, sizeBytes);
 }

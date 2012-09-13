@@ -439,9 +439,7 @@ unsigned int SC_umodsi3(unsigned int a, unsigned int b) {
 }
 
 static void SC_debugF(const char *s, float f) {
-    int d;
-    memcpy(&d, &f, sizeof(d));
-    ALOGD("%s %f, 0x%08x", s, f, d);
+    ALOGD("%s %f, 0x%08x", s, f, *((int *) (&f)));
 }
 static void SC_debugFv2(const char *s, float f1, float f2) {
     ALOGD("%s {%f, %f}", s, f1, f2);

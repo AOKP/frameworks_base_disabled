@@ -2041,9 +2041,6 @@ OMXCodec::OMXCodec(
       mState(LOADED),
       mInitialBufferSubmit(true),
       mSignalledEOS(false),
-#ifdef QCOM_HARDWARE
-      mFinalStatus(OK),
-#endif
       mNoMoreOutputData(false),
       mOutputPortSettingsHaveChanged(false),
       mSeekTimeUs(-1),
@@ -2064,9 +2061,6 @@ OMXCodec::OMXCodec(
               (!strncmp(componentName, "OMX.google.", 11)
               || !strcmp(componentName, "OMX.Nvidia.mpeg2v.decode"))
                         ? NULL : nativeWindow) {
-#ifdef QCOM_HARDWARE
-    parseFlags();
-#endif
     mPortStatus[kPortIndexInput] = ENABLED;
     mPortStatus[kPortIndexOutput] = ENABLED;
 
@@ -4191,12 +4185,10 @@ bool OMXCodec::drainInputBuffer(BufferInfo *info) {
         // mNoMoreOutputData to false so fillOutputBuffer gets called on
         // the first output buffer (see comment in fillOutputBuffer), and
         // mSignalledEOS must be true so drainInputBuffer is not executed
-        // on extra frames. Setting mFinalStatus to ERROR_END_OF_STREAM as
-        // we dont want to return OK and NULL buffer in read.
+        // on extra frames.
         flags |= OMX_BUFFERFLAG_EOS;
         mNoMoreOutputData = false;
         mSignalledEOS = true;
-        mFinalStatus = ERROR_END_OF_STREAM;
 #endif
     } else {
         mNoMoreOutputData = false;
@@ -5906,10 +5898,10 @@ status_t OMXCodec::pause() {
 
 }
 #ifdef QCOM_HARDWARE
-void OMXCodec::parseFlags() {
+void OMXCodec::parseFlags(uint32_t flags) {
     //TODO - uncomment if needed
     //    mGPUComposition = ((flags & kEnableGPUComposition) ? true : false);
-    mThumbnailMode = ((mFlags & kEnableThumbnailMode) ? true : false);
+    mThumbnailMode = ((flags & kEnableThumbnailMode) ? true : false);
 }
 #endif
 

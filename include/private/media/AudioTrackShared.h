@@ -1,6 +1,5 @@
 /*
  * Copyright (C) 2007 The Android Open Source Project
- * Copyright (c) 2011, Code Aurora Forum. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,8 +80,7 @@ struct audio_track_cblk_t
                 // 8 bit PCM data: in this case,  mCblk->frameSize is based on a sample size of
                 // 16 bit because data is converted to 16 bit before being stored in buffer
 
-                uint32_t    frameSize;
-                uint8_t     padding;
+                uint8_t     frameSize;
                 uint8_t     pad1;
                 uint16_t    bufferTimeoutMs; // Maximum cumulated timeout before restarting audioflinger
 

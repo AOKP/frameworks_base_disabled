@@ -65,8 +65,6 @@ private:
     sp<LiveSession> mLiveSession;
     sp<ATSParser> mTSParser;
 
-    int64_t mNewSeekTime;
-
     DISALLOW_EVIL_CONSTRUCTORS(HTTPLiveSource);
 };
 

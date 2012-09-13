@@ -40,6 +40,28 @@ const char CameraParameters::KEY_PREVIEW_FRAME_RATE_MODE[] = "preview-frame-rate
 const char CameraParameters::KEY_SUPPORTED_PREVIEW_FRAME_RATE_MODES[] = "preview-frame-rate-modes";
 const char CameraParameters::KEY_PREVIEW_FRAME_RATE_AUTO_MODE[] = "frame-rate-auto";
 const char CameraParameters::KEY_PREVIEW_FRAME_RATE_FIXED_MODE[] = "frame-rate-fixed";
+//Values for Continuous AF
+const char CameraParameters::CAF_OFF[] = "caf-off";
+const char CameraParameters::CAF_ON[] = "caf-on";
+//Same, for CodeAurora-based blobs
+const char CameraParameters::CAPTURE_MODE_NORMAL[] = "normal";
+const char CameraParameters::CAPTURE_MODE_BURST[] = "burst";
+const char CameraParameters::CAPTURE_MODE_CONTI_BURST[] = "contiburst";
+const char CameraParameters::CAPTURE_MODE_HDR[] = "hdr";
+const char CameraParameters::CAPTURE_MODE_HJR[] = "hjr";
+const char CameraParameters::CAPTURE_MODE_PANORAMA[] = "panorama";    
+const char CameraParameters::CONTINUOUS_AF_OFF[] = "caf-off";
+const char CameraParameters::CONTINUOUS_AF_ON[] = "caf-on";
+const char CameraParameters::KEY_CONTINUOUS_AF[] = "continuous-af";
+const char CameraParameters::KEY_CAPTURE_MODE[] = "capture-mode";
+const char CameraParameters::KEY_PICTURE_COUNT[] = "picture-count";
+const char CameraParameters::KEY_MAX_BURST_PICTURE_COUNT[] = "max-burst-picture-count";
+const char CameraParameters::KEY_SUPPORTED_CONTINUOUS_AF[] = "continuous-af-mode";
+const char CameraParameters::KEY_SUPPORTED_CAPTURE_MODES[] = "capture-mode-values";
+const char CameraParameters::KEY_PANORAMA_MODE[] = "panorama-mode";
+const char CameraParameters::PANORAMA_MODE_NOT_INPROGRESS[] = "not-in-progress";
+const char CameraParameters::PANORAMA_MODE_INPROGRESS[] = "in-progress";
+const char CameraParameters::KEY_TAKING_PICTURE_ZOOM[] = "taking-picture-zoom";
 #endif
 const char CameraParameters::KEY_PICTURE_SIZE[] = "picture-size";
 const char CameraParameters::KEY_SUPPORTED_PICTURE_SIZES[] = "picture-size-values";
@@ -73,7 +95,7 @@ const char CameraParameters::KEY_SUPPORTED_SCENE_MODES[] = "scene-mode-values";
 #ifdef QCOM_HARDWARE
 const char CameraParameters::KEY_SCENE_DETECT[] = "scene-detect";
 const char CameraParameters::KEY_SUPPORTED_SCENE_DETECT[] = "scene-detect-values";
-#endif QCOM_HARDWARE
+#endif
 const char CameraParameters::KEY_FLASH_MODE[] = "flash-mode";
 const char CameraParameters::KEY_SUPPORTED_FLASH_MODES[] = "flash-mode-values";
 const char CameraParameters::KEY_FOCUS_MODE[] = "focus-mode";
@@ -101,8 +123,6 @@ const char CameraParameters::KEY_SMOOTH_ZOOM_SUPPORTED[] = "smooth-zoom-supporte
 const char CameraParameters::KEY_FOCUS_DISTANCES[] = "focus-distances";
 const char CameraParameters::KEY_VIDEO_FRAME_FORMAT[] = "video-frame-format";
 #ifdef QCOM_HARDWARE
-const char CameraParameters::KEY_ISO_MODE[] = "iso";
-const char CameraParameters::KEY_SUPPORTED_ISO_MODES[] = "iso-values";
 const char CameraParameters::KEY_LENSSHADE[] = "lensshade";
 const char CameraParameters::KEY_SUPPORTED_LENSSHADE_MODES[] = "lensshade-values";
 const char CameraParameters::KEY_AUTO_EXPOSURE[] = "auto-exposure";
@@ -121,11 +141,17 @@ const char CameraParameters::KEY_REDEYE_REDUCTION[] = "redeye-reduction";
 const char CameraParameters::KEY_SUPPORTED_REDEYE_REDUCTION[] = "redeye-reduction-values";
 const char CameraParameters::KEY_HIGH_DYNAMIC_RANGE_IMAGING[] = "hdr";
 const char CameraParameters::KEY_SUPPORTED_HDR_IMAGING_MODES[] = "hdr-values";
+#ifndef SAMSUNG_CAMERA_HARDWARE
+const char CameraParameters::KEY_ISO_MODE[] = "iso";
+const char CameraParameters::KEY_SUPPORTED_ISO_MODES[] = "iso-values";
+#endif
 #endif
 #ifdef SAMSUNG_CAMERA_HARDWARE
 const char CameraParameters::KEY_METERING[] = "metering";
 const char CameraParameters::KEY_WDR[] = "wdr";
 const char CameraParameters::KEY_ANTI_SHAKE_MODE[] = "anti-shake";
+const char CameraParameters::KEY_ISO_MODE[] = "iso";
+const char CameraParameters::KEY_SUPPORTED_ISO_MODES[] = "iso-values";
 #endif
 const char CameraParameters::KEY_VIDEO_SIZE[] = "video-size";
 const char CameraParameters::KEY_SUPPORTED_VIDEO_SIZES[] = "video-size-values";
@@ -217,6 +243,7 @@ const char CameraParameters::SCENE_MODE_FLOWERS[] = "flowers";
 const char CameraParameters::SCENE_MODE_BARCODE[] = "barcode";
 #ifdef QCOM_HARDWARE
 const char CameraParameters::SCENE_MODE_AR[] = "AR";
+const char CameraParameters::SCENE_MODE_OFF[] = "off";
 
 // Values for auto scene detection settings.
 const char CameraParameters::SCENE_DETECT_OFF[] = "off";
@@ -249,9 +276,11 @@ const char CameraParameters::FOCUS_MODE_FIXED[] = "fixed";
 const char CameraParameters::FOCUS_MODE_EDOF[] = "edof";
 const char CameraParameters::FOCUS_MODE_CONTINUOUS_VIDEO[] = "continuous-video";
 const char CameraParameters::FOCUS_MODE_CONTINUOUS_PICTURE[] = "continuous-picture";
-
-#if defined(QCOM_HARDWARE)
+#ifdef QCOM_HARDWARE
+const char CameraParameters::FOCUS_MODE_CONTINUOUS_CAMERA[] = "continuous-camera";
 const char CameraParameters::FOCUS_MODE_NORMAL[] = "normal";
+
+
 const char CameraParameters::KEY_SKIN_TONE_ENHANCEMENT[] = "skinToneEnhancement";
 const char CameraParameters::KEY_SUPPORTED_SKIN_TONE_ENHANCEMENT_MODES[] = "skinToneEnhancement-values";
 
@@ -290,11 +319,26 @@ const char CameraParameters::SKIN_TONE_ENHANCEMENT_ENABLE[] = "enable";
 const char CameraParameters::SKIN_TONE_ENHANCEMENT_DISABLE[] = "disable";
 
 const char CameraParameters::KEY_SHARPNESS[] = "sharpness";
+#ifdef QCOM_HARDWARE
+const char CameraParameters::KEY_MAX_SHARPNESS[] = "sharpness-max";
+const char CameraParameters::KEY_MIN_SHARPNESS[] = "sharpness-min";
+#else
 const char CameraParameters::KEY_MAX_SHARPNESS[] = "max-sharpness";
+#endif
 const char CameraParameters::KEY_CONTRAST[] = "contrast";
+#ifdef QCOM_HARDWARE
+const char CameraParameters::KEY_MAX_CONTRAST[] = "contrast-max";
+const char CameraParameters::KEY_MIN_CONTRAST[] = "contrast-min";
+#else
 const char CameraParameters::KEY_MAX_CONTRAST[] = "max-contrast";
+#endif
 const char CameraParameters::KEY_SATURATION[] = "saturation";
+#ifdef QCOM_HARDWARE
+const char CameraParameters::KEY_MAX_SATURATION[] = "saturation-max";
+const char CameraParameters::KEY_MIN_SATURATION[] = "saturation-min";
+#else
 const char CameraParameters::KEY_MAX_SATURATION[] = "max-saturation";
+#endif
 
 //Values for DENOISE
 const char CameraParameters::DENOISE_OFF[] = "denoise-off";
@@ -322,7 +366,6 @@ const char CameraParameters::VIDEO_HFR_4X[] = "120";
 // Values for Redeye Reduction settings.
 const char CameraParameters::REDEYE_REDUCTION_ENABLE[] = "enable";
 const char CameraParameters::REDEYE_REDUCTION_DISABLE[] = "disable";
-
 // Values for HDR settings.
 const char CameraParameters::HDR_ENABLE[] = "enable";
 const char CameraParameters::HDR_DISABLE[] = "disable";
@@ -355,6 +398,7 @@ void CameraParameters::setOrientation(int orientation)
     }
 }
 #endif
+
 
 CameraParameters::CameraParameters()
                 : mMap()
@@ -528,7 +572,6 @@ static int parseNDimVector(const char *str, int *num, int N, char delim = ',')
     }
     return 0;
 }
-
 static void parseSizesList(const char *sizesStr, Vector<Size> &sizes)
 {
     if (sizesStr == 0) {
@@ -596,6 +639,11 @@ void CameraParameters::setPreviewFpsRange(int minFPS, int maxFPS)
     char str[32];
     snprintf(str, sizeof(str), "%d,%d",minFPS,maxFPS);
     set(KEY_PREVIEW_FPS_RANGE,str);
+}
+
+void CameraParameters::setPostviewSize(int width, int height)
+{
+    // dummy
 }
 #endif
 
@@ -702,6 +750,71 @@ void CameraParameters::dump() const
         LOGD("%s: %s\n", k.string(), v.string());
     }
 }
+
+#ifdef QCOM_HARDWARE
+void CameraParameters::setTouchIndexAec(int x, int y)
+{
+    char str[32];
+    snprintf(str, sizeof(str), "%dx%d", x, y);
+    set(KEY_TOUCH_INDEX_AEC, str);
+}
+
+void CameraParameters::getTouchIndexAec(int *x, int *y) const
+{
+    *x = -1;
+    *y = -1;
+
+    // Get the current string, if it doesn't exist, leave the -1x-1
+    const char *p = get(KEY_TOUCH_INDEX_AEC);
+    if (p == 0)
+        return;
+
+    int tempX, tempY;
+    if (parse_pair(p, &tempX, &tempY, 'x') == 0) {
+        *x = tempX;
+        *y = tempY;
+    }
+}
+
+void CameraParameters::setTouchIndexAf(int x, int y)
+{
+    char str[32];
+    snprintf(str, sizeof(str), "%dx%d", x, y);
+    set(KEY_TOUCH_INDEX_AF, str);
+}
+
+void CameraParameters::getMeteringAreaCenter(int *x, int *y) const
+{
+    //Default invalid values
+    *x = -2000;
+    *y = -2000;
+
+    const char *p = get(KEY_METERING_AREAS);
+    if(p != NULL) {
+        int arr[5] = {-2000, -2000, -2000, -2000, 0};
+        parseNDimVector(p, arr, 5); //p = "(x1, y1, x2, y2, weight)"
+        *x = (arr[0] + arr[2])/2; //center_x = (x1+x2)/2
+        *y = (arr[1] + arr[3])/2; //center_y = (y1+y2)/2
+    }
+}
+
+void CameraParameters::getTouchIndexAf(int *x, int *y) const
+{
+    *x = -1;
+    *y = -1;
+
+    // Get the current string, if it doesn't exist, leave the -1x-1
+    const char *p = get(KEY_TOUCH_INDEX_AF);
+    if (p == 0)
+        return;
+
+    int tempX, tempY;
+    if (parse_pair(p, &tempX, &tempY, 'x') == 0) {
+        *x = tempX;
+        *y = tempY;
+    }
+}
+#endif
 
 status_t CameraParameters::dump(int fd, const Vector<String16>& args) const
 {

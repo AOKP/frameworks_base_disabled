@@ -30,10 +30,6 @@
 
 #include <ui/egl/android_natives.h>
 
-#ifdef SAMSUNG_HDMI_SUPPORT
-#include "SecHdmiClient.h"
-#endif
-
 #ifdef QCOM_HARDWARE
 #define NUM_FRAMEBUFFERS_MAX  3
 #else
@@ -48,9 +44,6 @@ namespace android {
 
 class Surface;
 class NativeBuffer;
-#ifdef SAMSUNG_HDMI_SUPPORT
-class SecHdmiClient;
-#endif
 
 // ---------------------------------------------------------------------------
 
@@ -108,9 +101,6 @@ private:
     int32_t mBufferHead;
     int32_t mCurrentBufferIndex;
     bool mUpdateOnDemand;
-#ifdef SAMSUNG_HDMI_SUPPORT
-    SecHdmiClient *mHdmiClient;
-#endif
 };
     
 // ---------------------------------------------------------------------------
@@ -118,3 +108,4 @@ private:
 // ---------------------------------------------------------------------------
 
 #endif // ANDROID_FRAMEBUFFER_NATIVE_WINDOW_H
+

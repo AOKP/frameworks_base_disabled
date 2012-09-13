@@ -24,7 +24,6 @@ import android.media.DecoderCapabilities;
 import android.media.DecoderCapabilities.VideoDecoder;
 import android.media.DecoderCapabilities.AudioDecoder;
 import android.mtp.MtpConstants;
-import android.os.SystemProperties;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -98,10 +97,9 @@ public class MediaFile {
     public static final int FILE_TYPE_PLS      = 42;
     public static final int FILE_TYPE_WPL      = 43;
     public static final int FILE_TYPE_HTTPLIVE = 44;
-    public static final int FILE_TYPE_DASH     = 45;
 
     private static final int FIRST_PLAYLIST_FILE_TYPE = FILE_TYPE_M3U;
-    private static final int LAST_PLAYLIST_FILE_TYPE = FILE_TYPE_DASH;
+    private static final int LAST_PLAYLIST_FILE_TYPE = FILE_TYPE_HTTPLIVE;
 
     // Drm file types
     public static final int FILE_TYPE_FL      = 51;
@@ -221,18 +219,8 @@ public class MediaFile {
         addFileType("AVI", FILE_TYPE_AVI, "video/avi");
 
         if (isWMVEnabled()) {
-        if(SystemProperties.OMAP_ENHANCEMENT) {
-            addFileType("WMV", FILE_TYPE_WMV, "video/asf", MtpConstants.FORMAT_WMV);
-        } else {
             addFileType("WMV", FILE_TYPE_WMV, "video/x-ms-wmv", MtpConstants.FORMAT_WMV);
-        }
             addFileType("ASF", FILE_TYPE_ASF, "video/x-ms-asf");
-        }
-
-        if(SystemProperties.OMAP_ENHANCEMENT) {
-            addFileType("WMA", FILE_TYPE_WMA, "audio/x-ms-wma");
-            addFileType("WMV", FILE_TYPE_WMV, "video/asf");
-            addFileType("ASF", FILE_TYPE_ASF, "video/asf");
         }
 
         addFileType("JPG", FILE_TYPE_JPEG, "image/jpeg", MtpConstants.FORMAT_EXIF_JPEG);
@@ -250,7 +238,6 @@ public class MediaFile {
         addFileType("M3U8", FILE_TYPE_HTTPLIVE, "application/vnd.apple.mpegurl");
         addFileType("M3U8", FILE_TYPE_HTTPLIVE, "audio/mpegurl");
         addFileType("M3U8", FILE_TYPE_HTTPLIVE, "audio/x-mpegurl");
-        addFileType("MPD", FILE_TYPE_DASH, "application/dash+xml");
 
         addFileType("FL", FILE_TYPE_FL, "application/x-android-drm-fl");
 

@@ -56,14 +56,6 @@ extern const char *MEDIA_MIMETYPE_CONTAINER_WVM;
 
 extern const char *MEDIA_MIMETYPE_TEXT_3GPP;
 
-#ifdef OMAP_ENHANCEMENT
-extern const char *MEDIA_MIMETYPE_CONTAINER_ASF;
-extern const char *MEDIA_MIMETYPE_VIDEO_WMV;
-extern const char *MEDIA_MIMETYPE_AUDIO_WMA;
-extern const char *MEDIA_MIMETYPE_AUDIO_WMAPRO;
-extern const char *MEDIA_MIMETYPE_AUDIO_WMALSL;
-#endif
-
 #ifdef QCOM_HARDWARE
 extern const char *MEDIA_MIMETYPE_AUDIO_EVRC;
 
@@ -77,7 +69,6 @@ extern const char *MEDIA_MIMETYPE_CONTAINER_QCP;
 extern const char *MEDIA_MIMETYPE_VIDEO_DIVX311;
 extern const char *MEDIA_MIMETYPE_VIDEO_DIVX4;
 extern const char *MEDIA_MIMETYPE_CONTAINER_MPEG2;
-
 extern const char *MEDIA_MIMETYPE_CONTAINER_3G2;
 #endif
 }  // namespace android

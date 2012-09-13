@@ -52,12 +52,6 @@ enum {
     kKeyAacCodecSpecificData = 'nacc' , // for native aac files
 #endif
     kKeyAVCC              = 'avcc',  // raw data
-#ifdef OMAP_ENHANCEMENT
-    kKeyHdr               = 'hdrd',  // raw data
-    kKeySARIdc            = 'sari',  // Sample aspect ratio of the luma samples (int32_t)
-    kKeySARWidth          = 'sarw',  // Sample aspect ratio width (int32_t)
-    kKeySARHeight         = 'sarh',  // Sample aspect ratio height (int32_t)
-#endif
     kKeyD263              = 'd263',  // raw data
     kKeyVorbisInfo        = 'vinf',  // raw data
     kKeyVorbisBooks       = 'vboo',  // raw data
@@ -122,10 +116,6 @@ enum {
 
     kKeyValidSamples      = 'valD',  // int32_t
 
-#ifdef QCOM_HARDWARE
-    kKeyEditOffset        = 'edof',  // bool (int64_t)
-#endif
-
     kKeyIsUnreadable      = 'unre',  // bool (int32_t)
 #ifdef QCOM_HARDWARE
     kKeyRawCodecSpecificData = 'rcsd',  // raw data - added to support mmParser
@@ -139,15 +129,11 @@ enum {
     kKeyWMAFormatTag      = 'fmtt',  // int64_t
     kKeyWMABitspersample  = 'bsps',  // int64_t
     kKeyWMAVirPktSize     = 'vpks',  // int64_t
+    kKeyWMVProfile        = 'wmvp',   //int32_t
 #endif
 
     // An indication that a video buffer has been rendered.
     kKeyRendered          = 'rend',  // bool (int32_t)
-
-#ifdef QCOM_HARDWARE
-    // An indication that a video frame has arrived late
-    kKeyLateness          = 'late',  //int64_t
-#endif
 
     // The language code for this media
     kKeyMediaLanguage     = 'lang',  // cstring
@@ -168,18 +154,12 @@ enum {
     //Extractor sets this
     kKeyUseArbitraryMode  = 'ArbM'  //bool (int32_t)
 #endif
-#ifdef OMAP_ENHANCEMENT
-    kKeyBufferLayout      = 'lout',
-    kKeyVideoFPS          = 'vfps', // int32_t
-#endif
+
 };
 
 enum {
     kTypeESDS        = 'esds',
     kTypeAVCC        = 'avcc',
-#ifdef OMAP_ENHANCEMENT
-    kTypeHdr         = 'hdrd',
-#endif
     kTypeD263        = 'd263',
 };
 #ifdef QCOM_HARDWARE

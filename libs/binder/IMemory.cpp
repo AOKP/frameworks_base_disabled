@@ -81,7 +81,7 @@ public:
     virtual void* getBase() const;
     virtual size_t getSize() const;
     virtual uint32_t getFlags() const;
-#ifndef BYPASS_OFFSET
+#ifndef BINDER_COMPAT
     virtual uint32_t getOffset() const;
 #endif
 
@@ -110,7 +110,7 @@ private:
     mutable void*       mBase;
     mutable size_t      mSize;
     mutable uint32_t    mFlags;
-#ifndef BYPASS_OFFSET
+#ifndef BINDER_COMPAT
     mutable uint32_t    mOffset;
 #endif
     mutable bool        mRealHeap;
@@ -238,12 +238,11 @@ status_t BnMemory::onTransact(
 
 BpMemoryHeap::BpMemoryHeap(const sp<IBinder>& impl)
     : BpInterface<IMemoryHeap>(impl),
-    mHeapId(-1), mBase(MAP_FAILED), mSize(0), mFlags(0), 
-#ifndef BYPASS_OFFSET
-    mOffset(0),
+        mHeapId(-1), mBase(MAP_FAILED), mSize(0), mFlags(0),
+#ifndef BINDER_COMPAT
+        mOffset(0),
 #endif
-    mRealHeap(false)
-
+        mRealHeap(false)
 {
 #ifdef QCOM_HARDWARE
     mIonFd = open("/dev/ion", O_RDONLY);
@@ -291,7 +290,7 @@ void BpMemoryHeap::assertMapped() const
             if (mHeapId == -1) {
                 mBase   = heap->mBase;
                 mSize   = heap->mSize;
-#ifndef BYPASS_OFFSET
+#ifndef BINDER_COMPAT
                 mOffset = heap->mOffset;
 #endif
                 android_atomic_write( dup( heap->mHeapId ), &mHeapId );
@@ -317,7 +316,7 @@ void BpMemoryHeap::assertReallyMapped() const
         int parcel_fd = reply.readFileDescriptor();
         ssize_t size = reply.readInt32();
         uint32_t flags = reply.readInt32();
-#ifndef BYPASS_OFFSET
+#ifndef BINDER_COMPAT
         uint32_t offset = reply.readInt32();
 #else
         uint32_t offset = 0;
@@ -346,7 +345,7 @@ void BpMemoryHeap::assertReallyMapped() const
             } else {
                 mSize = size;
                 mFlags = flags;
-#ifndef BYPASS_OFFSET
+#ifndef BINDER_COMPAT
                 mOffset = offset;
 #endif
                 android_atomic_write(fd, &mHeapId);
@@ -375,7 +374,7 @@ uint32_t BpMemoryHeap::getFlags() const {
     return mFlags;
 }
 
-#ifndef BYPASS_OFFSET
+#ifndef BINDER_COMPAT
 uint32_t BpMemoryHeap::getOffset() const {
     assertMapped();
     return mOffset;
@@ -401,7 +400,7 @@ status_t BnMemoryHeap::onTransact(
             reply->writeFileDescriptor(getHeapID());
             reply->writeInt32(getSize());
             reply->writeInt32(getFlags());
-#ifndef BYPASS_OFFSET
+#ifndef BINDER_COMPAT
             reply->writeInt32(getOffset());
 #endif
             return NO_ERROR;

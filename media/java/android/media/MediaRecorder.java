@@ -81,10 +81,10 @@ public class MediaRecorder
         System.loadLibrary("media_jni");
         native_init();
     }
+
     private final static String TAG = "MediaRecorder";
     private final static String IOBUSY_VOTE = "com.android.server.CpuGovernorService.action.IOBUSY_VOTE";
     private final static String IOBUSY_UNVOTE = "com.android.server.CpuGovernorService.action.IOBUSY_UNVOTE";
-
     // The two fields below are accessed by native methods
     @SuppressWarnings("unused")
     private int mNativeContext;
@@ -228,9 +228,11 @@ public class MediaRecorder
         /** @hide H.264/AAC data encapsulated in MPEG2/TS */
         public static final int OUTPUT_FORMAT_MPEG2TS = 8;
 
-        /** QCP file format */
+        /** QCP file format
+         * @hide */
         public static final int QCP = 9;
-        /** 3GPP2 media file format*/
+        /** 3GPP2 media file format
+         * @hide */
         public static final int THREE_GPP2 = 10;
     };
 
@@ -250,13 +252,17 @@ public class MediaRecorder
         public static final int AMR_WB = 2;
         /** AAC audio codec */
         public static final int AAC = 3;
-        /** enhanced AAC audio codec */
+        /** enhanced AAC audio codec
+         * @hide */
         public static final int AAC_PLUS = 4;
-        /** enhanced AAC plus audio codec */
+        /** enhanced AAC plus audio codec
+         * @hide */
         public static final int EAAC_PLUS = 5;
-        /** EVRC audio codec */
+        /** EVRC audio codec
+         * @hide */
         public static final int EVRC = 6;
-        /** QCELP audio codec */
+        /** QCELP audio codec
+         * @hide */
         public static final int QCELP =7;
     }
 
@@ -669,6 +675,8 @@ public class MediaRecorder
      *
      * @throws IllegalStateException if it is called before
      * prepare().
+     *
+     * @hide
      */
     public native void native_start() throws IllegalStateException;
 
@@ -683,10 +691,13 @@ public class MediaRecorder
      * the output file is not properly constructed when this happens.
      *
      * @throws IllegalStateException if it is called before start()
+     *
+     * @hide
      */
     public native void native_stop() throws IllegalStateException;
 
     public void start() throws IllegalStateException {
+        if (SystemProperties.QCOM_HARDWARE) {
             try {
                 Application application = ActivityThread.currentApplication();
                 if (application != null) {
@@ -698,11 +709,13 @@ public class MediaRecorder
             } catch (Exception exception) {
                 Log.e(TAG, "Unable to vote to turn io_is_busy off.");
             }
+        }
 
         native_start();
     }
 
     public void stop() throws IllegalStateException {
+        if (SystemProperties.QCOM_HARDWARE) {
             try {
                 Application application = ActivityThread.currentApplication();
                 if (application != null) {
@@ -714,6 +727,7 @@ public class MediaRecorder
             } catch (Exception exception) {
                 Log.e(TAG, "Unable to withdraw io_is_busy off vote.");
             }
+        }
 
         native_stop();
     }

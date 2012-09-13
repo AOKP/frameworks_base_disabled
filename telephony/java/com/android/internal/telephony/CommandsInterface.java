@@ -1590,7 +1590,6 @@ public interface CommandsInterface {
      * CM-specific: Ask the RIL about the presence of back-compat flags
      */
     public boolean needsOldRilFeature(String feature);
-
     /**
      * @hide
      * samsung stk service implementation - set up registrant for sending

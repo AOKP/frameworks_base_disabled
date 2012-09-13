@@ -137,8 +137,8 @@ public class CdmaServiceStateTracker extends ServiceStateTracker {
     protected int mHomeNetworkId[] = null;
     protected String mMin;
     protected String mPrlVersion;
-    protected boolean mIsMinInfoReady = false;
 
+    protected boolean mIsMinInfoReady = false;
     private boolean isEriTextLoaded = false;
     protected boolean isSubscriptionFromRuim = false;
     private CdmaSubscriptionSourceManager mCdmaSSM;
@@ -482,9 +482,7 @@ public class CdmaServiceStateTracker extends ServiceStateTracker {
         case EVENT_CDMA_PRL_VERSION_CHANGED:
             ar = (AsyncResult)msg.obj;
             if (ar.exception == null) {
-                //This Causes Phone App To Crash On Startup
-                //ints = (int[]) ar.result;
-                //mPrlVersion = Integer.toString(ints[0]);
+                // Causes Error With Phone App On Boot
             }
             break;
 

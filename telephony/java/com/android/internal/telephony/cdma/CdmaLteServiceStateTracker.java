@@ -480,11 +480,11 @@ public class CdmaLteServiceStateTracker extends CdmaServiceStateTracker {
 
     @Override
     public boolean isConcurrentVoiceAndDataAllowed() {
-        if (mLteSS.getRadioTechnology() !=
-                    ServiceState.RIL_RADIO_TECHNOLOGY_1xRTT)
-            return getSVDO;
+        if ((getSVDO) && (mLteSS.getRadioTechnology() !=
+                    ServiceState.RADIO_TECHNOLOGY_1xRTT))
+            return true;
         else
-            return (mLteSS.getCssIndicator() == 1);
+            return (networkType == ServiceState.RADIO_TECHNOLOGY_LTE);
     }
 
     /**

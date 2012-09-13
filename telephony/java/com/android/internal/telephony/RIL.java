@@ -2092,8 +2092,8 @@ public class RIL extends BaseCommands implements CommandsInterface {
             case 7:
             case 8:
             case 9:
-            case 10: state = RadioState.RADIO_ON; break;
-            case 13: state = RadioState.RADIO_ON; break;
+            case 10:
+	        case 13: state = RadioState.RADIO_ON; break;
 
             default:
                 throw new RuntimeException(
@@ -3004,6 +3004,7 @@ public class RIL extends BaseCommands implements CommandsInterface {
         return response;
     }
 
+
     protected Object
      responseICC_IO(Parcel p) {
         int sw1, sw2;
@@ -3152,7 +3153,10 @@ public class RIL extends BaseCommands implements CommandsInterface {
             dataCall.ifname = Resources.getSystem().getString(com.android.internal.R.string.config_datause_iface);
         } else {
             dataCall.status = p.readInt();
-            dataCall.suggestedRetryTime = p.readInt();
+            if (needsOldRilFeature("usehcradio"))
+                dataCall.suggestedRetryTime = -1;
+            else
+	      dataCall.suggestedRetryTime = p.readInt();
             dataCall.cid = p.readInt();
             dataCall.active = p.readInt();
             dataCall.type = p.readString();
@@ -3264,7 +3268,7 @@ public class RIL extends BaseCommands implements CommandsInterface {
         }
 
         return ret;
-   }
+    }
 
    protected Object
    responseCellList(Parcel p) {

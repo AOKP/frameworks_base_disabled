@@ -307,4 +307,3 @@ class WiredAccessoryObserver extends UEventObserver {
         }
     };
 }
-

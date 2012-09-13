@@ -653,4 +653,3 @@ public class LegacyUsbDeviceManager extends UsbDeviceManager {
         mHandler.sendMessage(MSG_SET_CURRENT_FUNCTION, function, makeDefault);
     }
 }
-

@@ -2536,7 +2536,6 @@ uint32_t AudioFlinger::MixerThread::prepareTracks_l(const SortedVector< wp<Track
                 if (track->type() == AUDIO_STREAM_MUSIC && !track->isMuted() && !track->isPausing()) {
                     if(mStreamTypes[AUDIO_STREAM_MUSIC].volume > 0 && !gMusicStreamNeedsPrevVolume) {
                         gPrevMusicStreamVolume = mStreamTypes[AUDIO_STREAM_MUSIC].volume;
-                        LOGD("Stored volume = %f", gPrevMusicStreamVolume);
                     } else {
                         gMusicStreamIsMuted = true;
                     }
@@ -3666,21 +3665,6 @@ AudioFlinger::ThreadBase::TrackBase::TrackBase(
 
 AudioFlinger::ThreadBase::TrackBase::~TrackBase()
 {
-#ifdef OMAP_ENHANCEMENT
-    sp<AudioFlinger> audioFlinger;
-    // We have to use flinger's lock here to avoid race conditions between
-    // different threads inside one flinger. Even if mClient is NULL,
-    // the thread must be alive and we can use it to access flinger and
-    // it's lock.
-    if(mClient != NULL) {
-        audioFlinger = mClient->audioFlinger();
-    } else {
-        LOGW("mClient is NULL, flinger's mutex will be accessed through mThread");
-        sp<ThreadBase> thread = mThread.promote();
-        audioFlinger = thread->mAudioFlinger;
-    }
-    Mutex::Autolock _l(audioFlinger->mLock);
-#endif
     if (mCblk) {
         mCblk->~audio_track_cblk_t();   // destroy our shared-structure.
         if (mClient == NULL) {
@@ -3689,9 +3673,7 @@ AudioFlinger::ThreadBase::TrackBase::~TrackBase()
     }
     mCblkMemory.clear();            // and free the shared memory
     if (mClient != NULL) {
-#ifndef OMAP_ENHANCEMENT
         Mutex::Autolock _l(mClient->audioFlinger()->mLock);
-#endif
         mClient.clear();
     }
 }

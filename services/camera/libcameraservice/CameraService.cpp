@@ -44,10 +44,6 @@
 #include "CameraService.h"
 #include "CameraHardwareInterface.h"
 
-#ifdef USE_SEC_CAMERA_CORE
-#include "SecCameraCore.h"
-#endif
-
 namespace android {
 
 // ----------------------------------------------------------------------------
@@ -158,11 +154,7 @@ status_t CameraService::getCameraInfo(int cameraId,
 sp<ICamera> CameraService::connect(
         const sp<ICameraClient>& cameraClient, int cameraId) {
     int callingPid = getCallingPid();
-#ifdef USE_SEC_CAMERA_CORE
-    sp<SecCameraCoreManager> hardware = NULL;
-#else
     sp<CameraHardwareInterface> hardware = NULL;
-#endif
 
     LOG1("CameraService::connect E (pid %d, id %d)", callingPid, cameraId);
 
@@ -222,11 +214,7 @@ sp<ICamera> CameraService::connect(
     char camera_device_name[10];
     snprintf(camera_device_name, sizeof(camera_device_name), "%d", cameraId);
 
-#ifdef USE_SEC_CAMERA_CORE
-    hardware = new SecCameraCoreManager(camera_device_name);
-#else
     hardware = new CameraHardwareInterface(camera_device_name);
-#endif
     if (hardware->initialize(&mModule->common) != OK) {
         hardware.clear();
         return NULL;
@@ -375,17 +363,11 @@ void CameraService::playSound(sound_kind kind) {
 }
 
 // ----------------------------------------------------------------------------
-#ifdef USE_SEC_CAMERA_CORE
-CameraService::Client::Client(const sp<CameraService>& cameraService,
-        const sp<ICameraClient>& cameraClient,
-        const sp<SecCameraCoreManager>& hardware,
-        int cameraId, int cameraFacing, int clientPid) {
-#else
+
 CameraService::Client::Client(const sp<CameraService>& cameraService,
         const sp<ICameraClient>& cameraClient,
         const sp<CameraHardwareInterface>& hardware,
         int cameraId, int cameraFacing, int clientPid) {
-#endif
     int callingPid = getCallingPid();
     LOG1("Client::Client E (pid %d)", callingPid);
 
@@ -405,8 +387,11 @@ CameraService::Client::Client(const sp<CameraService>& cameraService,
                             (void *)cameraId);
 
     // Enable zoom, error, focus, and metadata messages by default
-    enableMsgType(CAMERA_MSG_ERROR | CAMERA_MSG_ZOOM | CAMERA_MSG_FOCUS |
-                  CAMERA_MSG_PREVIEW_METADATA);
+    enableMsgType(CAMERA_MSG_ERROR | CAMERA_MSG_ZOOM | CAMERA_MSG_FOCUS
+#ifndef QCOM_HARDWARE
+                  | CAMERA_MSG_PREVIEW_METADATA
+#endif
+                  );
 
     // Callback is disabled by default
     mPreviewCallbackFlag = CAMERA_FRAME_CALLBACK_FLAG_NOOP;
@@ -414,6 +399,9 @@ CameraService::Client::Client(const sp<CameraService>& cameraService,
     mPlayShutterSound = true;
     cameraService->setCameraBusy(cameraId);
     cameraService->loadSound();
+#ifdef QCOM_HARDWARE
+    mFaceDetection = false;
+#endif
     LOG1("Client::Client X (pid %d)", callingPid);
 }
 
@@ -553,9 +541,11 @@ void CameraService::Client::disconnect() {
 
     // Release the held ANativeWindow resources.
     if (mPreviewWindow != 0) {
+#if defined(QCOM_HARDWARE) && !defined(BINDER_COMPAT)
+        mHardware->setPreviewWindow(0);
+#endif
         disconnectWindow(mPreviewWindow);
         mPreviewWindow = 0;
-        mHardware->setPreviewWindow(mPreviewWindow);
     }
     mHardware.clear();
 
@@ -595,6 +585,10 @@ status_t CameraService::Client::setPreviewWindow(const sp<IBinder>& binder,
             native_window_set_buffers_transform(window.get(), mOrientation);
             result = mHardware->setPreviewWindow(window);
         }
+#if defined(QCOM_HARDWARE) && !defined(BINDER_COMPAT)
+    } else {
+        result = mHardware->setPreviewWindow(window);
+#endif
     }
 
     if (result == NO_ERROR) {
@@ -654,7 +648,10 @@ void CameraService::Client::setPreviewCallbackFlag(int callback_flag) {
 // start preview mode
 status_t CameraService::Client::startPreview() {
     LOG1("startPreview (pid %d)", getCallingPid());
-    enableMsgType(CAMERA_MSG_PREVIEW_METADATA);
+#ifdef QCOM_HARDWARE
+    if (mFaceDetection)
+      enableMsgType(CAMERA_MSG_PREVIEW_METADATA);
+#endif
     return startCameraMode(CAMERA_PREVIEW_MODE);
 }
 
@@ -704,11 +701,6 @@ status_t CameraService::Client::startPreviewMode() {
         native_window_set_buffers_transform(mPreviewWindow.get(),
                 mOrientation);
     }
-
-#ifdef OMAP_ENHANCEMENT
-    disableMsgType(CAMERA_MSG_COMPRESSED_BURST_IMAGE);
-#endif
-
     mHardware->setPreviewWindow(mPreviewWindow);
     result = mHardware->startPreview();
 
@@ -749,19 +741,6 @@ void CameraService::Client::stopPreview() {
     Mutex::Autolock lock(mLock);
     if (checkPidAndHardware() != NO_ERROR) return;
 
-#ifdef OMAP_ENHANCEMENT
-
-    //According to framework documentation, preview needs
-    //to be started for image capture. This will make sure
-    //that image capture related messages get disabled if
-    //not done already in their respective handlers.
-    //If these messages come when in the midddle of
-    //stopping preview. We will deadlock the system in
-    //lockIfMessageWanted()
-
-    disableMsgType(CAMERA_MSG_POSTVIEW_FRAME);
-
-#endif
 
     disableMsgType(CAMERA_MSG_PREVIEW_FRAME);
     mHardware->stopPreview();
@@ -858,9 +837,6 @@ status_t CameraService::Client::takePicture(int msgType) {
                            CAMERA_MSG_RAW_IMAGE |
                            CAMERA_MSG_RAW_IMAGE_NOTIFY |
                            CAMERA_MSG_COMPRESSED_IMAGE);
-#ifdef OMAP_ENHANCEMENT
-    picMsgType |= CAMERA_MSG_COMPRESSED_BURST_IMAGE;
-#endif
     disableMsgType(CAMERA_MSG_PREVIEW_METADATA);
     enableMsgType(picMsgType);
     mburstCnt = mHardware->getParameters().getInt("num-snaps-per-shutter");
@@ -955,14 +931,22 @@ status_t CameraService::Client::sendCommand(int32_t cmd, int32_t arg1, int32_t a
     } else if (cmd == CAMERA_CMD_PLAY_RECORDING_SOUND) {
         mCameraService->playSound(SOUND_RECORDING);
     }
-#ifdef QCOM_HARDWARE
     else if (cmd == CAMERA_CMD_HISTOGRAM_ON ) {
         enableMsgType(CAMERA_MSG_STATS_DATA);
     }
     else if (cmd ==  CAMERA_CMD_HISTOGRAM_OFF) {
         disableMsgType(CAMERA_MSG_STATS_DATA);
-    }
+#ifdef QCOM_HARDWARE
+    } else if (cmd ==   CAMERA_CMD_START_FACE_DETECTION) {
+      mFaceDetection = true;
+      enableMsgType(CAMERA_MSG_PREVIEW_METADATA);
+    } else if (cmd ==   CAMERA_CMD_STOP_FACE_DETECTION) {
+      mFaceDetection = false;
+      disableMsgType(CAMERA_MSG_PREVIEW_METADATA);
 #endif
+    }
+
+
     return mHardware->sendCommand(cmd, arg1, arg2);
 }
 
@@ -1094,11 +1078,6 @@ void CameraService::Client::dataCallback(int32_t msgType,
         case CAMERA_MSG_COMPRESSED_IMAGE:
             client->handleCompressedPicture(dataPtr);
             break;
-#ifdef OMAP_ENHANCEMENT
-        case CAMERA_MSG_COMPRESSED_BURST_IMAGE:
-            client->handleCompressedBurstPicture(dataPtr);
-            break;
-#endif
         default:
             client->handleGenericData(msgType, dataPtr, metadata);
             break;
@@ -1218,28 +1197,19 @@ void CameraService::Client::handleCompressedPicture(const sp<IMemory>& mem) {
     if (!mburstCnt) {
         LOG1("mburstCnt = %d", mburstCnt);
         disableMsgType(CAMERA_MSG_COMPRESSED_IMAGE);
-    }
-    sp<ICameraClient> c = mCameraClient;
-    mLock.unlock();
-    if (c != 0) {
-        c->dataCallback(CAMERA_MSG_COMPRESSED_IMAGE, mem, NULL);
-    }
-}
-
-#ifdef OMAP_ENHANCEMENT
-// burst picture callback - compressed picture ready
-void CameraService::Client::handleCompressedBurstPicture(const sp<IMemory>& mem) {
-    // Don't disable this message type yet. In this mode takePicture() will
-    // get called only once. When burst finishes this message will get automatically
-    // disabled in the respective call for restarting the preview.
-
-    sp<ICameraClient> c = mCameraClient;
-    mLock.unlock();
-    if (c != 0) {
-        c->dataCallback(CAMERA_MSG_COMPRESSED_IMAGE, mem, NULL);
-    }
-}
+#ifdef QCOM_HARDWARE
+        if (mFaceDetection) {
+          enableMsgType(CAMERA_MSG_PREVIEW_METADATA);
+        }
 #endif
+    }
+    sp<ICameraClient> c = mCameraClient;
+    mLock.unlock();
+    if (c != 0) {
+        c->dataCallback(CAMERA_MSG_COMPRESSED_IMAGE, mem, NULL);
+    }
+}
+
 
 void CameraService::Client::handleGenericNotify(int32_t msgType,
     int32_t ext1, int32_t ext2) {
@@ -1403,4 +1373,3 @@ status_t CameraService::dump(int fd, const Vector<String16>& args) {
 }
 
 }; // namespace android
-

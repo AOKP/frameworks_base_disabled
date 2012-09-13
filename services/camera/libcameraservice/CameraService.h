@@ -109,21 +109,12 @@ private:
         virtual status_t        sendCommand(int32_t cmd, int32_t arg1, int32_t arg2);
     private:
         friend class CameraService;
-#ifdef USE_SEC_CAMERA_CORE
-                                Client(const sp<CameraService>& cameraService,
-                                       const sp<ICameraClient>& cameraClient,
-                                       const sp<SecCameraCoreManager>& hardware,
-                                       int cameraId,
-                                       int cameraFacing,
-                                       int clientPid);
-#else
                                 Client(const sp<CameraService>& cameraService,
                                        const sp<ICameraClient>& cameraClient,
                                        const sp<CameraHardwareInterface>& hardware,
                                        int cameraId,
                                        int cameraFacing,
                                        int clientPid);
-#endif
                                 ~Client();
 
         // return our camera client
@@ -163,9 +154,6 @@ private:
         void                    handlePostview(const sp<IMemory>& mem);
         void                    handleRawPicture(const sp<IMemory>& mem);
         void                    handleCompressedPicture(const sp<IMemory>& mem);
-#ifdef OMAP_ENHANCEMENT
-        void                    handleCompressedBurstPicture(const sp<IMemory>& mem);
-#endif
         void                    handleGenericNotify(int32_t msgType, int32_t ext1, int32_t ext2);
         void                    handleGenericData(int32_t msgType, const sp<IMemory>& dataPtr,
                                                   camera_frame_metadata_t *metadata);
@@ -190,15 +178,13 @@ private:
         int                             mCameraId;       // immutable after constructor
         int                             mCameraFacing;   // immutable after constructor
         pid_t                           mClientPid;
-#ifdef USE_SEC_CAMERA_CORE
-        sp<SecCameraCoreManager>        mHardware;       // cleared after disconnect()
-#else
         sp<CameraHardwareInterface>     mHardware;       // cleared after disconnect()
-#endif
         int                             mPreviewCallbackFlag;
         int                             mOrientation;     // Current display orientation
         bool                            mPlayShutterSound;
-
+#ifdef QCOM_HARDWARE
+        bool                            mFaceDetection;
+#endif
         // Ensures atomicity among the public methods
         mutable Mutex                   mLock;
         // This is a binder of Surface or SurfaceTexture.

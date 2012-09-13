@@ -61,10 +61,6 @@
 #include <qcom_ui.h>
 #endif
 
-#ifdef SAMSUNG_HDMI_SUPPORT
-#include "SecTVOutService.h"
-#endif
-
 /* ideally AID_GRAPHICS would be in a semi-public header
  * or there would be a way to map a user/group name to its id
  */
@@ -81,7 +77,6 @@ extern "C" void NvDispMgrAutoOrientation(int rotation);
 #endif
 
 namespace android {
-
 // ---------------------------------------------------------------------------
 
 const String16 sHardwareTest("android.permission.HARDWARE_TEST");
@@ -121,25 +116,6 @@ SurfaceFlinger::SurfaceFlinger()
         mUseDithering(false)
 {
     init();
-
-#ifdef SAMSUNG_HDMI_SUPPORT
-    LOGI(">>> Run SecTVOutService");
-    android::SecTVOutService::instantiate();
-#if defined(SAMSUNG_EXYNOS5250)
-    mHdmiClient = SecHdmiClient::getInstance();
-    mHdmiClient->setHdmiEnable(1);
-
-    const int orientation = ISurfaceComposer::eOrientationDefault;
-    if (uint32_t(orientation) == eOrientation90)
-        mHdmiClient->setHdmiRotate(270, 0);
-    else if(uint32_t(orientation) == eOrientation180)
-        mHdmiClient->setHdmiRotate(180, 0);
-    else if(uint32_t(orientation) == eOrientation270)
-        mHdmiClient->setHdmiRotate(90, 0);
-    else
-        mHdmiClient->setHdmiRotate(0, 0);
-#endif
-#endif
 }
 
 void SurfaceFlinger::init()
@@ -300,9 +276,6 @@ status_t SurfaceFlinger::readyToRun()
     dcblk->ydpi         = hw.getDpiY();
     dcblk->fps          = hw.getRefreshRate();
     dcblk->density      = hw.getDensity();
-#ifdef OMAP_ENHANCEMENT
-    dcblk->maxTex       = hw.getMaxTextureSize();
-#endif
 
     // Initialize OpenGL|ES
     glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
@@ -310,11 +283,7 @@ status_t SurfaceFlinger::readyToRun()
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnable(GL_SCISSOR_TEST);
     glShadeModel(GL_FLAT);
-#ifdef FORCE_DITHERING
-    glEnable(GL_DITHER);
-#else
     glDisable(GL_DITHER);
-#endif
     glDisable(GL_CULL_FACE);
 
     const uint16_t g0 = pack565(0x0F,0x1F,0x0F);
@@ -647,19 +616,6 @@ void SurfaceFlinger::handleTransactionLocked(uint32_t transactionFlags)
 
             mVisibleRegionsDirty = true;
             mDirtyRegion.set(hw.bounds());
-
-#if defined(SAMSUNG_HDMI_SUPPORT) && defined(SAMSUNG_EXYNOS5250)
-            HWComposer& hwc(graphicPlane(0).displayHardware().getHwComposer());
-            int overlayLayerCount = hwc.getLayerCount(HWC_OVERLAY);
-            if (uint32_t(orientation) == eOrientation90)
-                mHdmiClient->setHdmiRotate(270, overlayLayerCount);
-            else if(uint32_t(orientation) == eOrientation180)
-                mHdmiClient->setHdmiRotate(180, overlayLayerCount);
-            else if(uint32_t(orientation) == eOrientation270)
-                mHdmiClient->setHdmiRotate(90, overlayLayerCount);
-            else
-                mHdmiClient->setHdmiRotate(0, overlayLayerCount);
-#endif
         }
 
         if (currentLayers.size() > mDrawingState.layersSortedByZ.size()) {
@@ -1675,10 +1631,6 @@ void SurfaceFlinger::screenReleased(int dpy)
     // this may be called by a signal handler, we can't do too much in here
     android_atomic_or(eConsoleReleased, &mConsoleSignals);
     signalEvent();
-
-#if defined(SAMSUNG_HDMI_SUPPORT) && defined(SAMSUNG_EXYNOS5250)
-    mHdmiClient->setHdmiEnable(0);
-#endif
 }
 
 void SurfaceFlinger::screenAcquired(int dpy)
@@ -1686,10 +1638,6 @@ void SurfaceFlinger::screenAcquired(int dpy)
     // this may be called by a signal handler, we can't do too much in here
     android_atomic_or(eConsoleAcquired, &mConsoleSignals);
     signalEvent();
-
-#if defined(SAMSUNG_HDMI_SUPPORT) && defined(SAMSUNG_EXYNOS5250)
-    mHdmiClient->setHdmiEnable(1);
-#endif
 }
 
 status_t SurfaceFlinger::dump(int fd, const Vector<String16>& args)
@@ -2306,8 +2254,13 @@ status_t SurfaceFlinger::electronBeamOnAnimationImplLocked()
         hw.flip(screenBounds);
     }
 
-    nbFrames = 4;
     v_stretch vverts(hw_w, hw_h);
+
+    glMatrixMode(GL_TEXTURE);
+    glLoadIdentity();
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
     glEnable(GL_BLEND);
     glBlendFunc(GL_ONE, GL_ONE);
     for (int i=nbFrames-1 ; i>=0 ; i--) {
@@ -2334,6 +2287,12 @@ status_t SurfaceFlinger::electronBeamOnAnimationImplLocked()
         // draw the blue plane
         vverts(vtx, vb);
         glColorMask(0,0,1,1);
+        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
+        // draw the white highlight (we use the last vertices)
+        glDisable(GL_TEXTURE_2D);
+        glColorMask(1,1,1,1);
+        glColor4f(vg, vg, vg, 1);
         glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
         hw.flip(screenBounds);

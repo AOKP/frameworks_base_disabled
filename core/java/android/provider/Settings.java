@@ -2171,6 +2171,13 @@ public final class Settings {
         public static final String UNLOCK_SOUND = "unlock_sound";
 
         /**
+         * Stores values for custom lockscreen targets
+         * Whether the screen will be locked if a call ends and the screen is off.
+         * @hide
+         */
+        public static final String LOCKSCREEN_IF_CALL_ENDS_WITH_SCREENOFF = "lockscreen_if_call_ends_with_screenoff";
+
+        /**
          * Receive incoming SIP calls?
          * 0 = no
          * 1 = yes

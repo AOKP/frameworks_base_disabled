@@ -482,8 +482,9 @@ public class CdmaServiceStateTracker extends ServiceStateTracker {
         case EVENT_CDMA_PRL_VERSION_CHANGED:
             ar = (AsyncResult)msg.obj;
             if (ar.exception == null) {
-                ints = (int[]) ar.result;
-                mPrlVersion = Integer.toString(ints[0]);
+                //This Causes Phone App To Crash On Startup
+                //ints = (int[]) ar.result;
+                //mPrlVersion = Integer.toString(ints[0]);
             }
             break;
 

@@ -1296,4 +1296,12 @@
     <string name="reboot_download">Download</string>
     <string name="reboot_bootloader">Bootloader</string>
     <string name="reboot_progress">Zařízení se restartuje</string>
+    
+    <string name="lockscreen_calendar_tomorrow">Zítra</string>
+    <string name="lockscreen_always_battery">Vybíjí se, <xliff:g id="number">%d</xliff:g><xliff:g id="percent">%%</xliff:g></string>
+    <string name="lockscreen_always_low_battery">Připojte dobíjecí zařízení, <xliff:g id="number">%d</xliff:g><xliff:g id="percent">%%</xliff:g></string>
+
+    <string name="app_killed_message">Aplikace ukončena</string>
+    <string name="global_actions_toggle_navbar_hide">Ovládání navigační lišty</string>
+    <string name="global_action_screenshot">Snímek obrazovky</string>
 </resources>

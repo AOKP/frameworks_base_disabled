@@ -1304,4 +1304,7 @@
     <string name="app_killed_message">Aplikace ukončena</string>
     <string name="global_actions_toggle_navbar_hide">Ovládání navigační lišty</string>
     <string name="global_action_screenshot">Snímek obrazovky</string>
+
+    <string name="vibration_picker_title">Zvolit vibrační vzor</string>
+    <string name="vibration_picker_del_title">Smazat vibrační vzor</string>
 </resources>

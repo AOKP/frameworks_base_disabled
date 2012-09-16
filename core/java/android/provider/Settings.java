@@ -2144,6 +2144,12 @@ public final class Settings {
          */
         public static final String LOCKSCREEN_AUTO_ROTATE = "com.android.internal.R.config_enableLockScreenRotation";
 
+	/**
+         * Whether to enable lockscreen vibrate
+         * @hide
+         */
+        public static final String LOCKSCREEN_VIBRATE_DISABLED = "lockscreen.vibrate_disabled";
+
         /**
          * URI for the low battery sound file.
          * @hide

@@ -47,8 +47,40 @@
         <item name="android:textStyle">normal</item>
         <item name="android:textColor">@android:color/holo_blue_light</item>
     </style>
+    
+    <style name="TextAppearance.StatusBar.BatteryTextOnly_Plugged" parent="@*android:style/TextAppearance.StatusBar.Icon">
+        <!-- Note: must be dp to fit in status bar -->
+        <item name="android:textSize">16dp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">@android:color/holo_green_light</item>
+    </style>
+    
+    <style name="TextAppearance.StatusBar.BatteryTextOnly_Low" parent="@*android:style/TextAppearance.StatusBar.Icon">
+        <!-- Note: must be dp to fit in status bar -->
+        <item name="android:textSize">16dp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">@android:color/holo_red_light</item>
+    </style>
 
     <style name="TextAppearance.StatusBar.Date" parent="@*android:style/TextAppearance.StatusBar.Icon">
+        <item name="android:textSize">16dp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">@android:color/holo_blue_light</item>
+    </style>
+    
+     <style name="TextAppearance.StatusBar.WifiText" parent="@*android:style/TextAppearance.StatusBar.Icon">
+        <item name="android:textSize">16dp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">@android:color/holo_blue_light</item>
+    </style>
+    
+     <style name="TextAppearance.StatusBar.SignalText" parent="@*android:style/TextAppearance.StatusBar.Icon">
+        <item name="android:textSize">16dp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">@android:color/holo_blue_light</item>
+    </style>
+    
+    <style name="TextAppearance.StatusBar.Toggle" parent="@*android:style/TextAppearance.StatusBar.Icon">
         <item name="android:textSize">16dp</item>
         <item name="android:textStyle">normal</item>
         <item name="android:textColor">@android:color/holo_blue_light</item>
@@ -108,6 +140,10 @@
     	<item name="android:layout_gravity">left|bottom</item>
     	<item name="android:textSize">11dp</item>
     	<item name="android:textStyle">bold</item>
+        <item name="android:shadowColor">#FF000000</item>
+        <item name="android:shadowDx">0</item>
+        <item name="android:shadowDy">0</item>
+        <item name="android:shadowRadius">2.5</item>
     </style>
     
     <style name="Battery_Center">
@@ -115,6 +151,10 @@
     	<item name="android:layout_gravity">center</item>
     	<item name="android:textSize">9dp</item>
     	<item name="android:textStyle">bold</item>
+        <item name="android:shadowColor">#FF000000</item>
+        <item name="android:shadowDx">0</item>
+        <item name="android:shadowDy">0</item>
+        <item name="android:shadowRadius">2.5</item>
     </style>
 
     <style name="brucekey_icon">

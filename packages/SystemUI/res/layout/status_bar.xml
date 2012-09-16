@@ -117,19 +117,19 @@
     </LinearLayout>
 
     <LinearLayout
-            android:id="@+id/center_clock_layout"
+        android:id="@+id/center_clock_layout"
 	    android:gravity="center"
 	    android:orientation="horizontal"
 	    android:layout_width="fill_parent"
 	    android:layout_height="fill_parent">
-	        <com.android.systemui.statusbar.policy.ClockCenter
-	      	    android:textAppearance="@style/TextAppearance.StatusBar.Clock"
-		    android:gravity="center"
-		    android:id="@+id/center_clock"
-		    android:paddingLeft="6.0dip"
-		    android:layout_width="wrap_content"
-		    android:layout_height="fill_parent"
-		    android:singleLine="true" />
+	    <com.android.systemui.statusbar.policy.ClockCenter
+	       android:textAppearance="@style/TextAppearance.StatusBar.Clock"
+		   android:gravity="center"
+		   android:id="@+id/center_clock"
+		   android:paddingLeft="6.0dip"
+		   android:layout_width="wrap_content"
+		   android:layout_height="fill_parent"
+		   android:singleLine="true" />
     </LinearLayout>
         
     <LinearLayout android:id="@+id/ticker"

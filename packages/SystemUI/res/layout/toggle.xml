@@ -28,7 +28,7 @@
 
             <TextView
                 android:id="@+id/label"
-                android:textAppearance="@style/TextAppearance.StatusBar.Date"
+                android:textAppearance="@style/TextAppearance.StatusBar.Toggle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:singleLine="true"

@@ -53,6 +53,8 @@ public class BatteryControllerNotification extends LinearLayout {
     private TextView mBatteryCenterText;
     private ViewGroup mBatteryGroup;
     private TextView mBatteryTextOnly;
+    private TextView mBatteryTextOnly_Low;
+    private TextView mBatteryTextOnly_Plugged;
 
     private static int mBatteryStyle;
     private boolean mBatteryEnabled;
@@ -84,6 +86,8 @@ public class BatteryControllerNotification extends LinearLayout {
         mBatteryText = (TextView) findViewById(R.id.battery_text);
         mBatteryCenterText = (TextView) findViewById(R.id.battery_text_center);
         mBatteryTextOnly = (TextView) findViewById(R.id.battery_text_only);
+        mBatteryTextOnly_Low = (TextView) findViewById(R.id.battery_text_only_low);
+        mBatteryTextOnly_Plugged = (TextView) findViewById(R.id.battery_text_only_plugged);
         addIconView(mBatteryIcon);
 
         isAttached = true;
@@ -156,7 +160,6 @@ public class BatteryControllerNotification extends LinearLayout {
         if (mBatteryGroup != null) {
             mBatteryText.setText(Integer.toString(level));
             mBatteryCenterText.setText(Integer.toString(level));
-            mBatteryTextOnly.setText(Integer.toString(level));
             SpannableStringBuilder formatted = new SpannableStringBuilder(
                     Integer.toString(level) + "%");
             CharacterStyle style = new RelativeSizeSpan(0.7f); // beautiful
@@ -172,15 +175,27 @@ public class BatteryControllerNotification extends LinearLayout {
                         Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
             }
             mBatteryTextOnly.setText(formatted);
-            if (plugged) { // colors hardcoded by now, maybe colorpicker can be
-                           // added if needed
-                mBatteryTextOnly.setTextColor(Color.GREEN);
-            } else if (level < 16) {
-                mBatteryTextOnly.setTextColor(Color.RED);
+            mBatteryTextOnly_Low.setText(formatted);
+            mBatteryTextOnly_Plugged.setText(formatted);
+            if (mBatteryStyle == STYLE_TEXT_ONLY) {
+                if (plugged) { 
+                    mBatteryTextOnly.setVisibility(View.GONE);
+                    mBatteryTextOnly_Plugged.setVisibility(View.VISIBLE);
+                    mBatteryTextOnly_Low.setVisibility(View.GONE);
+                } else if (level < 16) {
+                    mBatteryTextOnly.setVisibility(View.GONE);
+                    mBatteryTextOnly_Plugged.setVisibility(View.GONE);
+                    mBatteryTextOnly_Low.setVisibility(View.VISIBLE);
+                } else {
+                    mBatteryTextOnly.setVisibility(View.VISIBLE);
+                    mBatteryTextOnly_Plugged.setVisibility(View.GONE);
+                    mBatteryTextOnly_Low.setVisibility(View.GONE);
+                }
             } else {
-                mBatteryTextOnly.setTextColor(0xFF33B5E5);
+                mBatteryTextOnly.setVisibility(View.GONE);
+                mBatteryTextOnly_Plugged.setVisibility(View.GONE);
+                mBatteryTextOnly_Low.setVisibility(View.GONE);
             }
-
         }
     }
 
@@ -206,8 +221,8 @@ public class BatteryControllerNotification extends LinearLayout {
     
     public void isVisible(boolean show) {
     	ContentResolver cr = mContext.getContentResolver();
-    	mBatteryEnabled = Settings.System.getInt(cr,
-                Settings.System.NOTIFICATION_BATTERY_DISPLAY, 0) == 1;
+    	mBatteryEnabled = Settings.System.getBoolean(cr,
+                Settings.System.NOTIFICATION_BATTERY_DISPLAY, false);
     	
     	if (mBatteryEnabled && isAttached) {
     		if (show) {
@@ -217,6 +232,8 @@ public class BatteryControllerNotification extends LinearLayout {
                 mBatteryCenterText.setVisibility(View.GONE);
                 mBatteryIcon.setVisibility(View.GONE);
                 mBatteryTextOnly.setVisibility(View.GONE);
+                mBatteryTextOnly_Low.setVisibility(View.GONE);
+                mBatteryTextOnly_Plugged.setVisibility(View.GONE);
                 setVisibility(View.GONE);
     		}
     		
@@ -228,8 +245,8 @@ public class BatteryControllerNotification extends LinearLayout {
         // Slog.i(TAG, "updated settings values");
         ContentResolver cr = mContext.getContentResolver();
         
-        mBatteryEnabled = Settings.System.getInt(cr,
-                Settings.System.NOTIFICATION_BATTERY_DISPLAY, 0) == 1;
+        mBatteryEnabled = Settings.System.getBoolean(cr,
+                Settings.System.NOTIFICATION_BATTERY_DISPLAY, false);
         
         mBatteryStyle = Settings.System.getInt(cr,
                 Settings.System.STATUSBAR_BATTERY_ICON, 0);
@@ -240,49 +257,42 @@ public class BatteryControllerNotification extends LinearLayout {
                     mBatteryCenterText.setVisibility(View.GONE);
                     mBatteryText.setVisibility(View.GONE);
                     mBatteryIcon.setVisibility(View.VISIBLE);
-                    mBatteryTextOnly.setVisibility(View.GONE);
                     setVisibility(View.VISIBLE);
                     break;
                 case STYLE_TEXT_ONLY:
                     mBatteryText.setVisibility(View.GONE);
                     mBatteryCenterText.setVisibility(View.GONE);
                     mBatteryIcon.setVisibility(View.GONE);
-                    mBatteryTextOnly.setVisibility(View.VISIBLE);
                     setVisibility(View.VISIBLE);
                     break;
                 case STYLE_ICON_TEXT:
                     mBatteryText.setVisibility(View.VISIBLE);
                     mBatteryCenterText.setVisibility(View.GONE);
                     mBatteryIcon.setVisibility(View.VISIBLE);
-                    mBatteryTextOnly.setVisibility(View.GONE);
                     setVisibility(View.VISIBLE);
                     break;
                 case STYLE_ICON_CENTERED_TEXT:
                     mBatteryText.setVisibility(View.GONE);
                     mBatteryCenterText.setVisibility(View.VISIBLE);
                     mBatteryIcon.setVisibility(View.VISIBLE);
-                    mBatteryTextOnly.setVisibility(View.GONE);
                     setVisibility(View.VISIBLE);
                     break;
                 case STYLE_HIDE:
                     mBatteryText.setVisibility(View.GONE);
                     mBatteryCenterText.setVisibility(View.GONE);
                     mBatteryIcon.setVisibility(View.GONE);
-                    mBatteryTextOnly.setVisibility(View.GONE);
                     setVisibility(View.GONE);
                     break;
                 case STYLE_ICON_CIRCLE:
                     mBatteryText.setVisibility(View.GONE);
                     mBatteryCenterText.setVisibility(View.GONE);
                     mBatteryIcon.setVisibility(View.VISIBLE);
-                    mBatteryTextOnly.setVisibility(View.GONE);
                     setVisibility(View.VISIBLE);
                     break;
                 default:
                     mBatteryText.setVisibility(View.GONE);
                     mBatteryCenterText.setVisibility(View.GONE);
                     mBatteryIcon.setVisibility(View.VISIBLE);
-                    mBatteryTextOnly.setVisibility(View.GONE);
                     setVisibility(View.VISIBLE);
                     break;
             }
@@ -291,6 +301,8 @@ public class BatteryControllerNotification extends LinearLayout {
             mBatteryCenterText.setVisibility(View.GONE);
             mBatteryIcon.setVisibility(View.GONE);
             mBatteryTextOnly.setVisibility(View.GONE);
+            mBatteryTextOnly_Low.setVisibility(View.GONE);
+            mBatteryTextOnly_Plugged.setVisibility(View.GONE);
             setVisibility(View.GONE);
         }
         

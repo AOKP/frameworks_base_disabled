@@ -52,6 +52,9 @@ public class SignalClusterView
     private boolean mIsAirplaneMode = false;
     private int mAirplaneIconId = 0;
     private String mWifiDescription, mMobileDescription, mMobileTypeDescription;
+    private static final int STYLE_HIDE = 0;
+    private static final int STYLE_SHOW = 1;
+    private static final int STYLE_SHOW_DBM = 2;
 
     private boolean showingSignalText = false;
     private boolean showingWiFiText = false;
@@ -265,8 +268,8 @@ public class SignalClusterView
         ContentResolver resolver = mContext.getContentResolver();
 
         boolean clustdefault = getResources().getBoolean(R.bool.statusbar_alt_signal_layout);
-        showingSignalText = Settings.System.getBoolean(resolver,
-                Settings.System.STATUSBAR_SIGNAL_TEXT, false);
+        showingSignalText = (Settings.System.getInt(resolver,
+                Settings.System.STATUSBAR_SIGNAL_TEXT,STYLE_HIDE) > 0);
         showingWiFiText = Settings.System.getBoolean(resolver,
                 Settings.System.STATUSBAR_WIFI_SIGNAL_TEXT, false);
         showingAltCluster = Settings.System.getBoolean(resolver,

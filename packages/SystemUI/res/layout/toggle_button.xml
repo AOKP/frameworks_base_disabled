@@ -28,7 +28,7 @@
             android:layout_height="wrap_content">
 
             <TextView
-                android:textAppearance="@style/TextAppearance.StatusBar.Date"
+                android:textAppearance="@style/TextAppearance.StatusBar.Toggle"
                 android:layout_gravity="top"
                 android:id="@id/label"
                 android:layout_width="wrap_content"

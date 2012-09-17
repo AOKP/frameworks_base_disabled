@@ -1114,6 +1114,17 @@ status_t EventHub::openDeviceLocked(const char *devicePath) {
     // We need to do this for joysticks too because the key layout may specify axes.
     status_t keyMapStatus = NAME_NOT_FOUND;
     if (device->classes & (INPUT_DEVICE_CLASS_KEYBOARD | INPUT_DEVICE_CLASS_JOYSTICK)) {
+        String8 layout;
+        if (mOrKeyLayouts.tryGetProperty(device->identifier.name, layout)) {
+            ALOGI("Replacing key layout and character map of %s with %s",
+                    device->identifier.name.string(), layout.string());
+            if (!device->configuration) {
+                device->configuration = new PropertyMap();
+            }
+            device->configuration->addProperty(String8("keyboard.layout"), layout);
+            device->configuration->addProperty(String8("keyboard.characterMap"), layout);
+        }
+        
         // Load the keymap for the device.
         keyMapStatus = loadKeyMapLocked(device);
     }
@@ -1478,5 +1489,8 @@ void EventHub::monitor() {
     mLock.unlock();
 }
 
+void EventHub::setKeyLayout(const char* deviceName, const char* keyLayout) {
+    mOrKeyLayouts.addProperty(String8(deviceName), String8(keyLayout));
+}
 
 }; // namespace android

@@ -300,6 +300,10 @@ public:
     virtual void vibrate(int32_t deviceId, const nsecs_t* pattern, size_t patternSize,
             ssize_t repeat, int32_t token) = 0;
     virtual void cancelVibrate(int32_t deviceId, int32_t token) = 0;
+
+    /* Sets a specific input device's keyLayout to be overridden by filename.
+     */
+    virtual void setKeyLayout(const char* deviceName, const char* keyLayout) = 0;
 };
 
 
@@ -369,6 +373,8 @@ public:
     virtual void vibrate(int32_t deviceId, const nsecs_t* pattern, size_t patternSize,
             ssize_t repeat, int32_t token);
     virtual void cancelVibrate(int32_t deviceId, int32_t token);
+
+    virtual void setKeyLayout(const char* deviceName, const char* keyLayout);
 
 protected:
     // These members are protected so they can be instrumented by test cases.

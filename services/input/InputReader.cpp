@@ -709,6 +709,11 @@ void InputReader::cancelVibrate(int32_t deviceId, int32_t token) {
     }
 }
 
+void InputReader::setKeyLayout(const char* deviceName, const char* keyLayout) {
+    AutoMutex _l(mLock);
+    mEventHub->setKeyLayout(deviceName, keyLayout);
+}
+
 void InputReader::dump(String8& dump) {
     AutoMutex _l(mLock);
 

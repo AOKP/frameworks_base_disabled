@@ -3814,4 +3814,6 @@
   <java-symbol type="string" name="vibration_picker_del_title"/>
   <java-symbol type="layout" name="vibration_picker_dialog"/>
 
+ <!-- Tablets and docks -->
+  <java-symbol type="bool" name="config_hasRemovableLid" />
 </resources>

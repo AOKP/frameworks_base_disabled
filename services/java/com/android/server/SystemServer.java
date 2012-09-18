@@ -710,6 +710,12 @@ class ServerThread extends Thread {
             reportWtf("making Vibrator Service ready", e);
         }
 
+        try {
+            lockSettings.systemReady();
+        } catch (Throwable e) {
+            reportWtf("making Lock Settings Service ready", e);
+        }
+
         if (devicePolicy != null) {
             try {
                 devicePolicy.systemReady();
@@ -750,11 +756,6 @@ class ServerThread extends Thread {
             pm.systemReady();
         } catch (Throwable e) {
             reportWtf("making Package Manager Service ready", e);
-        }
-        try {
-            lockSettings.systemReady();
-        } catch (Throwable e) {
-            reportWtf("making Lock Settings Service ready", e);
         }
 
         IntentFilter filter = new IntentFilter();

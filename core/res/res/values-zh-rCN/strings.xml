@@ -1316,4 +1316,8 @@
 
     <!-- Lockscreen calendar string -->
     <string name="lockscreen_calendar_tomorrow">明天</string>
+
+    <!-- Vibration picker dialog title -->
+    <string name="vibration_picker_title">选择振动效果</string>
+    <string name="vibration_picker_del_title">删除振动效果</string>
 </resources>

@@ -115,12 +115,12 @@ public class WifiText extends TextView {
     }
 
     private void updateSettings() {
-        int newColor = -1;
+        int newColor = 0;
         ContentResolver resolver = getContext().getContentResolver();
         newColor = Settings.System.getInt(resolver,
                 Settings.System.STATUSBAR_WIFI_SIGNAL_TEXT_COLOR,
                 mSignalColor);
-        if (newColor > -1 && newColor != mSignalColor) {
+        if (newColor < 0 && newColor != mSignalColor) {
             // newColor is valid - let's change the textview.
             mSignalColor = newColor;
             setTextColor(mSignalColor);

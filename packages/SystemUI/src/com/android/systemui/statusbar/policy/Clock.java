@@ -294,7 +294,7 @@ public class Clock extends TextView {
 
     protected void updateSettings() {
         ContentResolver resolver = mContext.getContentResolver();
-        int newColor = -1;
+        int newColor = 0;
 
         mAmPmStyle = Settings.System.getInt(resolver,
                 Settings.System.STATUSBAR_CLOCK_AM_PM_STYLE, AM_PM_STYLE_GONE);   
@@ -305,7 +305,7 @@ public class Clock extends TextView {
         
         newColor = Settings.System.getInt(resolver,
                 Settings.System.STATUSBAR_CLOCK_COLOR, mClockColor);
-        if (newColor > -1 && newColor != mClockColor) {
+        if (newColor < 0 && newColor != mClockColor) {
             // Color has changed and is valid.
             mClockColor = newColor;
             setTextColor(mClockColor);

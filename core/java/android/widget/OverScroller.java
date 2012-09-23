@@ -24,6 +24,7 @@ import android.util.Log;
 import android.view.ViewConfiguration;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Interpolator;
+import java.io.*;
 
 /**
  * This class encapsulates scrolling with the ability to overshoot the bounds
@@ -43,8 +44,26 @@ public class OverScroller {
     private static final int DEFAULT_DURATION = 250;
     private static final int SCROLL_MODE = 0;
     private static final int FLING_MODE = 1;
+    private static final String scalingMaxFreqFile = "/sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq";
 
     private final PowerManager mPm;
+    
+    private int maxFreq = readFileIntoInt(scalingMaxFreqFile);
+    
+    // Reads file into variable
+    private int readFileIntoInt(String fileToBeRead) {
+      try {
+        File fileObject = new File(fileToBeRead);
+        Reader readerObject = new FileReader(fileObject);
+        BufferedReader bufferedReaderObject = new BufferedReader(readerObject);
+        String stringDataFromFile = bufferedReaderObject.readLine();
+        readerObject.close();
+        bufferedReaderObject.close();
+        return Integer.parseInt(stringDataFromFile.trim());
+      } catch (IOException e) {
+        return 1000000;
+      }
+    }
 
     /**
      * Creates an OverScroller with a viscous fluid scroll interpolator and flywheel.
@@ -381,7 +400,7 @@ public class OverScroller {
      */
     public void startScroll(int startX, int startY, int dx, int dy, int duration) {
         mMode = SCROLL_MODE;
-        mPm.cpuBoost(1500000);
+        mPm.cpuBoost(maxFreq);
         mScrollerX.startScroll(startX, dx, duration);
         mScrollerY.startScroll(startY, dy, duration);
     }
@@ -452,7 +471,7 @@ public class OverScroller {
             }
         }
 
-        mPm.cpuBoost(1500000);
+        mPm.cpuBoost(maxFreq);
         mMode = FLING_MODE;
         mScrollerX.fling(startX, velocityX, minX, maxX, overX);
         mScrollerY.fling(startY, velocityY, minY, maxY, overY);

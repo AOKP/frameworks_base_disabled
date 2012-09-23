@@ -24,6 +24,7 @@ import android.util.FloatMath;
 import android.view.ViewConfiguration;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Interpolator;
+import java.io.*;
 
 
 /**
@@ -69,6 +70,9 @@ public class Scroller  {
     private static float END_TENSION = 1.0f - START_TENSION;
     private static final int NB_SAMPLES = 100;
     private static final float[] SPLINE = new float[NB_SAMPLES + 1];
+    private static final String scalingMaxFreqFile = "/sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq";
+
+    private int maxFreq = readFileIntoInt(scalingMaxFreqFile);
 
     private float mDeceleration;
     private final float mPpi;
@@ -103,6 +107,21 @@ public class Scroller  {
 
     private static float sViscousFluidScale;
     private static float sViscousFluidNormalize;
+    
+    // Reads file into variable
+    private int readFileIntoInt(String fileToBeRead) {
+      try {
+        File fileObject = new File(fileToBeRead);
+        Reader readerObject = new FileReader(fileObject);
+        BufferedReader bufferedReaderObject = new BufferedReader(readerObject);
+        String stringDataFromFile = bufferedReaderObject.readLine();
+        readerObject.close();
+        bufferedReaderObject.close();
+        return Integer.parseInt(stringDataFromFile.trim());
+      } catch (IOException e) {
+        return 1000000;
+      }
+    }
 
     /**
      * Create a Scroller with the default duration and interpolator.
@@ -347,7 +366,7 @@ public class Scroller  {
         mDeltaX = dx;
         mDeltaY = dy;
         mDurationReciprocal = 1.0f / (float) mDuration;
-        mPm.cpuBoost(1500000);
+        mPm.cpuBoost(maxFreq);
     }
 
     /**

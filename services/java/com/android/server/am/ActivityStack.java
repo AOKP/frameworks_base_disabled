@@ -65,7 +65,7 @@ import android.util.Slog;
 import android.view.WindowManagerPolicy;
 import com.android.internal.app.ActivityTrigger;
 
-import java.io.IOException;
+import java.io.*;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -294,6 +294,24 @@ final class ActivityStack {
     static final int LAUNCH_TICK_MSG = ActivityManagerService.FIRST_ACTIVITY_STACK_MSG + 7;
     static final int STOP_TIMEOUT_MSG = ActivityManagerService.FIRST_ACTIVITY_STACK_MSG + 8;
     static final int DESTROY_ACTIVITIES_MSG = ActivityManagerService.FIRST_ACTIVITY_STACK_MSG + 9;
+    private static final String scalingMaxFreqFile = "/sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq";
+
+    private int maxFreq = readFileIntoInt(scalingMaxFreqFile);
+    
+    // Reads file into variable
+    private int readFileIntoInt(String fileToBeRead) {
+      try {
+        File fileObject = new File(fileToBeRead);
+        Reader readerObject = new FileReader(fileObject);
+        BufferedReader bufferedReaderObject = new BufferedReader(readerObject);
+        String stringDataFromFile = bufferedReaderObject.readLine();
+        readerObject.close();
+        bufferedReaderObject.close();
+        return Integer.parseInt(stringDataFromFile.trim());
+      } catch (IOException e) {
+        return 1000000;
+      }
+    }
 
     static class ScheduleDestroyArgs {
         final ProcessRecord mOwner;
@@ -1400,7 +1418,7 @@ final class ActivityStack {
 
     final boolean resumeTopActivityLocked(ActivityRecord prev, Bundle options) {
 
-        mPm.cpuBoost(1500000);
+        mPm.cpuBoost(maxFreq);
 
         // Find the first activity that is not finishing.
         ActivityRecord next = topRunningActivityLocked(null);
@@ -2413,7 +2431,7 @@ final class ActivityStack {
 
         int err = ActivityManager.START_SUCCESS;
 
-        mPm.cpuBoost(1500000);
+        mPm.cpuBoost(maxFreq);
 
         ProcessRecord callerApp = null;
         if (caller != null) {

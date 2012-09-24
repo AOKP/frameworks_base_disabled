@@ -166,6 +166,7 @@ public class BluetoothService extends IBluetooth.Stub {
     private static String mDockAddress;
     private String mDockPin;
 
+    private Object mAllowConnectLock = new Object();
     private boolean mAllowConnect = true;
 
     private int mAdapterConnectionState = BluetoothAdapter.STATE_DISCONNECTED;
@@ -2483,7 +2484,7 @@ public class BluetoothService extends IBluetooth.Stub {
     }
 
     private void autoConnect() {
-        synchronized (this) {
+        synchronized (mAllowConnectLock) {
             if (!mAllowConnect) {
                 Log.d(TAG, "Not auto-connecting devices because of temporary BT on state.");
                 return;
@@ -2506,7 +2507,7 @@ public class BluetoothService extends IBluetooth.Stub {
     }
 
     public boolean notifyIncomingConnection(String address, boolean rejected) {
-        synchronized (this) {
+        synchronized (mAllowConnectLock) {
             if (!mAllowConnect) {
                 Log.d(TAG, "Not allowing incoming connection because of temporary BT on state.");
                 return false;
@@ -2533,7 +2534,7 @@ public class BluetoothService extends IBluetooth.Stub {
     }
 
     /*package*/ boolean notifyIncomingA2dpConnection(String address, boolean rejected) {
-        synchronized (this) {
+        synchronized (mAllowConnectLock) {
             if (!mAllowConnect) {
                 Log.d(TAG, "Not allowing a2dp connection because of temporary BT on state.");
                 return false;

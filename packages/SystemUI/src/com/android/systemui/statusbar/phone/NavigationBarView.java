@@ -102,6 +102,7 @@ public class NavigationBarView extends LinearLayout {
     final static String ACTION_HOME = "**home**";
     final static String ACTION_BACK = "**back**";
     final static String ACTION_SEARCH = "**search**";
+    final static String ACTION_SCREENSHOT = "**screenshot**";
     final static String ACTION_MENU = "**menu**";
     final static String ACTION_POWER = "**power**";
     final static String ACTION_NOTIFICATIONS = "**notifications**";
@@ -880,6 +881,8 @@ public class NavigationBarView extends LinearLayout {
                 return getResources().getDrawable(R.drawable.ic_sysbar_recent);
             } else if (uri.equals(ACTION_SEARCH)) {
                 return getResources().getDrawable(R.drawable.ic_sysbar_search);
+            } else if (uri.equals(ACTION_SCREENSHOT)) {
+                return getResources().getDrawable(R.drawable.ic_sysbar_screenshot);
             } else if (uri.equals(ACTION_MENU)) {
                 return getResources().getDrawable(R.drawable.ic_sysbar_menu_big);
             } else if (uri.equals(ACTION_IME)) {

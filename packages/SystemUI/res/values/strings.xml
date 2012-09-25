@@ -407,6 +407,8 @@
     <string name="toggle_tether">Tether</string>
     <string name="toggle_nfc">NFC</string>
     <string name="status_bar_settings_toggles">Toggles</string>
+    
+    <string name="toggle_navbar">Toggle NavBar</string>
 
     <!-- Label in drop down to identify brightness slider -->
     <string name="brightness_label">Brightness</string>

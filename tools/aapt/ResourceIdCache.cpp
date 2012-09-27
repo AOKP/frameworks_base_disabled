@@ -14,22 +14,29 @@ struct lutEntry {
     uint32_t resId;
 };
 
-// more than enough... uses about 100kb of memory
+// more than enough - wastes about 100kb of memory (ex strings)
 static const int lutCapacity = 4096;
-static struct lutEntry lut[lutCapacity];
+static struct lutEntry* lut = NULL;
 static int lutUsed = 0;
+
+static bool lutAlloc() {
+    if (lut == NULL) lut = new struct lutEntry[lutCapacity];
+    return (lut != NULL);
+}
 
 uint32_t ResourceIdCache::lookup(const String16& package,
                                  const String16& type,
                                  const String16& name,
                                  bool onlyPublic)
 {
+    if (!lutAlloc()) return 0;
+
     for (int i = 0; i < lutUsed; i++) {
         if (
             // name is most likely to be different
             (name == lut[i].name) &&
-            (package == lut[i].package) &&
             (type == lut[i].type) &&
+            (package == lut[i].package) &&
             (onlyPublic == lut[i].onlyPublic)
         ) {
             return lut[i].resId;
@@ -44,6 +51,8 @@ bool ResourceIdCache::store(const String16& package,
                             bool onlyPublic,
                             uint32_t resId)
 {
+    if (!lutAlloc()) return false;
+
     if (lutUsed < lutCapacity) {
         lut[lutUsed].package = String16(package);
         lut[lutUsed].type = String16(type);

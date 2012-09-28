@@ -28,7 +28,7 @@
     <com.android.internal.widget.multiwaveview.GlowPadView
         android:id="@+id/glow_pad_view"
         android:layout_width="wrap_content"
-        android:layout_height="370dip"
+        android:layout_height="390dip"
         android:layout_gravity="center_horizontal|bottom"
         android:gravity="center_horizontal|top"
 

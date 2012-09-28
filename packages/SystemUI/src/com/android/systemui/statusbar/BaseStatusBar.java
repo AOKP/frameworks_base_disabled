@@ -22,8 +22,10 @@ import android.app.ActivityManagerNative;
 import android.app.KeyguardManager;
 import android.app.Notification;
 import android.app.PendingIntent;
+import android.content.res.Configuration;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.database.ContentObserver;
@@ -85,6 +87,7 @@ public abstract class BaseStatusBar extends SystemUI implements
     protected static final int MSG_SHOW_INTRUDER = 1026;
     protected static final int MSG_HIDE_INTRUDER = 1027;
     private int mNavRingAmount;
+    private boolean mTabletui;
 
     protected static final boolean ENABLE_INTRUDERS = false;
 
@@ -188,6 +191,9 @@ public abstract class BaseStatusBar extends SystemUI implements
     public void start() {
         mDisplay = ((WindowManager)mContext.getSystemService(Context.WINDOW_SERVICE))
                 .getDefaultDisplay();
+
+        mTabletui = Settings.System.getBoolean(mContext.getContentResolver(),
+                        Settings.System.MODE_TABLET_UI, false);
 
         mNavRingAmount = Settings.System.getInt(mContext.getContentResolver(),
                          Settings.System.SYSTEMUI_NAVRING_AMOUNT, 1);
@@ -447,12 +453,22 @@ public abstract class BaseStatusBar extends SystemUI implements
         // Provide SearchPanel with a temporary parent to allow layout params to work.
         LinearLayout tmpRoot = new LinearLayout(mContext);
 
-        if (mNavRingAmount == 5 || mNavRingAmount == 4) {
-        mSearchPanelView = (SearchPanelView) LayoutInflater.from(mContext).inflate(
-                 R.layout.status_bar_search_panel_five, tmpRoot, false);
+        if ((screenLayout() == Configuration.SCREENLAYOUT_SIZE_XLARGE) || ((screenLayout() == Configuration.SCREENLAYOUT_SIZE_LARGE) && mTabletui)) {
+             if (mNavRingAmount == 5 || mNavRingAmount == 4) {
+                 mSearchPanelView = (SearchPanelView) LayoutInflater.from(mContext).inflate(
+                                     R.layout.status_bar_search_panel_left_five, tmpRoot, false);
+             } else {
+                 mSearchPanelView = (SearchPanelView) LayoutInflater.from(mContext).inflate(
+                                     R.layout.status_bar_search_panel_left, tmpRoot, false);
+             }
         } else {
-        mSearchPanelView = (SearchPanelView) LayoutInflater.from(mContext).inflate(
-                 R.layout.status_bar_search_panel, tmpRoot, false);
+             if (mNavRingAmount == 5 || mNavRingAmount == 4) {
+                 mSearchPanelView = (SearchPanelView) LayoutInflater.from(mContext).inflate(
+                                     R.layout.status_bar_search_panel_five, tmpRoot, false);
+             } else {
+                 mSearchPanelView = (SearchPanelView) LayoutInflater.from(mContext).inflate(
+                                     R.layout.status_bar_search_panel, tmpRoot, false);
+             }
         }
 
         mSearchPanelView.setOnTouchListener(
@@ -978,6 +994,12 @@ public abstract class BaseStatusBar extends SystemUI implements
     public boolean inKeyguardRestrictedInputMode() {
         KeyguardManager km = (KeyguardManager) mContext.getSystemService(Context.KEYGUARD_SERVICE);
         return km.inKeyguardRestrictedInputMode();
+    }
+
+    public int screenLayout() {
+        final int screenSize = Resources.getSystem().getConfiguration().screenLayout &
+                Configuration.SCREENLAYOUT_SIZE_MASK;
+        return screenSize;
     }
 
     public boolean isTablet() {

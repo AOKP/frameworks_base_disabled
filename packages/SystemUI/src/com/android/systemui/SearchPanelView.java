@@ -107,6 +107,7 @@ public class SearchPanelView extends FrameLayout implements
     private List<String> targetList;
 
     private int mNavRingAmount;
+    private boolean mTabletui;
 
     public SearchPanelView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
@@ -120,6 +121,9 @@ public class SearchPanelView extends FrameLayout implements
 
         mContentResolver = mContext.getContentResolver();
         mTargetObserver = new TargetObserver(new Handler());
+
+        mTabletui = Settings.System.getBoolean(mContext.getContentResolver(),
+                        Settings.System.MODE_TABLET_UI, false);
 
         mNavRingAmount = Settings.System.getInt(mContext.getContentResolver(),
                          Settings.System.SYSTEMUI_NAVRING_AMOUNT, 1);
@@ -159,7 +163,7 @@ public class SearchPanelView extends FrameLayout implements
                 || screenLayout() == Configuration.SCREENLAYOUT_SIZE_XLARGE) {
             targetListOffset = 0;
         } else {
-            if (isScreenPortrait() == true) {
+            if (isScreenPortrait() == true || mTabletui) {
                 targetListOffset = 0;
             } else {
                 targetListOffset = -2;
@@ -348,18 +352,28 @@ public class SearchPanelView extends FrameLayout implements
         int endPosOffset;
 
         if (screenLayout() == Configuration.SCREENLAYOUT_SIZE_XLARGE) {
-            startPosOffset = 1;
-            endPosOffset = 8;
+            startPosOffset = 0;
+            endPosOffset = 11;
         } else if (screenLayout() == Configuration.SCREENLAYOUT_SIZE_LARGE) {
-            if (mNavRingAmount == 4 || mNavRingAmount == 2) {
-            startPosOffset = 0;
-            endPosOffset = 1;
+            if (mTabletui) {
+                if (mNavRingAmount == 4 || mNavRingAmount == 2) {
+                    startPosOffset = 0;
+                    endPosOffset = 8;
+                } else {
+                    startPosOffset = 0;
+                    endPosOffset = 11;
+                }
             } else {
-            startPosOffset = 0;
-            endPosOffset = 3;
+                if (mNavRingAmount == 4 || mNavRingAmount == 2) {
+                    startPosOffset = 0;
+                    endPosOffset = 1;
+                } else {
+                    startPosOffset = 0;
+                    endPosOffset = 3;
+                }
             }
         } else {
-            if (isScreenPortrait() == true) {
+            if (isScreenPortrait() == true || mTabletui) {
                 if (mNavRingAmount == 4 || mNavRingAmount == 2) {
                 startPosOffset = 0;
                 endPosOffset = 1;

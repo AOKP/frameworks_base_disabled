@@ -2689,9 +2689,9 @@ public final class Settings {
          */
         public static final String POWER_DIALOG_SHOW_AIRPLANE_TOGGLE = "power_dialog_show_airplane_toggle";
 
-         /**
-          * Used to determine if the NavBar should be enabled on devices that do not
-          * otherwise have a NavBar
+        /**
+         * Used to determine if the NavBar should be enabled on devices that do not
+         * otherwise have a NavBar
          * @hide
          */
         public static final String NAVIGATION_BAR_SHOW = "navigation_bar_show";
@@ -2951,6 +2951,13 @@ public final class Settings {
          * @hide
          */
         public static final String CUSTOM_FLING_VELOCITY = "custom_fling_velocity";
+
+        /**
+         * Statusbar transparency value
+         * from 0% to 100%
+         * @hide
+         */
+        public static final String STATUS_BAR_TRANSPARENCY = "status_bar_transparency";
 
         /**
          * @hide

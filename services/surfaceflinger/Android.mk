@@ -2,21 +2,6 @@ LOCAL_PATH:= $(call my-dir)
 
 include $(CLEAR_VARS)
 
-ifeq ($(BOARD_HAVE_CODEC_SUPPORT),SAMSUNG_CODEC_SUPPORT)
-LOCAL_CFLAGS     += -DSAMSUNG_CODEC_SUPPORT
-endif
-
-ifeq ($(BOARD_FORCE_DITHERING),true)
-LOCAL_CFLAGS     += -DFORCE_DITHERING
-endif
-
-ifeq ($(MAKECMDGOALS), sdk_addon)
-ifeq ($(TARGET_PRODUCT), s3d)
-OMAP_ENHANCEMENT_S3D := true
-LOCAL_CPPFLAGS += -DOMAP_ENHANCEMENT_S3D
-endif
-endif
-
 LOCAL_SRC_FILES:= \
     Layer.cpp \
     LayerBase.cpp \
@@ -91,6 +76,17 @@ LOCAL_C_INCLUDES := \
 	$(call include-path-for, corecg graphics)
 
 LOCAL_C_INCLUDES += hardware/libhardware/modules/gralloc
+
+ifeq ($(BOARD_HAVE_CODEC_SUPPORT),SAMSUNG_CODEC_SUPPORT)
+LOCAL_CFLAGS += -DSAMSUNG_CODEC_SUPPORT
+endif
+
+ifeq ($(BOARD_HAVE_HDMI_SUPPORT),SAMSUNG_HDMI_SUPPORT)
+LOCAL_CFLAGS += -DSAMSUNG_HDMI_SUPPORT
+LOCAL_SHARED_LIBRARIES += libhdmiclient libTVOut
+LOCAL_C_INCLUDES += $(TARGET_HAL_PATH)/libhdmi/libhdmiservice
+LOCAL_C_INCLUDES += $(TARGET_HAL_PATH)/include
+endif
 
 ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
 ifeq ($(TARGET_HAVE_BYPASS),true)

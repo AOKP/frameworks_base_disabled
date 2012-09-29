@@ -52,7 +52,6 @@ MemoryHeapBase::MemoryHeapBase()
 MemoryHeapBase::MemoryHeapBase(size_t size, uint32_t flags, char const * name)
     : mFD(-1), mSize(0), mBase(MAP_FAILED), mFlags(flags),
       mDevice(0), mNeedUnmap(false)
-
 #ifndef BINDER_COMPAT
     , mOffset(0)
 #endif
@@ -95,7 +94,6 @@ MemoryHeapBase::MemoryHeapBase(const char* device, size_t size, uint32_t flags)
 MemoryHeapBase::MemoryHeapBase(int fd, size_t size, uint32_t flags, uint32_t offset)
     : mFD(-1), mSize(0), mBase(MAP_FAILED), mFlags(flags),
       mDevice(0), mNeedUnmap(false)
-
 #ifndef BINDER_COMPAT
     , mOffset(0)
 #endif
@@ -155,7 +153,6 @@ status_t MemoryHeapBase::mapfd(int fd, size_t size, uint32_t offset)
     }
     mFD = fd;
     mSize = size;
-
 #ifndef BINDER_COMPAT
     mOffset = offset;
 #endif

@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2009 The Android Open Source Project
- * Copyright (C) 2010-2011 Code Aurora Forum
+ * Copyright (C) 2010-2012 Code Aurora Forum
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,8 +29,9 @@
 #include "include/AACExtractor.h"
 #ifdef QCOM_HARDWARE
 #include "include/ExtendedExtractor.h"
+#else
+#include "include/AVIExtractor.h"
 #endif
-#include "include/WVMExtractor.h"
 
 #include <media/stagefright/MediaDefs.h>
 
@@ -79,7 +80,6 @@ bool DataSource::sniff(
     *mimeType = "";
     *confidence = 0.0f;
     meta->clear();
-
     Mutex::Autolock autoLock(gSnifferMutex);
     for (List<SnifferFunc>::iterator it = gSniffers.begin();
          it != gSniffers.end(); ++it) {
@@ -100,6 +100,7 @@ bool DataSource::sniff(
                 *meta = newMeta;
 #ifdef QCOM_HARDWARE
                 if(*confidence >= 0.6f) {
+
                     LOGV("Ignore other Sniffers - confidence = %f , mimeType = %s",*confidence,mimeType->string());
 
                     char value[PROPERTY_VALUE_MAX];
@@ -121,6 +122,7 @@ bool DataSource::sniff(
                             LOGV("Confidence of Extended sniffer greater than previous sniffer ");
                         }
                     }
+
                     break;
                 }
 #endif
@@ -174,6 +176,7 @@ void DataSource::RegisterDefaultSniffers() {
 #ifdef QCOM_HARDWARE
     ExtendedExtractor::RegisterSniffers();
 #endif
+
     char value[PROPERTY_VALUE_MAX];
     if (property_get("drm.service.enabled", value, NULL)
             && (!strcmp(value, "1") || !strcasecmp(value, "true"))) {

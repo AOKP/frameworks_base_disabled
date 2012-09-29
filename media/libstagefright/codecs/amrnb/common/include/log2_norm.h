@@ -85,7 +85,7 @@ extern "C"
     ; EXTERNAL VARIABLES REFERENCES
     ; Declare variables used in this module but defined elsewhere
     ----------------------------------------------------------------------------*/
-    extern const Word16 log2_tbl[];
+    extern Word16 log2_tbl[];
     /*----------------------------------------------------------------------------
     ; SIMPLE TYPEDEF'S
     ----------------------------------------------------------------------------*/

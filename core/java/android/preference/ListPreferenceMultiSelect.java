@@ -22,11 +22,16 @@ import android.content.DialogInterface;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 
+/**
+ * @hide
+ */
 public class ListPreferenceMultiSelect extends ListPreference {
 
     private static final String SEPARATOR = "OV=I=XseparatorX=I=VO";
 
     private boolean[] mClickedDialogEntryIndices;
+
+    private String mSummary;
 
     public ListPreferenceMultiSelect(Context context) {
         super(context);
@@ -101,6 +106,26 @@ public class ListPreferenceMultiSelect extends ListPreference {
             if (callChangeListener(val)) {
                 setValue(val);
             }
+        }
+    }
+
+    @Override
+    public CharSequence getSummary() {
+        final CharSequence entry = getEntry();
+        if (mSummary == null) {
+            return super.getSummary();
+        } else {
+            return mSummary;
+        }
+    }
+
+    @Override
+    public void setSummary(CharSequence summary) {
+        super.setSummary(summary);
+        if (summary == null && mSummary != null) {
+            mSummary = null;
+        } else if (summary != null && !summary.equals(mSummary)) {
+            mSummary = summary.toString();
         }
     }
 }

@@ -521,7 +521,7 @@ OSCL_EXPORT_REF Int PVMP4AudioDecodeFrame(
     per_chan_share_w_fxpCoef *pChLeftShare;  /* Helper pointer */
     per_chan_share_w_fxpCoef *pChRightShare; /* Helper pointer */
 
-    Int            status = -1;
+    Int            status = MP4AUDEC_SUCCESS;
 
 
     Bool empty_frame;
@@ -679,7 +679,7 @@ OSCL_EXPORT_REF Int PVMP4AudioDecodeFrame(
     leaveGetLoop = FALSE;
     empty_frame  = TRUE;
 
-    while (leaveGetLoop == FALSE)
+    while ((leaveGetLoop == FALSE) && (status == SUCCESS))
     {
         /* get audio syntactic element */
         id_syn_ele = (Int)get9_n_lessbits(LEN_SE_ID, &pVars->inputStream);
@@ -755,20 +755,19 @@ OSCL_EXPORT_REF Int PVMP4AudioDecodeFrame(
                 getfill(&pVars->inputStream);
 #endif
 
-                continue;
+                break;
 
             case ID_DSE:       /* Data Streaming element */
                 get_dse(pVars->share.data_stream_bytes,
                         &pVars->inputStream);
-                continue;
+                break;
 
             default: /* Unsupported element, including ID_LFE */
                 status = -1;  /* ERROR CODE needs to be updated */
                 break;
 
         } /* end switch() */
-        if(status != SUCCESS)
-            break;
+
     } /* end while() */
 
     byte_align(&pVars->inputStream);

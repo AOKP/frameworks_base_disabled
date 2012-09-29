@@ -303,6 +303,8 @@ public class WindowManagerService extends IWindowManager.Stub
 
     final boolean mLimitedAlphaCompositing;
 
+    final boolean mSetLandscapeProperty;
+
     final WindowManagerPolicy mPolicy = PolicyManager.makeNewWindowManager();
 
     final IActivityManager mActivityManager;
@@ -753,6 +755,8 @@ public class WindowManagerService extends IWindowManager.Stub
         mAllowBootMessages = showBootMsgs;
         mLimitedAlphaCompositing = context.getResources().getBoolean(
                 com.android.internal.R.bool.config_sf_limitedAlpha);
+        mSetLandscapeProperty = context.getResources().getBoolean(
+                com.android.internal.R.bool.config_setLandscapeProp);
 
         mPowerManager = pm;
         mPowerManager.setPolicy(mPolicy);
@@ -3788,35 +3792,30 @@ public class WindowManagerService extends IWindowManager.Stub
             // show a starting window -- the current effect (a full-screen
             // opaque starting window that fades away to the real contents
             // when it is ready) does not work for this.
-            try {
-                if (theme != 0) {
-                    AttributeCache.Entry ent = AttributeCache.instance().get(pkg, theme,
-                            com.android.internal.R.styleable.Window);
-                    if (ent.array.getBoolean(
-                            com.android.internal.R.styleable.Window_windowIsTranslucent, false)) {
+            if (theme != 0) {
+                AttributeCache.Entry ent = AttributeCache.instance().get(pkg, theme,
+                        com.android.internal.R.styleable.Window);
+                if (ent.array.getBoolean(
+                        com.android.internal.R.styleable.Window_windowIsTranslucent, false)) {
+                    return;
+                }
+                if (ent.array.getBoolean(
+                        com.android.internal.R.styleable.Window_windowIsFloating, false)) {
+                    return;
+                }
+                if (ent.array.getBoolean(
+                        com.android.internal.R.styleable.Window_windowShowWallpaper, false)) {
+                    if (mWallpaperTarget == null) {
+                        // If this theme is requesting a wallpaper, and the wallpaper
+                        // is not curently visible, then this effectively serves as
+                        // an opaque window and our starting window transition animation
+                        // can still work.  We just need to make sure the starting window
+                        // is also showing the wallpaper.
+                        windowFlags |= WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER;
+                    } else {
                         return;
-                    }
-                    if (ent.array.getBoolean(
-                            com.android.internal.R.styleable.Window_windowIsFloating, false)) {
-                        return;
-                    }
-                    if (ent.array.getBoolean(
-                            com.android.internal.R.styleable.Window_windowShowWallpaper, false)) {
-                        if (mWallpaperTarget == null) {
-                            // If this theme is requesting a wallpaper, and the wallpaper
-                            // is not curently visible, then this effectively serves as
-                            // an opaque window and our starting window transition animation
-                            // can still work.  We just need to make sure the starting window
-                            // is also showing the wallpaper.
-                            windowFlags |= WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER;
-                        } else {
-                            return;
-                        }
                     }
                 }
-            } catch (NullPointerException npe) {
-                // we failed but don't let that kill the server
-                return;
             }
 
             mStartingIconInTransition = true;
@@ -5050,6 +5049,11 @@ public class WindowManagerService extends IWindowManager.Stub
         SystemProperties.set(StrictMode.VISUAL_PROPERTY, value);
     }
 
+    public void setLandscapeProperty(String value) {
+        if (!mSetLandscapeProperty) return;
+        SystemProperties.set("sys.orientation.landscape", value);
+    }
+
     /**
      * Takes a snapshot of the screen.  In landscape mode this grabs the whole screen.
      * In portrait mode, it grabs the upper region of the screen based on the vertical dimension
@@ -6064,10 +6068,10 @@ public class WindowManagerService extends IWindowManager.Stub
         int orientation = Configuration.ORIENTATION_SQUARE;
         if (dw < dh) {
             orientation = Configuration.ORIENTATION_PORTRAIT;
-            SystemProperties.set("sys.orientation.landscape", "0");
+            setLandscapeProperty("0");
         } else if (dw > dh) {
             orientation = Configuration.ORIENTATION_LANDSCAPE;
-            SystemProperties.set("sys.orientation.landscape", "1");
+            setLandscapeProperty("1");
         }
         config.orientation = orientation;
 

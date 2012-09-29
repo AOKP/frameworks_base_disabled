@@ -346,9 +346,9 @@ static const CodecInfo kEncoderInfo[] = {
 
 #undef OPTIONAL
 
-#define CODEC_LOGI(x, ...) LOGI("[%s] " x, mComponentName, ##__VA_ARGS__)
-#define CODEC_LOGV(x, ...) LOGV("[%s] " x, mComponentName, ##__VA_ARGS__)
-#define CODEC_LOGE(x, ...) LOGE("[%s] " x, mComponentName, ##__VA_ARGS__)
+#define CODEC_LOGI(x, ...) LOGI("[%s] "x, mComponentName, ##__VA_ARGS__)
+#define CODEC_LOGV(x, ...) LOGV("[%s] "x, mComponentName, ##__VA_ARGS__)
+#define CODEC_LOGE(x, ...) LOGE("[%s] "x, mComponentName, ##__VA_ARGS__)
 
 struct OMXCodecObserver : public BnOMXObserver {
     OMXCodecObserver() {
@@ -2017,6 +2017,9 @@ status_t OMXCodec::setVideoOutputFormat(
     const size_t X = 64 * 8 * 1024;  // const size_t X = 64 * 1024;
 #else
     const size_t X = 64 * 1024;
+    if (def.nBufferSize < X) {
+        def.nBufferSize = X;
+    }
 #endif
 
     CHECK_EQ((int)def.eDomain, (int)OMX_PortDomainVideo);
@@ -6231,4 +6234,3 @@ void OMXCodec::setQCELPFormat(int32_t numChannels, int32_t sampleRate, int32_t b
 #endif
 
 }  // namespace android
-

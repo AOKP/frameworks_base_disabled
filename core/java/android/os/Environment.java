@@ -469,4 +469,3 @@ public class Environment {
         return path == null ? new File(defaultPath) : new File(path);
     }
 }
-

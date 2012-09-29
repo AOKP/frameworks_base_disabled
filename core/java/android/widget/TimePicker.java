@@ -212,7 +212,6 @@ public class TimePicker extends FrameLayout {
                     button.requestFocus();
                     mIsAm = !mIsAm;
                     updateAmPmControl();
-                    onTimeChanged();
                 }
             });
         } else {
@@ -227,7 +226,6 @@ public class TimePicker extends FrameLayout {
                     picker.requestFocus();
                     mIsAm = !mIsAm;
                     updateAmPmControl();
-                    onTimeChanged();
                 }
             });
             mAmPmSpinnerInput = (EditText) mAmPmSpinner.findViewById(R.id.numberpicker_input);

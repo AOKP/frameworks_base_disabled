@@ -35,9 +35,6 @@ struct DisplayInfo {
     float               density;
     float               xdpi;
     float               ydpi;
-#ifdef OMAP_ENHANCEMENT
-    uint32_t            maxTex;
-#endif
 };
 
 /* Display orientations as defined in Surface.java and ISurfaceComposer.h. */

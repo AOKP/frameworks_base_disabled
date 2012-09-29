@@ -189,8 +189,12 @@ public interface TelephonyProperties
     static final String PROPERTY_TEST_CSIM = "persist.radio.test-csim";
 
     /**
-     * Set to true to indicate a Motorola phone which supports the New Architecure
-     * for handling LTE/CDMA/GSM
+     * Ignore RIL_UNSOL_NITZ_TIME_RECEIVED completely, used for debugging/testing.
      */
-    static final String PROPERTY_MOTO_NEWARCH = "ro.ril.moto.newarch";
+    static final String PROPERTY_IGNORE_NITZ = "telephony.test.ignore.nitz";
+
+    /**
+     * Set to true to indicates support for simultaneous voice and data.
+     */
+    static final String PROPERTY_SVDATA = "ro.config.svlte1x";
 }

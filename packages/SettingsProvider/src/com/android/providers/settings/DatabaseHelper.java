@@ -1355,6 +1355,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     
             // Set default tty mode
             loadSetting(stmt, Settings.System.TTY_MODE, 0);
+
+            // Set default noise suppression value
+            loadSetting(stmt, Settings.System.NOISE_SUPPRESSION, 0);
     
             loadBooleanSetting(stmt, Settings.System.AIRPLANE_MODE_ON,
                     R.bool.def_airplane_mode_on);
@@ -1503,10 +1506,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             // Enable or disable Cell Broadcast SMS
             loadSetting(stmt, Settings.Secure.CDMA_CELL_BROADCAST_SMS,
                     RILConstants.CDMA_CELL_BROADCAST_SMS_DISABLED);
-    
-            // Set the preferred cdma subscription to 0 = Subscription from RUIM, when available
-            loadSetting(stmt, Settings.Secure.PREFERRED_CDMA_SUBSCRIPTION,
-                    RILConstants.PREFERRED_CDMA_SUBSCRIPTION);
     
             // Don't do this.  The SystemServer will initialize ADB_ENABLED from a
             // persistent system property instead.

@@ -1,6 +1,5 @@
 /*
  * Copyright (C) 2009 The Android Open Source Project
- * Copyright (c) 2012, Code Aurora Forum. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -139,7 +138,7 @@ struct AwesomeNativeWindowRenderer : public AwesomeRenderer {
         status_t err = mNativeWindow->queueBuffer(
                 mNativeWindow.get(), buffer->graphicBuffer().get());
         if (err != 0) {
-            ALOGE("queueBuffer failed with error %s (%d)", strerror(-err),
+            LOGE("queueBuffer failed with error %s (%d)", strerror(-err),
                     -err);
             return;
         }
@@ -283,7 +282,7 @@ void AwesomePlayer::setListener(const wp<MediaPlayerBase> &listener) {
 }
 
 void AwesomePlayer::setUID(uid_t uid) {
-    ALOGV("AwesomePlayer running on behalf of uid %d", uid);
+    LOGV("AwesomePlayer running on behalf of uid %d", uid);
 
     mUID = uid;
     mUIDValid = true;
@@ -316,9 +315,9 @@ status_t AwesomePlayer::setDataSource_l(
     }
 
     if (!(mFlags & INCOGNITO)) {
-        ALOGI("setDataSource_l('%s')", mUri.string());
+        LOGI("setDataSource_l('%s')", mUri.string());
     } else {
-        ALOGI("setDataSource_l(URL suppressed)");
+        LOGI("setDataSource_l(URL suppressed)");
     }
 
     // The actual work will be done during preparation in the call to
@@ -396,7 +395,7 @@ status_t AwesomePlayer::setDataSource_l(const sp<MediaExtractor> &extractor) {
         if (!meta->findInt32(kKeyBitRate, &bitrate)) {
             const char *mime;
             CHECK(meta->findCString(kKeyMIMEType, &mime));
-            ALOGV("track of type '%s' does not publish bitrate", mime);
+            LOGV("track of type '%s' does not publish bitrate", mime);
 
             totalBitRate = -1;
             break;
@@ -407,7 +406,7 @@ status_t AwesomePlayer::setDataSource_l(const sp<MediaExtractor> &extractor) {
 
     mBitrate = totalBitRate;
 
-    ALOGV("mBitrate = %lld bits/sec", mBitrate);
+    LOGV("mBitrate = %lld bits/sec", mBitrate);
 
     {
         Mutex::Autolock autoLock(mStatsLock);
@@ -441,12 +440,6 @@ status_t AwesomePlayer::setDataSource_l(const sp<MediaExtractor> &extractor) {
                 mDisplayWidth = displayWidth;
                 mDisplayHeight = displayHeight;
             }
-#ifdef OMAP_ENHANCEMENT
-            else{
-                success=meta->findInt32(kKeyWidth, &mDisplayWidth);
-                success=meta->findInt32(kKeyHeight, &mDisplayHeight);
-            }
-#endif
 
             {
                 Mutex::Autolock autoLock(mStatsLock);
@@ -525,7 +518,7 @@ void AwesomePlayer::reset_l() {
     if (mFlags & PREPARING) {
         modifyFlags(PREPARE_CANCELLED, SET);
         if (mConnectingDataSource != NULL) {
-            ALOGI("interrupting the connection process");
+            LOGI("interrupting the connection process");
             mConnectingDataSource->disconnect();
         }
 
@@ -682,7 +675,7 @@ void AwesomePlayer::onVideoLagUpdate() {
     int64_t videoLateByUs = audioTimeUs - mVideoTimeUs;
 
     if (!(mFlags & VIDEO_AT_EOS) && videoLateByUs > 300000ll) {
-        ALOGV("video late by %lld ms.", videoLateByUs / 1000ll);
+        LOGV("video late by %lld ms.", videoLateByUs / 1000ll);
 
         notifyListener_l(
                 MEDIA_INFO,
@@ -698,20 +691,19 @@ void AwesomePlayer::onBufferingUpdate() {
     if (!mBufferingEventPending) {
         return;
     }
-    bool cacheFull = false;
+    mBufferingEventPending = false;
 
     if (mCachedSource != NULL) {
         status_t finalStatus;
         size_t cachedDataRemaining = mCachedSource->approxDataRemaining(&finalStatus);
         bool eos = (finalStatus != OK);
-        cacheFull = mCachedSource->isCacheFull();
 
         if (eos) {
             if (finalStatus == ERROR_END_OF_STREAM) {
                 notifyListener_l(MEDIA_BUFFERING_UPDATE, 100);
             }
             if (mFlags & PREPARING) {
-                ALOGV("cache has reached EOS, prepare is done.");
+                LOGV("cache has reached EOS, prepare is done.");
                 finishAsyncPrepare_l();
             }
         } else {
@@ -732,22 +724,22 @@ void AwesomePlayer::onBufferingUpdate() {
 
                 if ((mFlags & PLAYING) && !eos
                         && (cachedDataRemaining < kLowWaterMarkBytes)) {
-                    ALOGI("cache is running low (< %d) , pausing.",
+                    LOGI("cache is running low (< %d) , pausing.",
                          kLowWaterMarkBytes);
                     modifyFlags(CACHE_UNDERRUN, SET);
                     pause_l();
                     ensureCacheIsFetching_l();
                     sendCacheStats();
                     notifyListener_l(MEDIA_INFO, MEDIA_INFO_BUFFERING_START);
-                } else if (eos || cachedDataRemaining > kHighWaterMarkBytes || cacheFull) {
+                } else if (eos || cachedDataRemaining > kHighWaterMarkBytes) {
                     if (mFlags & CACHE_UNDERRUN) {
-                        ALOGI("cache has filled up (> %d), resuming.",
+                        LOGI("cache has filled up (> %d), resuming.",
                              kHighWaterMarkBytes);
                         modifyFlags(CACHE_UNDERRUN, CLEAR);
                         play_l();
                         notifyListener_l(MEDIA_INFO, MEDIA_INFO_BUFFERING_END);
                     } else if (mFlags & PREPARING) {
-                        ALOGV("cache has filled up (> %d), prepare is done",
+                        LOGV("cache has filled up (> %d), prepare is done",
                              kHighWaterMarkBytes);
                         finishAsyncPrepare_l();
                     }
@@ -767,7 +759,7 @@ void AwesomePlayer::onBufferingUpdate() {
                 notifyListener_l(MEDIA_BUFFERING_UPDATE, 100);
             }
             if (mFlags & PREPARING) {
-                ALOGV("cache has reached EOS, prepare is done.");
+                LOGV("cache has reached EOS, prepare is done.");
                 finishAsyncPrepare_l();
             }
         } else {
@@ -783,34 +775,33 @@ void AwesomePlayer::onBufferingUpdate() {
     int64_t cachedDurationUs;
     bool eos;
     if (getCachedDuration_l(&cachedDurationUs, &eos)) {
-        ALOGV("cachedDurationUs = %.2f secs, eos=%d",
+        LOGV("cachedDurationUs = %.2f secs, eos=%d",
              cachedDurationUs / 1E6, eos);
 
         if ((mFlags & PLAYING) && !eos
                 && (cachedDurationUs < kLowWaterMarkUs)) {
-            ALOGI("cache is running low (%.2f secs) , pausing.",
+            LOGI("cache is running low (%.2f secs) , pausing.",
                  cachedDurationUs / 1E6);
             modifyFlags(CACHE_UNDERRUN, SET);
             pause_l();
             ensureCacheIsFetching_l();
             sendCacheStats();
             notifyListener_l(MEDIA_INFO, MEDIA_INFO_BUFFERING_START);
-        } else if (eos || cachedDurationUs > kHighWaterMarkUs || cacheFull) {
+        } else if (eos || cachedDurationUs > kHighWaterMarkUs) {
             if (mFlags & CACHE_UNDERRUN) {
-                ALOGI("cache has filled up (%.2f secs), resuming.",
+                LOGI("cache has filled up (%.2f secs), resuming.",
                      cachedDurationUs / 1E6);
                 modifyFlags(CACHE_UNDERRUN, CLEAR);
                 play_l();
                 notifyListener_l(MEDIA_INFO, MEDIA_INFO_BUFFERING_END);
             } else if (mFlags & PREPARING) {
-                ALOGV("cache has filled up (%.2f secs), prepare is done",
+                LOGV("cache has filled up (%.2f secs), prepare is done",
                      cachedDurationUs / 1E6);
                 finishAsyncPrepare_l();
             }
         }
     }
 
-    mBufferingEventPending = false;
     postBufferingEvent_l();
 }
 
@@ -836,7 +827,7 @@ void AwesomePlayer::onStreamDone() {
     mStreamDoneEventPending = false;
 
     if (mStreamDoneStatus != ERROR_END_OF_STREAM) {
-        ALOGV("MEDIA_ERROR %d", mStreamDoneStatus);
+        LOGV("MEDIA_ERROR %d", mStreamDoneStatus);
 
         notifyListener_l(
                 MEDIA_ERROR, MEDIA_ERROR_UNKNOWN, mStreamDoneStatus);
@@ -874,7 +865,7 @@ void AwesomePlayer::onStreamDone() {
             }
         }
     } else {
-        ALOGV("MEDIA_PLAYBACK_COMPLETE");
+        LOGV("MEDIA_PLAYBACK_COMPLETE");
         notifyListener_l(MEDIA_PLAYBACK_COMPLETE);
 
         pause_l(true /* at eos */);
@@ -1096,20 +1087,20 @@ void AwesomePlayer::notifyVideoSize_l() {
         cropRight = width - 1;
         cropBottom = height - 1;
 
-        ALOGV("got dimensions only %d x %d", width, height);
+        LOGV("got dimensions only %d x %d", width, height);
     } else {
-        ALOGV("got crop rect %d, %d, %d, %d",
+        LOGV("got crop rect %d, %d, %d, %d",
              cropLeft, cropTop, cropRight, cropBottom);
     }
 
     int32_t displayWidth;
     if (meta->findInt32(kKeyDisplayWidth, &displayWidth)) {
-        ALOGV("Display width changed (%d=>%d)", mDisplayWidth, displayWidth);
+        LOGV("Display width changed (%d=>%d)", mDisplayWidth, displayWidth);
         mDisplayWidth = displayWidth;
     }
     int32_t displayHeight;
     if (meta->findInt32(kKeyDisplayHeight, &displayHeight)) {
-        ALOGV("Display height changed (%d=>%d)", mDisplayHeight, displayHeight);
+        LOGV("Display height changed (%d=>%d)", mDisplayHeight, displayHeight);
         mDisplayHeight = displayHeight;
     }
 
@@ -1290,7 +1281,7 @@ status_t AwesomePlayer::setNativeWindow_l(const sp<ANativeWindow> &native) {
         return OK;
     }
 
-    ALOGV("attempting to reconfigure to use new surface");
+    LOGV("attempting to reconfigure to use new surface");
 
     bool wasPlaying = (mFlags & PLAYING) != 0;
 
@@ -1302,7 +1293,7 @@ status_t AwesomePlayer::setNativeWindow_l(const sp<ANativeWindow> &native) {
     status_t err = initVideoDecoder();
 
     if (err != OK) {
-        ALOGE("failed to reinstantiate video decoder after surface change.");
+        LOGE("failed to reinstantiate video decoder after surface change.");
         return err;
     }
 
@@ -1370,9 +1361,6 @@ status_t AwesomePlayer::seekTo(int64_t timeUs) {
     if (mExtractorFlags & MediaExtractor::CAN_SEEK) {
         Mutex::Autolock autoLock(mLock);
         return seekTo_l(timeUs);
-    }else {
-        notifyListener_l(MEDIA_SEEK_COMPLETE);
-        mSeekNotificationSent = true;
     }
 
     return OK;
@@ -1436,7 +1424,7 @@ status_t AwesomePlayer::seekTo_l(int64_t timeUs) {
     }
 
     if (!(mFlags & PLAYING)) {
-        ALOGV("seeking while paused, sending SEEK_COMPLETE notification"
+        LOGV("seeking while paused, sending SEEK_COMPLETE notification"
              " immediately.");
 
         notifyListener_l(MEDIA_SEEK_COMPLETE);
@@ -1693,7 +1681,7 @@ void AwesomePlayer::finishSeekIfNecessary(int64_t videoTimeUs) {
     }
 
     if (mAudioPlayer != NULL) {
-        ALOGV("seeking audio to %lld us (%.2f secs).", videoTimeUs, videoTimeUs / 1E6);
+        LOGV("seeking audio to %lld us (%.2f secs).", videoTimeUs, videoTimeUs / 1E6);
 
         // If we don't have a video time, seek audio to the originally
         // requested seek time instead.
@@ -1726,7 +1714,6 @@ void AwesomePlayer::finishSeekIfNecessary(int64_t videoTimeUs) {
 
 void AwesomePlayer::onVideoEvent() {
     Mutex::Autolock autoLock(mLock);
-    int mAudioSourcePaused = false;
     if (!mVideoEventPending) {
         // The event has been cancelled in reset_l() but had already
         // been scheduled for execution at that time.
@@ -1756,14 +1743,13 @@ void AwesomePlayer::onVideoEvent() {
                 modifyFlags(AUDIO_RUNNING, CLEAR);
             }
             mAudioSource->pause();
-            mAudioSourcePaused = true;
         }
     }
 
     if (!mVideoBuffer) {
         MediaSource::ReadOptions options;
         if (mSeeking != NO_SEEK) {
-            ALOGV("seeking to %lld us (%.2f secs)", mSeekTimeUs, mSeekTimeUs / 1E6);
+            LOGV("seeking to %lld us (%.2f secs)", mSeekTimeUs, mSeekTimeUs / 1E6);
 
             options.setSeekTo(
                     mSeekTimeUs,
@@ -1779,7 +1765,7 @@ void AwesomePlayer::onVideoEvent() {
                 CHECK(mVideoBuffer == NULL);
 
                 if (err == INFO_FORMAT_CHANGED) {
-                    ALOGV("VideoSource signalled format change.");
+                    LOGV("VideoSource signalled format change.");
 
                     notifyVideoSize_l();
 
@@ -1794,14 +1780,10 @@ void AwesomePlayer::onVideoEvent() {
                 // a seek request pending that needs to be applied
                 // to the audio track.
                 if (mSeeking != NO_SEEK) {
-                    ALOGV("video stream ended while seeking!");
+                    LOGV("video stream ended while seeking!");
                 }
                 finishSeekIfNecessary(-1);
 
-                if (mAudioSourcePaused) {
-                    mAudioSource->start();
-                    mAudioSourcePaused = false;
-                }
                 if (mAudioPlayer != NULL
                         && !(mFlags & (AUDIO_RUNNING | SEEK_PREVIEW))) {
                     startAudioPlayer_l();
@@ -1837,7 +1819,7 @@ void AwesomePlayer::onVideoEvent() {
 
     if (mSeeking == SEEK_VIDEO_ONLY) {
         if (mSeekTimeUs > timeUs) {
-            ALOGI("XXX mSeekTimeUs = %lld us, timeUs = %lld us",
+            LOGI("XXX mSeekTimeUs = %lld us, timeUs = %lld us",
                  mSeekTimeUs, timeUs);
         }
     }
@@ -1850,14 +1832,10 @@ void AwesomePlayer::onVideoEvent() {
     SeekType wasSeeking = mSeeking;
     finishSeekIfNecessary(timeUs);
 
-    if (mAudioSourcePaused) {
-        mAudioSource->start();
-        mAudioSourcePaused = false;
-    }
     if (mAudioPlayer != NULL && !(mFlags & (AUDIO_RUNNING | SEEK_PREVIEW))) {
         status_t err = startAudioPlayer_l();
         if (err != OK) {
-            ALOGE("Starting the audio player failed w/ err %d", err);
+            LOGE("Starting the audio player failed w/ err %d", err);
             return;
         }
     }
@@ -1896,7 +1874,7 @@ void AwesomePlayer::onVideoEvent() {
         latenessUs = nowUs - timeUs;
 
         if (latenessUs > 0) {
-            ALOGI("after SEEK_VIDEO_ONLY we're late by %.2f secs", latenessUs / 1E6);
+            LOGI("after SEEK_VIDEO_ONLY we're late by %.2f secs", latenessUs / 1E6);
         }
     }
 
@@ -1926,7 +1904,7 @@ void AwesomePlayer::onVideoEvent() {
 
         if (latenessUs > 40000) {
             // We're more than 40ms late.
-            ALOGV("we're late by %lld us (%.2f secs)",
+            LOGV("we're late by %lld us (%.2f secs)",
                  latenessUs, latenessUs / 1E6);
 
             if (!(mFlags & SLOW_DECODER_HACK)
@@ -2191,7 +2169,7 @@ status_t AwesomePlayer::finishSetDataSource_l() {
         if (err != OK) {
             mConnectingDataSource.clear();
 
-            ALOGI("mConnectingDataSource->connect() returned %d", err);
+            LOGI("mConnectingDataSource->connect() returned %d", err);
             return err;
         }
 
@@ -2237,9 +2215,9 @@ status_t AwesomePlayer::finishSetDataSource_l() {
 
                 mLock.unlock();
 
-                // Initially make sure we have at least 128 bytes for the sniff
+                // Initially make sure we have at least 192 KB for the sniff
                 // to complete without blocking.
-                static const size_t kMinBytesForSniffing = 128;
+                static const size_t kMinBytesForSniffing = 192 * 1024;
 
                 off64_t metaDataSize = -1ll;
                 for (;;) {
@@ -2254,7 +2232,7 @@ status_t AwesomePlayer::finishSetDataSource_l() {
                         break;
                     }
 
-                    ALOGV("now cached %d bytes of data", cachedDataRemaining);
+                    LOGV("now cached %d bytes of data", cachedDataRemaining);
 
                     if (metaDataSize < 0
                             && cachedDataRemaining >= kMinBytesForSniffing) {
@@ -2279,7 +2257,7 @@ status_t AwesomePlayer::finishSetDataSource_l() {
                         }
 
                         CHECK_GE(metaDataSize, 0ll);
-                        ALOGV("metaDataSize = %lld bytes", metaDataSize);
+                        LOGV("metaDataSize = %lld bytes", metaDataSize);
                     }
 
                     usleep(200000);
@@ -2289,7 +2267,7 @@ status_t AwesomePlayer::finishSetDataSource_l() {
             }
 
             if (mFlags & PREPARE_CANCELLED) {
-                ALOGI("Prepare cancelled while waiting for initial cache fill.");
+                LOGI("Prepare cancelled while waiting for initial cache fill.");
                 return UNKNOWN_ERROR;
             }
         }
@@ -2371,7 +2349,7 @@ void AwesomePlayer::onPrepareAsyncEvent() {
     Mutex::Autolock autoLock(mLock);
 
     if (mFlags & PREPARE_CANCELLED) {
-        ALOGI("prepare was cancelled before doing anything");
+        LOGI("prepare was cancelled before doing anything");
         abortPrepare(UNKNOWN_ERROR);
         return;
     }
@@ -2406,16 +2384,6 @@ void AwesomePlayer::onPrepareAsyncEvent() {
     modifyFlags(PREPARING_CONNECTED, SET);
 
     if (isStreamingHTTP()) {
-
-        //Set the max interleaving offset for HTTP Caching source.
-        //This is required only for clips with audio & video
-        if (mCachedSource != NULL && mVideoSource != NULL && mAudioSource != NULL) {
-            int64_t bitrate = 0;
-            if( getBitrate( &bitrate ) ) {
-                //considering that Audio Video can be apart by 0.3 secs
-                mCachedSource->setAVInterleavingOffset( bitrate/3 );
-            }
-        }
         postBufferingEvent_l();
     } else {
         finishAsyncPrepare_l();
@@ -2482,7 +2450,7 @@ status_t AwesomePlayer::setParameter(int key, const Parcel &request) {
 status_t AwesomePlayer::setCacheStatCollectFreq(const Parcel &request) {
     if (mCachedSource != NULL) {
         int32_t freqMs = request.readInt32();
-        ALOGD("Request to keep cache stats in the past %d ms",
+        LOGD("Request to keep cache stats in the past %d ms",
             freqMs);
         return mCachedSource->setCacheStatCollectFreq(freqMs);
     }

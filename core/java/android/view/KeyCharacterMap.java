@@ -130,6 +130,18 @@ public class KeyCharacterMap {
      */
     public static final char VOICE_INPUT = '\uEF06';
 
+    /*
+     * Private use character denoting a .com suffix
+     * @hide
+     */
+    public static final char DOT_COM_INPUT = '\uEF03';
+
+    /**
+     * Private use character denoting a www. prefix
+     * @hide
+     */
+    public static final char DOT_WWW_INPUT = '\uEF04';
+
     /**
      * Modifier keys may be chorded with character keys.
      *

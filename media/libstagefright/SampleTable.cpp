@@ -347,7 +347,7 @@ status_t SampleTable::setTimeToSampleParams(
 
 status_t SampleTable::setCompositionTimeToSampleParams(
         off64_t data_offset, size_t data_size) {
-    ALOGI("There are reordered frames present.");
+    LOGI("There are reordered frames present.");
 
     if (mCompositionTimeDeltaEntries != NULL || data_size < 8) {
         return ERROR_MALFORMED;
@@ -415,7 +415,7 @@ status_t SampleTable::setSyncSampleParams(off64_t data_offset, size_t data_size)
     mNumSyncSamples = U32_AT(&header[4]);
 
     if (mNumSyncSamples < 2) {
-        ALOGV("Table of sync samples is empty or has only a single entry!");
+        LOGV("Table of sync samples is empty or has only a single entry!");
     }
 
     mSyncSamples = new uint32_t[mNumSyncSamples];
@@ -631,7 +631,7 @@ status_t SampleTable::findSyncSampleNear(
 
     if (left == mNumSyncSamples) {
         if (flags == kFlagAfter) {
-            ALOGE("tried to find a sync frame after the last one: %d", left);
+            LOGE("tried to find a sync frame after the last one: %d", left);
             return ERROR_OUT_OF_RANGE;
         }
     }

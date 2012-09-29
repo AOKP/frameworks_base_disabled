@@ -470,4 +470,3 @@ void OMX::invalidateNodeID_l(node_id node) {
 }
 
 }  // namespace android
-

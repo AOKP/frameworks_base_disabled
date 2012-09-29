@@ -604,7 +604,7 @@ void SimpleSoftOMXComponent::checkTransitions() {
 
         if (port->mTransition == PortInfo::DISABLING) {
             if (port->mBuffers.empty()) {
-                ALOGV("Port %d now disabled.", i);
+                LOGV("Port %d now disabled.", i);
 
                 port->mTransition = PortInfo::NONE;
                 notify(OMX_EventCmdComplete, OMX_CommandPortDisable, i, NULL);
@@ -613,7 +613,7 @@ void SimpleSoftOMXComponent::checkTransitions() {
             }
         } else if (port->mTransition == PortInfo::ENABLING) {
             if (port->mDef.bPopulated == OMX_TRUE) {
-                ALOGV("Port %d now enabled.", i);
+                LOGV("Port %d now enabled.", i);
 
                 port->mTransition = PortInfo::NONE;
                 port->mDef.bEnabled = OMX_TRUE;

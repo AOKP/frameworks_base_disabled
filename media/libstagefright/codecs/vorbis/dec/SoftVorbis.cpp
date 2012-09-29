@@ -353,21 +353,21 @@ void SoftVorbis::onQueueFilled(OMX_U32 portIndex) {
 
         int err = vorbis_dsp_synthesis(mState, &pack, 1);
         if (err != 0) {
-            ALOGW("vorbis_dsp_synthesis returned %d", err);
+            LOGW("vorbis_dsp_synthesis returned %d", err);
         } else {
             numFrames = vorbis_dsp_pcmout(
                     mState, (int16_t *)outHeader->pBuffer,
                     kMaxNumSamplesPerBuffer);
 
             if (numFrames < 0) {
-                ALOGE("vorbis_dsp_pcmout returned %d", numFrames);
+                LOGE("vorbis_dsp_pcmout returned %d", numFrames);
                 numFrames = 0;
             }
         }
 
         if (mNumFramesLeftOnPage >= 0) {
             if (numFrames > mNumFramesLeftOnPage) {
-                ALOGV("discarding %d frames at end of page",
+                LOGV("discarding %d frames at end of page",
                      numFrames - mNumFramesLeftOnPage);
                 numFrames = mNumFramesLeftOnPage;
             }

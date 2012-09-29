@@ -18,7 +18,6 @@
 #define ANDROID_NATIVE_WINDOW_H
 
 #include <android/rect.h>
-#include <system/window.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -32,6 +31,9 @@ enum {
     WINDOW_FORMAT_RGBX_8888          = 2,
     WINDOW_FORMAT_RGB_565            = 4,
 };
+
+struct ANativeWindow;
+typedef struct ANativeWindow ANativeWindow;
 
 typedef struct ANativeWindow_Buffer {
     // The number of pixels that are show horizontally.
@@ -49,7 +51,7 @@ typedef struct ANativeWindow_Buffer {
 
     // The actual bits.
     void* bits;
-
+    
     // Do not touch.
     uint32_t reserved[6];
 } ANativeWindow_Buffer;

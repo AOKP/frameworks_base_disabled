@@ -115,6 +115,9 @@ private:
 #endif
     mutable bool        mRealHeap;
     mutable Mutex       mLock;
+#ifdef QCOM_HARDWARE
+    mutable int         mIonFd;
+#endif
 };
 
 // ----------------------------------------------------------------------------
@@ -235,12 +238,15 @@ status_t BnMemory::onTransact(
 
 BpMemoryHeap::BpMemoryHeap(const sp<IBinder>& impl)
     : BpInterface<IMemoryHeap>(impl),
-    mHeapId(-1), mBase(MAP_FAILED), mSize(0), mFlags(0),
+        mHeapId(-1), mBase(MAP_FAILED), mSize(0), mFlags(0),
 #ifndef BINDER_COMPAT
         mOffset(0),
 #endif
         mRealHeap(false)
 {
+#ifdef QCOM_HARDWARE
+    mIonFd = open("/dev/ion", O_RDONLY);
+#endif
 }
 
 BpMemoryHeap::~BpMemoryHeap() {
@@ -267,6 +273,10 @@ BpMemoryHeap::~BpMemoryHeap() {
             free_heap(binder);
         }
     }
+#ifdef QCOM_HARDWARE
+    if (mIonFd > 0)
+        close(mIonFd);
+#endif
 }
 
 void BpMemoryHeap::assertMapped() const
@@ -390,7 +400,6 @@ status_t BnMemoryHeap::onTransact(
             reply->writeFileDescriptor(getHeapID());
             reply->writeInt32(getSize());
             reply->writeInt32(getFlags());
-
 #ifndef BINDER_COMPAT
             reply->writeInt32(getOffset());
 #endif

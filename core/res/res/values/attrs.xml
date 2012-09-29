@@ -1497,9 +1497,9 @@
         <enum name="KEYCODE_CALENDAR" value="208" />
         <enum name="KEYCODE_MUSIC" value="209" />
         <enum name="KEYCODE_CALCULATOR" value="210" />
-        <enum name="KEYCODE_TOGGLE_WIFI" value="211" />
-        <enum name="KEYCODE_TOGGLE_BT" value="212" />
-        <enum name="KEYCODE_TOGGLE_TOUCHPAD" value="213" />
+        <enum name="KEYCODE_TOGGLE_WIFI" value="227" />
+        <enum name="KEYCODE_TOGGLE_BT" value="282" />
+        <enum name="KEYCODE_TOGGLE_TOUCHPAD" value="229" />
         <enum name="KEYCODE_BRIGHTNESS_DOWN" value="214" />
         <enum name="KEYCODE_BRIGHTNESS_UP" value="215" />
         <enum name="KEYCODE_BRIGHTNESS_AUTO" value="216" />
@@ -3030,11 +3030,7 @@
              inputType attributes are found,  the inputType flags will override the value of
              singleLine.) } -->
         <attr name="singleLine" format="boolean" />
-        <!-- Specifies whether the widget is enabled. The interpretation of the enabled state varies by subclass.
-             For example, a non-enabled EditText prevents the user from editing the contained text, and
-             a non-enabled Button prevents the user from tapping the button. 
-             The appearance of enabled and non-enabled widgets may differ, if the drawables referenced
-             from evaluating state_enabled differ. -->
+        <!-- Specifies whether the TextView is enabled or not. {@deprecated Use state_enabled instead}. -->
         <attr name="enabled" format="boolean" />
         <!-- If the text is selectable, select it all when the view takes
              focus instead of moving the cursor to the start or end. -->
@@ -3065,7 +3061,7 @@
             <!-- Input is numeric. -->
             <flag name="integer" value="0x01" />
             <!-- Input is numeric, with sign allowed. -->
-            <flag name="signed" value="0x03" />
+            <flag name="signed" value="0x003" />
             <!-- Input is numeric, with decimals allowed. -->
             <flag name="decimal" value="0x05" />
         </attr>

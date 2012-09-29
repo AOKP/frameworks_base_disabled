@@ -41,12 +41,10 @@
 
 #ifdef QCOM_HARDWARE
 #include <qcom_ui.h>
+#define SHIFT_SRC_TRANSFORM 4
 #endif
 
 #define DEBUG_RESIZE    0
-#ifdef QCOM_HARDWARE
-#define SHIFT_SRC_TRANSFORM 4
-#endif
 
 namespace android {
 
@@ -66,11 +64,7 @@ Layer::Layer(SurfaceFlinger* flinger,
         mFormat(PIXEL_FORMAT_NONE),
         mGLExtensions(GLExtensions::getInstance()),
         mOpaqueLayer(true),
-#ifdef FORCE_DITHERING
-        mNeedsDithering(true),
-#else
         mNeedsDithering(false),
-#endif
         mSecure(false),
 #ifdef QCOM_HARDWARE
         mLayerQcomFlags(0),

@@ -41,12 +41,12 @@ public class WimaxHelper {
     private static DexClassLoader sWimaxClassLoader;
     private static String sWimaxManagerClassname, sIsWimaxEnabledMethodname,
                           sSetWimaxEnabledMethodname, sGetWimaxStateMethodname;
-    
+
     public static boolean isWimaxSupported(Context context) {
         return context.getResources().getBoolean(
                 com.android.internal.R.bool.config_wimaxEnabled);
     }
-    
+
     public static DexClassLoader getWimaxClassLoader(Context context) {
         if (isWimaxSupported(context)) {
             if (sWimaxClassLoader == null) {
@@ -79,10 +79,10 @@ public class WimaxHelper {
         }
         return null;
     }
-    
+
     public static Object createWimaxService(Context context, Handler handler) {
         Object controller = null;
-        
+
         try {
             DexClassLoader wimaxClassLoader = getWimaxClassLoader(context);
             if (sWimaxManagerClassname.equals(WIMAX_CONTROLLER_CLASSNAME)) {
@@ -173,7 +173,7 @@ public class WimaxHelper {
         }
         return ret;
     }
-    
+
     private static Object getWimaxInfo(Context context) {
         Object wimaxInfo = null;
         try {

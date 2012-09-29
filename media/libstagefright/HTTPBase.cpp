@@ -111,11 +111,11 @@ status_t HTTPBase::setBandwidthStatCollectFreq(int32_t freqMs) {
     if (freqMs < kMinBandwidthCollectFreqMs
             || freqMs > kMaxBandwidthCollectFreqMs) {
 
-        ALOGE("frequency (%d ms) is out of range [1000, 60000]", freqMs);
+        LOGE("frequency (%d ms) is out of range [1000, 60000]", freqMs);
         return BAD_VALUE;
     }
 
-    ALOGI("frequency set to %d ms", freqMs);
+    LOGI("frequency set to %d ms", freqMs);
     mBandWidthCollectFreqMs = freqMs;
     return OK;
 }
@@ -139,7 +139,7 @@ bool HTTPBase::getUID(uid_t *uid) const {
 void HTTPBase::RegisterSocketUserTag(int sockfd, uid_t uid, uint32_t kTag) {
     int res = qtaguid_tagSocket(sockfd, kTag, uid);
     if (res != 0) {
-        ALOGE("Failed tagging socket %d for uid %d (My UID=%d)", sockfd, uid, geteuid());
+        LOGE("Failed tagging socket %d for uid %d (My UID=%d)", sockfd, uid, geteuid());
     }
 }
 
@@ -147,7 +147,7 @@ void HTTPBase::RegisterSocketUserTag(int sockfd, uid_t uid, uint32_t kTag) {
 void HTTPBase::UnRegisterSocketUserTag(int sockfd) {
     int res = qtaguid_untagSocket(sockfd);
     if (res != 0) {
-        ALOGE("Failed untagging socket %d (My UID=%d)", sockfd, geteuid());
+        LOGE("Failed untagging socket %d (My UID=%d)", sockfd, geteuid());
     }
 }
 

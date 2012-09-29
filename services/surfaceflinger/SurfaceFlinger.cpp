@@ -276,9 +276,6 @@ status_t SurfaceFlinger::readyToRun()
     dcblk->ydpi         = hw.getDpiY();
     dcblk->fps          = hw.getRefreshRate();
     dcblk->density      = hw.getDensity();
-#ifdef OMAP_ENHANCEMENT
-    dcblk->maxTex       = hw.getMaxTextureSize();
-#endif
 
     // Initialize OpenGL|ES
     glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
@@ -286,11 +283,7 @@ status_t SurfaceFlinger::readyToRun()
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnable(GL_SCISSOR_TEST);
     glShadeModel(GL_FLAT);
-#ifdef FORCE_DITHERING
-    glEnable(GL_DITHER);
-#else
     glDisable(GL_DITHER);
-#endif
     glDisable(GL_CULL_FACE);
 
     const uint16_t g0 = pack565(0x0F,0x1F,0x0F);
@@ -2287,8 +2280,13 @@ status_t SurfaceFlinger::electronBeamOnAnimationImplLocked()
         hw.flip(screenBounds);
     }
 
-    nbFrames = 4;
     v_stretch vverts(hw_w, hw_h);
+
+    glMatrixMode(GL_TEXTURE);
+    glLoadIdentity();
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
     glEnable(GL_BLEND);
     glBlendFunc(GL_ONE, GL_ONE);
     for (int i=nbFrames-1 ; i>=0 ; i--) {
@@ -2315,6 +2313,12 @@ status_t SurfaceFlinger::electronBeamOnAnimationImplLocked()
         // draw the blue plane
         vverts(vtx, vb);
         glColorMask(0,0,1,1);
+        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
+        // draw the white highlight (we use the last vertices)
+        glDisable(GL_TEXTURE_2D);
+        glColorMask(1,1,1,1);
+        glColor4f(vg, vg, vg, 1);
         glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
         hw.flip(screenBounds);

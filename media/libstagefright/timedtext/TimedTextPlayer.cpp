@@ -91,7 +91,7 @@ status_t TimedTextPlayer::start(uint8_t index) {
 
     if (index >=
             mTextTrackVector.size() + mTextOutOfBandVector.size()) {
-        ALOGE("Incorrect text track index: %d", index);
+        LOGE("Incorrect text track index: %d", index);
         return BAD_VALUE;
     }
 

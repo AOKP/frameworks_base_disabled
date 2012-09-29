@@ -338,7 +338,7 @@ private:
         int64_t mFirstFrameLatencyStartUs; //first frame latency start
         int64_t mLastFrame;
         int64_t mLastFrameUs;
-        float mFPSSumUs;
+        int64_t mFPSSumUs;
         int64_t mStatisticsFrames;
         bool mVeryFirstFrame;
 

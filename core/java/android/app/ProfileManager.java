@@ -78,15 +78,6 @@ public class ProfileManager {
         return null;
     }
 
-    public Profile getLastActiveProfile() {
-        try {
-            return getService().getLastActiveProfile();
-        } catch (RemoteException e) {
-            Log.e(TAG, e.getLocalizedMessage(), e);
-        }
-        return null;
-    }
-
     /** @hide */
     public void addProfile(Profile profile) {
         try {

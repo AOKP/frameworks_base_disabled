@@ -17,6 +17,7 @@
 package com.android.internal.telephony.test;
 
 import android.os.AsyncResult;
+import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
@@ -120,9 +121,9 @@ public final class SimulatedCommands extends BaseCommands
 
         if (pin != null && pin.equals(mPinCode)) {
             Log.i(LOG_TAG, "[SimCmd] supplyIccPin: success!");
-            setRadioState(RadioState.SIM_READY);
             mPinUnlockAttempts = 0;
             mSimLockedState = SimLockState.NONE;
+            mIccStatusChangedRegistrants.notifyRegistrants();
 
             if (result != null) {
                 AsyncResult.forMessage(result, null, null);
@@ -162,9 +163,9 @@ public final class SimulatedCommands extends BaseCommands
 
         if (puk != null && puk.equals(SIM_PUK_CODE)) {
             Log.i(LOG_TAG, "[SimCmd] supplyIccPuk: success!");
-            setRadioState(RadioState.SIM_READY);
             mSimLockedState = SimLockState.NONE;
             mPukUnlockAttempts = 0;
+            mIccStatusChangedRegistrants.notifyRegistrants();
 
             if (result != null) {
                 AsyncResult.forMessage(result, null, null);
@@ -441,11 +442,11 @@ public final class SimulatedCommands extends BaseCommands
      *      The ar.result List is sorted by DriverCall.index
      */
     public void getCurrentCalls (Message result) {
-        if (mState == RadioState.SIM_READY) {
+        if ((mState == RadioState.RADIO_ON) && !isSimLocked()) {
             //Log.i("GSM", "[SimCmds] getCurrentCalls");
             resultSuccess(result, simulatedCallState.getDriverCalls());
         } else {
-            //Log.i("GSM", "[SimCmds] getCurrentCalls: SIM not ready!");
+            //Log.i("GSM", "[SimCmds] getCurrentCalls: RADIO_OFF or SIM not ready!");
             resultFail(result,
                 new CommandException(
                     CommandException.Error.RADIO_NOT_AVAILABLE));
@@ -1022,14 +1023,7 @@ public final class SimulatedCommands extends BaseCommands
 
     public void setRadioPower(boolean on, Message result) {
         if(on) {
-            if (isSimLocked()) {
-                Log.i("SIM", "[SimCmd] setRadioPower: SIM locked! state=" +
-                        mSimLockedState);
-                setRadioState(RadioState.SIM_LOCKED_OR_ABSENT);
-            }
-            else {
-                setRadioState(RadioState.SIM_READY);
-            }
+            setRadioState(RadioState.RADIO_ON);
         } else {
             setRadioState(RadioState.RADIO_OFF);
         }
@@ -1519,4 +1513,24 @@ public final class SimulatedCommands extends BaseCommands
     }
 
     public boolean needsOldRilFeature(String feature) { return false; }
+
+    /**
+     * added samsung part to command interface
+     * @param h
+     * @param what
+     * @param obj
+     */
+    public void setOnCatSendSmsResult(Handler h, int what, Object obj) {
+    }
+
+    /**
+     *
+     * @param h
+     */
+    public void unSetOnCatSendSmsResult(Handler h) {
+    }
+
+    public void getVoiceRadioTechnology(Message response) {
+        unimplemented(response);
+    }
 }

@@ -219,7 +219,6 @@ public class Camera {
         /**
 * The facing of the camera is the same as that of the screen.
 * @hide
-*/
         public static final int CAMERA_SUPPORT_MODE_NONZSL = 3;
 
         /**
@@ -1753,8 +1752,8 @@ public class Coordinate {
         public static final String ANTIBANDING_50HZ = "50hz";
         public static final String ANTIBANDING_60HZ = "60hz";
         public static final String ANTIBANDING_OFF = "off";
-        //Values for ISO settings
 
+        //Values for ISO settings
         /** @hide */
         public static final String ISO_AUTO = "auto";
         /** @hide */
@@ -2091,7 +2090,8 @@ public class Coordinate {
         public static final String DENOISE_OFF = "denoise-off";
         /** @hide */
         public static final String DENOISE_ON = "denoise-on";
-// Values for Redeye Reduction settings.
+
+	// Values for Redeye Reduction settings.
         /** @hide */
         public static final String REDEYE_REDUCTION_ENABLE = "enable";
         /** @hide */

@@ -299,13 +299,16 @@ status_t BootAnimation::readyToRun() {
         // We could use readahead..
         // ... if bionic supported it :(
         //readahead(fd, 0, INT_MAX);
-        void *crappyBuffer = malloc(1024*1024);
+        void *crappyBuffer = malloc(2*1024*1024);
+        if (crappyBuffer != NULL) {
+            // Read all the zip
+            while (!feof(fd))
+                fread(crappyBuffer, 1024, 2*1024, fd);
 
-        while (!feof(fd) && crappyBuffer)
-            fread(crappyBuffer, 1024, 1024, fd);
-
-        if (crappyBuffer != NULL)
             free(crappyBuffer);
+        } else {
+            LOGW("Unable to allocate memory to preload the animation");
+        }
         fclose(fd);
     }
 #endif
@@ -449,7 +452,7 @@ bool BootAnimation::movie()
             const String8 path(entryName.getPathDir());
             const String8 leaf(entryName.getPathLeaf());
             if (leaf.size() > 0) {
-                for (int j=0 ; j<pcount ; j++) {
+                for (size_t j=0 ; j<pcount ; j++) {
                     if (path == animation.parts[j].path) {
                         int method;
                         // supports only stored png files
@@ -497,11 +500,12 @@ bool BootAnimation::movie()
     Region clearReg(Rect(mWidth, mHeight));
     clearReg.subtractSelf(Rect(xc, yc, xc+animation.width, yc+animation.height));
 
-    for (int i=0 ; i<pcount && !exitPending() ; i++) {
+    for (size_t i=0 ; i<pcount && !exitPending() ; i++) {
         const Animation::Part& part(animation.parts[i]);
         const size_t fcount = part.frames.size();
 
-        #if NO_TEXTURE_CACHE
+        // can be 1, 0, or not set
+        #ifdef NO_TEXTURE_CACHE
         const int noTextureCache = NO_TEXTURE_CACHE;
         #else
         const int noTextureCache = ((animation.width * animation.height * fcount) >
@@ -511,10 +515,10 @@ bool BootAnimation::movie()
         glBindTexture(GL_TEXTURE_2D, 0);
 
         for (int r=0 ; !part.count || r<part.count ; r++) {
-            for (int j=0 ; j<fcount && !exitPending(); j++) {
+            for (size_t j=0 ; j<fcount && !exitPending(); j++) {
                 const Animation::Frame& frame(part.frames[j]);
 
-                if (r > 0) {
+                if (r > 0 && !noTextureCache) {
                     glBindTexture(GL_TEXTURE_2D, frame.tid);
                 } else {
                     if (part.count != 1) {
@@ -549,13 +553,15 @@ bool BootAnimation::movie()
                 long wait = ns2us(frameDuration);
                 if (wait > 0)
                     usleep(wait);
+                if (noTextureCache)
+                    glDeleteTextures(1, &frame.tid);
             }
             usleep(part.pause * ns2us(frameDuration));
         }
 
         // free the textures for this part
-        if (part.count != 1) {
-            for (int j=0 ; j<fcount ; j++) {
+        if (part.count != 1 && !noTextureCache) {
+            for (size_t j=0 ; j<fcount ; j++) {
                 const Animation::Frame& frame(part.frames[j]);
                 glDeleteTextures(1, &frame.tid);
             }

@@ -112,8 +112,7 @@ public class DhcpInfoInternal {
         if (TextUtils.isEmpty(dns2) == false) {
             p.addDns(NetworkUtils.numericToInetAddress(dns2));
         } else {
-            p.addDns(NetworkUtils.numericToInetAddress(serverAddress));
-            Log.d(TAG, "empty dns1, use dhcp server as dns1!");
+            Log.d(TAG, "makeLinkProperties with empty dns2!");
         }
         return p;
     }

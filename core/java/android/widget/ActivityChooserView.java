@@ -517,7 +517,6 @@ public class ActivityChooserView extends ViewGroup implements ActivityChooserMod
             mActivityChooserContent.setBackgroundDrawable(mActivityChooserContentBackground);
         } else {
             mActivityChooserContent.setBackgroundDrawable(null);
-            mActivityChooserContent.setPadding(0, 0, 0, 0);
         }
     }
 

@@ -1,7 +1,6 @@
 /*
 **
 ** Copyright 2008, The Android Open Source Project
-** Copyright (c) 2011, Code Aurora Forum. All rights reserved.
 **
 ** Licensed under the Apache License, Version 2.0 (the "License");
 ** you may not use this file except in compliance with the License.
@@ -57,12 +56,12 @@ status_t AudioRecord::getMinFrameCount(
     size_t size = 0;
     if (AudioSystem::getInputBufferSize(sampleRate, format, channelCount, &size)
             != NO_ERROR) {
-        ALOGE("AudioSystem could not query the input buffer size.");
+        LOGE("AudioSystem could not query the input buffer size.");
         return NO_INIT;
     }
 
     if (size == 0) {
-        ALOGE("Unsupported configuration: sampleRate %d, format %d, channelCount %d",
+        LOGE("Unsupported configuration: sampleRate %d, format %d, channelCount %d",
             sampleRate, format, channelCount);
         return BAD_VALUE;
     }
@@ -165,7 +164,7 @@ status_t AudioRecord::set(
         int sessionId)
 {
 
-    ALOGV("set(): sampleRate %d, channelMask %d, frameCount %d",sampleRate, channelMask, frameCount);
+    LOGV("set(): sampleRate %d, channelMask %d, frameCount %d",sampleRate, channelMask, frameCount);
 
     AutoMutex lock(mLock);
 
@@ -186,7 +185,7 @@ status_t AudioRecord::set(
     }
     // validate parameters
     if (!audio_is_valid_format(format)) {
-        ALOGE("Invalid format");
+        LOGE("Invalid format");
         return BAD_VALUE;
     }
 
@@ -201,7 +200,7 @@ status_t AudioRecord::set(
     } else {
         mSessionId = sessionId;
     }
-    ALOGV("set(): mSessionId %d", mSessionId);
+    LOGV("set(): mSessionId %d", mSessionId);
 
     audio_io_handle_t input = AudioSystem::getInput(inputSource,
                                                     sampleRate,
@@ -210,50 +209,18 @@ status_t AudioRecord::set(
                                                     (audio_in_acoustics_t)flags,
                                                     mSessionId);
     if (input == 0) {
-        ALOGE("Could not get audio input for record source %d", inputSource);
+        LOGE("Could not get audio input for record source %d", inputSource);
         return BAD_VALUE;
     }
 
     // validate framecount
-    size_t inputBuffSizeInBytes = -1;
-    if (AudioSystem::getInputBufferSize(sampleRate, format, channelCount, &inputBuffSizeInBytes)
-            != NO_ERROR) {
-        LOGE("AudioSystem could not query the input buffer size.");
-        return NO_INIT;
+    int minFrameCount = 0;
+    status_t status = getMinFrameCount(&minFrameCount, sampleRate, format, channelCount);
+    if (status != NO_ERROR) {
+        return status;
     }
-    LOGV("AudioRecord::set() inputBuffSizeInBytes = %d", inputBuffSizeInBytes );
-
-    if (inputBuffSizeInBytes == 0) {
-        LOGE("Recording parameters are not supported: sampleRate %d, channelCount %d, format %d",
-            sampleRate, channelCount, format);
-        return BAD_VALUE;
-    }
-
-    mFirstread = false;
-    // Change for Codec type
-    int frameSizeInBytes = 0;
-    if (format ==AUDIO_FORMAT_AMR_NB) {
-        frameSizeInBytes = channelCount * 32; // Full rate framesize
-#ifdef QCOM_HARDWARE
-    } else if (format ==AUDIO_FORMAT_EVRC) {
-        frameSizeInBytes = channelCount * 23; // Full rate framesize
-    } else if (format ==AUDIO_FORMAT_QCELP) {
-        frameSizeInBytes = channelCount * 35; // Full rate framesize
-#endif
-    } else if (format ==AUDIO_FORMAT_AAC) {
-        frameSizeInBytes = 2048;
-    } else if ((format ==AUDIO_FORMAT_PCM_16_BIT) || (format ==AUDIO_FORMAT_PCM_8_BIT)) {
-                if (audio_is_linear_pcm(format)) {
-                    frameSizeInBytes = channelCount * (format == AUDIO_FORMAT_PCM_16_BIT ? sizeof(int16_t) : sizeof(int8_t));
-               } else {
-                    frameSizeInBytes = sizeof(int8_t);
-               }
-               mFirstread = true;
-    }
-
-    // We use 2* size of input buffer for ping pong use of record buffer.
-    int minFrameCount = 2 * inputBuffSizeInBytes / frameSizeInBytes;
     LOGV("AudioRecord::set() minFrameCount = %d", minFrameCount);
+
     if (frameCount == 0) {
         frameCount = minFrameCount;
     } else if (frameCount < minFrameCount) {
@@ -265,7 +232,7 @@ status_t AudioRecord::set(
     }
 
     // create the IAudioRecord
-    status_t status = openRecord_l(sampleRate, format, channelMask,
+    status = openRecord_l(sampleRate, format, channelMask,
                         frameCount, flags, input);
     if (status != NO_ERROR) {
         return status;
@@ -299,7 +266,6 @@ status_t AudioRecord::set(
     mInputSource = (uint8_t)inputSource;
     mFlags = flags;
     mInput = input;
-    mFirstread = false;
     AudioSystem::acquireAudioSessionId(mSessionId);
 
     return NO_ERROR;
@@ -334,21 +300,7 @@ uint32_t AudioRecord::frameCount() const
 
 int AudioRecord::frameSize() const
 {
-
-    if (format() ==AUDIO_FORMAT_AMR_NB) {
-        return channelCount() * 32; // Full rate framesize
-#ifdef QCOM_HARDWARE
-    } else if (format() == AUDIO_FORMAT_EVRC) {
-        return channelCount() * 23; // Full rate framesize
-    } else if (format() == AUDIO_FORMAT_QCELP) {
-        return channelCount() * 35; // Full rate framesize
-#endif
-    } else if (format() == AUDIO_FORMAT_AAC) {
-        // Not actual framsize but for variable frame rate AAC encoding,
-        // buffer size is treated as a frame size
-        return 2048;
-   }
-   if (audio_is_linear_pcm(mFormat)) {
+    if (audio_is_linear_pcm(mFormat)) {
         return channelCount()*audio_bytes_per_sample(mFormat);
     } else {
         return sizeof(uint8_t);
@@ -358,9 +310,7 @@ int AudioRecord::frameSize() const
 int AudioRecord::inputSource() const
 {
     return (int)mInputSource;
-
 }
-
 
 // -------------------------------------------------------------------------
 
@@ -369,12 +319,12 @@ status_t AudioRecord::start()
     status_t ret = NO_ERROR;
     sp<ClientRecordThread> t = mClientRecordThread;
 
-    ALOGV("start");
+    LOGV("start");
 
     if (t != 0) {
         if (t->exitPending()) {
             if (t->requestExitAndWait() == WOULD_BLOCK) {
-                ALOGE("AudioRecord::start called from thread");
+                LOGE("AudioRecord::start called from thread");
                 return WOULD_BLOCK;
             }
         }
@@ -428,7 +378,7 @@ status_t AudioRecord::stop()
 {
     sp<ClientRecordThread> t = mClientRecordThread;
 
-    ALOGV("stop");
+    LOGV("stop");
 
     if (t != 0) {
         t->mLock.lock();
@@ -551,12 +501,12 @@ status_t AudioRecord::openRecord_l(
                                                        &status);
 
     if (record == 0) {
-        ALOGE("AudioFlinger could not create record track, status: %d", status);
+        LOGE("AudioFlinger could not create record track, status: %d", status);
         return status;
     }
     sp<IMemory> cblk = record->getCblk();
     if (cblk == 0) {
-        ALOGE("Could not get control block");
+        LOGE("Could not get control block");
         return NO_INIT;
     }
     mAudioRecord.clear();
@@ -614,7 +564,7 @@ status_t AudioRecord::obtainBuffer(Buffer* audioBuffer, int32_t waitCount)
             if (__builtin_expect(result!=NO_ERROR, false)) {
                 cblk->waitTimeMs += waitTimeMs;
                 if (cblk->waitTimeMs >= cblk->bufferTimeoutMs) {
-                    ALOGW(   "obtainBuffer timed out (is the CPU pegged?) "
+                    LOGW(   "obtainBuffer timed out (is the CPU pegged?) "
                             "user=%08x, server=%08x", cblk->user, cblk->server);
                     cblk->lock.unlock();
                     result = mAudioRecord->start();
@@ -625,7 +575,7 @@ create_new_record:
                         result = AudioRecord::restoreRecord_l(cblk);
                     }
                     if (result != NO_ERROR) {
-                        ALOGW("obtainBuffer create Track error %d", result);
+                        LOGW("obtainBuffer create Track error %d", result);
                         cblk->lock.unlock();
                         return result;
                     }
@@ -705,7 +655,7 @@ ssize_t AudioRecord::read(void* buffer, size_t userSize)
 
     if (ssize_t(userSize) < 0) {
         // sanity-check. user is most-likely passing an error code.
-        ALOGE("AudioRecord::read(buffer=%p, size=%u (%d)",
+        LOGE("AudioRecord::read(buffer=%p, size=%u (%d)",
                 buffer, userSize, userSize);
         return BAD_VALUE;
     }
@@ -743,11 +693,6 @@ ssize_t AudioRecord::read(void* buffer, size_t userSize)
         read += bytesRead;
 
         releaseBuffer(&audioBuffer);
-        if(!mFirstread)
-        {
-           mFirstread = true;
-           break;
-        }
     } while (userSize);
 
     return read;
@@ -793,7 +738,7 @@ bool AudioRecord::processAudioBuffer(const sp<ClientRecordThread>& thread)
         status_t err = obtainBuffer(&audioBuffer, 1);
         if (err < NO_ERROR) {
             if (err != TIMED_OUT) {
-                ALOGE_IF(err != status_t(NO_MORE_BUFFERS), "Error obtaining an audio buffer, giving up.");
+                LOGE_IF(err != status_t(NO_MORE_BUFFERS), "Error obtaining an audio buffer, giving up.");
                 return false;
             }
             break;
@@ -820,18 +765,13 @@ bool AudioRecord::processAudioBuffer(const sp<ClientRecordThread>& thread)
         frames -= audioBuffer.frameCount;
 
         releaseBuffer(&audioBuffer);
-        if(!mFirstread)
-        {
-           mFirstread = true;
-           break;
-        }
 
     } while (frames);
 
 
     // Manage overrun callback
     if (mActive && (cblk->framesAvailable() == 0)) {
-        ALOGV("Overrun user: %x, server: %x, flags %04x", cblk->user, cblk->server, cblk->flags);
+        LOGV("Overrun user: %x, server: %x, flags %04x", cblk->user, cblk->server, cblk->flags);
         if (!(android_atomic_or(CBLK_UNDERRUN_ON, &cblk->flags) & CBLK_UNDERRUN_MSK)) {
             mCbf(EVENT_OVERRUN, mUserData, 0);
         }
@@ -853,7 +793,7 @@ status_t AudioRecord::restoreRecord_l(audio_track_cblk_t*& cblk)
     status_t result;
 
     if (!(android_atomic_or(CBLK_RESTORING_ON, &cblk->flags) & CBLK_RESTORING_MSK)) {
-        ALOGW("dead IAudioRecord, creating a new one");
+        LOGW("dead IAudioRecord, creating a new one");
         // signal old cblk condition so that other threads waiting for available buffers stop
         // waiting now
         cblk->cv.broadcast();
@@ -876,13 +816,13 @@ status_t AudioRecord::restoreRecord_l(audio_track_cblk_t*& cblk)
         cblk->cv.broadcast();
     } else {
         if (!(cblk->flags & CBLK_RESTORED_MSK)) {
-            ALOGW("dead IAudioRecord, waiting for a new one to be created");
+            LOGW("dead IAudioRecord, waiting for a new one to be created");
             mLock.unlock();
             result = cblk->cv.waitRelative(cblk->lock, milliseconds(RESTORE_TIMEOUT_MS));
             cblk->lock.unlock();
             mLock.lock();
         } else {
-            ALOGW("dead IAudioRecord, already restored");
+            LOGW("dead IAudioRecord, already restored");
             result = NO_ERROR;
             cblk->lock.unlock();
         }
@@ -890,7 +830,7 @@ status_t AudioRecord::restoreRecord_l(audio_track_cblk_t*& cblk)
             result = status_t(STOPPED);
         }
     }
-    ALOGV("restoreRecord_l() status %d mActive %d cblk %p, old cblk %p flags %08x old flags %08x",
+    LOGV("restoreRecord_l() status %d mActive %d cblk %p, old cblk %p flags %08x old flags %08x",
          result, mActive, mCblk, cblk, mCblk->flags, cblk->flags);
 
     if (result == NO_ERROR) {
@@ -899,7 +839,7 @@ status_t AudioRecord::restoreRecord_l(audio_track_cblk_t*& cblk)
     }
     cblk->lock.lock();
 
-    ALOGW_IF(result != NO_ERROR, "restoreRecord_l() error %d", result);
+    LOGW_IF(result != NO_ERROR, "restoreRecord_l() error %d", result);
 
     return result;
 }

@@ -87,7 +87,7 @@ public class GSMPhone extends PhoneBase {
     // from this file will go into the radio log rather than the main
     // log.  (Use "adb logcat -b radio" to see them.)
     static final String LOG_TAG = "GSM";
-    private static final boolean LOCAL_DEBUG = false;
+    private static final boolean LOCAL_DEBUG = true;
 
     // Key used to read/write current ciphering state
     public static final String CIPHERING_KEY = "ciphering_key";
@@ -135,22 +135,22 @@ public class GSMPhone extends PhoneBase {
         }
 
         mCM.setPhoneType(Phone.PHONE_TYPE_GSM);
+        mIccCard = new SimCard(this, LOG_TAG, true);
         mCT = new GsmCallTracker(this);
         mSST = new GsmServiceStateTracker (this);
         mSMS = new GsmSMSDispatcher(this, mSmsStorageMonitor, mSmsUsageMonitor);
         mIccFileHandler = new SIMFileHandler(this);
         mIccRecords = new SIMRecords(this);
         mDataConnectionTracker = new GsmDataConnectionTracker (this);
-        mIccCard = new SimCard(this);
         if (!unitTestMode) {
             mSimPhoneBookIntManager = new SimPhoneBookInterfaceManager(this);
             mSimSmsIntManager = new SimSmsInterfaceManager(this, mSMS);
             mSubInfo = new PhoneSubInfo(this);
         }
-        mStkService = CatService.getInstance(mCM, mIccRecords, mContext, mIccFileHandler, mIccCard);
+        mStkService = CatService.getInstance(mCM, mIccRecords, mContext, mIccFileHandler, mIccCard,
+                mSimSmsIntManager);
 
         mCM.registerForAvailable(this, EVENT_RADIO_AVAILABLE, null);
-        mIccRecords.registerForRecordsEvents(this, EVENT_ICC_RECORD_EVENTS, null);
         mIccRecords.registerForRecordsLoaded(this, EVENT_SIM_RECORDS_LOADED, null);
         mCM.registerForOffOrNotAvailable(this, EVENT_RADIO_OFF_OR_NOT_AVAILABLE, null);
         mCM.registerForOn(this, EVENT_RADIO_ON, null);
@@ -204,8 +204,6 @@ public class GSMPhone extends PhoneBase {
 
             //Unregister from all former registered events
             mCM.unregisterForAvailable(this); //EVENT_RADIO_AVAILABLE
-            /* FIXME HASH: Added Motorola Code */
-            mIccRecords.unregisterForRecordsEvents(this); //EVENT_RECORD_EVENTS
             mIccRecords.unregisterForRecordsLoaded(this); //EVENT_SIM_RECORDS_LOADED
             mCM.unregisterForOffOrNotAvailable(this); //EVENT_RADIO_OFF_OR_NOT_AVAILABLE
             mCM.unregisterForOn(this); //EVENT_RADIO_ON
@@ -237,12 +235,8 @@ public class GSMPhone extends PhoneBase {
         mStkService = null;
         mSimPhoneBookIntManager = null;
         mSimSmsIntManager = null;
-        mSMS = null;
         mSubInfo = null;
-        mIccRecords = null;
         mIccFileHandler = null;
-        mIccCard = null;
-        mDataConnectionTracker = null;
         mCT = null;
         mSST = null;
     }
@@ -254,17 +248,14 @@ public class GSMPhone extends PhoneBase {
 
     public ServiceState
     getServiceState() {
-        if (mSST == null) return null;
         return mSST.ss;
     }
 
     public CellLocation getCellLocation() {
-        if (mSST == null) return null;
         return mSST.cellLoc;
     }
 
     public Phone.State getState() {
-        if (mCT == null) return null;
         return mCT.state;
     }
 
@@ -277,7 +268,6 @@ public class GSMPhone extends PhoneBase {
     }
 
     public SignalStrength getSignalStrength() {
-        if (mSST == null) return null;
         return mSST.mSignalStrength;
     }
 
@@ -470,9 +460,7 @@ public class GSMPhone extends PhoneBase {
     }
 
     public void clearDisconnected() {
-        if (mCT != null) {
-            mCT.clearDisconnected();
-        }
+        mCT.clearDisconnected();
     }
 
     public boolean canTransfer() {
@@ -485,19 +473,16 @@ public class GSMPhone extends PhoneBase {
 
     public GsmCall
     getForegroundCall() {
-        if (mCT == null) return null;
         return mCT.foregroundCall;
     }
 
     public GsmCall
     getBackgroundCall() {
-        if (mCT == null) return null;
         return mCT.backgroundCall;
     }
 
     public GsmCall
     getRingingCall() {
-        if (mCT == null) return null;
         return mCT.ringingCall;
     }
 
@@ -990,9 +975,7 @@ public class GSMPhone extends PhoneBase {
     }
 
     public void setCallWaiting(boolean enable, Message onComplete) {
-        if (mCM != null) {
-            mCM.setCallWaiting(enable, CommandsInterface.SERVICE_CLASS_VOICE, onComplete);
-        }
+        mCM.setCallWaiting(enable, CommandsInterface.SERVICE_CLASS_VOICE, onComplete);
     }
 
     public void
@@ -1056,13 +1039,10 @@ public class GSMPhone extends PhoneBase {
     }
 
     public void setMute(boolean muted) {
-        if (mCT != null) {
-            mCT.setMute(muted);
-        }
+        mCT.setMute(muted);
     }
 
     public boolean getMute() {
-        if (mCT == null) return false;
         return mCT.getMute();
     }
 

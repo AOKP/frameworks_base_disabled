@@ -67,7 +67,7 @@ void hexdump(const void *_data, size_t size) {
             }
         }
 
-        ALOGI("%s", line.c_str());
+        LOGI("%s", line.c_str());
 
         offset += 16;
     }

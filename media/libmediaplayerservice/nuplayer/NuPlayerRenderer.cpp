@@ -48,8 +48,7 @@ NuPlayer::Renderer::Renderer(
       mSyncQueues(false),
       mPaused(false),
       mLastPositionUpdateUs(-1ll),
-      mVideoLateByUs(0ll),
-      mWasPaused(false) {
+      mVideoLateByUs(0ll) {
 }
 
 NuPlayer::Renderer::~Renderer() {
@@ -97,7 +96,6 @@ void NuPlayer::Renderer::signalTimeDiscontinuity() {
     CHECK(mVideoQueue.empty());
     mAnchorTimeMediaUs = -1;
     mAnchorTimeRealUs = -1;
-    mWasPaused = false;
     mSyncQueues = mHasAudio && mHasVideo;
 }
 
@@ -336,13 +334,6 @@ void NuPlayer::Renderer::postDrainVideoQueue() {
                 mAnchorTimeRealUs = ALooper::GetNowUs();
             }
         } else {
-            if ( (!mHasAudio && mHasVideo) && (mWasPaused == true))
-            {
-               mAnchorTimeMediaUs = mediaTimeUs;
-               mAnchorTimeRealUs = ALooper::GetNowUs();
-               mWasPaused = false;
-            }
-
             int64_t realTimeUs =
                 (mediaTimeUs - mAnchorTimeMediaUs) + mAnchorTimeRealUs;
 
@@ -641,7 +632,6 @@ void NuPlayer::Renderer::onPause() {
          mAudioQueue.size(), mVideoQueue.size());
 
     mPaused = true;
-    mWasPaused = true;
 }
 
 void NuPlayer::Renderer::onResume() {

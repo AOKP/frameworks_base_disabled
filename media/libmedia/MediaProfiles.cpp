@@ -639,7 +639,6 @@ MediaProfiles::getInstance()
         sInstance->checkAndAddRequiredProfilesIfNecessary();
         sIsInitialized = true;
     }
-
     LOGE("getInstance %x",sInstance);
     return sInstance;
 }

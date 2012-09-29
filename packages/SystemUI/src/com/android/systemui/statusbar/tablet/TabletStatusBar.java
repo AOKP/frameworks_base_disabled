@@ -62,7 +62,6 @@ import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Pair;
 import android.util.Slog;
-import android.util.TypedValue;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.IWindowManager;
@@ -506,12 +505,20 @@ public class TabletStatusBar extends StatusBar implements
                 // we're screwed here fellas
             }
         }
+        if (mShowStatusBar) {
             mHeightReceiver.updateHeight(); // display size may have changed
             loadDimens();
             mNotificationPanelParams.height = getNotificationPanelHeight();
             WindowManagerImpl.getDefault().updateViewLayout(mNotificationPanel,
                     mNotificationPanelParams);
             mRecentsPanel.updateValuesFromResources();
+        } else { // statusbar hidden - so don't reset height on rotate/config change
+        	onBarHeightChanged(0);
+        	mNotificationPanelParams.height = getNotificationPanelHeight();
+            WindowManagerImpl.getDefault().updateViewLayout(mNotificationPanel,
+                    mNotificationPanelParams);
+            mRecentsPanel.updateValuesFromResources();
+        }
     }
 
     protected void loadDimens() {
@@ -1271,17 +1278,16 @@ public class TabletStatusBar extends StatusBar implements
         if (showMenu) { // we need to show the menu button
         	if (mMenuButton == null && mTempMenuButton == null) {  // User has not put their own menu button on the navbar or a temp one exists
         		mTempMenu = true;
-        		// rather than constantly creating a new view, I'll just create one and keep it
-        		if (mTempMenuButton == null)
-        			mTempMenuButton = generateKey(true, ACTION_MENU,ACTION_NULL,"");
-        		mNavigationArea.addView(mTempMenuButton);
+        		mTempMenuButton = generateKey(true, ACTION_MENU,ACTION_NULL,"");
+        		mTempMenuButton.setTag("temp_menu_button");
+        		mNavigationArea.addView((View) mTempMenuButton);
         	}
         } else {
         	if (mMenuButton == null) { // only try to remove menu if user doesn't have custom button
         		mTempMenu = false;
         		if (mTempMenuButton != null) { // just a little sanity check.  It better not be null
-        			mNavigationArea.removeView(mTempMenuButton);
-        		// I'm not disposing of the tempview, we'll keep it for next time.
+        			mNavigationArea.removeView(mNavigationArea.findViewWithTag("temp_menu_button"));
+        			mTempMenuButton = null;
         		}
         	}
         }
@@ -1383,19 +1389,9 @@ public class TabletStatusBar extends StatusBar implements
             Slog.d(TAG, "Set hard keyboard status: available=" + available
                     + ", enabled=" + enabled);
         }
-        if (mContext.getResources().getBoolean(R.bool.config_forcefullyDisableHardwareKeyboard)) {
-            try {
-                mBarService.setHardKeyboardEnabled(false);
-            } catch (RemoteException e) {}
-            mInputMethodSwitchButton.setHardKeyboardStatus(false);
-            updateNotificationIcons();
-            mInputMethodsPanel.setHardKeyboardStatus(false, false);
-            
-        } else {
-            mInputMethodSwitchButton.setHardKeyboardStatus(available);
-            updateNotificationIcons();
-            mInputMethodsPanel.setHardKeyboardStatus(available, enabled);
-        }
+        mInputMethodSwitchButton.setHardKeyboardStatus(available);
+        updateNotificationIcons();
+        mInputMethodsPanel.setHardKeyboardStatus(available, enabled);
     }
 
     @Override
@@ -2103,6 +2099,9 @@ public class TabletStatusBar extends StatusBar implements
             resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_BUTTONS_QTY), false,
                     this);
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_BUTTONS_SHOW), false,
+                    this);
 
             for (int j = 0; j < 5; j++) { // watch all 5 settings for changes.
                 resolver.registerContentObserver(
@@ -2118,9 +2117,6 @@ public class TabletStatusBar extends StatusBar implements
                         Settings.System.getUriFor(Settings.System.NAVIGATION_CUSTOM_APP_ICONS[j]),
                         false,
                         this);
-                resolver.registerContentObserver(
-                		Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_BUTTONS_SHOW), false,
-                		this);
             }
             updateSettings();
         }
@@ -2171,12 +2167,15 @@ public class TabletStatusBar extends StatusBar implements
                 Settings.System.putString(resolver,
                 		Settings.System.NAVIGATION_CUSTOM_APP_ICONS[j], "");
             }
-            mShowStatusBar = (Settings.System.getInt(resolver,
-                    Settings.System.NAVIGATION_BAR_BUTTONS_SHOW, 1) == 1);
-            mStatusBarView.setVisibility(mShowStatusBar ? View.VISIBLE : View.GONE);
         }
         makeNavBar();
-
+        mShowStatusBar = (Settings.System.getInt(resolver,
+                Settings.System.NAVIGATION_BAR_BUTTONS_SHOW, 1) == 1);
+       if (mShowStatusBar) {
+    	   mHeightReceiver.updateHeight(); // reset back to normal	   
+       } else {
+    	   onBarHeightChanged(0); // force StatusBar to 0 height.
+       }
     }
 
     private Drawable getNavbarIconImage(boolean landscape, String uri) {
@@ -2221,7 +2220,8 @@ public class TabletStatusBar extends StatusBar implements
     }
 
     private void makeNavBar(){
-    	final boolean landscape;
+
+    	boolean landscape;
     	landscape = (mContext.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE);
     	if (mNavigationArea != null) {
     		mNavigationArea.removeAllViews();
@@ -2259,12 +2259,10 @@ public class TabletStatusBar extends StatusBar implements
         Resources r = mContext.getResources();
 
         int btnWidth = 48;
-        int pad = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, r.getDisplayMetrics());
+
         v = new ExtensibleKeyButtonView(mContext, null, ClickAction, Longpress);
         v.setLayoutParams(getLayoutParams(landscape, btnWidth));
-        v.setGlowBackground(landscape ? R.drawable.ic_sysbar_highlight_land
-                : R.drawable.ic_sysbar_highlight);
-        v.setPadding(pad, 0, pad, 0);
+        v.setGlowBackground(R.drawable.ic_sysbar_highlight);
 
         // the rest is for setting the icon (or custom icon)
         if (IconUri != null && IconUri.length() > 0) {
@@ -2307,6 +2305,7 @@ public class TabletStatusBar extends StatusBar implements
                 new LayoutParams((int) px, LayoutParams.MATCH_PARENT, 1f);
     }
 
+
     public void dump(FileDescriptor fd, PrintWriter pw, String[] args) {
         pw.print("mDisabled=0x");
         pw.println(Integer.toHexString(mDisabled));
@@ -2314,4 +2313,5 @@ public class TabletStatusBar extends StatusBar implements
         mNetworkController.dump(fd, pw, args);
     }
 }
+
 

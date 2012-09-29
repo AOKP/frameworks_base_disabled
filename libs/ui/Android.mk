@@ -87,13 +87,14 @@ endif
 LOCAL_C_INCLUDES := \
     external/skia/include/core
 
-ifeq ($(TARGET_BOARD_PLATFORM),msm7x30)
-    LOCAL_SRC_FILES+= OverlayHtc.cpp
+ifeq ($(BOARD_USES_HTC_CAMERA),true)
+    LOCAL_SRC_FILES += OverlayHtc.cpp
 endif
 
 LOCAL_MODULE:= libui
 
 include $(BUILD_SHARED_LIBRARY)
+
 
 # Include subdirectory makefiles
 # ============================================================

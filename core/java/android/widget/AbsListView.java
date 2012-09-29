@@ -16,11 +16,11 @@
 
 package android.widget;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.android.internal.R;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Rect;
@@ -31,7 +31,6 @@ import android.os.Handler;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.StrictMode;
-import android.os.SystemProperties;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -58,13 +57,15 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.view.ViewTreeObserver;
 import android.view.accessibility.AccessibilityEvent;
+import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.inputmethod.BaseInputConnection;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputConnectionWrapper;
 import android.view.inputmethod.InputMethodManager;
 
-import com.android.internal.R;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Base class that can be used to implement virtualized lists of items. A list does
@@ -407,15 +408,6 @@ public abstract class AbsListView extends AdapterView<ListAdapter> implements Te
      * the top edge.
      */
     boolean mStackFromBottom;
-    
-    /**
-     * Indicates whether to system-wide-override to enable/disable or not.
-     * 0 = force to enable scrollingCacheEnabled regardless of app setting
-     * 1 = default is to enable scrollingCacheEnabled unless app specifies
-     * 2 = default is to disable scrollingCacheEnabled unless app specifies
-     * 3 = force to disable scrollingCacheEnabled regardless of app setting
-     */
-    int mScrollingCacheProperty = SystemProperties.getInt("persist.sys.scrollingcache",0);
 
     /**
      * When set to true, the list automatically discards the children's
@@ -757,21 +749,7 @@ public abstract class AbsListView extends AdapterView<ListAdapter> implements Te
         boolean stackFromBottom = a.getBoolean(R.styleable.AbsListView_stackFromBottom, false);
         setStackFromBottom(stackFromBottom);
 
-        boolean scrollingCacheEnabled = true;
-        switch(mScrollingCacheProperty) {
-        case 0:
-            scrollingCacheEnabled = true;
-            break;
-        default:
-            scrollingCacheEnabled = a.getBoolean(R.styleable.AbsListView_scrollingCache, true);
-            break;
-        case 2:
-            scrollingCacheEnabled = a.getBoolean(R.styleable.AbsListView_scrollingCache, false);
-            break;
-        case 3:
-            scrollingCacheEnabled = false;
-            break;
-        }
+        boolean scrollingCacheEnabled = a.getBoolean(R.styleable.AbsListView_scrollingCache, true);
         setScrollingCacheEnabled(scrollingCacheEnabled);
 
         boolean useTextFilter = a.getBoolean(R.styleable.AbsListView_textFilterEnabled, false);
@@ -803,8 +781,7 @@ public abstract class AbsListView extends AdapterView<ListAdapter> implements Te
         setFocusableInTouchMode(true);
         setWillNotDraw(false);
         setAlwaysDrawnWithCacheEnabled(false);
-        boolean scrollingCacheEnabled = (mScrollingCacheProperty < 2);
-        setScrollingCacheEnabled(scrollingCacheEnabled);
+        setScrollingCacheEnabled(true);
 
         final ViewConfiguration configuration = ViewConfiguration.get(mContext);
         mTouchSlop = configuration.getScaledTouchSlop();

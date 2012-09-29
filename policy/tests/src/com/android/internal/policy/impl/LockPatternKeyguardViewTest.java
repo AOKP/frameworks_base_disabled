@@ -91,11 +91,6 @@ public class LockPatternKeyguardViewTest extends AndroidTestCase {
         }
 
         /** {@inheritDoc} */
-        public boolean checkInProgress() {
-            return false;
-        }
-
-        /** {@inheritDoc} */
         public boolean needsInput() {
             return false;
         }

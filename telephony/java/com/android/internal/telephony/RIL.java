@@ -24,12 +24,6 @@ import static android.telephony.TelephonyManager.NETWORK_TYPE_UMTS;
 import static android.telephony.TelephonyManager.NETWORK_TYPE_HSDPA;
 import static android.telephony.TelephonyManager.NETWORK_TYPE_HSUPA;
 import static android.telephony.TelephonyManager.NETWORK_TYPE_HSPA;
-/* FIXME HASH: Added Motorola Code */
-import static android.telephony.TelephonyManager.NETWORK_TYPE_CDMA;
-import static android.telephony.TelephonyManager.NETWORK_TYPE_1xRTT;
-import static android.telephony.TelephonyManager.NETWORK_TYPE_EVDO_0;
-import static android.telephony.TelephonyManager.NETWORK_TYPE_EVDO_A;
-import static android.telephony.TelephonyManager.NETWORK_TYPE_EVDO_B;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -47,6 +41,7 @@ import android.os.Message;
 import android.os.Parcel;
 import android.os.PowerManager;
 import android.os.SystemProperties;
+import android.os.Registrant;
 import android.os.PowerManager.WakeLock;
 import android.telephony.NeighboringCellInfo;
 import android.telephony.PhoneNumberUtils;
@@ -272,6 +267,26 @@ public class RIL extends BaseCommands implements CommandsInterface {
             }
         }
     };
+
+    protected Registrant mCatSendSmsResultRegistrant;
+    /**
+     * samsung stk service implementation - set up registrant for sending
+     * sms send result from modem(RIL) to catService
+     * @param h
+     * @param what
+     * @param obj
+     */
+    public void setOnCatSendSmsResult(Handler h, int what, Object obj) {
+        mCatSendSmsResultRegistrant = new Registrant(h, what, obj);
+    }
+
+    /**
+     *
+     * @param h
+     */
+    public void unSetOnCatSendSmsResult(Handler h) {
+        mCatSendSmsResultRegistrant.clear();
+    }
 
     class RILSender extends Handler implements Runnable {
         public RILSender(Looper looper) {
@@ -651,6 +666,15 @@ public class RIL extends BaseCommands implements CommandsInterface {
     }
 
     //***** CommandsInterface implementation
+
+    public void getVoiceRadioTechnology(Message result) {
+        RILRequest rr = RILRequest.obtain(RIL_REQUEST_VOICE_RADIO_TECH, result);
+
+        if (RILJ_LOGD) riljLog(rr.serialString() + "> " + requestToString(rr.mRequest));
+
+        send(rr);
+    }
+
 
     @Override public void
     setOnNITZTime(Handler h, int what, Object obj) {
@@ -2060,14 +2084,16 @@ public class RIL extends BaseCommands implements CommandsInterface {
         switch(stateInt) {
             case 0: state = RadioState.RADIO_OFF; break;
             case 1: state = RadioState.RADIO_UNAVAILABLE; break;
-            case 2: state = RadioState.SIM_NOT_READY; break;
-            case 3: state = RadioState.SIM_LOCKED_OR_ABSENT; break;
-            case 4: state = RadioState.SIM_READY; break;
-            case 5: state = RadioState.RUIM_NOT_READY; break;
-            case 6: state = RadioState.RUIM_READY; break;
-            case 7: state = RadioState.RUIM_LOCKED_OR_ABSENT; break;
-            case 8: state = RadioState.NV_NOT_READY; break;
-            case 9: state = RadioState.NV_READY; break;
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+            case 7:
+            case 8:
+            case 9:
+            case 10:
+	        case 13: state = RadioState.RADIO_ON; break;
 
             default:
                 throw new RuntimeException(
@@ -2324,6 +2350,7 @@ public class RIL extends BaseCommands implements CommandsInterface {
             case RIL_REQUEST_CDMA_GET_SUBSCRIPTION_SOURCE: ret =  responseInts(p); break;
             case RIL_REQUEST_ISIM_AUTHENTICATION: ret =  responseString(p); break;
             case RIL_REQUEST_ACKNOWLEDGE_INCOMING_GSM_SMS_WITH_PDU: ret = responseVoid(p); break;
+            case RIL_REQUEST_VOICE_RADIO_TECH: ret = responseInts(p); break;
             case RIL_REQUEST_STK_SEND_ENVELOPE_WITH_STATUS: ret = responseICC_IO(p); break;
             default:
                 throw new RuntimeException("Unrecognized solicited response: " + rr.mRequest);
@@ -2473,6 +2500,9 @@ public class RIL extends BaseCommands implements CommandsInterface {
             case RIL_UNSOL_CDMA_PRL_CHANGED: ret = responseInts(p); break;
             case RIL_UNSOL_EXIT_EMERGENCY_CALLBACK_MODE: ret = responseVoid(p); break;
             case RIL_UNSOL_RIL_CONNECTED: ret = responseInts(p); break;
+            case RIL_UNSOL_VOICE_RADIO_TECH_CHANGED: ret =  responseInts(p); break;
+            //samsung stk service implementation
+            case RIL_UNSOL_STK_SEND_SMS_RESULT: ret = responseInts(p); break;
 
             default:
                 throw new RuntimeException("Unrecognized unsol response: " + response);
@@ -2758,8 +2788,8 @@ public class RIL extends BaseCommands implements CommandsInterface {
 
             case RIL_UNSOL_OEM_HOOK_RAW:
                 if (RILJ_LOGD) unsljLogvRet(response, IccUtils.bytesToHexString((byte[])ret));
-                if (mUnsolOemHookRawRegistrants != null) {
-                    mUnsolOemHookRawRegistrants.notifyRegistrants(new AsyncResult(null, ret, null));
+                if (mUnsolOemHookRawRegistrant != null) {
+                    mUnsolOemHookRawRegistrant.notifyRegistrant(new AsyncResult(null, ret, null));
                 }
                 break;
 
@@ -2778,6 +2808,15 @@ public class RIL extends BaseCommands implements CommandsInterface {
                 if (mResendIncallMuteRegistrants != null) {
                     mResendIncallMuteRegistrants.notifyRegistrants(
                                         new AsyncResult (null, ret, null));
+                }
+                break;
+
+            case RIL_UNSOL_VOICE_RADIO_TECH_CHANGED:
+                if (RILJ_LOGD) unsljLogRet(response, ret);
+
+                if (mVoiceRadioTechChangedRegistrants != null) {
+                    mVoiceRadioTechChangedRegistrants.notifyRegistrants(
+                            new AsyncResult(null, ret, null));
                 }
                 break;
 
@@ -2818,6 +2857,19 @@ public class RIL extends BaseCommands implements CommandsInterface {
                 notifyRegistrantsRilConnectionChanged(((int[])ret)[0]);
                 break;
             }
+
+            //samsung stk service implementation
+            case RIL_UNSOL_STK_SEND_SMS_RESULT:
+                if (Resources.getSystem().
+                        getBoolean(com.android.internal.R.bool.config_samsung_stk)) {
+                    if (RILJ_LOGD) unsljLogRet(response, ret);
+
+                    if (mCatSendSmsResultRegistrant != null) {
+                        mCatSendSmsResultRegistrant.notifyRegistrant(
+                                new AsyncResult (null, ret, null));
+                    }
+                }
+                break;
         }
     }
 
@@ -2951,6 +3003,7 @@ public class RIL extends BaseCommands implements CommandsInterface {
 
         return response;
     }
+
 
     protected Object
      responseICC_IO(Parcel p) {
@@ -3100,7 +3153,10 @@ public class RIL extends BaseCommands implements CommandsInterface {
             dataCall.ifname = Resources.getSystem().getString(com.android.internal.R.string.config_datause_iface);
         } else {
             dataCall.status = p.readInt();
-            dataCall.suggestedRetryTime = p.readInt();
+            if (needsOldRilFeature("usehcradio"))
+                dataCall.suggestedRetryTime = -1;
+            else
+	      dataCall.suggestedRetryTime = p.readInt();
             dataCall.cid = p.readInt();
             dataCall.active = p.readInt();
             dataCall.type = p.readString();
@@ -3212,7 +3268,7 @@ public class RIL extends BaseCommands implements CommandsInterface {
         }
 
         return ret;
-   }
+    }
 
    protected Object
    responseCellList(Parcel p) {
@@ -3240,18 +3296,6 @@ public class RIL extends BaseCommands implements CommandsInterface {
            radioType = NETWORK_TYPE_HSUPA;
        } else if (radioString.equals("HSPA")) {
            radioType = NETWORK_TYPE_HSPA;
-       /* FIXME HASH: BEGIN Motorola Code */
-       } else if (radioString.equals("CDMA")) {
-           radioType = NETWORK_TYPE_CDMA;
-       } else if (radioString.equals("CDMA - 1xRTT")) {
-           radioType = NETWORK_TYPE_1xRTT;
-       } else if (radioString.equals("CDMA - EvDo rev. 0")) {
-           radioType = NETWORK_TYPE_EVDO_0;
-       } else if (radioString.equals("CDMA - EvDo rev. A")) {
-           radioType = NETWORK_TYPE_EVDO_A;
-       } else if (radioString.equals("CDMA - EvDo rev. B")) {
-           radioType = NETWORK_TYPE_EVDO_B;
-       /* FIXME HASH: END Motorola Code */
        } else {
            radioType = NETWORK_TYPE_UNKNOWN;
        }
@@ -3573,6 +3617,7 @@ public class RIL extends BaseCommands implements CommandsInterface {
             case RIL_REQUEST_CDMA_GET_SUBSCRIPTION_SOURCE: return "RIL_REQUEST_CDMA_GET_SUBSCRIPTION_SOURCE";
             case RIL_REQUEST_ISIM_AUTHENTICATION: return "RIL_REQUEST_ISIM_AUTHENTICATION";
             case RIL_REQUEST_ACKNOWLEDGE_INCOMING_GSM_SMS_WITH_PDU: return "RIL_REQUEST_ACKNOWLEDGE_INCOMING_GSM_SMS_WITH_PDU";
+            case RIL_REQUEST_VOICE_RADIO_TECH: return "RIL_REQUEST_VOICE_RADIO_TECH";
             case RIL_REQUEST_STK_SEND_ENVELOPE_WITH_STATUS: return "RIL_REQUEST_STK_SEND_ENVELOPE_WITH_STATUS";
             default: return "<unknown request: "+request+">";
         }
@@ -3622,6 +3667,8 @@ public class RIL extends BaseCommands implements CommandsInterface {
             case RIL_UNSOL_CDMA_PRL_CHANGED: return "UNSOL_CDMA_PRL_CHANGED";
             case RIL_UNSOL_EXIT_EMERGENCY_CALLBACK_MODE: return "UNSOL_EXIT_EMERGENCY_CALLBACK_MODE";
             case RIL_UNSOL_RIL_CONNECTED: return "UNSOL_RIL_CONNECTED";
+            case RIL_UNSOL_VOICE_RADIO_TECH_CHANGED: return "UNSOL_VOICE_RADIO_TECH_CHANGED";
+            case RIL_UNSOL_STK_SEND_SMS_RESULT: return "RIL_UNSOL_STK_SEND_SMS_RESULT";
             default: return "<unknown response: "+request+">";
         }
     }

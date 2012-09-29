@@ -3039,4 +3039,3 @@ void ACodec::FlushingOutputState::changeStateIfWeOwnAllBuffers() {
 }
 #endif
 }  // namespace android
-

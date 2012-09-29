@@ -439,4 +439,3 @@ status_t QueryCodecs(
 }  // namespace android
 
 #endif  // OMX_CODEC_H_
-

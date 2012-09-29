@@ -159,7 +159,6 @@ class ContextImpl extends Context {
     private int mThemeResource = 0;
     private Resources.Theme mTheme = null;
     private PackageManager mPackageManager;
-    private ProfileManager mProfileManager = null;
     private Context mReceiverRestrictedContext = null;
     private boolean mRestricted;
 
@@ -468,9 +467,9 @@ class ContextImpl extends Context {
 
         registerService(PROFILE_SERVICE, new ServiceFetcher() {
                 public Object createService(ContextImpl ctx) {
-                final Context outerContext = ctx.getOuterContext();
+                    final Context outerContext = ctx.getOuterContext();
                     return new ProfileManager (outerContext, ctx.mMainThread.getHandler());
-            }});
+                }});
     }
 
     static ContextImpl getImpl(Context context) {

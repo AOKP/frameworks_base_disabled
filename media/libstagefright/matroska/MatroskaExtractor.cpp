@@ -180,7 +180,7 @@ MatroskaSource::MatroskaSource(
         CHECK_GE(avccSize, 5u);
 
         mNALSizeLen = 1 + (avcc[4] & 3);
-        ALOGV("mNALSizeLen = %d", mNALSizeLen);
+        LOGV("mNALSizeLen = %d", mNALSizeLen);
     } else if (!strcasecmp(mime, MEDIA_MIMETYPE_AUDIO_AAC)) {
         mType = AAC;
     }
@@ -230,7 +230,7 @@ void BlockIterator::advance() {
 void BlockIterator::advance_l() {
     for (;;) {
         long res = mCluster->GetEntry(mBlockEntryIndex, mBlockEntry);
-        ALOGV("GetEntry returned %ld", res);
+        LOGV("GetEntry returned %ld", res);
 
         long long pos;
         long len;
@@ -240,12 +240,12 @@ void BlockIterator::advance_l() {
             CHECK_EQ(res, mkvparser::E_BUFFER_NOT_FULL);
 
             res = mCluster->Parse(pos, len);
-            ALOGV("Parse returned %ld", res);
+            LOGV("Parse returned %ld", res);
 
             if (res < 0) {
                 // I/O error
 
-                ALOGE("Cluster::Parse returned result %ld", res);
+                LOGE("Cluster::Parse returned result %ld", res);
 
                 mCluster = NULL;
                 break;
@@ -258,7 +258,7 @@ void BlockIterator::advance_l() {
             const mkvparser::Cluster *nextCluster;
             res = mExtractor->mSegment->ParseNext(
                     mCluster, nextCluster, pos, len);
-            ALOGV("ParseNext returned %ld", res);
+            LOGV("ParseNext returned %ld", res);
 
             if (res > 0) {
                 // EOF
@@ -274,7 +274,7 @@ void BlockIterator::advance_l() {
             mCluster = nextCluster;
 
             res = mCluster->Parse(pos, len);
-            ALOGV("Parse (2) returned %ld", res);
+            LOGV("Parse (2) returned %ld", res);
             CHECK_GE(res, 0);
 
             mBlockEntryIndex = 0;
@@ -317,10 +317,6 @@ void BlockIterator::seek(int64_t seekTimeUs, bool seekToKeyFrame) {
 
     if (seekToKeyFrame) {
         while (!eos() && !mBlockEntry->GetBlock()->IsKey()) {
-            advance_l();
-        }
-    } else {
-        while (!eos() && blockTimeUs() < seekTimeUs) {
             advance_l();
         }
     }
@@ -598,7 +594,7 @@ MatroskaExtractor::MatroskaExtractor(const sp<DataSource> &source)
 
 #if 0
     const mkvparser::SegmentInfo *info = mSegment->GetInfo();
-    ALOGI("muxing app: %s, writing app: %s",
+    LOGI("muxing app: %s, writing app: %s",
          info->GetMuxingAppAsUTF8(),
          info->GetWritingAppAsUTF8());
 #endif
@@ -722,8 +718,8 @@ void MatroskaExtractor::addTracks() {
         }
 
         const char *const codecID = track->GetCodecId();
-        ALOGV("codec id = %s", codecID);
-        ALOGV("codec name = %s", track->GetCodecNameAsUTF8());
+        LOGV("codec id = %s", codecID);
+        LOGV("codec name = %s", track->GetCodecNameAsUTF8());
 
         size_t codecPrivateSize;
         const unsigned char *codecPrivate =
@@ -803,12 +799,12 @@ void MatroskaExtractor::findThumbnails() {
         }
 
         BlockIterator iter(this, info->mTrackNum);
-        int32_t i_ = 0;
+        int32_t i = 0;
         int64_t thumbnailTimeUs = 0;
         size_t maxBlockSize = 0;
-        while (!iter.eos() && i_ < 20) {
+        while (!iter.eos() && i < 20) {
             if (iter.block()->IsKey()) {
-                ++i_;
+                ++i;
 
                 size_t blockSize = 0;
                 for (int i = 0; i < iter.block()->GetFrameCount(); ++i) {

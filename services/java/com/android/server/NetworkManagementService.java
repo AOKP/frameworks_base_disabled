@@ -878,11 +878,11 @@ public class NetworkManagementService extends INetworkManagementService.Stub
 
     private void modifyNat(String cmd, String internalInterface, String externalInterface) {
         cmd = String.format("nat %s %s %s", cmd, internalInterface, externalInterface);
-	NetworkInterface internalNetworkInterface = null;
+        NetworkInterface internalNetworkInterface = null;
         try {
             internalNetworkInterface = NetworkInterface.getByName(internalInterface);
         } catch (SocketException e) {
-	    Log.e(TAG, "failed to get ifindex. continuing.");
+            Log.e(TAG, "failed to get ifindex. continuing.");
         }
         if (internalNetworkInterface == null) {
             cmd += " 0";
@@ -1046,9 +1046,8 @@ public class NetworkManagementService extends INetworkManagementService.Stub
         mContext.enforceCallingOrSelfPermission(
                 android.Manifest.permission.CHANGE_WIFI_STATE, "NetworkManagementService");
         try {
-            String softApIface = SystemProperties.get("wifi.ap.interface", wlanIface);
             mConnector.doCommand("softap stopap");
-            mConnector.doCommand("softap stop " + softApIface);
+            mConnector.doCommand("softap stop " + wlanIface);
             wifiFirmwareReload(wlanIface, "STA");
         } catch (NativeDaemonConnectorException e) {
             throw new IllegalStateException("Error communicating to native daemon to stop soft AP",

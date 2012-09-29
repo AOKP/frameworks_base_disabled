@@ -143,8 +143,10 @@ void ExtendedExtractor::RegisterSniffers() {
         flag = false;
 #else
         DataSource::RegisterSniffer(snifferArray[i]);
-#endif 
+#endif
     }
 }
 
 }  // namespace android
+
+

@@ -696,15 +696,12 @@ void FontRenderer::setFont(SkPaint* paint, uint32_t fontId, float fontSize) {
     }
 
     const float skewX = paint->getTextSkewX();
-    uint32_t italicStyle;
-    memcpy(&italicStyle, &skewX, sizeof(italicStyle));
+    uint32_t italicStyle = *(uint32_t*) &skewX;
     const float scaleXFloat = paint->getTextScaleX();
-    uint32_t scaleX;
-    memcpy(&scaleX, &scaleXFloat, sizeof(scaleX));
+    uint32_t scaleX = *(uint32_t*) &scaleXFloat;
     SkPaint::Style style = paint->getStyle();
     const float strokeWidthFloat = paint->getStrokeWidth();
-    uint32_t strokeWidth;
-    memcpy(&strokeWidth, &strokeWidthFloat, sizeof(strokeWidth));
+    uint32_t strokeWidth = *(uint32_t*) &strokeWidthFloat;
     mCurrentFont = Font::create(this, fontId, fontSize, flags, italicStyle,
             scaleX, style, strokeWidth);
 

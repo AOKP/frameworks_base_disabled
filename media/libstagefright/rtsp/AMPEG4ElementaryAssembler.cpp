@@ -203,7 +203,7 @@ ARTPAssembler::AssemblyStatus AMPEG4ElementaryAssembler::addPacket(
         mNextExpectedSeqNoValid = true;
         mNextExpectedSeqNo = (uint32_t)buffer->int32Data();
     } else if ((uint32_t)buffer->int32Data() != mNextExpectedSeqNo) {
-        ALOGV("Not the sequence number I expected");
+        LOGV("Not the sequence number I expected");
 
         return WRONG_SEQUENCE_NUMBER;
     }
@@ -336,7 +336,7 @@ ARTPAssembler::AssemblyStatus AMPEG4ElementaryAssembler::addPacket(
 void AMPEG4ElementaryAssembler::submitAccessUnit() {
     CHECK(!mPackets.empty());
 
-    ALOGV("Access unit complete (%d nal units)", mPackets.size());
+    LOGV("Access unit complete (%d nal units)", mPackets.size());
 
     size_t totalSize = 0;
     for (List<sp<ABuffer> >::iterator it = mPackets.begin();
@@ -383,7 +383,7 @@ ARTPAssembler::AssemblyStatus AMPEG4ElementaryAssembler::assembleMore(
 
 void AMPEG4ElementaryAssembler::packetLost() {
     CHECK(mNextExpectedSeqNoValid);
-    ALOGV("packetLost (expected %d)", mNextExpectedSeqNo);
+    LOGV("packetLost (expected %d)", mNextExpectedSeqNo);
 
     ++mNextExpectedSeqNo;
 

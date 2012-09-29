@@ -4569,9 +4569,9 @@ public final class ActivityThread {
                         // everyone about it.
                         if (mPendingConfiguration == null ||
                                 mPendingConfiguration.isOtherSeqNewer(newConfig)) {
-                            mPendingConfiguration = new Configuration(newConfig);
+                            mPendingConfiguration = newConfig;
                             
-                            queueOrSendMessage(H.CONFIGURATION_CHANGED, mPendingConfiguration);
+                            queueOrSendMessage(H.CONFIGURATION_CHANGED, newConfig);
                         }
                     }
                 }

@@ -68,8 +68,6 @@ public class ProfileManagerService extends IProfileManager.Stub {
 
     private Profile mActiveProfile;
 
-    private Profile mLastActiveProfile;
-
     // Well-known UUID of the wildcard group
     private static final UUID mWildcardUUID = UUID.fromString("a126d48a-aaef-47c4-baed-7f0e44aeffe5");
     private NotificationGroup mWildcardGroup;
@@ -193,9 +191,7 @@ public class ProfileManagerService extends IProfileManager.Stub {
         try {
             enforceChangePermissions();
             Log.d(TAG, "Set active profile to: " + newActiveProfile.getUuid().toString() + " - " + newActiveProfile.getName());
-            if (mLastActiveProfile == null || !mLastActiveProfile.getUuid().equals(newActiveProfile.getUuid())) {
-                mLastActiveProfile = mActiveProfile;
-            }
+            Profile lastProfile = mActiveProfile;
             mActiveProfile = newActiveProfile;
             mDirty = true;
             if (doinit) {
@@ -215,8 +211,8 @@ public class ProfileManagerService extends IProfileManager.Stub {
                 Intent broadcast = new Intent(INTENT_ACTION_PROFILE_SELECTED);
                 broadcast.putExtra("name", mActiveProfile.getName());
                 broadcast.putExtra("uuid", mActiveProfile.getUuid().toString());
-                broadcast.putExtra("lastName", mLastActiveProfile == null ? null : mLastActiveProfile.getName());
-                broadcast.putExtra("lastUuid", mLastActiveProfile == null ? null : mLastActiveProfile.getUuid().toString());
+                broadcast.putExtra("lastName", lastProfile.getName());
+                broadcast.putExtra("lastUuid", lastProfile.getUuid().toString());
                 mContext.sendBroadcast(broadcast);
 
                 restoreCallingIdentity(token);
@@ -310,11 +306,6 @@ public class ProfileManagerService extends IProfileManager.Stub {
     @Override
     public Profile getActiveProfile() throws RemoteException {
         return mActiveProfile;
-    }
-
-    @Override
-    public Profile getLastActiveProfile() throws RemoteException {
-        return mLastActiveProfile;
     }
 
     @Override

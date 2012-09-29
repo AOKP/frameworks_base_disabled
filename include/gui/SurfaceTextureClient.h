@@ -183,6 +183,7 @@ private:
 #else
     mutable Region              mOldDirtyRegion;
 #endif
+    bool                        mConnectedToCpu;
 
 #ifdef QCOM_HARDWARE
     // mReqExtUsage is a flag set by app to mark a layer for display on

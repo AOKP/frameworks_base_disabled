@@ -304,7 +304,7 @@ void SoftAMR::onQueueFilled(OMX_U32 portIndex) {
                   MIME_IETF);
 
             if (numBytesRead == -1) {
-                ALOGE("PV AMR decoder AMRDecode() call failed");
+                LOGE("PV AMR decoder AMRDecode() call failed");
 
                 notify(OMX_EventError, OMX_ErrorUndefined, 0, NULL);
                 mSignalledError = true;

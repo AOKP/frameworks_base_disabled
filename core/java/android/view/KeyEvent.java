@@ -609,10 +609,10 @@ public class KeyEvent extends InputEvent implements Parcelable {
     public static final int KEYCODE_BRIGHTNESS_AUTO = 225;
     public static final int KEYCODE_CAPTURE         = 226;
 
-    private static final int LAST_KEYCODE           = KEYCODE_CAPTURE;
-
     public static final int KEYCODE_ALT_LOCK      = 211;
     public static final int KEYCODE_VOICE      = 212;
+
+    private static final int LAST_KEYCODE           = KEYCODE_VOICE;
 
     // NOTE: If you add a new keycode here you must also add it to:
     //  isSystem()

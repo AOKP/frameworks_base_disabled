@@ -1982,4 +1982,3 @@ status_t StagefrightRecorder::startExtendedRecording() {
 #endif
 
 }  // namespace android
-

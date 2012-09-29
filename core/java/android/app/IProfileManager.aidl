@@ -27,7 +27,6 @@ interface IProfileManager
     boolean setActiveProfile(in ParcelUuid profileParcelUuid);
     boolean setActiveProfileByName(String profileName);
     Profile getActiveProfile();
-    Profile getLastActiveProfile();
 
     boolean addProfile(in Profile profile);
     boolean removeProfile(in Profile profile);

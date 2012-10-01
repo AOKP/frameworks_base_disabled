@@ -164,6 +164,8 @@
     <string name="toggle_nfc">NFC</string>
     <string name="status_bar_settings_toggles">开关</string>
 
+    <string name="toggle_navbar">导航栏开关</string>
+
     <!-- Label in drop down to identify brightness slider -->
     <string name="brightness_label">亮度</string>
     <string name="recents_kill_all_button_text">全部结束</string>

@@ -95,7 +95,7 @@ public class TwoGToggle extends Toggle {
     @Override
     protected boolean onLongPress() {
         Intent intent = new Intent(
-                android.provider.Settings.ACTION_WIRELESS_SETTINGS);
+                android.provider.Settings.ACTION_DATA_ROAMING_SETTINGS);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         mContext.startActivity(intent);
         return true;

@@ -130,6 +130,14 @@ public class ManageDialog extends AlertActivity implements
             finish();
         }
     }
+    
+    public static String humanReadableByteCount(long bytes, boolean si) {
+      int unit = si ? 1000 : 1024;
+      if (bytes < unit) return bytes + " B";
+      int exp = (int) (Math.log(bytes) / Math.log(unit));
+      String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp-1) + (si ? "" : "i");
+      return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
+    }
 
     @Override
     public boolean handleMessage(Message message) {
@@ -153,11 +161,11 @@ public class ManageDialog extends AlertActivity implements
 
                 // [1] and [2] are received data in bytes and packets.
                 mDataReceived.setText(getString(R.string.data_value_format,
-                        numbers[1], numbers[2]));
+                        humanReadableByteCount(Long.parseLong(numbers[1]), true), numbers[2]));
 
                 // [9] and [10] are transmitted data in bytes and packets.
                 mDataTransmitted.setText(getString(R.string.data_value_format,
-                        numbers[9], numbers[10]));
+                        humanReadableByteCount(Long.parseLong(numbers[9]), true), numbers[10]));
             }
             mHandler.sendEmptyMessageDelayed(0, 1000);
         }

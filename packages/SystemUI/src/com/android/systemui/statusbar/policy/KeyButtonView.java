@@ -156,12 +156,8 @@ public class KeyButtonView extends ImageView {
             canvas.save();
             final int w = getWidth();
             final int h = getHeight();
-            final float aspect = (float)mGlowWidth / mGlowHeight;
-            final int drawW = (int)(h*aspect);
-            final int drawH = h;
-            final int margin = (drawW-w)/2;
             canvas.scale(mGlowScale, mGlowScale, w*0.5f, h*0.5f);
-            mGlowBG.setBounds(-margin, 0, drawW-margin, drawH);
+            mGlowBG.setBounds(0, 0, w, h);
             mGlowBG.setAlpha((int)(mDrawingAlpha * mGlowAlpha * 255));
             mGlowBG.draw(canvas);
             canvas.restore();

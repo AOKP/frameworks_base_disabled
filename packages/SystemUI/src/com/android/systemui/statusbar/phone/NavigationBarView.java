@@ -159,6 +159,7 @@ public class NavigationBarView extends LinearLayout {
 
     private int currentVisibility;
     private int currentSetting;
+    private boolean mHasBigMenuButton = false;
 
     // Widgets
     public FrameLayout mPopupView;
@@ -283,12 +284,8 @@ public class NavigationBarView extends LinearLayout {
                     .findViewById(R.id.lights_out) : rot0
                     .findViewById(R.id.lights_out));
 
-            // add left menu
-            if (currentSetting != SHOW_DONT) {
-                View leftmenuKey = generateKey(landscape, KEY_MENU_LEFT);
-                addButton(navButtonLayout, leftmenuKey, landscape);
-                addLightsOutButton(lightsOut, leftmenuKey, landscape, true);
-            }
+            // Add the Main Nav Buttons
+            mHasBigMenuButton = false;
             for (int j = 0; j < mNumberOfButtons; j++) {
                 ExtensibleKeyButtonView v = generateKey(landscape, mClickActions[j],
                         mLongpressActions[j],
@@ -300,7 +297,9 @@ public class NavigationBarView extends LinearLayout {
                 if (v.getId() == R.id.back){
                 	mBackIcon = mBackLandIcon = v.getDrawable();
                 }
-
+                if (v.getId() == R.id.menu){
+                    mHasBigMenuButton = true;
+                }
                 if (mNumberOfButtons == 3 && j != (mNumberOfButtons - 1)) {
                     // add separator view here
                     View separator = new View(mContext);
@@ -309,10 +308,20 @@ public class NavigationBarView extends LinearLayout {
                     addLightsOutButton(lightsOut, separator, landscape, true);
                 }
             }
-            if (currentSetting != SHOW_DONT) {
-                View rightMenuKey = generateKey(landscape, KEY_MENU_RIGHT);
-                addButton(navButtonLayout, rightMenuKey, landscape);
-                addLightsOutButton(lightsOut, rightMenuKey, landscape, true);
+            // check to see if we already have a menu button
+            if (!mHasBigMenuButton) {  // don't add menu buttons if we already have one
+                // add left menu
+                if (currentSetting != SHOW_DONT) {
+                    View leftmenuKey = generateKey(landscape, KEY_MENU_LEFT);
+                    navButtonLayout.addView(leftmenuKey,0);
+                    // it may not really be 'landscape, but I need to cheat to get the lightsout button inserted at front
+                    addLightsOutButton(lightsOut, leftmenuKey, true, true);
+                }
+                if (currentSetting != SHOW_DONT) {
+                    View rightMenuKey = generateKey(landscape, KEY_MENU_RIGHT);
+                    addButton(navButtonLayout, rightMenuKey, landscape);
+                    addLightsOutButton(lightsOut, rightMenuKey, landscape, true);
+                }
             }
         }
         createWidgetView();
@@ -351,13 +360,18 @@ public class NavigationBarView extends LinearLayout {
 
             case KEY_MENU_RIGHT:
                 v = new KeyButtonView(mContext, null);
-                v.setLayoutParams(getLayoutParams(landscape, 40));
+                v.setLayoutParams(getLayoutParams(landscape, (mTablet_UI == 1) ? 80 : 40));
 
                 v.setId(R.id.menu);
                 v.setCode(KeyEvent.KEYCODE_MENU);
-                v.setImageResource(landscape ? R.drawable.ic_sysbar_menu_land
+                if (mTablet_UI == 1) {
+                    v.setImageResource(R.drawable.ic_sysbar_menu_big);
+                    v.setVisibility(View.GONE);
+                } else {
+                    v.setImageResource(landscape ? R.drawable.ic_sysbar_menu_land
                         : R.drawable.ic_sysbar_menu);
-                v.setVisibility(View.INVISIBLE);
+                    v.setVisibility(View.INVISIBLE);
+                }
                 v.setContentDescription(r.getString(R.string.accessibility_menu));
                 v.setGlowBackground(landscape ? R.drawable.ic_sysbar_highlight_land
                         : R.drawable.ic_sysbar_highlight);
@@ -365,13 +379,18 @@ public class NavigationBarView extends LinearLayout {
 
             case KEY_MENU_LEFT:
                 v = new KeyButtonView(mContext, null);
-                v.setLayoutParams(getLayoutParams(landscape, 40));
+                v.setLayoutParams(getLayoutParams(landscape, (mTablet_UI == 1) ? 80 : 40));
 
                 v.setId(R.id.menu_left);
                 v.setCode(KeyEvent.KEYCODE_MENU);
-                v.setImageResource(landscape ? R.drawable.ic_sysbar_menu_land
+                if (mTablet_UI == 1) {
+                    v.setImageResource(R.drawable.ic_sysbar_menu_big);
+                    v.setVisibility(View.GONE);
+                } else {
+                    v.setImageResource(landscape ? R.drawable.ic_sysbar_menu_land
                         : R.drawable.ic_sysbar_menu);
-                v.setVisibility(View.INVISIBLE);
+                    v.setVisibility(View.INVISIBLE);
+                }
                 v.setContentDescription(r.getString(R.string.accessibility_menu));
                 v.setGlowBackground(landscape ? R.drawable.ic_sysbar_highlight_land
                         : R.drawable.ic_sysbar_highlight);
@@ -534,8 +553,9 @@ public class NavigationBarView extends LinearLayout {
         final boolean disableRecent = ((disabledFlags & View.STATUS_BAR_DISABLE_RECENT) != 0);
         final boolean disableBack = ((disabledFlags & View.STATUS_BAR_DISABLE_BACK) != 0);
 
-        setSlippery(disableHome && disableRecent && disableBack);
-        
+        if (mTablet_UI != 1) { // Tabletmode doesn't deal with slippery
+            setSlippery(disableHome && disableRecent && disableBack);
+        }
         for (int j = 0; j < mNumberOfButtons; j++) {
             View v = (View) findViewWithTag((mVertical ? "key_land_" : "key_") + j);
             if (v != null) {
@@ -564,7 +584,12 @@ public class NavigationBarView extends LinearLayout {
                 return;
             }
             WindowManagerImpl.getDefault().updateViewLayout(this, lp);
+            
         }
+    }
+
+    public boolean getMenuVisibility() {
+        return mShowMenu;
     }
 
     public void setMenuVisibility(final boolean show) {
@@ -576,7 +601,7 @@ public class NavigationBarView extends LinearLayout {
     	if (!force && mShowMenu == show)
             return;
 
-        if (currentSetting == SHOW_DONT) {
+        if ((currentSetting == SHOW_DONT) || mHasBigMenuButton) {
             return;
         }
 
@@ -587,22 +612,18 @@ public class NavigationBarView extends LinearLayout {
         ImageView rightButton = (ImageView) getRightMenuButton();
 
         switch (currentVisibility) {
-            case VISIBILITY_SYSTEM:
-                leftButton
-                        .setImageResource(mVertical ? R.drawable.ic_sysbar_menu_land
-                                : R.drawable.ic_sysbar_menu);
-                rightButton
-                        .setImageResource(mVertical ? R.drawable.ic_sysbar_menu_land
-                                : R.drawable.ic_sysbar_menu);
-                break;
             case VISIBILITY_ALWAYS:
-                leftButton
-                        .setImageResource(mVertical ? R.drawable.ic_sysbar_menu_land
-                                : R.drawable.ic_sysbar_menu);
-                rightButton
-                        .setImageResource(mVertical ? R.drawable.ic_sysbar_menu_land
-                                : R.drawable.ic_sysbar_menu);
                 localShow = true;
+            case VISIBILITY_SYSTEM:
+                if (mTablet_UI == 1) {
+                    rightButton.setImageResource(R.drawable.ic_sysbar_menu_big);
+                    leftButton.setImageResource(R.drawable.ic_sysbar_menu_big);
+                } else {
+                    rightButton.setImageResource(mVertical ? R.drawable.ic_sysbar_menu_land
+                        : R.drawable.ic_sysbar_menu);
+                    leftButton.setImageResource(mVertical ? R.drawable.ic_sysbar_menu_land
+                            : R.drawable.ic_sysbar_menu);
+                }
                 break;
             case VISIBILITY_NEVER:
                 leftButton
@@ -613,12 +634,15 @@ public class NavigationBarView extends LinearLayout {
                 break;
             case VISIBILITY_SYSTEM_AND_INVIZ:
                 if (localShow) {
-                    leftButton
-                            .setImageResource(mVertical ? R.drawable.ic_sysbar_menu_land
-                                    : R.drawable.ic_sysbar_menu);
-                    ((ImageView) getRightMenuButton())
-                            .setImageResource(mVertical ? R.drawable.ic_sysbar_menu_land
-                                    : R.drawable.ic_sysbar_menu);
+                    if (mTablet_UI == 1) {
+                        rightButton.setImageResource(R.drawable.ic_sysbar_menu_big);
+                        leftButton.setImageResource(R.drawable.ic_sysbar_menu_big);
+                    } else {
+                        rightButton.setImageResource(mVertical ? R.drawable.ic_sysbar_menu_land
+                            : R.drawable.ic_sysbar_menu);
+                        leftButton.setImageResource(mVertical ? R.drawable.ic_sysbar_menu_land
+                                : R.drawable.ic_sysbar_menu);
+                    }
                 } else {
                     localShow = true;
                     leftButton
@@ -630,19 +654,33 @@ public class NavigationBarView extends LinearLayout {
         }
 
         // do this after just in case show was changed
+        // Tablet menu buttons should not take up space when hidden.
         switch (currentSetting) {
             case SHOW_BOTH_MENU:
-                getLeftMenuButton().setVisibility(localShow ? View.VISIBLE : View.INVISIBLE);
-                getRightMenuButton().setVisibility(localShow ? View.VISIBLE : View.INVISIBLE);
+                if (mTablet_UI==1) {
+                    leftButton.setVisibility(localShow ? View.VISIBLE : View.GONE);
+                    rightButton.setVisibility(localShow ? View.VISIBLE : View.GONE);
+                } else {
+                    leftButton.setVisibility(localShow ? View.VISIBLE : View.INVISIBLE);
+                    rightButton.setVisibility(localShow ? View.VISIBLE : View.INVISIBLE);
+                }
                 break;
             case SHOW_LEFT_MENU:
-                getLeftMenuButton().setVisibility(localShow ? View.VISIBLE : View.INVISIBLE);
-                getRightMenuButton().setVisibility(View.INVISIBLE);
+                if (mTablet_UI==1) {
+                    leftButton.setVisibility(localShow ? View.VISIBLE : View.GONE);
+                } else {
+                    leftButton.setVisibility(localShow ? View.VISIBLE : View.INVISIBLE);
+                }
+                rightButton.setVisibility((mTablet_UI == 1) ? View.GONE : View.INVISIBLE);
                 break;
             default:
             case SHOW_RIGHT_MENU:
-                getLeftMenuButton().setVisibility(View.INVISIBLE);
-                getRightMenuButton().setVisibility(localShow ? View.VISIBLE : View.INVISIBLE);
+                leftButton.setVisibility((mTablet_UI == 1) ? View.GONE : View.INVISIBLE);
+                if (mTablet_UI==1) {
+                    rightButton.setVisibility(localShow ? View.VISIBLE : View.GONE);
+                } else {
+                    rightButton.setVisibility(localShow ? View.VISIBLE : View.INVISIBLE);
+                }
                 break;
         }
     }

@@ -63,11 +63,8 @@ public class TogglesView extends LinearLayout {
 
     private BaseStatusBar sb;
 
-    public static final String STOCK_TOGGLES = TOGGLE_WIFI + TOGGLE_DELIMITER
-            + TOGGLE_BLUETOOTH + TOGGLE_DELIMITER + TOGGLE_GPS
-            + TOGGLE_DELIMITER + TOGGLE_AUTOROTATE + TOGGLE_DELIMITER
-            + TOGGLE_SWAGGER + TOGGLE_DELIMITER + TOGGLE_VIBRATE
-            + TOGGLE_DELIMITER + TOGGLE_SYNC + TOGGLE_DELIMITER + TOGGLE_SILENT;
+    public String[] defaultToggles = getResources().getStringArray(R.array.default_toggles);
+    public String STOCK_TOGGLES = getDefaultToggles(defaultToggles);
 
     View mBrightnessSlider;
 
@@ -92,7 +89,7 @@ public class TogglesView extends LinearLayout {
     }
 
     private void addToggles(String userToggles) {
-        if (userToggles == null)
+        if (userToggles == null || "".equals(userToggles)) 
             userToggles = STOCK_TOGGLES;
 
         Log.e(TAG, userToggles);
@@ -352,5 +349,16 @@ public class TogglesView extends LinearLayout {
 
         SettingsObserver settingsObserver = new SettingsObserver(new Handler());
         settingsObserver.observe();
+    }
+
+    public String getDefaultToggles(String[] defaultToggles) {
+        StringBuilder stockToggles = new StringBuilder();
+        for(int i = 0; i < defaultToggles.length; i++) {
+            stockToggles.append(defaultToggles[i]);
+            if(i != defaultToggles.length - 1) {
+                stockToggles.append(TOGGLE_DELIMITER);
+            }
+        }
+        return stockToggles.toString();
     }
 }

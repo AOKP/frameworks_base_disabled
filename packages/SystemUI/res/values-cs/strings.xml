@@ -150,4 +150,14 @@
 
     <string name="recents_kill_all_button_text">Ukončit vše</string>
     <string name="toggle_navbar">Zobrazit/skrýt navigační lištu</string>
+    <string name="brightness_label">Jas</string>
+    <string name="app_killed_message">Aplikace ukončena</string>
+    <string name="wifi">WIFI</string>
+    <string name="bt">BT</string>
+    <string name="gps">GPS</string>
+    <string name="rotate">ROTACE</string>
+    <string name="swagger">SWAGGER</string>
+    <string name="sync">SYNCH</string>
+    <string name="silent">TICHÝ</string>
+    <string name="widgets">Widgety</string>
 </resources>

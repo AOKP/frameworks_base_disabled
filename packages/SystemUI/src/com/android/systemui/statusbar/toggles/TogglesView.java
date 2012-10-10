@@ -89,7 +89,7 @@ public class TogglesView extends LinearLayout {
     }
 
     private void addToggles(String userToggles) {
-        if (userToggles == null || "".equals(userToggles)) 
+        if (userToggles == null) 
             userToggles = STOCK_TOGGLES;
 
         Log.e(TAG, userToggles);

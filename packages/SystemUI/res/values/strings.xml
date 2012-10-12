@@ -427,6 +427,7 @@
     <string name="gps">GPS</string>
     <string name="rotate">ROTATE</string>
     <string name="swagger">SWAGGER</string>
+    <string name="vibrate">VIBRATE</string>
     <string name="sync">SYNC</string>
     <string name="silent">SILENT</string>
 

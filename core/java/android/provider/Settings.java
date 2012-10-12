@@ -979,7 +979,7 @@ public final class Settings {
          * with that name.  Note that internally setting values are always
          * stored as strings, so this function converts the given value to a
          * string (1 or 0) before storing it.
-         *
+         * 
          * @param cr The ContentResolver to access.
          * @param name The name of the setting to modify.
          * @param value The new value for the setting.
@@ -5442,14 +5442,6 @@ public final class Settings {
 
         /** Timeout for package verification. {@hide} */
         public static final String PACKAGE_VERIFIER_TIMEOUT = "verifier_timeout";
-
-        /**
-         * use the lock screen timeout settings when the user turns the power off manually?
-         * Boolean value
-         *
-         * @hide
-         */
-        public static final String LOCK_SCREEN_LOCK_USER_OVERRIDE = "lock_screen_lock_suer_override";
 
         /** {@hide} */
         public static final String

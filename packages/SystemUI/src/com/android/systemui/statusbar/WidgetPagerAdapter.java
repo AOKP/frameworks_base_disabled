@@ -38,13 +38,16 @@ public class WidgetPagerAdapter extends PagerAdapter {
     }
 
     public int getHeight(int pos) {
-        if (hostViews[pos] != null && hostViews[pos].getAppWidgetInfo() != null) {
-            int height = hostViews[pos].getAppWidgetInfo().minHeight;
-            setSavedHeight(pos, height);
-            return height;
-        } else {
-            return getSavedHeight(pos);
+        int height = getSavedHeight(pos);
+        if (height == -1) {
+            if (hostViews[pos] != null && hostViews[pos].getAppWidgetInfo() != null) {
+                height = hostViews[pos].getAppWidgetInfo().minHeight;
+            } else {
+                height = 100;  // default size
+            }
+            setSavedHeight(pos, height);    
         }
+        return height;
     }
 
     public String getLabel(int pos) {
@@ -57,13 +60,13 @@ public class WidgetPagerAdapter extends PagerAdapter {
     private int getSavedHeight(int pos) {
         SharedPreferences prefs = mContext.getSharedPreferences("widget_adapter",
                 Context.MODE_WORLD_WRITEABLE);
-        return prefs.getInt("widget_pos_" + pos, 100);
+        return prefs.getInt("widget_id_" + widgetIds[pos], -1);
     }
 
-    private void setSavedHeight(int pos, int height) {
+    public void setSavedHeight(int pos, int height) {
         SharedPreferences prefs = mContext.getSharedPreferences("widget_adapter",
                 Context.MODE_WORLD_WRITEABLE);
-        prefs.edit().putInt("widget_pos_" + pos, height).commit();
+        prefs.edit().putInt("widget_id_" + widgetIds[pos], height).commit();
     }
 
     /**

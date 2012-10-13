@@ -391,6 +391,7 @@
     <!-- Description of the button in the phone-style notification panel that controls auto-rotation, when auto-rotation is off. [CHAR LIMIT=NONE] -->
     <string name="accessibility_rotation_lock_on_portrait">Screen is locked in portrait orientation.</string>
 
+    <string name="shortcut_label">AOKP Actions</string>
     <string name="toggle_bt">BT</string>
     <string name="toggle_data">Data</string>
     <string name="toggle_lte">LTE</string>
@@ -411,6 +412,7 @@
     <string name="status_bar_settings_toggles">Toggles</string>
     
     <string name="toggle_navbar">Toggle NavBar</string>
+    <string name="toggle_widgets">Toggle Widgets</string>
 
     <!-- Label in drop down to identify brightness slider -->
     <string name="brightness_label">Brightness</string>

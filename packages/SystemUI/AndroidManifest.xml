@@ -218,13 +218,26 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.android.systemui.CreateShortcut" >
+            android:name="com.android.systemui.WidgetToggle"
+            android:label="@string/toggle_widgets"
+            android:icon="@drawable/ic_sysbar_widget" >
+            <intent-filter>
+                <action android:name="com.android.systemui.INTENT_WIDGET_TOGGLE" />
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="com.android.systemui.SHORTCUT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.android.systemui.CreateShortcut" 
+            android:label="@string/shortcut_label"
+            android:icon="@drawable/ic_sysbar_null">
             <intent-filter>
                 <action android:name="android.intent.action.CREATE_SHORTCUT" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-		<activity android:name="com.android.systemui.WidgetSelectActivity" >
+		<activity android:name="com.android.systemui.WidgetSelectActivity"
+		    android:excludeFromRecents="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>

@@ -142,9 +142,11 @@
     <string name="status_bar_notification_inspect_item_title" msgid="1163547729015390250">"应用信息"</string>
     <string name="notifications_off_title" msgid="8936620513608443224">"通知功能已停用"</string>
     <string name="notifications_off_text" msgid="2529001315769385273">"点按此处可重新启用通知功能。"</string>
+    <string name="widgets">小部件</string>
     <string name="accessibility_rotation_lock_off" msgid="4062780228931590069">"屏幕会自动旋转。"</string>
     <string name="accessibility_rotation_lock_on_landscape" msgid="6731197337665366273">"屏幕锁定为横向模式。"</string>
     <string name="accessibility_rotation_lock_on_portrait" msgid="5809367521644012115">"屏幕锁定为纵向模式。"</string>
+    <string name="shortcut_label">AOKP 动作</string>
     <string name="toggle_bt">蓝牙</string>
     <string name="toggle_data">数据</string>
     <string name="toggle_lte">LTE</string>
@@ -165,9 +167,20 @@
     <string name="status_bar_settings_toggles">开关</string>
 
     <string name="toggle_navbar">导航栏开关</string>
+    <string name="toggle_widgets">小部件开关</string>
 
     <!-- Label in drop down to identify brightness slider -->
     <string name="brightness_label">亮度</string>
     <string name="recents_kill_all_button_text">全部结束</string>
-    <string name="app_killed_message">应用程序已结束</string> 
+    <string name="app_killed_message">应用程序已结束</string>
+
+    <string name="wifi">WIFI</string>
+    <string name="bt">蓝牙</string>
+    <string name="gps">GPS</string>
+    <string name="rotate">旋转</string>
+    <string name="swagger">自爆</string>
+    <string name="vibrate">振动</string>
+    <string name="sync">同步</string>
+    <string name="silent">静音</string>
+
 </resources>

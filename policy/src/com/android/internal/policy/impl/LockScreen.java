@@ -129,7 +129,6 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
     private KeyguardStatusViewManager mStatusViewManager;
     private UnlockWidgetCommonMethods mUnlockWidgetMethods;
     private View mUnlockWidget;
-    private boolean mCameraDisabled;
     private boolean mSearchDisabled;
     // Is there a vibrator
     private final boolean mHasVibrator;
@@ -306,7 +305,6 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
             UnlockWidgetCommonMethods {
         private final GlowPadView mGlowPadView;
         private String[] mStoredTargets;
-        private int mTargetOffset;
         private boolean mIsScreenLarge;
 
         GlowPadViewMethods(GlowPadView glowPadView) {
@@ -351,7 +349,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
                     Settings.System.LOCKSCREEN_TARGETS);
             if (storedVal == null) {
                 int resId;
-                if (mCameraDisabled && mEnableRingSilenceFallback) {
+                if (mEnableRingSilenceFallback) {
                     // Fall back to showing ring/silence if camera is disabled...
                     resId = mSilentMode ? R.array.lockscreen_targets_when_silent
                             : R.array.lockscreen_targets_when_soundon;
@@ -380,7 +378,6 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
                         }
                     }
                 }
-                setEnabled(com.android.internal.R.drawable.ic_lockscreen_camera, !mCameraDisabled);
                 setEnabled(com.android.internal.R.drawable.ic_action_assist_generic, !mSearchDisabled);
             } else {
                 mStoredTargets = storedVal.split("\\|");
@@ -392,12 +389,6 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
                 final boolean isLandscape = mCreationOrientation == Configuration.ORIENTATION_LANDSCAPE;
                 final Drawable blankActiveDrawable = res.getDrawable(R.drawable.ic_lockscreen_target_activated);
                 final InsetDrawable activeBack = new InsetDrawable(blankActiveDrawable, 0, 0, 0, 0);
-                // Shift targets for landscape lockscreen on phones
-                mTargetOffset = isLandscape && !mIsScreenLarge ? 2 : 0;
-                if (mTargetOffset == 2) {
-                    storedDraw.add(new TargetDrawable(res, null));
-                    storedDraw.add(new TargetDrawable(res, null));
-                }
                 // Add unlock target
                 storedDraw.add(new TargetDrawable(res, res.getDrawable(R.drawable.ic_lockscreen_unlock)));
 
@@ -410,7 +401,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
                     total = 8;
                 }
 
-                for (int i = 0; i < total - mTargetOffset - 1; i++) {
+                for (int i = 0; i < total - 1; i++) {
                     int tmpInset = targetInset;
                     if (i < mStoredTargets.length) {
                         String uri = mStoredTargets[i];
@@ -465,12 +456,10 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
                                     }
                                 }
                                 TargetDrawable nDrawable = new TargetDrawable(res, getLayeredDrawable(back,front, tmpInset, frontBlank));
-                                boolean isCamera = in.getComponent().getClassName().equals("com.android.camera.CameraLauncher");
-                                if (isCamera) {
-                                    nDrawable.setEnabled(!mCameraDisabled);
-                                } else {
-                                    boolean isSearch = in.getComponent().getClassName().equals("SearchActivity");
-                                    if (isSearch) {
+                                ComponentName compName = in.getComponent();
+                                if (compName != null) {
+                                    String cls = compName.getClassName();
+                                    if (cls.equals("SearchActivity")) {
                                         nDrawable.setEnabled(!mSearchDisabled);
                                     }
                                 }
@@ -528,19 +517,14 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
                 }
             } else {
                 final boolean isLand = mCreationOrientation == Configuration.ORIENTATION_LANDSCAPE;
-                if ((target == 0 && (mIsScreenLarge || !isLand)) || (target == 2 && !mIsScreenLarge && isLand)) {
+                if (target == 0) {
                     mCallback.goToUnlockScreen();
                 } else {
-                    target -= 1 + mTargetOffset;
+                    target -= 1;
                     if (target < mStoredTargets.length && mStoredTargets[target] != null) {
                         try {
-                            Intent tIntent = Intent.parseUri(mStoredTargets[target], 0);
-                            tIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            mContext.startActivity(tIntent);
-                            mCallback.goToUnlockScreen();
-                            return;
+                            launchActivity(Intent.parseUri(mStoredTargets[target], 0));
                         } catch (URISyntaxException e) {
-                        } catch (ActivityNotFoundException e) {
                         }
                     }
                 }
@@ -553,12 +537,8 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
                     | Intent.FLAG_ACTIVITY_SINGLE_TOP
                     | Intent.FLAG_ACTIVITY_CLEAR_TOP);
             try {
-                ActivityManagerNative.getDefault().dismissKeyguardOnNextActivity();
-            } catch (RemoteException e) {
-                Log.w(TAG, "can't dismiss keyguard on launch");
-            }
-            try {
                 mContext.startActivity(intent);
+                mCallback.goToUnlockScreen();
             } catch (ActivityNotFoundException e) {
                 Log.w(TAG, "Activity not found for intent + " + intent.getAction());
             }
@@ -777,7 +757,6 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
             Log.v(TAG, "Camera disabled by Sim State");
         }
         boolean searchActionAvailable = SearchManager.getAssistIntent(mContext) != null;
-        mCameraDisabled = disabledByAdmin || disabledBySimState || !cameraPresent;
         mSearchDisabled = disabledBySimState || !searchActionAvailable || !searchTargetPresent;
         mUnlockWidgetMethods.updateResources();
     }

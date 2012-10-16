@@ -34,8 +34,9 @@ public class WifiP2pProvDiscEvent {
     public static final int PBC_RSP     = 2;
     public static final int ENTER_PIN   = 3;
     public static final int SHOW_PIN    = 4;
+    public static final int DISC_FAILURE= 5;
 
-    /* One of PBC_REQ, PBC_RSP, ENTER_PIN or SHOW_PIN */
+    /* One of PBC_REQ, PBC_RSP, ENTER_PIN or SHOW_PIN or DISC_FAILURE*/
     public int event;
 
     public WifiP2pDevice device;
@@ -69,6 +70,7 @@ public class WifiP2pProvDiscEvent {
         else if (tokens[0].endsWith("PBC-RESP")) event = PBC_RSP;
         else if (tokens[0].endsWith("ENTER-PIN")) event = ENTER_PIN;
         else if (tokens[0].endsWith("SHOW-PIN")) event = SHOW_PIN;
+        else if (tokens[0].endsWith("DISC-FAILURE")) event = DISC_FAILURE;
         else throw new IllegalArgumentException("Malformed event " + string);
 
 

@@ -1,9 +1,9 @@
 /*
  * Copyright (C) 2010 The Android Open Source Project
  * Copyright 2011 Colin McDonough
- * 
+ *
  * Modified for AOKP by Mike Wilson (Zaphod-Beeblebrox)
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -75,8 +75,7 @@ public class TorchToggle extends Toggle implements
 
     @Override
     protected void onCheckChanged(boolean isChecked) {
-        mToggle.setEnabled(false); // we've changed torch - let's disable until
-                                   // torch catches up;
+        //mToggle.setEnabled(false); // we've changed torch - let's disable until torch catches up;
         if (isChecked) {
             Intent i = new Intent(INTENT_TORCH_ON);
             i.setAction(INTENT_TORCH_ON);
@@ -99,9 +98,10 @@ public class TorchToggle extends Toggle implements
             String key) {
         mIsTorchOn = sharedPreferences.getBoolean(KEY_TORCH_ON, false);
         updateState();
+        /*
         if (mToggle.isChecked() == mIsTorchOn) {
-            mToggle.setEnabled(true); // torch status has caught up with toggle
-                                      // - re-enable toggle.
+            mToggle.setEnabled(true); // torch status has caught up with toggle - re-enable toggle.
         }
+        */
     }
 }

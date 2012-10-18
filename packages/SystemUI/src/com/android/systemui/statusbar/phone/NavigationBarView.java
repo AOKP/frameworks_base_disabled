@@ -321,10 +321,12 @@ public class NavigationBarView extends LinearLayout {
             if (!mHasBigMenuButton) {  // don't add menu buttons if we already have one
                 // add left menu
                 if (currentSetting != SHOW_DONT) {
-                    View leftmenuKey = generateKey(landscape, KEY_MENU_LEFT);
-                    navButtonLayout.addView(leftmenuKey,0);
-                    // it may not really be 'landscape, but I need to cheat to get the lightsout button inserted at front
-                    addLightsOutButton(lightsOut, leftmenuKey, true, true);
+                    View leftMenuKey = generateKey(landscape, KEY_MENU_LEFT);
+                    // since we didn't add these at the beginning, we need to insert it now
+                    // the behavior is backwards from landscape (ie, insert at beginning
+                    // if portrait, add to end if landscape
+                    addButton(navButtonLayout, leftMenuKey, !landscape);
+                    addLightsOutButton(lightsOut, leftMenuKey, !landscape, true);
                 }
                 if (currentSetting != SHOW_DONT) {
                     View rightMenuKey = generateKey(landscape, KEY_MENU_RIGHT);

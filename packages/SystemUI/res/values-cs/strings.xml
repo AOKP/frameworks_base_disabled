@@ -160,4 +160,26 @@
     <string name="sync">SYNCH</string>
     <string name="silent">TICHÝ</string>
     <string name="widgets">Widgety</string>
+
+    <string name="shortcut_label">AOKP akce</string>
+    <string name="toggle_bt">BT</string>
+    <string name="toggle_data">Data</string>
+    <string name="toggle_lte">LTE</string>
+    <string name="toggle_rotate">Rotace</string>
+    <string name="toggle_wifi">Wi-Fi</string>
+    <string name="toggle_gps">GPS</string>
+    <string name="toggle_2g">2G</string>
+    <string name="toggle_wifiap">Wi-Fi AP</string>
+    <string name="toggle_airplane">Mód letadlo</string>
+    <string name="toggle_vibrate">Vibrace</string>
+    <string name="toggle_silent">Tichý</string>
+    <string name="toggle_torch">Svítilna</string>
+    <string name="toggle_sync">Synch</string>
+    <string name="toggle_swagger">Swagger</string>
+    <string name="toggle_fcharge">Rychlé nabíjení</string>
+    <string name="toggle_tether">Tether</string>
+    <string name="toggle_nfc">NFC</string>
+    <string name="status_bar_settings_toggles">Přepínače</string>
+
+    <string name="toggle_widgets">Zobrazit/skrýt widgety</string>
 </resources>

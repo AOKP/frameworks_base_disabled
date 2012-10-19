@@ -80,7 +80,7 @@
     <!-- Column 2 -->
     <com.android.internal.widget.multiwaveview.GlowPadView
         android:id="@+id/unlock_widget"
-        android:layout_width="326dip"
+        android:layout_width="360dip"
         android:layout_height="match_parent"
         android:layout_rowSpan="4"
         android:gravity="left|center_vertical"

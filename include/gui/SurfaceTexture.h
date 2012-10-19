@@ -48,6 +48,13 @@ public:
     enum { NUM_BUFFER_SLOTS = 32 };
     enum { NO_CONNECTED_API = 0 };
 
+#ifdef OMAP_ENHANCEMENT
+    enum {
+        MIN_SURFACEFLINGERCLIENT_BUFFERS = 2,
+        MAX_SURFACEFLINGERCLIENT_BUFFERS
+    };
+#endif
+
     struct FrameAvailableListener : public virtual RefBase {
         // onFrameAvailable() is called from queueBuffer() each time an
         // additional frame becomes available for consumption. This means that
@@ -247,6 +254,31 @@ public:
     void dump(String8& result) const;
     void dump(String8& result, const char* prefix, char* buffer, size_t SIZE) const;
 
+#ifdef OMAP_ENHANCEMENT
+    //sets the layout for the buffers
+    virtual status_t setLayout(uint32_t layout);
+    // getCurrentLayout returns the layout of the current buffer
+    uint32_t getCurrentLayout() const;
+
+    // updateAndGetCurrent updates to the current buffer and returns
+    virtual status_t updateAndGetCurrent(sp<GraphicBuffer>* buf);
+
+    // updateTexImage sets the image contents of the target texture to that of
+    // the most recently queued buffer.
+    //
+    // This call may only be made while the OpenGL ES context to which the
+    // target texture belongs is bound to the calling thread.
+    status_t __updateTexImage(sp<GraphicBuffer>* buf = NULL);
+
+    // takeCurrentBuffer returns the buffer associated with the current image.
+    // The buffer will not be reused until releaseBuffer() is called
+    sp<GraphicBuffer> takeCurrentBuffer();
+
+    // releaseBuffer allows the SurfaceTexture to continue using the
+    // buffer.
+    void releaseBuffer(sp<GraphicBuffer> graphic_buffer);
+#endif
+
 protected:
 
     // freeBufferLocked frees the resources (both GraphicBuffer and EGLImage)
@@ -385,6 +417,16 @@ private:
         // to EGL_NO_SYNC_KHR when the buffer is created and (optionally, based
         // on a compile-time option) set to a new sync object in updateTexImage.
         EGLSyncKHR mFence;
+
+#ifdef OMAP_ENHANCEMENT
+        // mLayout is the current layout of the buffer for this buffer slot. This gets
+        // set to mNextLayout each time queueBuffer gets called for this buffer.
+        uint32_t mLayout;
+
+        // mMetadata is a flattened string pertaining to some metadata for this
+        // slot. Content of metadata may be different dependeing on usecase
+        String8 mMetadata;
+#endif
     };
 
     // mSlots is the array of buffer slots that must be mirrored on the client

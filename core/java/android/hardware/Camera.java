@@ -219,6 +219,7 @@ public class Camera {
         /**
 * The facing of the camera is the same as that of the screen.
 * @hide
+*/
         public static final int CAMERA_SUPPORT_MODE_NONZSL = 3;
 
         /**

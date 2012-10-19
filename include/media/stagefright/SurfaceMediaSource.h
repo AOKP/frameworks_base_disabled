@@ -117,7 +117,7 @@ public:
     // Make sure this is called when the mutex is locked
     virtual status_t onFrameReceivedLocked();
 
-    virtual status_t setScalingMode(int mode) { } // no op for encoding
+    virtual status_t setScalingMode(int mode) { return OK; } // no op for encoding
     virtual int query(int what, int* value);
 
     // Just confirming to the ISurfaceTexture interface as of now
@@ -197,6 +197,15 @@ public:
     // isMetaDataStoredInVideoBuffers tells the encoder whether we will
     // pass metadata through the buffers. Currently, it is force set to true
     bool isMetaDataStoredInVideoBuffers() const;
+
+#ifdef OMAP_ENHANCEMENT
+    // Just confirming to the ISurfaceTexture interface as of now
+    virtual status_t setLayout(uint32_t layout) { return OK; }
+
+    // updateAndGetCurrent updates to the current image and gives the ownership
+    // of the buffer to the client
+    virtual status_t updateAndGetCurrent(sp<GraphicBuffer>* buf);
+#endif
 
 protected:
 

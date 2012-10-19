@@ -38,11 +38,8 @@
 #include <utils/Errors.h>
 #include <utils/Log.h>
 #include <utils/String16.h>
-<<<<<<< HEAD
 #include <cutils/properties.h>
 
-=======
->>>>>>> 3d4e537... Fix all (or alteast most) of the stagefright build breaks
 #include <system/camera.h>
 #include "CameraService.h"
 #include "CameraHardwareInterface.h"
@@ -759,11 +756,7 @@ status_t CameraService::Client::startRecordingMode() {
 
 // stop preview mode
 void CameraService::Client::stopPreview() {
-<<<<<<< HEAD
     ALOG1("stopPreview (pid %d)", getCallingPid());
-=======
-    LOG1("stopPreview (pid %d)", getCallingPid());
->>>>>>> 3d4e537... Fix all (or alteast most) of the stagefright build breaks
     disableMsgType(CAMERA_MSG_PREVIEW_METADATA);
     Mutex::Autolock lock(mLock);
     if (checkPidAndHardware() != NO_ERROR) return;
@@ -1242,11 +1235,7 @@ void CameraService::Client::dataCallback(int32_t msgType,
     if (!client->lockIfMessageWanted(msgType)) return;
 
     if (dataPtr == 0 && metadata == NULL) {
-<<<<<<< HEAD
         ALOGE("Null data returned in data callback");
-=======
-        LOGE("Null data returned in data callback");
->>>>>>> 3d4e537... Fix all (or alteast most) of the stagefright build breaks
         client->handleGenericNotify(CAMERA_MSG_ERROR, CAMERA_ERROR_UNKNOWN, 0);
         return;
     }
@@ -1386,11 +1375,7 @@ void CameraService::Client::handleCompressedPicture(const sp<IMemory>& mem) {
     if (mburstCnt) mburstCnt--;
 
     if (!mburstCnt) {
-<<<<<<< HEAD
         ALOG1("mburstCnt = %d", mburstCnt);
-=======
-        LOG1("mburstCnt = %d", mburstCnt);
->>>>>>> 3d4e537... Fix all (or alteast most) of the stagefright build breaks
         disableMsgType(CAMERA_MSG_COMPRESSED_IMAGE);
 #ifdef QCOM_HARDWARE
         if (mFaceDetection) {

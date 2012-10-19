@@ -4103,6 +4103,8 @@ void OMXCodec::onStateChange(OMX_STATETYPE newState) {
                         // component teardown to zero out any protected buffers
                         // without the risk of scanning out one of those buffers.
                         pushBlankBuffersToNativeWindow();
+                    }
+#ifdef QCOM_HARDWARE
                 }
 #endif
 
@@ -5922,6 +5924,20 @@ static const char *colorFormatString(OMX_COLOR_FORMATTYPE type) {
 
     if (type == OMX_TI_COLOR_FormatYUV420PackedSemiPlanar) {
         return "OMX_TI_COLOR_FormatYUV420PackedSemiPlanar";
+	}
+    else if (type == OMX_QCOM_COLOR_FormatYVU420SemiPlanar) {
+        return "OMX_QCOM_COLOR_FormatYVU420SemiPlanar";
+#ifdef QCOM_HARDWARE
+    } else if (type == QOMX_COLOR_FormatYVU420PackedSemiPlanar32m4ka) {
+        return "QOMX_COLOR_FormatYVU420PackedSemiPlanar32m4ka";
+    } else if (type == QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka) {
+        return "QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka";
+    }
+    /*else if (type ==  OMX_QCOM_COLOR_FormatYVU420SemiPlanarInterlace) {
+        return "OMX_QCOM_COLOR_FormatYVU420SemiPlanarInterlace";
+    } */
+    else if (type < 0 || (size_t)type >= numNames) {
+#else
     } else if (type < 0 || (size_t)type >= numNames) {
 #endif
         return "UNKNOWN";
@@ -6777,7 +6793,7 @@ void OMXCodec::setQCELPFormat(int32_t numChannels, int32_t sampleRate, int32_t b
       LOGI("QCELP decoder \n");
     }
 }
-endif
+#endif
 #ifdef OMAP_ENHANCEMENT
 // Attempt to parse an int64 literal optionally surrounded by whitespace,
 // returns true on success, false otherwise.

@@ -846,6 +846,4 @@
     <!--Boolean to enable stk functionality on Samsung phones-->
     <bool name="config_samsung_stk">false</bool>
 
-    <!-- Use legacy USB device manager. -->
-    <bool name="config_usesLegacyUsbDeviceManager">false</bool>
 </resources>

@@ -2018,7 +2018,6 @@ status_t MPEG4Extractor::updateAudioTrackInfoFromESDS_MPEG4Audio(
         // packetized MP3 audio; for now, lets just return ERROR_UNSUPPORTED
         LOGE("MP3 track in MP4/3GPP file is not supported");
         return ERROR_UNSUPPORTED;
-#endif
     }
 
     const uint8_t *csd;

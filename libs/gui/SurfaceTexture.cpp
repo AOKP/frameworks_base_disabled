@@ -709,10 +709,6 @@ status_t SurfaceTexture::queueBuffer(int buf, int64_t timestamp,
         mSlots[buf].mTimestamp = timestamp;
         mFrameCounter++;
         mSlots[buf].mFrameNumber = mFrameCounter;
-#ifdef OMAP_ENHANCEMENT
-        mSlots[buf].mMetadata = metadata;
-        mSlots[buf].mLayout = mNextLayout;
-#endif
 
 #ifdef QCOM_HARDWARE
         // Update the buffer Geometry if required
@@ -784,24 +780,6 @@ status_t SurfaceTexture::setTransform(uint32_t transform) {
     mNextTransform = transform;
     return OK;
 }
-
-#ifdef OMAP_ENHANCEMENT
-status_t SurfaceTexture::setLayout(uint32_t layout) {
-    ST_LOGV("SurfaceTexture::setLayout");
-    Mutex::Autolock lock(mMutex);
-    if (mAbandoned) {
-        ST_LOGE("setLayout: SurfaceTexture has been abandoned!");
-        return NO_INIT;
-    }
-    mNextLayout = layout;
-    return OK;
-}
-
-status_t SurfaceTexture::updateAndGetCurrent(sp<GraphicBuffer>* buf) {
-    ST_LOGV("updateAndGetCurrent");
-    return __updateTexImage(buf);
-}
-#endif
 
 status_t SurfaceTexture::connect(int api,
         uint32_t* outWidth, uint32_t* outHeight, uint32_t* outTransform) {
@@ -944,15 +922,6 @@ status_t SurfaceTexture::updateTexImage(bool isComposition) {
     if (!mQueue.empty()) {
         Fifo::iterator front(mQueue.begin());
         int buf = *front;
-        bool failed = false;
-
-#ifdef OMAP_ENHANCEMENT
-        // TODO(XXX): Do not update texture object if user
-        // did not specify proper texture target. Hack for
-        // now to workaround SurfaceTexture dependency on
-        // texture
-        if (mTexTarget != EGL_NONE) {
-#endif
 
         // Update the GL texture object.
         EGLImageKHR image = mSlots[buf].mEglImage;
@@ -993,24 +962,7 @@ status_t SurfaceTexture::updateTexImage(bool isComposition) {
         }
 
         glBindTexture(mTexTarget, mTexName);
-
-#ifdef OMAP_ENHANCEMENT
-        // DIRTY HACK: we need to indicate specifically if texture size exceeds hardware limitations,
-        // so that Layer class can skip trying to draw it. Should be removed once proper solution on
-        // how to handle 1080p + VSTAB on SGX540 be implemented
-        GLint maxTextureSize;
-        glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTextureSize);
-
-        if ((mSlots[buf].mGraphicBuffer->getHeight() > (uint32_t)maxTextureSize) ||
-            (mSlots[buf].mGraphicBuffer->getWidth() > (uint32_t)maxTextureSize)) {
-                LOGE("updateTexImage: error creating texture since it's size doesn't meet hardware limitations");
-                failed = true;
-            } else {
-#endif
         glEGLImageTargetTexture2DOES(mTexTarget, (GLeglImageOES)image);
-#ifdef OMAP_ENHANCEMENT
-        }
-#endif
 
         bool failed = false;
         while ((error = glGetError()) != GL_NO_ERROR) {
@@ -1063,31 +1015,12 @@ status_t SurfaceTexture::updateTexImage(bool isComposition) {
         mCurrentTransform = mSlots[buf].mTransform;
         mCurrentScalingMode = mSlots[buf].mScalingMode;
         mCurrentTimestamp = mSlots[buf].mTimestamp;
-#ifdef OMAP_ENHANCEMENT
-        mCurrentLayout = mSlots[buf].mLayout;
-#endif
         computeCurrentTransformMatrix();
 
         // Now that we've passed the point at which failures can happen,
         // it's safe to remove the buffer from the front of the queue.
         mQueue.erase(front);
         mDequeueCondition.signal();
-
-#ifdef OMAP_ENHANCEMENT
-        // Return current buffer to caller is caller set a graphic_buf pointer
-        // Caller will use this because the following code segment will be run
-        // with the protection of the lock
-        if (graphic_buf) {
-            *graphic_buf = mCurrentTextureBuf;
-        }
-
-        // DIRTY HACK: in case texture size exceeds hardware limitations, we return EFBIG error code
-        // so that Layer class can skip trying to draw it. Should be removed once proper solution on
-        // how to handle 1080p + VSTAB on SGX540 be implemented
-        if (failed) {
-            return -EFBIG;
-        }
-#endif
     } else {
         // We always bind the texture even if we don't update its contents.
         glBindTexture(mTexTarget, mTexName);
@@ -1387,13 +1320,6 @@ bool SurfaceTexture::isSynchronousMode() const {
     Mutex::Autolock lock(mMutex);
     return mSynchronousMode;
 }
-
-#ifdef OMAP_ENHANCEMENT
-uint32_t SurfaceTexture::getCurrentLayout() const {
-    Mutex::Autolock lock(mMutex);
-    return mCurrentLayout;
-}
-#endif
 
 int SurfaceTexture::query(int what, int* outValue)
 {

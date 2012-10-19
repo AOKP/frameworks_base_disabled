@@ -197,6 +197,7 @@ private:
 #ifdef OMAP_ENHANCEMENT
     mutable Vector<Region>      mOldDirtyRegionHistory;
 #endif
+    bool                        mConnectedToCpu;
 
 #ifdef OMAP_ENHANCEMENT
     // mCurrentBuffer contains the current buffer from SurfaceTexture

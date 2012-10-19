@@ -292,6 +292,7 @@ static VideoFrame *extractVideoFrameWithCodecFlags(
     }
 #else
     err = converter.convert(
+#endif
             (const uint8_t *)buffer->data() + buffer->range_offset(),
             width, height,
             crop_left, crop_top, crop_right, crop_bottom,
@@ -299,7 +300,6 @@ static VideoFrame *extractVideoFrameWithCodecFlags(
             frame->mWidth,
             frame->mHeight,
             0, 0, frame->mWidth - 1, frame->mHeight - 1);
-#endif
 #ifdef QCOM_HARDWARE
     }
     else {
@@ -418,10 +418,9 @@ VideoFrame *StagefrightMetadataRetriever::getFrameAtTime(
 
     VideoFrame *frame =
         extractVideoFrameWithCodecFlags(
-
+#endif
                 &mClient, trackMeta, source, OMXCodec::kPreferSoftwareCodecs,
                 timeUs, option);
-#endif
 #ifdef QCOM_HARDWARE
     }
 #endif

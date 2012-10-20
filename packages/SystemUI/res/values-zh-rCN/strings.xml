@@ -182,5 +182,19 @@
     <string name="vibrate">振动</string>
     <string name="sync">同步</string>
     <string name="silent">静音</string>
+    <string name="memory">RAM</string>
+    <string name="service_background_processes"><xliff:g id="memory">%1$s</xliff:g> 空闲</string>
+    <string name="service_foreground_processes"><xliff:g id="memory">%1$s</xliff:g> 使用</string>
+    <string name="service_process_name"><xliff:g id="process">%1$s</xliff:g></string>
+    <string name="service_client_name"><xliff:g id="client_name">%1$s</xliff:g></string>
+    <string name="service_started_by_app">已运行应用程序</string>
+    <string name="running_processes_item_description_s_s"><xliff:g id="numprocess">%1$d</xliff:g>
+        进程和 <xliff:g id="numservices">%2$d</xliff:g> 服务</string>
+    <string name="running_processes_item_description_s_p"><xliff:g id="numprocess">%1$d</xliff:g>
+        进程和 <xliff:g id="numservices">%2$d</xliff:g> 服务</string>
+    <string name="running_processes_item_description_p_s"><xliff:g id="numprocess">%1$d</xliff:g>
+        进程和 <xliff:g id="numservices">%2$d</xliff:g> 服务</string>
+    <string name="running_processes_item_description_p_p"><xliff:g id="numprocess">%1$d</xliff:g>
+        进程和 <xliff:g id="numservices">%2$d</xliff:g> 服务</string>
 
 </resources>

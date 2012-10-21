@@ -98,11 +98,11 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 
 
     private static final int COLOR_WHITE = 0xFFFFFFFF;
-    public static final int LAYOUT_TRI = 2;
-    public static final int LAYOUT_QUAD = 3;
-    public static final int LAYOUT_HEPTA = 4;
-    public static final int LAYOUT_HEXA = 5;
-    public static final int LAYOUT_OCTO = 7;
+    public static final int LAYOUT_TRI = 3;
+    public static final int LAYOUT_QUAD = 4;
+    public static final int LAYOUT_HEPTA = 5;
+    public static final int LAYOUT_HEXA = 6;
+    public static final int LAYOUT_OCTO = 8;
 
     private int mLockscreenTargets;
 
@@ -384,19 +384,17 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
                 final boolean isLandscape = mCreationOrientation == Configuration.ORIENTATION_LANDSCAPE;
                 final Drawable blankActiveDrawable = res.getDrawable(R.drawable.ic_lockscreen_target_activated);
                 final InsetDrawable activeBack = new InsetDrawable(blankActiveDrawable, 0, 0, 0, 0);
-                // Add unlock target
-                storedDraw.add(new TargetDrawable(res, res.getDrawable(R.drawable.ic_lockscreen_unlock)));
 
                 int total = 0;
-                if (mLockscreenTargets == 2) {
+                if (mLockscreenTargets == 3) {
                     total = 4;
-                } else if (mLockscreenTargets == 3 || mLockscreenTargets == 5) {
+                } else if (mLockscreenTargets == 4 || mLockscreenTargets == 6) {
                     total = 6;
-                } else if (mLockscreenTargets == 4 || mLockscreenTargets == 7) {
+                } else if (mLockscreenTargets == 5 || mLockscreenTargets == 8) {
                     total = 8;
                 }
 
-                for (int i = 0; i < total - 1; i++) {
+                for (int i = 0; i < total; i++) {
                     int tmpInset = targetInset;
                     if (i < mStoredTargets.length) {
                         String uri = mStoredTargets[i];
@@ -466,8 +464,6 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
                                     }else{
                                         storedDraw.add(new TargetDrawable(res, res.getDrawable(R.drawable.ic_lockscreen_soundon)));
                                     }
-                                }else if(className.equals(HOMESCREEN_CMP)){
-                                        storedDraw.add(new TargetDrawable(res, res.getDrawable(R.drawable.ic_lockscreen_home)));
                                 }else{
                                     if (front == null || back == null) {
                                         ActivityInfo aInfo = in.resolveActivityInfo(packMan, PackageManager.GET_ACTIVITIES);
@@ -540,11 +536,6 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
                     break;
                 }
             } else {
-                final boolean isLand = mCreationOrientation == Configuration.ORIENTATION_LANDSCAPE;
-                if (target == 0) {
-                    mCallback.goToUnlockScreen();
-                } else {
-                    target -= 1;
                     if (target < mStoredTargets.length && mStoredTargets[target] != null) {
                         try {
                             Intent tIntent = Intent.parseUri(mStoredTargets[target], 0);
@@ -575,6 +566,8 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
                                     mAudioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
                                 }
                                 mCallback.pokeWakelock();
+                            }else if(HOMESCREEN_CMP.equals(className)){
+                                mCallback.goToUnlockScreen();
                             }else{
                                 launchActivity(tIntent);
                             }
@@ -583,7 +576,6 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
                     }
                 }
             }
-        }
 
         private void launchActivity(Intent intent) {
             intent.setFlags(

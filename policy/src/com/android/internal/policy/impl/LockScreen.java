@@ -465,6 +465,10 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
                                     }else{
                                         storedDraw.add(new TargetDrawable(res, res.getDrawable(R.drawable.ic_lockscreen_soundon)));
                                     }
+                                }else if(className.equals(HOMESCREEN_CMP) && front == null){
+                                    storedDraw.add(new TargetDrawable(res, res.getDrawable(R.drawable.ic_lockscreen_home)));
+                                }else if(className.equals(UNLOCK_CMP) && front == null){
+                                    storedDraw.add(new TargetDrawable(res, res.getDrawable(R.drawable.ic_lockscreen_unlock)));
                                 }else{
                                     if (front == null || back == null) {
                                         ActivityInfo aInfo = in.resolveActivityInfo(packMan, PackageManager.GET_ACTIVITIES);

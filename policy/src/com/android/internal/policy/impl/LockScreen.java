@@ -95,6 +95,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
     private static final String RING_VIB_CMP = "com.android.systemui.RingVibToggle";
     private static final String RING_SILENT_CMP = "com.android.systemui.RingSilentToggle";
     private static final String HOMESCREEN_CMP = "com.android.systemui.GoToHomescreen";
+    private static final String UNLOCK_CMP = "com.android.systemui.LockscreenUnlock";
 
 
     private static final int COLOR_WHITE = 0xFFFFFFFF;
@@ -386,7 +387,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
                 final InsetDrawable activeBack = new InsetDrawable(blankActiveDrawable, 0, 0, 0, 0);
 
                 int total = 0;
-                if (mLockscreenTargets == 3) {
+                if (mLockscreenTargets <= 3) {
                     total = 4;
                 } else if (mLockscreenTargets == 4 || mLockscreenTargets == 6) {
                     total = 6;
@@ -566,7 +567,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
                                     mAudioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
                                 }
                                 mCallback.pokeWakelock();
-                            }else if(HOMESCREEN_CMP.equals(className)){
+                            }else if(UNLOCK_CMP.equals(className)){
                                 mCallback.goToUnlockScreen();
                             }else{
                                 launchActivity(tIntent);

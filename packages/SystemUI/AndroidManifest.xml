@@ -280,6 +280,19 @@
             </intent-filter>
         </activity>
         <activity
+            android:name="com.android.systemui.LockscreenUnlock"
+            android:label="@string/lockscreen_unlock"
+            android:icon="@drawable/ic_lockscreen_unlock"
+            android:theme="@android:style/Theme.Holo.Panel"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTop" >
+            <intent-filter>
+                <action android:name="com.android.systemui.INTENT_GO_TO_HOMESCREEN" />
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="com.android.systemui.SHORTCUT" />
+            </intent-filter>
+        </activity>
+        <activity
             android:name="com.android.systemui.CreateShortcut"
             android:label="@string/shortcut_label"
             android:icon="@drawable/ic_sysbar_null">

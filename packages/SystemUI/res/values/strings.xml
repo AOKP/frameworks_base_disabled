@@ -417,6 +417,7 @@
     <string name="toggle_ring_silent">Toggle Ring/Silent</string>
     <string name="toggle_ring_vib_silent">Toggle Ring/Vib/Silent</string>
     <string name="go_to_homescreen">Go To Homescreen</string>
+    <string name="lockscreen_unlock">Lockscreen - Unlock</string>
 
     <!-- Label in drop down to identify brightness slider -->
     <string name="brightness_label">Brightness</string>

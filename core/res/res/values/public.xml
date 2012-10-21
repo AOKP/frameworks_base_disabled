@@ -1023,6 +1023,9 @@
   <java-symbol type="drawable" name="unlock_wave" />
   <java-symbol type="drawable" name="ic_lockscreen_camera" />
   <java-symbol type="drawable" name="ic_lockscreen_silent" />
+  <java-symbol type="drawable" name="ic_lockscreen_soundon" />
+  <java-symbol type="drawable" name="ic_lockscreen_vib" />
+  <java-symbol type="drawable" name="ic_lockscreen_home" />
   <java-symbol type="drawable" name="ic_lockscreen_unlock" />
   <java-symbol type="drawable" name="ic_action_assist_generic" />
   <java-symbol type="drawable" name="notification_bg" />

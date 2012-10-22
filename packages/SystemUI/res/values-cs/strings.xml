@@ -182,4 +182,20 @@
     <string name="status_bar_settings_toggles">Přepínače</string>
 
     <string name="toggle_widgets">Zobrazit/skrýt widgety</string>
+    <string name="toggle_ring_vib">Přepnout hlasitý/vibrace</string>
+    <string name="toggle_ring_silent">Přepnout hlasitý/tichý</string>
+    <string name="toggle_ring_vib_silent">Přepnout hlasitý/vibrace/tichý</string>
+    <string name="go_to_homescreen">Přejít na domovskou obrazovku</string>
+    <string name="lockscreen_unlock">Zamčená obrazovka - odemknout</string>
+
+    <string name="memory">RAM</string>
+    <string name="service_background_processes"><xliff:g id="memory">%1$s</xliff:g> volno</string>
+    <string name="service_foreground_processes"><xliff:g id="memory">%1$s</xliff:g> použito</string>
+    <string name="service_process_name"><xliff:g id="process">%1$s</xliff:g></string>
+    <string name="service_client_name"><xliff:g id="client_name">%1$s</xliff:g></string>
+    <string name="service_started_by_app">Spuštěno aplikací.</string>
+    <string name="running_processes_item_description_s_s"><xliff:g id="numprocess">%1$d</xliff:g> služba a <xliff:g id="numservices">%2$d</xliff:g> služba</string>
+    <string name="running_processes_item_description_s_p"><xliff:g id="numprocess">%1$d</xliff:g> služby a <xliff:g id="numservices">%2$d</xliff:g> služby</string>
+    <string name="running_processes_item_description_p_s"><xliff:g id="numprocess">%1$d</xliff:g> služba a <xliff:g id="numservices">%2$d</xliff:g> služba</string>
+    <string name="running_processes_item_description_p_p"><xliff:g id="numprocess">%1$d</xliff:g> služby a <xliff:g id="numservices">%2$d</xliff:g> služby</string>
 </resources>

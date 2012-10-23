@@ -2087,6 +2087,12 @@ public final class Settings {
         public static final String HAPTIC_FEEDBACK_ENABLED = "haptic_feedback_enabled";
 
         /**
+         * Whether the haptic feedback are enabled for statusbar toggles. The value is
+         * boolean (1 or 0).
+         */
+        public static final String HAPTIC_FEEDBACK_TOGGLES_ENABLED = "haptic_feedback_toggles_enabled";
+
+        /**
          * @deprecated Each application that shows web suggestions should have its own
          * setting for this.
          */

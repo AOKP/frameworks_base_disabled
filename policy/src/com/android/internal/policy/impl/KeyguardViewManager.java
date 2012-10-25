@@ -18,13 +18,9 @@ package com.android.internal.policy.impl;
 
 import com.android.internal.R;
 
-import com.android.internal.app.ThemeUtils;
-
 import android.app.Activity;
 import android.app.ActivityManager;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
 import android.graphics.PixelFormat;
@@ -52,7 +48,6 @@ public class KeyguardViewManager implements KeyguardWindowController {
     private static String TAG = "KeyguardViewManager";
 
     private final Context mContext;
-    private Context mUiContext;
     private final ViewManager mViewManager;
     private final KeyguardViewCallback mCallback;
     private final KeyguardViewProperties mKeyguardViewProperties;
@@ -66,7 +61,6 @@ public class KeyguardViewManager implements KeyguardWindowController {
     private KeyguardViewBase mKeyguardView;
 
     private boolean mScreenOn = false;
-    private boolean mUseLSTheme;
 
     public interface ShowListener {
         void onShown(IBinder windowToken);
@@ -81,27 +75,11 @@ public class KeyguardViewManager implements KeyguardWindowController {
             KeyguardViewCallback callback, KeyguardViewProperties keyguardViewProperties,
             KeyguardUpdateMonitor updateMonitor) {
         mContext = context;
-        ThemeUtils.registerThemeChangeReceiver(mContext, new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                mUiContext = null;
-            }
-        });
-        mUseLSTheme = Settings.System.getBoolean(
-                context.getContentResolver(),
-                Settings.System.USE_LOCKSCREEN_THEMES, false);
         mViewManager = viewManager;
         mCallback = callback;
         mKeyguardViewProperties = keyguardViewProperties;
 
         mUpdateMonitor = updateMonitor;
-    }
-
-    private Context getUiContext() {
-        if (mUiContext == null) {
-            mUiContext = ThemeUtils.createUiContext(mContext);
-        }
-        return (mUiContext != null && mUseLSTheme) ? mUiContext : mContext;
     }
 
     /**
@@ -182,7 +160,7 @@ public class KeyguardViewManager implements KeyguardWindowController {
 
         if (mKeyguardView == null) {
             if (DEBUG) Log.d(TAG, "keyguard view is null, creating it...");
-            mKeyguardView = mKeyguardViewProperties.createKeyguardView(getUiContext(), mCallback,
+            mKeyguardView = mKeyguardViewProperties.createKeyguardView(mContext, mCallback,
                     mUpdateMonitor, this);
             mKeyguardView.setId(R.id.lock_screen);
 

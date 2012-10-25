@@ -66,6 +66,7 @@ public class KeyguardViewManager implements KeyguardWindowController {
     private KeyguardViewBase mKeyguardView;
 
     private boolean mScreenOn = false;
+    private boolean mUseLSTheme;
 
     public interface ShowListener {
         void onShown(IBinder windowToken);
@@ -86,6 +87,9 @@ public class KeyguardViewManager implements KeyguardWindowController {
                 mUiContext = null;
             }
         });
+        mUseLSTheme = Settings.System.getBoolean(
+                context.getContentResolver(),
+                Settings.System.USE_LOCKSCREEN_THEMES, false);
         mViewManager = viewManager;
         mCallback = callback;
         mKeyguardViewProperties = keyguardViewProperties;
@@ -97,7 +101,7 @@ public class KeyguardViewManager implements KeyguardWindowController {
         if (mUiContext == null) {
             mUiContext = ThemeUtils.createUiContext(mContext);
         }
-        return mUiContext != null ? mUiContext : mContext;
+        return (mUiContext != null && mUseLSTheme) ? mUiContext : mContext;
     }
 
     /**
@@ -125,7 +129,7 @@ public class KeyguardViewManager implements KeyguardWindowController {
     public synchronized void show() {
         if (DEBUG) Log.d(TAG, "show(); mKeyguardView==" + mKeyguardView);
 
-        Resources res = getUiContext().getResources();
+        Resources res = mContext.getResources();
         boolean enableScreenRotation =
                 SystemProperties.getBoolean("lockscreen.rot_override",false)
                 || Settings.System.getBoolean(mContext
@@ -133,7 +137,7 @@ public class KeyguardViewManager implements KeyguardWindowController {
         if (mKeyguardHost == null) {
             if (DEBUG) Log.d(TAG, "keyguard host is null, creating it...");
 
-            mKeyguardHost = new KeyguardViewHost(getUiContext(), mCallback);
+            mKeyguardHost = new KeyguardViewHost(mContext, mCallback);
 
             final int stretch = ViewGroup.LayoutParams.MATCH_PARENT;
             int flags = WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN

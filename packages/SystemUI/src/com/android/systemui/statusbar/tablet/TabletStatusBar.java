@@ -142,6 +142,8 @@ public class TabletStatusBar extends BaseStatusBar implements
     int mNavIconWidth = -1;
     int mMenuNavIconWidth = -1;
     int mNumberOfButtons = 3;
+    float mWidthLand = 0f;
+    float mWidthPort = 0f;
     boolean mLandscape = false;
     private int mMaxNotificationIcons = 5;
 
@@ -406,12 +408,29 @@ public class TabletStatusBar extends BaseStatusBar implements
     }
 
     public void UpdateWeights(boolean landscape) {
-        final float min = landscape ? NAVBAR_MIN_LAND : NAVBAR_MIN_PORTRAIT;
-        final float max = landscape ? NAVBAR_MAX_LAND : NAVBAR_MAX_PORTRAIT;
-        final float weight = landscape ? NAVBAR_BUTTON_WEIGHT_LAND : NAVBAR_BUTTON_WEIGHT_PORTRAIT;
-        
-        final float nav = Math.max(min,
-                          Math.min(max, mNumberOfButtons * weight));
+        float nav = 50f;
+        if (landscape) {
+           if (mWidthLand < 1) {
+                float min = NAVBAR_MIN_LAND;
+                float max = NAVBAR_MAX_LAND;
+                float weight = NAVBAR_BUTTON_WEIGHT_LAND;
+                nav = Math.max(min,
+                              Math.min(max, mNumberOfButtons * weight));
+           } else {
+                nav = mWidthLand + 30f;
+           }
+        } else {
+           if (mWidthPort < 1) {
+                float min = NAVBAR_MIN_PORTRAIT;
+                float max = NAVBAR_MAX_PORTRAIT;
+                float weight = NAVBAR_BUTTON_WEIGHT_PORTRAIT;
+                nav = Math.max(min,
+                              Math.min(max, mNumberOfButtons * weight));
+           } else {
+                nav = mWidthPort + 30f;
+           }
+
+        }
         
         final float notif = NAVBAR_BASE_AVAIL - nav;
         mNavigationArea.setLayoutParams(new LinearLayout.LayoutParams(0,LayoutParams.MATCH_PARENT,nav));
@@ -1688,6 +1707,12 @@ public class TabletStatusBar extends BaseStatusBar implements
             resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_BUTTONS_QTY), false,
                     this);
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_WIDTH_LAND), false,
+                    this);
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_WIDTH_PORT), false,
+                    this);
         }
 
         @Override
@@ -1701,6 +1726,12 @@ public class TabletStatusBar extends BaseStatusBar implements
         mNumberOfButtons = Settings.System.getInt(resolver,
                 Settings.System.NAVIGATION_BAR_BUTTONS_QTY, 3);
         
+        mWidthLand = Settings.System.getFloat(resolver,
+                Settings.System.NAVIGATION_BAR_WIDTH_LAND, 0f);
+
+        mWidthPort = Settings.System.getFloat(resolver,
+                Settings.System.NAVIGATION_BAR_WIDTH_PORT, 0f);
+
         mLandscape = (mContext.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE);
 
         UpdateWeights(mLandscape);

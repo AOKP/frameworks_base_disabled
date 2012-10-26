@@ -3216,6 +3216,12 @@ public final class Settings {
         public static final String QUIET_HOURS_BLN = "quiet_hours_bln";
 
         /**
+         * Key to store Torch state.
+         * @hide
+         */
+        public static final String TORCH_STATE = "torch_state";
+
+        /**
          * where to show the legacy menu key
          * 0 = right (default)
          * 1 = left

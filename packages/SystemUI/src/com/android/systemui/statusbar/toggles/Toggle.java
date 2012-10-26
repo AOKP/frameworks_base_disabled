@@ -194,7 +194,7 @@ public abstract class Toggle implements OnCheckedChangeListener {
     public final void onCheckedChanged(CompoundButton buttonView,
             boolean isChecked) {
         if(hapticEnabled == true && hapticTogglesEnabled == true && vib != null) {
-            vib.vibrate(10);
+            vib.vibrate(22);
         }
         if (mSystemChange)
             return;

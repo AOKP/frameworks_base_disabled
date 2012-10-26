@@ -2,7 +2,7 @@
  * Copyright 2011 Colin McDonough
  *
  * Modified for AOKP by Mike Wilson - Zaphod-Beeblebrox
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -46,6 +46,7 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
     private Camera mCamera;
     private boolean lightOn;
     private boolean startingTorch;
+    private boolean previewOn;
     private View button;
     private SurfaceView surfaceView;
     private SurfaceHolder surfaceHolder;
@@ -74,15 +75,7 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
             try {
                 mCamera = Camera.open();
             } catch (RuntimeException e) {
-                //Log.e(TAG, "Camera.open() failed: " + e.getMessage());
-                e.printStackTrace();
-            }
-        }
-        if(mCamera != null){
-            try {
-                mCamera.reconnect();
-            }catch (Exception e) {
-                e.printStackTrace();
+                Log.e(TAG, "Camera.open() failed: " + e.getMessage());
             }
         }
     }
@@ -111,10 +104,8 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
         if (!Parameters.FLASH_MODE_TORCH.equals(flashMode)) {
             // Turn on the flash
             if (flashModes.contains(Parameters.FLASH_MODE_TORCH)) {
-                mCamera.stopPreview();
                 parameters.setFlashMode(Parameters.FLASH_MODE_TORCH);
                 mCamera.setParameters(parameters);
-                mCamera.startPreview();
                 startWakeLock();
             } else {
                 Log.e(TAG, "FLASH_MODE_TORCH not supported");
@@ -139,19 +130,32 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
             if (flashModes == null) {
                 return;
             }
-            //Log.i(TAG, "Flash mode: " + flashMode);
-            //Log.i(TAG, "Flash modes: " + flashModes);
-            if (Parameters.FLASH_MODE_TORCH.equals(flashMode)) {
+            Log.i(TAG, "Flash mode: " + flashMode);
+            Log.i(TAG, "Flash modes: " + flashModes);
+            if (!Parameters.FLASH_MODE_OFF.equals(flashMode)) {
                 // Turn off the flash
                 if (flashModes.contains(Parameters.FLASH_MODE_OFF)) {
                     parameters.setFlashMode(Parameters.FLASH_MODE_OFF);
                     mCamera.setParameters(parameters);
-                    mCamera.stopPreview();
                     stopWakeLock();
                 } else {
                     Log.e(TAG, "FLASH_MODE_OFF not supported");
                 }
             }
+        }
+    }
+
+    private void startPreview() {
+        if (!previewOn && mCamera != null) {
+            mCamera.startPreview();
+            previewOn = true;
+        }
+    }
+
+    private void stopPreview() {
+        if (previewOn && mCamera != null) {
+            mCamera.stopPreview();
+            previewOn = false;
         }
     }
 
@@ -197,6 +201,7 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
         if (!startingTorch) {
             startingTorch = true;
             getCamera();
+            startPreview();
             turnLightOn();
             SharedPreferences.Editor editor = prefs.edit();
             editor.putBoolean(KEY_TORCH_ON, true);
@@ -209,8 +214,8 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
         if (!startingTorch) {
             if (mCamera != null) {
                 turnLightOff();
+                stopPreview();
                 mCamera.release();
-                mCamera = null;
             }
             SharedPreferences.Editor editor = prefs.edit();
             editor.putBoolean(KEY_TORCH_ON, false);

@@ -16,8 +16,6 @@
 
 package com.android.systemui.statusbar.policy;
 
-import android.app.ActivityManagerNative;
-import android.app.StatusBarManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -27,7 +25,6 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
-import android.provider.AlarmClock;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.format.DateFormat;
@@ -37,10 +34,7 @@ import android.text.style.RelativeSizeSpan;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
 import android.util.AttributeSet;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.View.OnTouchListener;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
@@ -53,12 +47,11 @@ import com.android.internal.R;
  * This widget display an analogic clock with two hands for hours and
  * minutes.
  */
-public class ClockStock extends TextView  implements OnClickListener, OnTouchListener {
+public class ClockStock extends TextView {
     private boolean mAttached;
     private Calendar mCalendar;
     private String mClockFormatString;
     private SimpleDateFormat mClockFormat;
-    private int mDefaultColor;
 
     private static final int AM_PM_STYLE_NORMAL  = 0;
     private static final int AM_PM_STYLE_SMALL   = 1;
@@ -76,12 +69,6 @@ public class ClockStock extends TextView  implements OnClickListener, OnTouchLis
 
     public ClockStock(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-
-        if(isClickable()){
-            setOnClickListener(this);
-            setOnTouchListener(this);
-        }
-        mDefaultColor = getCurrentTextColor();
     }
 
     @Override
@@ -216,40 +203,6 @@ public class ClockStock extends TextView  implements OnClickListener, OnTouchLis
  
         return result;
 
-    }
-
-    @Override
-    public void onClick(View v) {
-        setTextColor(mDefaultColor);
-
-        // collapse status bar
-        StatusBarManager statusBarManager = (StatusBarManager) getContext().getSystemService(
-                Context.STATUS_BAR_SERVICE);
-        statusBarManager.collapse();
-
-        // dismiss keyguard in case it was active and no passcode set
-        try {
-            ActivityManagerNative.getDefault().dismissKeyguardOnNextActivity();
-        } catch (Exception ex) {
-            // no action needed here
-        }
-
-        // start alarm clock intent
-        Intent intent = new Intent(AlarmClock.ACTION_SET_ALARM);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        mContext.startActivity(intent);
-    }
-
-    @Override
-    public boolean onTouch(View v, MotionEvent event) {
-        int a = event.getAction();
-        if (a == MotionEvent.ACTION_DOWN) {
-            setTextColor(getResources().getColor(R.color.holo_blue_light));
-        } else if (a == MotionEvent.ACTION_CANCEL || a == MotionEvent.ACTION_UP) {
-            setTextColor(mDefaultColor);
-        }
-        // never consume touch event, so onClick is propperly processed
-        return false;
     }
 }
 

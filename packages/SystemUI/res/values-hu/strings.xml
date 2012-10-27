@@ -145,4 +145,34 @@
     <string name="accessibility_rotation_lock_off" msgid="4062780228931590069">"A képernyő automatikusan forogni fog."</string>
     <string name="accessibility_rotation_lock_on_landscape" msgid="6731197337665366273">"A képernyő zárolva van fekvő tájolásban."</string>
     <string name="accessibility_rotation_lock_on_portrait" msgid="5809367521644012115">"A képernyő zárolva van álló tájolásban."</string>
+
+    <string name="toggle_bt">BT</string>
+    <string name="toggle_data">Adat</string>
+    <string name="toggle_lte">LTE</string>
+    <string name="toggle_rotate">Forgatás</string>
+    <string name="toggle_wifi">Wi-Fi</string>
+    <string name="toggle_gps">GPS</string>
+    <string name="toggle_2g">2G</string>
+    <string name="toggle_wifiap">Wi-Fi AP</string>
+    <string name="toggle_airplane">Repülőgép mód</string>
+    <string name="toggle_vibrate">Rezgő</string>
+    <string name="toggle_silent">Néma</string>
+    <string name="toggle_torch">Lámpa</string>
+    <string name="toggle_sync">Sync</string>
+    <string name="toggle_swagger">Swagger</string>
+    <string name="toggle_fcharge">Gyorstöltés</string>
+    <string name="toggle_tether">Tether</string>
+    <string name="toggle_nfc">NFC</string>
+    <string name="status_bar_settings_toggles">Kapcsolók</string>
+    
+    <string name="toggle_navbar">Értesítés Kapcsoló</string>
+
+    <!-- Label in drop down to identify brightness slider -->
+    <string name="brightness_label">Fényerő</string>
+
+    <string name="battery_test">99</string>
+
+    <string name="recents_kill_all_button_text">Kill all</string>
+    <string name="app_killed_message">App killed</string>
+
 </resources>

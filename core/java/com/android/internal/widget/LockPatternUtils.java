@@ -899,7 +899,7 @@ public class LockPatternUtils {
      * @return Whether tactile feedback for the pattern is enabled.
      */
     public boolean isTactileFeedbackEnabled() {
-        return getBoolean(Settings.Secure.LOCK_PATTERN_TACTILE_FEEDBACK_ENABLED, false);
+        return getBoolean(Settings.Secure.LOCK_PATTERN_TACTILE_FEEDBACK_ENABLED, true);
     }
 
     /**

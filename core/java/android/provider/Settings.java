@@ -3403,6 +3403,34 @@ public final class Settings {
         public static final String KILL_APP_LONGPRESS_BACK = "kill_app_longpress_back";
 
         /**
+         *
+         *
+         * @hide
+         */
+        public static final String NOTIFICATION_DATE_LONGCLICK = "notification_date_longclick";
+
+        /**
+         *
+         *
+         * @hide
+         */
+        public static final String NOTIFICATION_DATE_SHORTCLICK = "notification_date_shortclick";
+
+        /**
+         *
+         *
+         * @hide
+         */
+        public static final String NOTIFICATION_CLOCK_LONGCLICK = "notification_clock_longclick";
+
+        /**
+         *
+         *
+         * @hide
+         */
+        public static final String NOTIFICATION_CLOCK_SHORTCLICK = "notification_clock_shortclick";
+
+        /**
          * Whether to show statusbar signal text
          *
          * @hide

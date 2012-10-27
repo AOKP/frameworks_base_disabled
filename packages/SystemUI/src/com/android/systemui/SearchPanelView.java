@@ -83,6 +83,7 @@ import com.android.internal.widget.multiwaveview.TargetDrawable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.net.URISyntaxException;
 
 
 public class SearchPanelView extends FrameLayout implements
@@ -157,6 +158,7 @@ public class SearchPanelView extends FrameLayout implements
 
     private boolean launchTarget(int target) {
         String targetKey;
+        Intent intent = SearchManager.getAssistIntent(mContext);
 
         int targetListOffset;
         if (screenLayout() == Configuration.SCREENLAYOUT_SIZE_LARGE
@@ -180,39 +182,17 @@ public class SearchPanelView extends FrameLayout implements
             return false;
         }
 
-        if (targetKey.startsWith("app:")) {
-            String activity = targetKey.substring(4);
-            ComponentName component = ComponentName.unflattenFromString(activity);
-
-            /* Try to launch the activity from history, if available.*/
-            ActivityManager activityManager = (ActivityManager) mContext
-                    .getSystemService(Context.ACTIVITY_SERVICE);
-            for (ActivityManager.RecentTaskInfo task : activityManager.getRecentTasks(20,
-                    ActivityManager.RECENT_IGNORE_UNAVAILABLE)) {
-                if (task != null && task.origActivity != null &&
-                        task.origActivity.equals(component)) {
-                        if (task.id > 0) {
-                           activityManager.moveTaskToFront(task.id, ActivityManager.MOVE_TASK_WITH_HOME);
-                    return true;
-                    }
-                }
-            }
-
-            vibrate();
-            Intent intent = new Intent();
-            intent.addCategory(Intent.CATEGORY_LAUNCHER);
-            intent.setComponent(component);
-            intent.addFlags(Intent.FLAG_ACTIVITY_TASK_ON_HOME
-                    | Intent.FLAG_ACTIVITY_NEW_TASK);
-            mContext.startActivity(intent);
-            return true;
-        } else if (targetKey.equals("screenoff")) {
+        if (targetKey.equals("screenoff")) {
             vibrate();
             screenOff();
             return true;
         } else if (targetKey.equals("ime_switcher")) {
             vibrate();
             getContext().sendBroadcast(new Intent("android.settings.SHOW_INPUT_METHOD_PICKER"));
+            return true;
+        } else if (targetKey.equals("assist")) {
+            vibrate();
+            startAssistActivity();
             return true;
         } else if (targetKey.equals("ring_vib")) {
         	AudioManager am = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
@@ -278,8 +258,30 @@ public class SearchPanelView extends FrameLayout implements
             vibrate();
             powerMenu();
             return true;
-        }
-    return false;
+        } else {
+            /* Try to launch the activity from history, if available.*/
+            ActivityManager activityManager = (ActivityManager) mContext
+                    .getSystemService(Context.ACTIVITY_SERVICE);
+            for (ActivityManager.RecentTaskInfo task : activityManager.getRecentTasks(20,
+                    ActivityManager.RECENT_IGNORE_UNAVAILABLE)) {
+                if (task != null && task.origActivity != null &&
+                        task.origActivity.equals(targetKey)) {
+                        if (task.id > 0) {
+                           activityManager.moveTaskToFront(task.id, ActivityManager.MOVE_TASK_WITH_HOME);
+                    return true;
+                    }
+                }
+            }
+
+            vibrate();
+            try {
+                intent = Intent.parseUri(targetKey, 0);
+	        } catch (URISyntaxException e) {
+	        }
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            mContext.startActivity(intent);
+            return true;
+    }
     }
 
     class GlowPadTriggerListener implements GlowPadView.OnTriggerListener {
@@ -434,13 +436,12 @@ public class SearchPanelView extends FrameLayout implements
                 storedDraw.add(new TargetDrawable(mResources, mResources.getDrawable(R.drawable.ic_action_power)));
             } else if (targetActivities.get(i).equals("assist")) {
                 storedDraw.add(new TargetDrawable(mResources, com.android.internal.R.drawable.ic_action_assist_generic));
-            } else if (targetActivities.get(i).startsWith("app:")) {
+            } else {
                 try {
-                    ActivityInfo activityInfo= mPackageManager.getActivityInfo(
-                            ComponentName.unflattenFromString(targetActivities.get(i).substring(4)),
-                            PackageManager.GET_RECEIVERS);
+                    Intent in = Intent.parseUri(targetActivities.get(i), 0);
+                    ActivityInfo aInfo = in.resolveActivityInfo(mPackageManager, PackageManager.GET_ACTIVITIES);
 
-                    Drawable activityIcon = activityInfo.loadIcon(mPackageManager);
+                    Drawable activityIcon = aInfo.loadIcon(mPackageManager);
                     Drawable iconBg = mResources.getDrawable(R.drawable.ic_navbar_blank);
                     Drawable iconBgActivated = mResources.getDrawable(R.drawable.ic_navbar_blank_activated);
 

@@ -172,6 +172,7 @@
     <string name="toggle_ring_silent">铃声/静音开关</string>
     <string name="toggle_ring_vib_silent">铃声/振动/静音开关</string>
     <string name="go_to_homescreen">回到主屏幕</string>
+    <string name="lockscreen_unlock">锁屏 - 解锁</string>
 
     <!-- Label in drop down to identify brightness slider -->
     <string name="brightness_label">亮度</string>

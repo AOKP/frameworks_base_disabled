@@ -29,6 +29,7 @@ import android.os.Vibrator;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
@@ -41,7 +42,7 @@ import com.android.systemui.R;
 /**
  * TODO: Listen for changes to the setting.
  */
-public abstract class Toggle implements OnCheckedChangeListener {
+public abstract class Toggle implements OnCheckedChangeListener, OnClickListener {
 
     protected static final String TAG = "Toggle";
 
@@ -122,6 +123,8 @@ public abstract class Toggle implements OnCheckedChangeListener {
         mBackground = (ImageView) mView.findViewById(R.id.toggle_background);
 
         mToggle.setOnCheckedChangeListener(this);
+        mToggle.setOnClickListener(this);
+
         mToggle.setOnLongClickListener(new OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -193,12 +196,17 @@ public abstract class Toggle implements OnCheckedChangeListener {
     @Override
     public final void onCheckedChanged(CompoundButton buttonView,
             boolean isChecked) {
+        if (mSystemChange) {
+            return;
+        }
+        onCheckChanged(isChecked);
+    }
+
+    @Override
+    public final void onClick(View v) {
         if(hapticEnabled == true && hapticTogglesEnabled == true && vib != null) {
             vib.vibrate(22);
         }
-        if (mSystemChange)
-            return;
-        onCheckChanged(isChecked);
     }
 
     public View getView() {

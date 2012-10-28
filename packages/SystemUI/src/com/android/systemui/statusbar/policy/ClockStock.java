@@ -74,6 +74,7 @@ public class ClockStock extends TextView implements OnClickListener, OnLongClick
     final static String ACTION_ALARM = "**alarm**";
     final static String ACTION_TODAY = "**today**";
     final static String ACTION_VOICEASSIST = "**assist**";
+    final static String ACTION_NOTHING = "**nothing**";
 
     private String mShortClick;
     private String mLongClick;
@@ -102,10 +103,10 @@ public class ClockStock extends TextView implements OnClickListener, OnLongClick
             settingsObserver.observe();
             updateSettings();
             if (mShortClick == null || mShortClick == "") {
-                mShortClick = "**alarm**";
+                mShortClick = "**nothing**";
             }
             if (mLongClick == null || mLongClick == "") {
-                mLongClick = "**assist**";
+                mLongClick = "**nothing**";
             }
         }
     }
@@ -247,6 +248,9 @@ public class ClockStock extends TextView implements OnClickListener, OnLongClick
    public void onClick(View v) {
 
         StatusBarManager statusBarManager = (StatusBarManager) getContext().getSystemService(Context.STATUS_BAR_SERVICE);
+        if (mLongClick.equals(ACTION_NOTHING)) {
+            // Do nothing....
+        } else {
             try {
                 ActivityManagerNative.getDefault().dismissKeyguardOnNextActivity();
             } catch (RemoteException e) {
@@ -266,25 +270,30 @@ public class ClockStock extends TextView implements OnClickListener, OnLongClick
                  intent = new Intent(RecognizerIntent.ACTION_WEB_SEARCH);
             } else if (mShortClick.equals(ACTION_ALARM)) {
                  intent = new Intent(AlarmClock.ACTION_SET_ALARM);
+            } else if (mLongClick.equals(ACTION_NOTHING)) {
+                 // intent = nothing cuz this dude no want shitz
             } else {
                 try {
                     intent = Intent.parseUri(mShortClick, 0);
                 } catch (URISyntaxException e) {
                 }
             }
-            try {
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                mContext.startActivity(intent);
-            } catch (ActivityNotFoundException e){
-            }
+               try {
+                   intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                   mContext.startActivity(intent);
+               } catch (ActivityNotFoundException e){
+               }
             statusBarManager.collapse();
+            }
         }
 
    @Override
    public boolean onLongClick(View v) {
 
         StatusBarManager statusBarManager = (StatusBarManager) getContext().getSystemService(Context.STATUS_BAR_SERVICE);
-
+        if (mLongClick.equals(ACTION_NOTHING)) {
+            // Do nothing....
+        } else {
             try {
                 ActivityManagerNative.getDefault().dismissKeyguardOnNextActivity();
             } catch (RemoteException e) {
@@ -304,20 +313,23 @@ public class ClockStock extends TextView implements OnClickListener, OnLongClick
                  intent = new Intent(RecognizerIntent.ACTION_WEB_SEARCH);
             } else if (mLongClick.equals(ACTION_ALARM)) {
                  intent = new Intent(AlarmClock.ACTION_SET_ALARM);
+            } else if (mLongClick.equals(ACTION_NOTHING)) {
+                 // intent = nothing cuz this dude no want shitz
             } else {
                 try {
-                    intent = Intent.parseUri(mLongClick, 0);
+                 intent = Intent.parseUri(mLongClick, 0);
                 } catch (URISyntaxException e) {
                 }
             }
-            try {
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                mContext.startActivity(intent);
-            } catch (ActivityNotFoundException e){
-            }
+               try {
+                   intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                   mContext.startActivity(intent);
+               } catch (ActivityNotFoundException e){
+               }
             statusBarManager.collapse();
-            return true;
-        }
+		}
+        return true;
+     }
 
    class SettingsObserver extends ContentObserver {
         SettingsObserver(Handler handler) {

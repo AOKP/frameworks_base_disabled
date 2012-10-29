@@ -1291,6 +1291,11 @@
     <string name="bluetooth_a2dp_audio_route_name" msgid="8575624030406771015">"Bluetooth-ljud"</string>
     <string name="media_route_chooser_grouping_done" msgid="7966438307723317169">"Klar"</string>
 
+    <!-- AOKP EXTRA -->
+
+    <!-- label for item that screenshots in phone options dialog -->
+    <string name="global_action_screenshot">Skärmdump</string>
+
     <!-- Reboot -->
     <string name="reboot">Omstart</string>
 
@@ -1306,4 +1311,10 @@
     <!-- Rebooting message -->
     <string name="reboot_progress">Din enhet startar om</string>
 
+    <!-- Lockscreen calendar string -->
+    <string name="lockscreen_calendar_tomorrow">Imorgon</string>
+
+    <!-- Vibration picker dialog title -->
+    <string name="vibration_picker_title">Välj vibrationer</string>
+    <string name="vibration_picker_del_title">Ta bort vibrationer</string>
 </resources>

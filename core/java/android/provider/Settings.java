@@ -3002,20 +3002,6 @@ public final class Settings {
         public static final String STATUSBAR_BATTERY_ICON = "statusbar_battery_icon";
 
         /**
-         * Determine friction of scrolling
-         *
-         * @hide
-         */
-        public static final String SCROLL_FRICTION = "scroll_friction";
-
-        /**
-         * Determine custom fling velocity
-         *
-         * @hide
-         */
-        public static final String CUSTOM_FLING_VELOCITY = "custom_fling_velocity";
-
-        /**
          * Statusbar transparency value
          * from 0% to 100%
          * @hide

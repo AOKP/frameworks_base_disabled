@@ -118,7 +118,7 @@ public class WeatherPanel extends FrameLayout {
             mSlash.setTextColor(color);
     }
 
-    private View.OnClickListener mPanelOnClickListener = new View.OnClickListener() {
+  /*  private View.OnClickListener mPanelOnClickListener = new View.OnClickListener() {
 
         @Override
         public void onClick(View v) {
@@ -135,12 +135,12 @@ public class WeatherPanel extends FrameLayout {
             v.getContext().sendBroadcast(weatherintent);
 
         }
-    };
+    }; */
 
     public WeatherPanel(Context context, AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
-        setOnClickListener(mPanelOnClickListener);
+        //setOnClickListener(mPanelOnClickListener);
     }
 
     @Override
@@ -156,9 +156,9 @@ public class WeatherPanel extends FrameLayout {
         mConditionImage = (ImageView) this.findViewById(R.id.condition_image);
         mSlash = (TextView) this.findViewById(R.id.weatherpanel_slash);
 
-        if (mConditionImage != null) {
+     /*   if (mConditionImage != null) {
             mConditionImage.setOnClickListener(mPanelOnClickListener);
-        }
+        } */
 
         if (!mAttached) {
             mAttached = true;

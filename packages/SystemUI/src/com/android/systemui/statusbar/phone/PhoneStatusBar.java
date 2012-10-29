@@ -193,10 +193,13 @@ public class PhoneStatusBar extends BaseStatusBar {
     final static String ACTION_TODAY = "**today**";
     final static String ACTION_VOICEASSIST = "**assist**";
     final static String ACTION_NOTHING = "**nothing**";
+    final static String ACTION_UPDATE = "**update**";
 
     private Intent intent;
     private String mShortClick;
     private String mLongClick;
+    private String mShortClickWeather;
+    private String mLongClickWeather;
 
     // expanded notifications
     View mNotificationPanel; // the sliding/resizing panel within the notification window
@@ -498,6 +501,8 @@ public class PhoneStatusBar extends BaseStatusBar {
         mSettingsButton.setOnLongClickListener(mSettingsLongClickListener);
         mRotationButton = (RotationToggle) mStatusBarWindow.findViewById(R.id.rotation_lock_button);
         mWeatherPanel = (WeatherPanel) mStatusBarWindow.findViewById(R.id.weatherpanel);
+        mWeatherPanel.setOnClickListener(mWeatherPanelListener);
+        mWeatherPanel.setOnLongClickListener(mWeatherPanelLongClickListener);
         mQuickToggles = (TogglesView) mStatusBarWindow.findViewById(R.id.quick_toggles);
         
         mScrollView = (ScrollView)mStatusBarWindow.findViewById(R.id.scroll);
@@ -616,6 +621,13 @@ public class PhoneStatusBar extends BaseStatusBar {
         }
         if (mLongClick == null || mLongClick == "") {
             mLongClick = "**nothing**";
+        }
+
+        if (mShortClickWeather == null || mShortClickWeather == "") {
+            mShortClickWeather = "**nothing**";
+        }
+        if (mLongClickWeather == null || mLongClickWeather == "") {
+            mLongClickWeather = "**nothing**";
         }
 
         mIsAutoBrightNess = checkAutoBrightNess();
@@ -2391,6 +2403,71 @@ public class PhoneStatusBar extends BaseStatusBar {
         }
     };
 
+    private View.OnClickListener mWeatherPanelListener = new View.OnClickListener() {
+        public void onClick(View v) {
+            if (mShortClickWeather.equals(ACTION_NOTHING)) {
+            // do nothing
+            } else {
+                try {
+                    ActivityManagerNative.getDefault().dismissKeyguardOnNextActivity();
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+                if (mShortClickWeather.equals(ACTION_UPDATE)) {
+                    Intent weatherintent = new Intent("com.aokp.romcontrol.INTENT_WEATHER_REQUEST");
+                    weatherintent.putExtra("com.aokp.romcontrol.INTENT_EXTRA_TYPE", "updateweather");
+                    weatherintent.putExtra("com.aokp.romcontrol.INTENT_EXTRA_ISMANUAL", true);
+                    v.getContext().sendBroadcast(weatherintent);
+                } else {
+                    try {
+                        intent = Intent.parseUri(mShortClickWeather, 0);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        mContext.startActivity(intent);
+                    } catch (ActivityNotFoundException e){
+                        e.printStackTrace();
+                    } catch (URISyntaxException e) {
+                        e.printStackTrace();
+                    }
+                   animateCollapse();
+                }
+            }
+        }
+    };
+
+    private View.OnLongClickListener mWeatherPanelLongClickListener = new View.OnLongClickListener() {
+
+        @Override
+        public boolean onLongClick(View v) {
+            if (mLongClickWeather.equals(ACTION_NOTHING)) {
+                return true;
+            } else {
+                try {
+                    ActivityManagerNative.getDefault().dismissKeyguardOnNextActivity();
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+                if (mLongClickWeather.equals(ACTION_UPDATE)) {
+                    Intent weatherintent = new Intent("com.aokp.romcontrol.INTENT_WEATHER_REQUEST");
+                    weatherintent.putExtra("com.aokp.romcontrol.INTENT_EXTRA_TYPE", "updateweather");
+                    weatherintent.putExtra("com.aokp.romcontrol.INTENT_EXTRA_ISMANUAL", true);
+                    v.getContext().sendBroadcast(weatherintent);
+                } else {
+                    try {
+                        intent = Intent.parseUri(mLongClickWeather, 0);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        mContext.startActivity(intent);
+                    } catch (ActivityNotFoundException e){
+                        e.printStackTrace();
+                    } catch (URISyntaxException e) {
+                        e.printStackTrace();
+                    }
+                   animateCollapse();
+                 }
+            }
+        return true;
+        }
+    };
+
     private View.OnClickListener mDateViewListener = new View.OnClickListener() {
         public void onClick(View v) {
         if (mShortClick.equals(ACTION_NOTHING)) {
@@ -2796,6 +2873,10 @@ public class PhoneStatusBar extends BaseStatusBar {
                     Settings.System.NOTIFICATION_DATE_SHORTCLICK), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.NOTIFICATION_DATE_LONGCLICK), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.WEATHER_PANEL_SHORTCLICK), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.WEATHER_PANEL_LONGCLICK), false, this);
         }
 
         @Override
@@ -2880,6 +2961,12 @@ public class PhoneStatusBar extends BaseStatusBar {
 
         mLongClick = Settings.System.getString(cr,
                 Settings.System.NOTIFICATION_DATE_LONGCLICK);
+
+        mShortClickWeather = Settings.System.getString(cr,
+                Settings.System.WEATHER_PANEL_SHORTCLICK);
+
+        mLongClickWeather = Settings.System.getString(cr,
+                Settings.System.WEATHER_PANEL_LONGCLICK);
         
         mDropdownSettingsDefualtBehavior = Settings.System.getBoolean(cr,
                 Settings.System.STATUSBAR_SETTINGS_BEHAVIOR, true);

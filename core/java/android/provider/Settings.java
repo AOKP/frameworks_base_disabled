@@ -3134,6 +3134,15 @@ public final class Settings {
         public static final String STATUSBAR_WEATHER_STYLE = "statusbar_weather_style";
 
         /**
+         * How to hide weather panel
+         * 1 = Default always on
+         * 2 = Same as toggles
+         * 3 = Opposite toggles
+         * @hide
+         */
+        public static final String STATUSBAR_WEATHER_HIDE = "statusbar_weather_hide";
+
+        /**
          * Whether to show the battery bar
          *
          * @hide

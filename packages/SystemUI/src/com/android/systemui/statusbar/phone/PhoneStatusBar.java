@@ -2362,7 +2362,7 @@ public class PhoneStatusBar extends BaseStatusBar {
 
     private View.OnClickListener mDateViewListener = new View.OnClickListener() {
         public void onClick(View v) {
-        if (mLongClick.equals(ACTION_NOTHING)) {
+        if (mShortClick.equals(ACTION_NOTHING)) {
             // Do nothing....
         } else {
             try {

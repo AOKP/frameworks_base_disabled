@@ -247,7 +247,7 @@ public class ClockStock extends TextView implements OnClickListener, OnLongClick
     public void onClick(View v) {
 
         StatusBarManager statusBarManager = (StatusBarManager) getContext().getSystemService(Context.STATUS_BAR_SERVICE);
-        if (mLongClick.equals(ACTION_NOTHING)) {
+        if (mShortClick.equals(ACTION_NOTHING)) {
             return;
         } else {
             try {

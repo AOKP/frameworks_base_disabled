@@ -2988,6 +2988,13 @@ public final class Settings {
          */
         public static final String VIBRATE_NOTIF_EXPAND = "vibrate_notif_expand";
 
+        /**
+         * @hide
+         * Show Wifi network name in notification shade
+         * 0 - don't show
+         * 1 - show
+         */
+        public static final String NOTIFICATION_SHOW_WIFI_SSID = "notification_show_wifi_ssid";
 
         /**
          * @hide

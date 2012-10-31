@@ -34,16 +34,38 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <TextView
-        android:id="@+id/carrier_label"
-        android:textAppearance="@style/TextAppearance.StatusBar.Expanded.Network"
-        android:layout_height="@dimen/carrier_label_height"
+    <LinearLayout
+        android:id="@+id/carrier_wifi"
         android:layout_width="match_parent"
+        android:layout_height="@dimen/carrier_label_height"
+        android:orientation="horizontal"
         android:layout_gravity="bottom"
         android:layout_marginBottom="@dimen/close_handle_height"
         android:gravity="center"
         android:visibility="invisible"
-        />
+        >
+        <TextView
+            android:id="@+id/carrier_label"
+            android:textAppearance="@style/TextAppearance.StatusBar.Expanded.Network"
+            android:layout_height="match_parent"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            />
+        <RelativeLayout
+            android:id="@+id/wifi_view"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" >
+            <TextView
+                android:id="@+id/wifi_text"
+                android:textAppearance="@style/TextAppearance.StatusBar.Expanded.Network"
+                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:gravity="center"
+                />
+        </RelativeLayout>
+    </LinearLayout>
 
     <com.android.systemui.statusbar.policy.WeatherText
         android:id="@+id/weather"
@@ -73,7 +95,7 @@
 	        layout="@layout/weatherpanel"
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content" />
-     
+
         <TextView
             android:id="@+id/emergency_calls_only"
             android:textAppearance="@style/TextAppearance.StatusBar.Expanded.Network.EmergencyOnly"

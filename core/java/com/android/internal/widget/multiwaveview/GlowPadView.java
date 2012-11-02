@@ -94,6 +94,7 @@ public class GlowPadView extends View {
         public void onGrabbed(View v, int handle);
         public void onReleased(View v, int handle);
         public void onTrigger(View v, int target);
+        public void onTargetChange(View v, int target);
         public void onGrabbedStateChange(View v, int handle);
         public void onFinishFinalAnimation();
     }
@@ -448,6 +449,9 @@ public class GlowPadView extends View {
             target.setState(TargetDrawable.STATE_INACTIVE);
         }
         mActiveTarget = -1;
+        if (mOnTriggerListener != null) {
+            mOnTriggerListener.onTargetChange(this, mActiveTarget);
+        }
     }
 
     /**
@@ -940,6 +944,9 @@ public class GlowPadView extends View {
             }
         }
         mActiveTarget = activeTarget;
+        if (mOnTriggerListener !=null) {
+            mOnTriggerListener.onTargetChange(this, mActiveTarget);
+        }
     }
 
     @Override

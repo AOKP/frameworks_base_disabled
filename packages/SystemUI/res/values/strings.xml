@@ -426,6 +426,7 @@
 
     <string name="recents_kill_all_button_text">Kill all</string>
     <string name="app_killed_message">App killed</string>
+    <string name="update_weather">Updating weather</string>
 
     <string name="wifi">WIFI</string>
     <string name="bt">BT</string>

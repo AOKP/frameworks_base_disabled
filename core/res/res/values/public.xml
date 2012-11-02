@@ -3787,6 +3787,7 @@
 
  <!-- Weather -->
   <public type="string" name="weatherpanel_slash" />
+  <public type="string" name="update_weather" />
   <public type="drawable" name="weather_condition" />
 
   <!-- Hide Navbar -->

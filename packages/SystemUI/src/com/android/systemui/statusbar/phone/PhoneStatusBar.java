@@ -90,6 +90,7 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 import com.android.internal.statusbar.StatusBarIcon;
 import com.android.internal.statusbar.StatusBarNotification;
 import com.android.systemui.R;
@@ -2433,6 +2434,8 @@ public class PhoneStatusBar extends BaseStatusBar {
                     weatherintent.putExtra("com.aokp.romcontrol.INTENT_EXTRA_TYPE", "updateweather");
                     weatherintent.putExtra("com.aokp.romcontrol.INTENT_EXTRA_ISMANUAL", true);
                     v.getContext().sendBroadcast(weatherintent);
+                    animateCollapse();
+                    Toast.makeText(mContext, R.string.update_weather, Toast.LENGTH_SHORT).show();
                 } else {
                     try {
                         intent = Intent.parseUri(mShortClickWeather, 0);
@@ -2466,6 +2469,8 @@ public class PhoneStatusBar extends BaseStatusBar {
                     weatherintent.putExtra("com.aokp.romcontrol.INTENT_EXTRA_TYPE", "updateweather");
                     weatherintent.putExtra("com.aokp.romcontrol.INTENT_EXTRA_ISMANUAL", true);
                     v.getContext().sendBroadcast(weatherintent);
+                    animateCollapse();
+                    Toast.makeText(mContext, R.string.update_weather, Toast.LENGTH_SHORT).show();
                 } else {
                     try {
                         intent = Intent.parseUri(mLongClickWeather, 0);

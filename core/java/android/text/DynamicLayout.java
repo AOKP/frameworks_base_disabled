@@ -503,8 +503,11 @@ public class DynamicLayout extends Layout
 
         mNumberOfBlocks = newNumberOfBlocks;
         final int deltaLines = newLineCount - (endLine - startLine + 1);
-        for (int i = firstBlock + numAddedBlocks; i < mNumberOfBlocks; i++) {
-            mBlockEndLines[i] += deltaLines;
+        if (deltaLines != 0) {
+            for (int i = firstBlock + numAddedBlocks; i < mNumberOfBlocks; i++) {
+                mBlockEndLines[i] += deltaLines;
+                mBlockIndices[i] = INVALID_BLOCK_INDEX;
+            }
         }
 
         int blockIndex = firstBlock;

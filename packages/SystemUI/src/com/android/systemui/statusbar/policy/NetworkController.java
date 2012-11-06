@@ -1131,10 +1131,7 @@ public class NetworkController extends BroadcastReceiver {
                 mHasMobileDataFeature ? mDataSignalIconId : mWifiIconId;
             mContentDescriptionCombinedSignal = mHasMobileDataFeature
                 ? mContentDescriptionDataType : mContentDescriptionWifi;
-        }
 
-        if (!mDataConnected) {
-            Slog.d(TAG, "refreshViews: Data not connected!! Set no data type icon / Roaming");
             mDataTypeIconId = 0;
             if (isCdma()) {
                 if (isCdmaEri()) {

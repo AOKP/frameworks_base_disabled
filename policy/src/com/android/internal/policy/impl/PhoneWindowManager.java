@@ -585,6 +585,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     private static final int MSG_DISABLE_POINTER_LOCATION = 2;
     private static final int MSG_DISPATCH_MEDIA_KEY_WITH_WAKE_LOCK = 3;
     private static final int MSG_DISPATCH_MEDIA_KEY_REPEAT_WITH_WAKE_LOCK = 4;
+    private static final int MSG_DISPATCH_VOLKEY_WITH_WAKE_LOCK = 5;
 
     private class PolicyHandler extends Handler {
         @Override
@@ -601,6 +602,11 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     break;
                 case MSG_DISPATCH_MEDIA_KEY_REPEAT_WITH_WAKE_LOCK:
                     dispatchMediaKeyRepeatWithWakeLock((KeyEvent)msg.obj);
+                    break;
+                case MSG_DISPATCH_VOLKEY_WITH_WAKE_LOCK:
+                    mIsLongPress = true;
+                    dispatchMediaKeyWithWakeLockToAudioService((KeyEvent)msg.obj);
+                    dispatchMediaKeyWithWakeLockToAudioService(KeyEvent.changeAction((KeyEvent)msg.obj, KeyEvent.ACTION_UP));
                     break;
             }
         }
@@ -780,46 +786,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             if(localLOGV) Log.v(TAG, "Disabling listeners");
             mOrientationSensorEnabled = false;
         }
-    }
-
-    /**
-     * When a volumeup-key longpress expires, skip songs based on key press
-     */
-    Runnable mVolumeUpLongPress = new Runnable() {
-        public void run() {
-            // set the long press flag to true
-            mIsLongPress = true;
-
-            // Shamelessly copied from Kmobs LockScreen controls, works for Pandora, etc...
-            sendMediaButtonEvent(KeyEvent.KEYCODE_MEDIA_NEXT);
-        };
-    };
-
-    /**
-     * When a volumedown-key longpress expires, skip songs based on key press
-     */
-    Runnable mVolumeDownLongPress = new Runnable() {
-        public void run() {
-            // set the long press flag to true
-            mIsLongPress = true;
-
-            // Shamelessly copied from Kmobs LockScreen controls, works for Pandora, etc...
-            sendMediaButtonEvent(KeyEvent.KEYCODE_MEDIA_PREVIOUS);
-        };
-    };
-
-    private void sendMediaButtonEvent(int code) {
-        long eventtime = SystemClock.uptimeMillis();
-
-        Intent downIntent = new Intent(Intent.ACTION_MEDIA_BUTTON, null);
-        KeyEvent downEvent = new KeyEvent(eventtime, eventtime, KeyEvent.ACTION_DOWN, code, 0);
-        downIntent.putExtra(Intent.EXTRA_KEY_EVENT, downEvent);
-        mContext.sendOrderedBroadcast(downIntent, null);
-
-        Intent upIntent = new Intent(Intent.ACTION_MEDIA_BUTTON, null);
-        KeyEvent upEvent = new KeyEvent(eventtime, eventtime, KeyEvent.ACTION_UP, code, 0);
-        upIntent.putExtra(Intent.EXTRA_KEY_EVENT, upEvent);
-        mContext.sendOrderedBroadcast(upIntent, null);
     }
 
     private void interceptPowerKeyDown(boolean handled) {
@@ -3807,7 +3773,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             case KeyEvent.KEYCODE_VOLUME_UP:
             case KeyEvent.KEYCODE_VOLUME_MUTE: {
                 if (mVolBtnMusicControls && !down) {
-                    handleVolumeLongPressAbort();
+                    mHandler.removeMessages(MSG_DISPATCH_VOLKEY_WITH_WAKE_LOCK);
 
                     // delay handling volume events if mVolBtnMusicControls is desired
                     if (!mIsLongPress && (result & ACTION_PASS_TO_USER) == 0)
@@ -3880,10 +3846,14 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                         if (mVolBtnMusicControls) {
                             // initialize long press flag to false for volume events
                             mIsLongPress = false;
-
-                            // if the button is held long enough, the following
-                            // procedure will set mIsLongPress=true
-                            handleVolumeLongPress(keyCode);
+                            // Use a message dispatcher to the Audio Service for track control
+                            // The dispatcher will set the long press flag once called
+                            int newKeyCode = event.getKeyCode() == KeyEvent.KEYCODE_VOLUME_UP ?
+                                KeyEvent.KEYCODE_MEDIA_NEXT : KeyEvent.KEYCODE_MEDIA_PREVIOUS;
+                            Message msg = mHandler.obtainMessage(MSG_DISPATCH_VOLKEY_WITH_WAKE_LOCK,
+                                new KeyEvent(event.getDownTime(), event.getEventTime(), event.getAction(), newKeyCode, 0));
+                            msg.setAsynchronous(true);
+                            mHandler.sendMessageDelayed(msg, ViewConfiguration.getLongPressTimeout());
                         } else {
                             // If music is playing but we decided not to pass the key to the
                             // application, handle the volume change here.
@@ -4052,22 +4022,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             }
         }
         return result;
-    }
-
-    void handleVolumeLongPress(int keycode) {
-        Runnable btnHandler;
-
-        if (keycode == KeyEvent.KEYCODE_VOLUME_UP)
-            btnHandler = mVolumeUpLongPress;
-        else
-            btnHandler = mVolumeDownLongPress;
-
-        mHandler.postDelayed(btnHandler, ViewConfiguration.getLongPressTimeout());
-    }
-
-    void handleVolumeLongPressAbort() {
-        mHandler.removeCallbacks(mVolumeUpLongPress);
-        mHandler.removeCallbacks(mVolumeDownLongPress);
     }
 
     void dispatchMediaKeyWithWakeLock(KeyEvent event) {

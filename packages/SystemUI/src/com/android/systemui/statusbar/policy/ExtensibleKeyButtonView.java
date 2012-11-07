@@ -28,7 +28,7 @@ import android.view.ViewConfiguration;
 import android.widget.Toast;
 
 import com.android.internal.statusbar.IStatusBarService;
-import com.android.systemui.statusbar.phone.NavigationBarView;
+import com.android.systemui.statusbar.WidgetView;
 import com.android.systemui.statusbar.policy.KeyButtonView;
 import com.android.systemui.R;
 
@@ -187,18 +187,18 @@ public class ExtensibleKeyButtonView extends KeyButtonView {
                 takeScreenshot();
                 return;
 
-        	} else if (mClickAction.equals(ACTION_KILL)) {
+                } else if (mClickAction.equals(ACTION_KILL)) {
 
-        		mHandler.postDelayed(mKillTask,ViewConfiguration.getGlobalActionKeyTimeout());
-        		return;
+                        mHandler.postDelayed(mKillTask,ViewConfiguration.getGlobalActionKeyTimeout());
+                        return;
 
-        	} else if (mClickAction.equals(ACTION_WIDGETS)) {
-        		Intent toggleWidgets = new Intent(
-                        NavigationBarView.WidgetReceiver.ACTION_TOGGLE_WIDGETS);
+                } else if (mClickAction.equals(ACTION_WIDGETS)) {
+                        Intent toggleWidgets = new Intent(
+                        WidgetView.WidgetReceiver.ACTION_TOGGLE_WIDGETS);
                 mContext.sendBroadcast(toggleWidgets);
                 return;
-        	} else {  // we must have a custom uri
-        		 try {
+                } else {  // we must have a custom uri
+                         try {
                      Intent intent = Intent.parseUri(mClickAction, 0);
                      intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                      getContext().startActivity(intent);
@@ -211,52 +211,52 @@ public class ExtensibleKeyButtonView extends KeyButtonView {
             return;
         }
     };
-    
+
     private OnLongClickListener mLongPressListener = new OnLongClickListener() {
 
         @Override
         public boolean onLongClick(View v) {
-        	if (mLongpress == null) {
-        		return true;
-        	}
-        	if (mLongpress.equals(ACTION_NULL)) {
-        		// attempt to keep long press functionality of 'keys' if
-        		// they haven't been overridden.
+                if (mLongpress == null) {
+                        return true;
+                }
+                if (mLongpress.equals(ACTION_NULL)) {
+                        // attempt to keep long press functionality of 'keys' if
+                        // they haven't been overridden.
                 return true;
-        	} else if (mLongpress.equals(ACTION_HOME)) {
-        		injectKeyDelayed(KeyEvent.KEYCODE_HOME);
-        		return true;
-        	} else if (mLongpress.equals(ACTION_BACK)) {
-        		injectKeyDelayed(KeyEvent.KEYCODE_BACK);
-        		return true;
-        	} else if (mLongpress.equals(ACTION_SEARCH)) {
-        		injectKeyDelayed(KeyEvent.KEYCODE_SEARCH);
-        		return true;
-        	} else if (mLongpress.equals(ACTION_MENU)) {
-        		injectKeyDelayed(KeyEvent.KEYCODE_MENU);
-        		return true;
-        	} else if (mLongpress.equals(ACTION_POWER)) {
-        		injectKeyDelayed(KeyEvent.KEYCODE_POWER);
-        		return true;
+                } else if (mLongpress.equals(ACTION_HOME)) {
+                        injectKeyDelayed(KeyEvent.KEYCODE_HOME);
+                        return true;
+                } else if (mLongpress.equals(ACTION_BACK)) {
+                        injectKeyDelayed(KeyEvent.KEYCODE_BACK);
+                        return true;
+                } else if (mLongpress.equals(ACTION_SEARCH)) {
+                        injectKeyDelayed(KeyEvent.KEYCODE_SEARCH);
+                        return true;
+                } else if (mLongpress.equals(ACTION_MENU)) {
+                        injectKeyDelayed(KeyEvent.KEYCODE_MENU);
+                        return true;
+                } else if (mLongpress.equals(ACTION_POWER)) {
+                        injectKeyDelayed(KeyEvent.KEYCODE_POWER);
+                        return true;
                 } else if (mLongpress.equals(ACTION_IME)) {
                         getContext().sendBroadcast(new Intent("android.settings.SHOW_INPUT_METHOD_PICKER"));
                         return true;
             } else if (mLongpress.equals(ACTION_SCREENSHOT)) {
                 takeScreenshot();
                 return true;
-        	} else if (mLongpress.equals(ACTION_KILL)) {
-        		mHandler.post(mKillTask);
-        		return true;
+                } else if (mLongpress.equals(ACTION_KILL)) {
+                        mHandler.post(mKillTask);
+                        return true;
             } else if (mLongpress.equals(ACTION_WIDGETS)) {
                 Intent toggleWidgets = new Intent(
-                        NavigationBarView.WidgetReceiver.ACTION_TOGGLE_WIDGETS);
+                        WidgetView.WidgetReceiver.ACTION_TOGGLE_WIDGETS);
                 mContext.sendBroadcast(toggleWidgets);
                 return true;
-        	} else if (mLongpress.equals(ACTION_RECENTS)) {
-        		try {
+                } else if (mLongpress.equals(ACTION_RECENTS)) {
+                        try {
                     mBarService.toggleRecentApps();
-                } catch (RemoteException e) {   
-                	// let it go.
+                } catch (RemoteException e) {
+                        // let it go.
                 }
                 return true;
             } else if (mClickAction.equals(ACTION_NOTIFICATIONS)) {
@@ -267,18 +267,18 @@ public class ExtensibleKeyButtonView extends KeyButtonView {
                     // Let's hope we don't catch one!
                 }
                 return true;
-        	} else {  // we must have a custom uri
-       		 	try {
-       		 		Intent intent = Intent.parseUri(mLongpress, 0);
-       		 		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-       		 		getContext().startActivity(intent);
-       		 	} catch (URISyntaxException e) {
-       		 		Log.e(TAG, "URISyntaxException: [" + mLongpress + "]");
-       		 	} catch (ActivityNotFoundException e){
-       		 		Log.e(TAG, "ActivityNotFound: [" + mLongpress + "]");
-       		 	}
-       		 	return true;
-        	}        	           
+                } else {  // we must have a custom uri
+       	                try {
+       	                        Intent intent = Intent.parseUri(mLongpress, 0);
+       	                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+       	                        getContext().startActivity(intent);
+       	                } catch (URISyntaxException e) {
+       	                        Log.e(TAG, "URISyntaxException: [" + mLongpress + "]");
+       	                } catch (ActivityNotFoundException e){
+       	                        Log.e(TAG, "ActivityNotFound: [" + mLongpress + "]");
+       	                }
+       	                return true;
+                }
         }
     };
 

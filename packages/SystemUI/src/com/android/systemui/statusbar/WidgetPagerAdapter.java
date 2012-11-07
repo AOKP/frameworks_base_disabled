@@ -10,9 +10,12 @@ import android.content.SharedPreferences;
 import android.os.Parcelable;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.View;
 
 public class WidgetPagerAdapter extends PagerAdapter {
+
+    private static final String TAG = "Widget";
 
     int[] widgetIds = new int[1];
     public AppWidgetHost mAppWidgetHost;

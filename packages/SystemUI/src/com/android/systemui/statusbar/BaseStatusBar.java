@@ -51,6 +51,7 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
 import android.view.WindowManagerImpl;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RemoteViews;
@@ -70,6 +71,7 @@ import com.android.systemui.statusbar.CommandQueue;
 import com.android.systemui.statusbar.NotificationData.Entry;
 import com.android.systemui.statusbar.policy.NotificationRowLayout;
 import com.android.systemui.statusbar.tablet.StatusBarPanel;
+import com.android.systemui.statusbar.WidgetView;
 
 import com.android.systemui.R;
 
@@ -86,9 +88,10 @@ public abstract class BaseStatusBar extends SystemUI implements
     protected static final int MSG_CLOSE_SEARCH_PANEL = 1025;
     protected static final int MSG_SHOW_INTRUDER = 1026;
     protected static final int MSG_HIDE_INTRUDER = 1027;
-    private int mNavRingAmount;
     private boolean mTabletui;
     private boolean mLefty;
+
+    private WidgetView mWidgetView;
 
     protected static final boolean ENABLE_INTRUDERS = false;
 
@@ -199,9 +202,6 @@ public abstract class BaseStatusBar extends SystemUI implements
         mLefty = (Settings.System.getBoolean(mContext.getContentResolver(),
                 Settings.System.NAVIGATION_BAR_LEFTY_MODE, false));
 
-        mNavRingAmount = Settings.System.getInt(mContext.getContentResolver(),
-                         Settings.System.SYSTEMUI_NAVRING_AMOUNT, 1);
-
         mProvisioningObserver.onChange(false); // set up
         mContext.getContentResolver().registerContentObserver(
                 Settings.Secure.getUriFor(Settings.Secure.DEVICE_PROVISIONED), true,
@@ -230,6 +230,8 @@ public abstract class BaseStatusBar extends SystemUI implements
 
         createAndAddWindows();
 
+        // create WidgetView
+        WidgetView mWidgetView = new WidgetView(mContext,null);
         disable(switches[0]);
         setSystemUiVisibility(switches[1], 0xffffffff);
         topAppWindowChanged(switches[2] != 0);

@@ -16,7 +16,7 @@
 
 package com.android.systemui;
 
-import com.android.systemui.statusbar.phone.NavigationBarView;
+import com.android.systemui.statusbar.WidgetView;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -41,7 +41,7 @@ public class WidgetToggle extends Activity  {
   public void onResume() {
     super.onResume();
     Intent toggleWidgets = new Intent(
-            NavigationBarView.WidgetReceiver.ACTION_TOGGLE_WIDGETS);
+            WidgetView.WidgetReceiver.ACTION_TOGGLE_WIDGETS);
     sendBroadcast(toggleWidgets);
     this.finish();
   }

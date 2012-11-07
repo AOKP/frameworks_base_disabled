@@ -10,7 +10,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.android.systemui.statusbar.phone.NavigationBarView;
+import com.android.systemui.statusbar.WidgetView;
 
 public class WidgetSelectActivity extends Activity {
 
@@ -55,7 +55,7 @@ public class WidgetSelectActivity extends Activity {
             if (appWidgetId != -1) {
                 // remove reference in the widget host
                 Intent deleteId = new Intent();
-                deleteId.setAction(NavigationBarView.WidgetReceiver.ACTION_DEALLOCATE_ID);
+                deleteId.setAction(WidgetView.WidgetReceiver.ACTION_DEALLOCATE_ID);
                 deleteId.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
                 sendBroadcast(deleteId);
 
@@ -106,8 +106,8 @@ public class WidgetSelectActivity extends Activity {
         send.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
         send.putExtra("summary", getWidgetSummary(appWidgetId));
         sendBroadcast(send);
+        Log.i(TAG, "ACTION_SEND_ID sent ID:"+ appWidgetId + " Label:"+getWidgetSummary(appWidgetId) );
         finish();
-        Log.i(TAG, "ACTION_SEND_ID sent");
 
     }
 

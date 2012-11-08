@@ -2755,6 +2755,12 @@ public final class Settings {
         public static final String NAVIGATION_BAR_WIDTH = "navigation_bar_width";
 
         /**
+         * Display NavBar on left side of screen (Boolean)
+         * @hide
+         */
+        public static final String NAVIGATION_BAR_LEFTY_MODE = "navigation_bar_lefty_mode";
+
+        /**
          *
          * @hide
          */
@@ -2790,6 +2796,36 @@ public final class Settings {
          * @hide
          */
         public static final String SYSTEMUI_NAVRING_5 = "systemui_navring_5";
+
+         /**
+         * @hide
+         */
+        public static final String SYSTEMUI_NAVRING_LONG_1 = "systemui_navring_long_1";
+
+        /**
+         * @hide
+         */
+        public static final String SYSTEMUI_NAVRING_LONG_2 = "systemui_navring_long_2";
+
+        /**
+         * @hide
+         */
+        public static final String SYSTEMUI_NAVRING_LONG_3 = "systemui_navring_long_3";
+
+        /**
+         * @hide
+         */
+        public static final String SYSTEMUI_NAVRING_LONG_4 = "systemui_navring_long_4";
+
+        /**
+         * @hide
+         */
+        public static final String SYSTEMUI_NAVRING_LONG_5 = "systemui_navring_long_5";
+
+        /**
+         * @hide
+         */
+        public static final String SYSTEMUI_NAVRING_LONG_ENABLE = "systemui_navring_long_enable";
 
         /**
          * @hide

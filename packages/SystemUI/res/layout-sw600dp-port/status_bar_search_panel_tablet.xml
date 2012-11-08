@@ -48,7 +48,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_gravity="bottom|left"
                 android:gravity="top|right"
-                android:layout_marginLeft="-700dip"
+                android:layout_marginLeft="-650dip"
 
                 prvandroid:targetDrawables="@array/navbar_search_targets"
                 prvandroid:targetDescriptions="@array/navbar_search_target_descriptions"

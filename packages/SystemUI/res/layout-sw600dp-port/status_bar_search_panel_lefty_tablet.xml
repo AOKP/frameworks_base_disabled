@@ -26,7 +26,7 @@
     android:layout_width="match_parent"
     android:paddingBottom="0dip">
 
-    <RelativeLayout
+     <RelativeLayout
         android:id="@+id/search_bg_protect"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -39,22 +39,21 @@
             android:layout_height="wrap_content"
             android:gravity="center_horizontal|bottom"
             android:layout_alignParentBottom="true">
-
+            
             <com.android.internal.widget.multiwaveview.GlowPadView
                 android:id="@+id/glow_pad_view"
                 android:orientation="horizontal"
                 android:layout_width="wrap_content"
-                android:layout_height="320dip"
+                android:layout_height="400dp"
                 android:layout_alignParentBottom="true"
-                android:layout_gravity="bottom|center_horizontal"
-                android:gravity="top|center_horizontal"
+                android:layout_marginRight="-650dip"
 
                 prvandroid:targetDrawables="@array/navbar_search_targets"
                 prvandroid:targetDescriptions="@array/navbar_search_target_descriptions"
                 prvandroid:directionDescriptions="@array/navbar_search_direction_descriptions"
                 prvandroid:handleDrawable="@drawable/navbar_search_handle"
-                prvandroid:outerRingDrawable="@drawable/navbar_search_outerring_five"
-                prvandroid:outerRadius="160dp"
+                prvandroid:outerRingDrawable="@drawable/navbar_search_outerring_left"
+                prvandroid:outerRadius="304dp"
                 prvandroid:innerRadius="@*android:dimen/glowpadview_inner_radius"
                 prvandroid:snapMargin="@dimen/navbar_search_snap_margin"
                 prvandroid:feedbackCount="0"
@@ -64,8 +63,9 @@
                 prvandroid:pointDrawable="@*android:drawable/ic_lockscreen_glowdot"
                />
 
-        </RelativeLayout>
+             </RelativeLayout>
 
     </RelativeLayout>
+
 
 </com.android.systemui.SearchPanelView>

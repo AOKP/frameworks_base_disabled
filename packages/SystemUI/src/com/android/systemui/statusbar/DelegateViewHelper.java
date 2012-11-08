@@ -17,6 +17,7 @@
 package com.android.systemui.statusbar;
 
 import android.graphics.RectF;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -34,6 +35,7 @@ public class DelegateViewHelper {
     RectF mInitialTouch = new RectF();
     private boolean mStarted;
     private boolean mSwapXY = false;
+    private boolean mLefty = false;
 
     public DelegateViewHelper(View sourceView) {
         setSourceView(sourceView);
@@ -76,7 +78,12 @@ public class DelegateViewHelper {
             for (int k = 0; k < historySize + 1; k++) {
                 float x = k < historySize ? event.getHistoricalX(k) : event.getX();
                 float y = k < historySize ? event.getHistoricalY(k) : event.getY();
-                final float distance = mSwapXY ? (mDownPoint[0] - x) : (mDownPoint[1] - y);
+                float distance = 0f;
+                if (mLefty){
+                    distance = mSwapXY ? (x - mDownPoint[0]) : (mDownPoint[1] - y);
+                } else {
+                    distance = mSwapXY ? (mDownPoint[0] - x) : (mDownPoint[1] - y);
+                }
                 if (distance > mTriggerThreshhold) {
                     mBar.showSearchPanel();
                     mPanelShowing = true;
@@ -134,5 +141,9 @@ public class DelegateViewHelper {
      */
     public void setSwapXY(boolean swap) {
         mSwapXY = swap;
+    }
+
+    public void setLefty(boolean lefty) {
+        mLefty = lefty;
     }
 }

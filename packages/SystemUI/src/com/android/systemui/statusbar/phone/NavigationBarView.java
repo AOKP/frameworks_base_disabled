@@ -31,6 +31,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.SharedPreferences;
 import android.database.ContentObserver;
@@ -104,7 +105,7 @@ public class NavigationBarView extends LinearLayout {
 
     private Drawable mBackIcon, mBackLandIcon, mBackAltIcon, mBackAltLandIcon;
     
-    private DelegateViewHelper mDelegateHelper;
+    public DelegateViewHelper mDelegateHelper;
 
     // workaround for LayoutTransitions leaving the nav buttons in a weird state (bug 5549288)
     final static boolean WORKAROUND_INVALID_LAYOUT = true;
@@ -125,6 +126,9 @@ public class NavigationBarView extends LinearLayout {
     final static String ACTION_NULL = "**null**";
 
     int mNumberOfButtons = 3;
+
+    // Will determine if NavBar goes to the left side in Landscape Mode
+    private boolean mLeftyMode;
     
     /* 0 = Phone UI
      * 1 = Tablet UI
@@ -204,6 +208,7 @@ public class NavigationBarView extends LinearLayout {
 
     public void setDelegateView(View view) {
         mDelegateHelper.setDelegateView(view);
+        mDelegateHelper.setLefty(mLeftyMode);
     }
 
     public void setBar(BaseStatusBar phoneStatusBar) {
@@ -300,8 +305,9 @@ public class NavigationBarView extends LinearLayout {
                         mLongpressActions[j],
                         mPortraitIcons[j]);
                 v.setTag((landscape ? "key_land_" : "key_") + j);
-                addButton(navButtonLayout, v, landscape);
-                addLightsOutButton(lightsOut, v, landscape, false);
+                addButton(navButtonLayout, v, landscape && !mLeftyMode);
+                // if we are in LeftyMode, then we want to add to end, like Portrait
+                addLightsOutButton(lightsOut, v, landscape && !mLeftyMode, false);
                 
                 if (v.getId() == R.id.back){
                 	mBackIcon = mBackLandIcon = v.getDrawable();
@@ -325,13 +331,13 @@ public class NavigationBarView extends LinearLayout {
                     // since we didn't add these at the beginning, we need to insert it now
                     // the behavior is backwards from landscape (ie, insert at beginning
                     // if portrait, add to end if landscape
-                    addButton(navButtonLayout, leftMenuKey, !landscape);
-                    addLightsOutButton(lightsOut, leftMenuKey, !landscape, true);
+                    addButton(navButtonLayout, leftMenuKey, !landscape || (landscape && mLeftyMode));
+                    addLightsOutButton(lightsOut, leftMenuKey, !landscape || (landscape && mLeftyMode), true);
                 }
                 if (currentSetting != SHOW_DONT) {
                     View rightMenuKey = generateKey(landscape, KEY_MENU_RIGHT);
-                    addButton(navButtonLayout, rightMenuKey, landscape);
-                    addLightsOutButton(lightsOut, rightMenuKey, landscape, true);
+                    addButton(navButtonLayout, rightMenuKey, landscape && !mLeftyMode);
+                    addLightsOutButton(lightsOut, rightMenuKey, landscape && !mLeftyMode, true);
                 }
             }
         }
@@ -873,6 +879,8 @@ public class NavigationBarView extends LinearLayout {
             resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_BUTTONS_QTY), false,
                     this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.NAVIGATION_BAR_LEFTY_MODE), false, this);
 
             for (int j = 0; j < 7; j++) { // watch all 5 settings for changes.
                 resolver.registerContentObserver(
@@ -908,6 +916,8 @@ public class NavigationBarView extends LinearLayout {
                 Settings.System.MENU_VISIBILITY, VISIBILITY_SYSTEM);
         mTablet_UI = Settings.System.getInt(resolver,
                 Settings.System.TABLET_UI,0);
+        mLeftyMode = Settings.System.getBoolean(resolver,
+                Settings.System.NAVIGATION_BAR_LEFTY_MODE, false);
         mNumberOfButtons = Settings.System.getInt(resolver,
                 Settings.System.NAVIGATION_BAR_BUTTONS_QTY, 0);
         if (mNumberOfButtons == 0) {
@@ -948,7 +958,6 @@ public class NavigationBarView extends LinearLayout {
             for (int i = 0; i < widgetIds.length; i++) {
                 widgetIds[i] = Integer.parseInt(split[i]);
             }
-            Log.d(TAG,"Made Widgets:"+ widgetIds.length);
         }
         makeBar();
 
@@ -1072,7 +1081,6 @@ public class NavigationBarView extends LinearLayout {
             public void run() {
                 mMoving = true;
                 mDowntime = System.currentTimeMillis();
-                Log.d(TAG,"LongPress!");
                 performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
             }
         };
@@ -1082,7 +1090,6 @@ public class NavigationBarView extends LinearLayout {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    Log.d(TAG,"mDown:" +event.getDownTime());
                     mHandler.postDelayed(SetMoving, ViewConfiguration.getLongPressTimeout());
                     mFirstMoveY = event.getY();
                     return true;
@@ -1092,7 +1099,6 @@ public class NavigationBarView extends LinearLayout {
                         float diff = event.getY() - mFirstMoveY;
                         int oldheight = mWidgetPager.getHeight();
                         int newheight = oldheight + (int) - diff; // this is pixels
-                        Log.d(TAG,"Diff:" +diff + " Old:" + oldheight + " New:"+ newheight);
                         if (System.currentTimeMillis() - mDowntime > 150) { // slow down the move/updates
                             mWidgetPager.setLayoutParams(
                                     new LayoutParams(LayoutParams.MATCH_PARENT, newheight));

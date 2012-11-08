@@ -22,21 +22,21 @@
   depending on the state of the device.  It is the same for landscape
   and portrait.-->
 <RelativeLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:tabunlock="http://schemas.android.com/apk/res/com.android.tabunlock"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent">
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tabunlock="http://schemas.android.com/apk/res/com.android.tabunlock"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
     <com.android.internal.policy.impl.LockscreenWallpaper
-	android:id="@+id/lockscreen_wallpaper"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent" />
+            android:id="@+id/lockscreen_wallpaper"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
     <LinearLayout
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:orientation="vertical"
-	android:id="@+id/root">
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent"
+	    android:orientation="vertical"
+	    android:id="@+id/root">
 
     <!-- top: status -->
     <RelativeLayout

@@ -3822,8 +3822,22 @@
   <java-symbol type="string" name="vibration_picker_del_title"/>
   <java-symbol type="layout" name="vibration_picker_dialog"/>
 
- <!-- Tablets and docks -->
+  <!-- Tablets and docks -->
   <java-symbol type="bool" name="config_hasRemovableLid" />
   <java-symbol type="bool" name="config_hasDockBattery" />
 
+  <!-- Alt lockscreen -->
+  <java-symbol type="layout" name="keyguard_screen_info_circles" />
+  <java-symbol type="layout" name="keyguard_screen_tab_unlock_circles" />
+  <java-symbol type="layout" name="keyguard_screen_tab_unlock_circles_land" />
+  <java-symbol type="layout" name="keyguard_transport_control_circles" />
+  <java-symbol type="drawable" name="unlock_halo_circles" />
+  <java-symbol type="drawable" name="unlock_ring_circles" />
+  <java-symbol type="drawable" name="unlock_wave_circles" />
+  <java-symbol type="id" name="ampm" />
+  <java-symbol type="id" name="circle_unlock_widget" />
+  <java-symbol type="id" name="sep" />
+  <java-symbol type="id" name="time_alt" />
+  <java-symbol type="id" name="timeDisplayHours" />
+  <java-symbol type="id" name="timeDisplayMinutes" />
 </resources>

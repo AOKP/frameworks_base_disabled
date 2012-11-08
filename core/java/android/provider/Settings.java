@@ -3127,6 +3127,36 @@ public final class Settings {
         public static final String LOCKSCREEN_LONG_MENU_ACTION = "lockscreen_long_menu_action";
 
         /**
+         * Whether to show the alt lockscreen layout
+         * @hide
+         */
+        public static final String USE_CIRCLES_LOCKSCREEN = "use_circles_lockscreen";
+
+        /**
+         * Sets bg color of alt lockscreen bg
+         * @hide
+         */
+        public static final String CIRCLES_LOCK_BG_COLOR = "circles_lock_bg_color";
+
+        /**
+         * Sets ring color of alt lockscreen
+         * @hide
+         */
+        public static final String CIRCLES_LOCK_RING_COLOR = "circles_lock_ring_color";
+
+        /**
+         * Sets halo color of alt lockscreen
+         * @hide
+         */
+        public static final String CIRCLES_LOCK_HALO_COLOR = "circles_lock_halo_color";
+
+        /**
+         * Sets wave color of alt lockscreen
+         * @hide
+         */
+        public static final String CIRCLES_LOCK_WAVE_COLOR = "circles_lock_wave_color";
+
+        /**
          * How to show weather on the statusbar
          *
          * @hide

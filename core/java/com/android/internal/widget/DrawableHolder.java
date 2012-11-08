@@ -23,6 +23,8 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.animation.Animator.AnimatorListener;
 import android.graphics.Canvas;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuff.Mode;
 import android.graphics.drawable.BitmapDrawable;
 import android.util.Log;
 import android.view.animation.DecelerateInterpolator;
@@ -41,6 +43,7 @@ public class DrawableHolder implements AnimatorListener {
     private float mScaleY = 1.0f;
     private BitmapDrawable mDrawable;
     private float mAlpha = 1f;
+    private int mColor = 0x00000000;
     private ArrayList<ObjectAnimator> mAnimators = new ArrayList<ObjectAnimator>();
     private ArrayList<ObjectAnimator> mNeedToStart = new ArrayList<ObjectAnimator>();
 
@@ -132,6 +135,8 @@ public class DrawableHolder implements AnimatorListener {
         canvas.translate(mX, mY);
         canvas.scale(mScaleX, mScaleY);
         canvas.translate(-0.5f*getWidth(), -0.5f*getHeight());
+        mDrawable.setColorFilter(null);
+        mDrawable.setColorFilter(mColor, PorterDuff.Mode.SRC_ATOP);
         mDrawable.setAlpha((int) Math.round(mAlpha * 255f));
         mDrawable.draw(canvas);
         canvas.restore();
@@ -173,6 +178,10 @@ public class DrawableHolder implements AnimatorListener {
 
     public void setAlpha(float alpha) {
         mAlpha = alpha;
+    }
+
+    public void setColor(int color) {
+        mColor = color;
     }
 
     public float getX() {

@@ -217,7 +217,8 @@ public class TransportControlView extends FrameLayout implements OnClickListener
     @Override
     public void onFinishInflate() {
         super.onFinishInflate();
-        if (Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_STOCK_MUSIC_LAYOUT, 0) == 0 || !mCirclesLock) {
+        if (Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.LOCKSCREEN_STOCK_MUSIC_LAYOUT, 0) == 0) {
             mLayout = (View) findViewById(R.id.layout_stock);
             mLayout.setVisibility(View.GONE);
 

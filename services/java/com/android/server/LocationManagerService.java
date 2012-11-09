@@ -2280,12 +2280,13 @@ public class LocationManagerService extends ILocationManager.Stub implements Run
     public void removeTestProvider(String provider) {
         checkMockPermissionsSafe();
         synchronized (mLock) {
-            MockProvider mockProvider = mMockProviders.remove(provider);
+            MockProvider mockProvider = mMockProviders.get(provider);
             if (mockProvider == null) {
                 throw new IllegalArgumentException("Provider \"" + provider + "\" unknown");
             }
             long identity = Binder.clearCallingIdentity();
             removeProvider(mProvidersByName.get(provider));
+            mMockProviders.remove(mockProvider);
             // reinstall real provider if we were mocking GPS or network provider
             if (LocationManager.GPS_PROVIDER.equals(provider) &&
                     mGpsLocationProvider != null) {

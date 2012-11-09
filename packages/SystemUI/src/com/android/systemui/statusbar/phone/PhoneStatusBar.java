@@ -970,7 +970,7 @@ public class PhoneStatusBar extends BaseStatusBar {
         }
         boolean phablet = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.TABLET_UI, 0) == 2;
-        if (mNavigationBarView.mDelegateHelper != null) {
+        if ((mNavigationBarView != null) && (mNavigationBarView.mDelegateHelper != null)) {
             mNavigationBarView.mDelegateHelper.setSwapXY((newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) && !phablet);
         }
     }

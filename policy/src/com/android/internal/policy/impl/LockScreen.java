@@ -130,7 +130,6 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
     private KeyguardStatusViewManager mStatusViewManager;
     private UnlockWidgetCommonMethods mUnlockWidgetMethods;
     private View mUnlockWidget;
-    private View mCircleUnlockWidget;
     private boolean mSearchDisabled;
     // Is there a vibrator
     private final boolean mHasVibrator;
@@ -824,27 +823,11 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
         mAudioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
         mSilentMode = isSilentMode();
         mUnlockWidget = findViewById(R.id.unlock_widget);
-        mCircleUnlockWidget = findViewById(R.id.circle_unlock_widget);
-        if (mCirclesLock) {
-            mUnlockWidgetMethods = createCircleUnlockMethod(mCircleUnlockWidget);
-        } else {
-            mUnlockWidgetMethods = createUnlockMethods(mUnlockWidget);
-        }
+        mUnlockWidgetMethods = createUnlockMethods(mUnlockWidget);
         updateSettings();
 
         if (DBG) Log.v(TAG, "*** LockScreen accel is "
                 + (mUnlockWidget.isHardwareAccelerated() ? "on":"off"));
-    }
-
-    private UnlockWidgetCommonMethods createCircleUnlockMethod(View unlockWidget) {
-         if (unlockWidget instanceof CirclesView) {
-            CirclesView circlesView = (CirclesView) unlockWidget;
-            CirclesViewMethods circlesViewMethods = new CirclesViewMethods(circlesView);
-            circlesView.setOnTriggerListener(circlesViewMethods);
-            return circlesViewMethods;
-        } else {
-            throw new IllegalStateException("Unrecognized unlock widget: " + unlockWidget);
-        }
     }
 
     private UnlockWidgetCommonMethods createUnlockMethods(View unlockWidget) {
@@ -860,6 +843,11 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
             SlidingTabMethods slidingTabMethods = new SlidingTabMethods(slidingTabView);
             slidingTabView.setOnTriggerListener(slidingTabMethods);
             return slidingTabMethods;
+        } else if (unlockWidget instanceof CirclesView) {
+            CirclesView circlesView = (CirclesView) unlockWidget;
+            CirclesViewMethods circlesViewMethods = new CirclesViewMethods(circlesView);
+            circlesView.setOnTriggerListener(circlesViewMethods);
+            return circlesViewMethods;
         } else if (unlockWidget instanceof WaveView) {
             WaveView waveView = (WaveView) unlockWidget;
             WaveViewMethods waveViewMethods = new WaveViewMethods(waveView);

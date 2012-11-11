@@ -3835,7 +3835,6 @@
   <java-symbol type="drawable" name="unlock_ring_circles" />
   <java-symbol type="drawable" name="unlock_wave_circles" />
   <java-symbol type="id" name="ampm" />
-  <java-symbol type="id" name="circle_unlock_widget" />
   <java-symbol type="id" name="sep" />
   <java-symbol type="id" name="time_alt" />
   <java-symbol type="id" name="timeDisplayHours" />

@@ -102,14 +102,13 @@ public class CirclesView extends View implements ValueAnimator.AnimatorUpdateLis
     private float mStartX;
     private float mStartY;
     private float mCircleSize;
-    private int defaultBgColor = 0xD2000000;
-    private int defaultRingColor = 0xFFFFFFFF;
-    private int defaultHaloColor = 0xFFFFFFFF;
-    private int defaultWaveColor = 0xD2FFFFFF;
-    private int bgColor;
-    private int ringColor;
-    private int haloColor;
-    private int waveColor;
+    private int mBgColor;
+    private int mRingColor;
+    private int mHaloColor;
+    private int mWaveColor;
+    private float mRingAlpha;
+    private float mHaloAlpha;
+    private float mWaveAlpha;
     private DrawableHolder mUnlockRing;
     private DrawableHolder mUnlockDefault;
     private DrawableHolder mUnlockHalo;
@@ -125,18 +124,25 @@ public class CirclesView extends View implements ValueAnimator.AnimatorUpdateLis
     public CirclesView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        bgColor = Settings.System.getInt(context.getContentResolver(),
-                Settings.System.CIRCLES_LOCK_BG_COLOR, defaultBgColor);
-        ringColor = Settings.System.getInt(context.getContentResolver(),
-                Settings.System.CIRCLES_LOCK_RING_COLOR, defaultRingColor);
-        haloColor = Settings.System.getInt(context.getContentResolver(),
-                Settings.System.CIRCLES_LOCK_HALO_COLOR, defaultHaloColor);
-        waveColor = Settings.System.getInt(context.getContentResolver(),
-                Settings.System.CIRCLES_LOCK_WAVE_COLOR, defaultWaveColor);
+        mBgColor = Settings.System.getInt(context.getContentResolver(),
+                Settings.System.CIRCLES_LOCK_BG_COLOR, 0xD2000000);
+        mRingColor = Settings.System.getInt(context.getContentResolver(),
+                Settings.System.CIRCLES_LOCK_RING_COLOR, 0xFFFFFFFF);
+        mHaloColor = Settings.System.getInt(context.getContentResolver(),
+                Settings.System.CIRCLES_LOCK_HALO_COLOR, 0xFFFFFFFF);
+        mWaveColor = Settings.System.getInt(context.getContentResolver(),
+                Settings.System.CIRCLES_LOCK_WAVE_COLOR, 0xFFFFFFFF);
+
+        mRingAlpha = Settings.System.getFloat(context.getContentResolver(),
+                Settings.System.CIRCLES_LOCK_RING_ALPHA, 1.0f);
+        mHaloAlpha = Settings.System.getFloat(context.getContentResolver(),
+                Settings.System.CIRCLES_LOCK_HALO_ALPHA, 1.0f);
+        mWaveAlpha = Settings.System.getFloat(context.getContentResolver(),
+                Settings.System.CIRCLES_LOCK_WAVE_ALPHA, 0.15f);
 
         mLockPatternUtils = new LockPatternUtils(context);
         setVibrateEnabled(mVibrationDuration > 0 && mLockPatternUtils.isTactileFeedbackEnabled());
-        
+
         initDrawables();
     }
 
@@ -189,7 +195,7 @@ public class CirclesView extends View implements ValueAnimator.AnimatorUpdateLis
 
     private void initDrawables() {
         mUnlockRing = new DrawableHolder(createDrawable(R.drawable.unlock_ring_circles));
-        mUnlockRing.setColor(ringColor);
+        mUnlockRing.setColor(mRingColor);
         mUnlockRing.setX(mLockCenterX);
         mUnlockRing.setY(mLockCenterY);
         mUnlockRing.setScaleX(0.1f);
@@ -198,7 +204,7 @@ public class CirclesView extends View implements ValueAnimator.AnimatorUpdateLis
         mDrawables.add(mUnlockRing);
 
         mUnlockHalo = new DrawableHolder(createDrawable(R.drawable.unlock_halo_circles));
-        mUnlockHalo.setColor(haloColor);
+        mUnlockHalo.setColor(mHaloColor);
         mUnlockHalo.setX(mLockCenterX);
         mUnlockHalo.setY(mLockCenterY);
         mUnlockHalo.setScaleX(0.1f);
@@ -207,7 +213,7 @@ public class CirclesView extends View implements ValueAnimator.AnimatorUpdateLis
         mDrawables.add(mUnlockHalo);
 
         mUnlockWave = new DrawableHolder(createDrawable(R.drawable.unlock_wave_circles));
-        mUnlockWave.setColor(waveColor);
+        mUnlockWave.setColor(mWaveColor);
         mUnlockWave.setX(mLockCenterX);
         mUnlockWave.setY(mLockCenterY);
         mUnlockWave.setScaleX(0.1f);
@@ -229,8 +235,8 @@ public class CirclesView extends View implements ValueAnimator.AnimatorUpdateLis
         mPaint.setXfermode(new PorterDuffXfermode(Mode.CLEAR));
         Drawable mBackgroundDrawable = new Drawable() {
             @Override
-            public void draw(Canvas canvas) {   
-                canvas.drawColor(bgColor, PorterDuff.Mode.SRC);
+            public void draw(Canvas canvas) {
+                canvas.drawColor(mBgColor, PorterDuff.Mode.SRC);
                 canvas.drawCircle(mStartX, mStartY, mCircleSize, mPaint);
             }
 
@@ -305,17 +311,17 @@ public class CirclesView extends View implements ValueAnimator.AnimatorUpdateLis
 
                 mUnlockHalo.setX(mStartX);
                 mUnlockHalo.setY(mStartY);
-                mUnlockHalo.setAlpha(1.0f);
+                mUnlockHalo.setAlpha(mHaloAlpha);
 
                 mUnlockWave.setX(mStartX);
                 mUnlockWave.setY(mStartY);
-                mUnlockWave.setAlpha(1.0f);
+                mUnlockWave.setAlpha(mWaveAlpha);
 
                 mUnlockRing.setX(mStartX);
                 mUnlockRing.setY(mStartY);
                 mUnlockRing.addAnimTo(DURATION, 0, "scaleX", 1.0f, true);
                 mUnlockRing.addAnimTo(DURATION, 0, "scaleY", 1.0f, true);
-                mUnlockRing.addAnimTo(DURATION, 0, "alpha", 1.0f, true);
+                mUnlockRing.addAnimTo(DURATION, 0, "alpha", mRingAlpha, true);
 
                 mLockState = STATE_ATTEMPTING;
                 break;
@@ -326,10 +332,10 @@ public class CirclesView extends View implements ValueAnimator.AnimatorUpdateLis
                     if (fingerDown) {
                         mUnlockHalo.setScaleX(1.5f);
                         mUnlockHalo.setScaleY(1.5f);
-                        mUnlockHalo.setAlpha(1.0f);
+                        mUnlockHalo.setAlpha(mHaloAlpha);
                         mUnlockWave.setScaleX(wavescale);
                         mUnlockWave.setScaleY(wavescale);
-                        mUnlockWave.setAlpha(1.0f);
+                        mUnlockWave.setAlpha(mWaveAlpha);
                     }  else {
                         if (DBG) Log.v(TAG, "up detected, moving to STATE_UNLOCK_ATTEMPT");
                         mLockState = STATE_UNLOCK_ATTEMPT;
@@ -339,10 +345,10 @@ public class CirclesView extends View implements ValueAnimator.AnimatorUpdateLis
                     mUnlockHalo.setScaleY(handlescale);
                     mCircleSize = dragDistance <= 130
                             ? 130 : dragDistance;
-                    mUnlockHalo.setAlpha(1.0f);
+                    mUnlockHalo.setAlpha(mHaloAlpha);
                     mUnlockWave.setScaleX(wavescale);
                     mUnlockWave.setScaleY(wavescale);
-                    mUnlockWave.setAlpha(1.0f);
+                    mUnlockWave.setAlpha(mWaveAlpha);
                 }
                 break;
 

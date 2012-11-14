@@ -102,10 +102,10 @@ public class ClockStock extends TextView implements OnClickListener, OnLongClick
             SettingsObserver settingsObserver = new SettingsObserver(new Handler());
             settingsObserver.observe();
             updateSettings();
-            if (mShortClick == null || mShortClick == "") {
+            if (mShortClick == null || mShortClick.equals("")) {
                 mShortClick = "**nothing**";
             }
-            if (mLongClick == null || mLongClick == "") {
+            if (mLongClick == null || mLongClick.equals("")) {
                 mLongClick = "**nothing**";
             }
         }

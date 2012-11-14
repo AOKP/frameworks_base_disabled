@@ -617,17 +617,17 @@ public class PhoneStatusBar extends BaseStatusBar {
         observer.observe();
         updateSettings();
 
-        if (mShortClick == null || mShortClick == "") {
+        if (mShortClick == null || mShortClick.equals("")) {
             mShortClick = "**nothing**";
         }
-        if (mLongClick == null || mLongClick == "") {
+        if (mLongClick == null || mLongClick.equals("")) {
             mLongClick = "**nothing**";
         }
 
-        if (mShortClickWeather == null || mShortClickWeather == "") {
+        if (mShortClickWeather == null || mShortClickWeather.equals("")) {
             mShortClickWeather = "**nothing**";
         }
-        if (mLongClickWeather == null || mLongClickWeather == "") {
+        if (mLongClickWeather == null || mLongClickWeather.equals("")) {
             mLongClickWeather = "**nothing**";
         }
 

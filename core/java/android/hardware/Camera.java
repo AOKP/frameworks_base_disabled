@@ -1856,6 +1856,12 @@ public class Coordinate {
         public static final String SCENE_MODE_ASD = "asd";
 
         /**
+* Scene mode is off.
+* @hide
+*/
+        public static final String SCENE_MODE_OFF = "off";
+
+        /**
 * Scene mode is auto ASD.
 */
         public static final String SCENE_MODE_AUTO = "auto";

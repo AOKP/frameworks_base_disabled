@@ -31,21 +31,23 @@
 			android:layout_height="wrap_content"
 			android:layout_width="wrap_content"
 			android:text="@string/battery_test"
+            android:textColor="#FFFFFFFF"
 			android:shadowColor="#FF000000"
 			android:shadowDx="0"
 			android:shadowDy="0"
 			android:shadowRadius="2.5"
 			android:visibility="gone" />
-	     <TextView
+        <TextView
 			android:id="@+id/battery_text_center"
 			style="@style/Battery_Center"
 			android:layout_height="wrap_content"
 			android:layout_width="wrap_content"
 			android:text="@string/battery_test"
+            android:textColor="#FFFFFFFF"
 			android:shadowColor="#FF000000"
 			android:shadowDx="0"
 			android:shadowDy="0"
-			android:shadowRadius="2.5"
+			android:shadowRadius="1"
 			android:visibility="gone" />
 			
 		<TextView

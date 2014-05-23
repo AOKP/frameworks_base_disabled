@@ -138,4 +138,25 @@
     <string name="gps_notification_searching_text" msgid="8574247005642736060">"GPS aranıyor"</string>
     <string name="gps_notification_found_text" msgid="4619274244146446464">"Konum GPS ile belirlendi"</string>
     <string name="accessibility_clear_all" msgid="5235938559247164925">"Tüm bildirimleri temizle"</string>
+    <string name="status_bar_settings_gps_button">GPS</string>
+    <string name="toggle_bt">BT</string>
+    <string name="toggle_data">Data</string>
+    <string name="toggle_lte">LTE</string>
+    <string name="toggle_rotate">Dönüş</string>
+    <string name="toggle_wifi">Wi-Fi</string>
+    <string name="toggle_gps">GPS</string>
+    <string name="toggle_2g">2G</string>
+    <string name="toggle_wifiap">Wi-Fi AP</string>
+    <string name="toggle_airplane">UçakMOD</string>
+    <string name="toggle_vibrate">Titreşim</string>
+    <string name="toggle_silent">Sessiz</string>
+    <string name="toggle_torch">Fener</string>
+    <string name="toggle_sync">Senkron</string>
+    <string name="toggle_swagger">Swagger</string>
+    <string name="toggle_fcharge">H-Şarj</string>
+    <string name="status_bar_settings_toggles">Düğmeler</string>
+    <string name="weatherpanel_slash">/</string>
+    <string name="toggle_navbar">Yazılımsal Düğme</string>
+    <string name="notifications_off_title">Bildirimler kapalı</string>
+    <string name="notifications_off_text">Bildirimleri tekrar açmak için buraya tıklayın.</string>
 </resources>
